@@ -20,4 +20,3 @@ You should have received a copy of the GNU Affero General Public License along w
 ## Throughput
 
 [![Throughput Graph](https://graphs.waffle.io/komunumo/komunumo-website/throughput.svg)](https://waffle.io/komunumo/komunumo-website/metrics/throughput)
-
