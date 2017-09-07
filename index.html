@@ -21,27 +21,97 @@
         <link rel="apple-touch-icon" sizes="152x152" href="/images/favicon/apple-icon-152x152.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-icon-180x180.png" />
         <link rel="manifest" href="/manifest.json" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet" />
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-TileImage" content="/images/favicon/ms-icon-144x144.png" />
         <meta name="theme-color" content="#ffffff" />
+        <script src="https://use.fontawesome.com/07259f69c0.js"></script>
 
         <style>
+            * {
+                color: #FFFFFF;
+                font-family: 'Roboto', sans-serif;
+            }
+
             body {
-                background-color: rgb(252, 238, 33);
+                background-image: linear-gradient(45deg, #00FFC9 0%, #00FF99 100%);
+                padding: 0;
             }
 
             img {
-                position: fixed;
-                height: 500px;
-                width: 500px;
-                top: 50%;
-                left: 50%;
-                margin-top: -250px;
-                margin-left: -250px;
+                display: block;
+                margin: 0 auto;
+                margin-top: 50px;
+                width: 350px;
+            }
+
+            .mission {
+                font-size: 32px;
+                line-height: 36px;
+                text-align: center;
+            }
+
+            .github {
+                background: rgba(0,0,0,0.20);
+                border-radius: 8px;
+                font-size: 50px;
+                line-height: 36px;
+                margin: 0 auto;
+                text-align: center;
+                width: 100px;
+            }
+
+            .github a, .knowmore a {
+                display: block;
+                text-decoration: none;
+            }
+
+            .knowmore {
+                font-size: 18px;
+                line-height: 30px;
+                margin: 64px;
+                text-align: center;
+            }
+
+            .fa-chevron-right {
+                font-size: 30px;
+                transform: rotate(90deg);
+            }
+
+            .description {
+                background: rgba(0,0,0,0.20);
+                font-size: 24px;
+                margin: 0;
+                padding: 50px;
+            }
+
+            @media screen and (min-width: 1000px) {
+                img {
+                    margin-top: 150px;
+                    width: 520px;
+                }
+
+                .mission {
+                    font-size: 64px;
+                    line-height: 66px;
+                }
+
+                .github {
+                    line-height: 66px;
+                }
+
+                .description {
+                    column-count: 2;
+                }
             }
         </style>
     </head>
     <body>
-        <a href="https://github.com/komunumo"><img src="images/komunumo.png" alt="Komunumo" title="Komunumo" /></a>
+        <img src="images/komunumo.svg" alt="Komunumo" title="Komunumo" />
+        <p class="mission">the open source<br />community management</p>
+        <div class="github"><a href="https://github.com/komunumo"><i class="fa fa-github" aria-hidden="true"></i></a></div>
+        <div class="knowmore"><a href="#bottom">know more</a><a href="#bottom"><i class="fa fa-chevron-right" aria-hidden="true"></i></a></div>
+        <p class="description">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus</p>
+        <a id="bottom"></a>
     </body>
 </html>
