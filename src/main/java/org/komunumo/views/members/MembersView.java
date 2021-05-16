@@ -28,7 +28,6 @@ import org.komunumo.data.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 
-//@Route(value = "members/:memberID?/:action?(edit)", layout = MainView.class)
 @PageTitle("Members")
 public class MembersView extends Div implements BeforeEnterObserver {
 

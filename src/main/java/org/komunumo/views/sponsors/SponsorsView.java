@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.util.UriUtils;
 
-//@Route(value = "sponsors/:sponsorID?/:action?(edit)", layout = MainView.class)
 @PageTitle("Sponsors")
 public class SponsorsView extends Div implements BeforeEnterObserver {
 

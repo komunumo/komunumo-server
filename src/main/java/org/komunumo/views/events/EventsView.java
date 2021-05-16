@@ -29,7 +29,6 @@ import org.komunumo.data.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 
-//@Route(value = "events/:eventID?/:action?(edit)", layout = MainView.class)
 @PageTitle("Events")
 public class EventsView extends Div implements BeforeEnterObserver {
 
