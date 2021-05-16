@@ -38,7 +38,7 @@ public class RegisterView extends Div {
                             address.getValue(), zipCode.getValue(), city.getValue(),
                             state.getValue(), country.getValue()
                     );
-                    Notification.show("Registration succeeded.");
+                    Notification.show("Check your log.");
                 })
         );
     }

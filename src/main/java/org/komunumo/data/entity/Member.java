@@ -22,6 +22,8 @@ public class Member extends AbstractEntity {
     private boolean admin;
     private String passwordSalt;
     private String passwordHash;
+    private String activationCode;
+    private boolean active;
 
     public String getFirstName() {
         return firstName;
@@ -126,6 +128,22 @@ public class Member extends AbstractEntity {
 
     public boolean checkPassword(String password) {
         return DigestUtils.sha1Hex(password + passwordSalt).equals(passwordHash);
+    }
+
+    public String getActivationCode() {
+        return activationCode;
+    }
+
+    public void setActivationCode(String activationCode) {
+        this.activationCode = activationCode;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
 }

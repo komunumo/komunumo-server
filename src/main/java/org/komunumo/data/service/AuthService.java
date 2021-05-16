@@ -6,6 +6,7 @@ import com.vaadin.flow.server.VaadinSession;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.komunumo.data.entity.Member;
 import org.komunumo.views.dashboard.DashboardView;
 import org.komunumo.views.events.EventsView;
@@ -13,6 +14,8 @@ import org.komunumo.views.logout.LogoutView;
 import org.komunumo.views.main.MainView;
 import org.komunumo.views.members.MembersView;
 import org.komunumo.views.sponsors.SponsorsView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,6 +25,8 @@ public class AuthService {
 
     public class AuthException extends Exception {}
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final MemberRepository memberRepository;
 
     public AuthService(final MemberRepository memberRepository) {
@@ -30,7 +35,7 @@ public class AuthService {
 
     public void authenticate(final String email, final String password) throws AuthException {
         final var member = memberRepository.getByEmail(email);
-        if (member != null && member.checkPassword(password)) {
+        if (member != null && member.isActive() && member.checkPassword(password)) {
             VaadinSession.getCurrent().setAttribute(Member.class, member);
             createRoutes(member);
         } else {
@@ -73,7 +78,20 @@ public class AuthService {
         member.setCountry(country);
         member.setMemberSince(LocalDate.now());
         member.setAdmin(false);
+        member.setActive(false);
+        member.setActivationCode(RandomStringUtils.randomAlphanumeric(32));
         memberRepository.save(member);
+        logger.info("http://localhost:8080/activate?email={}&code={}", member.getEmail(), member.getActivationCode());
+    }
+
+    public void activate(final String email, final String activationCode) throws AuthException {
+        final var member = memberRepository.getByEmail(email);
+        if (member != null && member.getActivationCode().equals(activationCode)) {
+            member.setActive(true);
+            memberRepository.save(member);
+        } else {
+            throw new AuthException();
+        }
     }
 
 }
