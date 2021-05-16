@@ -24,71 +24,72 @@ import org.vaadin.artur.exampledata.ExampleDataGenerator;
 public class DataGenerator {
 
     @Bean
-    public CommandLineRunner loadData(final EventRepository eventRepository, final MemberRepository memberRepository,
+    public CommandLineRunner loadData(final EventRepository eventRepository,
+                                      final MemberRepository memberRepository,
                                       final SponsorRepository sponsorRepository) {
         return args -> {
             Logger logger = LoggerFactory.getLogger(getClass());
-            if (eventRepository.count() != 0L) {
-                logger.info("Using existing database");
-                return;
+            final int seed = 123;
+
+            if (eventRepository.count() == 0L) {
+                logger.info("Generating event entities...");
+                ExampleDataGenerator<Event> eventRepositoryGenerator = new ExampleDataGenerator<>(Event.class,
+                        LocalDateTime.of(2021, 5, 15, 0, 0, 0));
+                eventRepositoryGenerator.setData(Event::setId, DataType.ID);
+                eventRepositoryGenerator.setData(Event::setTitle, DataType.TWO_WORDS);
+                eventRepositoryGenerator.setData(Event::setSpeaker, DataType.FULL_NAME);
+                eventRepositoryGenerator.setData(Event::setDate, DataType.DATETIME_NEXT_1_YEAR);
+                eventRepositoryGenerator.setData(Event::setVisible, DataType.BOOLEAN_50_50);
+                eventRepository.saveAll(eventRepositoryGenerator.create(100, seed));
             }
-            int seed = 123;
 
-            logger.info("Generating demo data");
+            if (memberRepository.count() == 0) {
+                logger.info("Generating member entities...");
 
-            logger.info("... generating 100 Event entities...");
-            ExampleDataGenerator<Event> eventRepositoryGenerator = new ExampleDataGenerator<>(Event.class,
-                    LocalDateTime.of(2021, 5, 15, 0, 0, 0));
-            eventRepositoryGenerator.setData(Event::setId, DataType.ID);
-            eventRepositoryGenerator.setData(Event::setTitle, DataType.TWO_WORDS);
-            eventRepositoryGenerator.setData(Event::setSpeaker, DataType.FULL_NAME);
-            eventRepositoryGenerator.setData(Event::setDate, DataType.DATETIME_NEXT_1_YEAR);
-            eventRepositoryGenerator.setData(Event::setVisible, DataType.BOOLEAN_50_50);
-            eventRepository.saveAll(eventRepositoryGenerator.create(100, seed));
+                final var member1 = new Member();
+                member1.setId(1);
+                member1.setFirstName("Marcus");
+                member1.setLastName("Fihlon");
+                member1.setEmail("marcus@fihlon.ch");
+                member1.setAddress("Winkelriedstrasse 25");
+                member1.setZipCode("6003");
+                member1.setCity("Luzern");
+                member1.setState("Luzern");
+                member1.setCountry("Schweiz");
+                member1.setMemberSince(LocalDate.of(2013, 2, 1));
+                member1.setAdmin(false);
+                member1.setPassword("user");
+                memberRepository.save(member1);
 
-            logger.info("... generating member entities...");
+                final var member2 = new Member();
+                member2.setId(2);
+                member2.setFirstName("Marcus");
+                member2.setLastName("Fihlon");
+                member2.setEmail("marcus@fihlon.swiss");
+                member2.setAddress("Winkelriedstrasse 25");
+                member2.setZipCode("6003");
+                member2.setCity("Luzern");
+                member2.setState("Luzern");
+                member2.setCountry("Schweiz");
+                member2.setMemberSince(LocalDate.of(2013, 2, 1));
+                member2.setAdmin(true);
+                member2.setPassword("admin");
+                memberRepository.save(member2);
+            }
 
-            final var member1 = new Member();
-            member1.setId(1);
-            member1.setFirstName("Marcus");
-            member1.setLastName("Fihlon");
-            member1.setEmail("marcus@fihlon.ch");
-            member1.setAddress("Winkelriedstrasse 25");
-            member1.setZipCode("6003");
-            member1.setCity("Luzern");
-            member1.setState("Luzern");
-            member1.setCountry("Schweiz");
-            member1.setMemberSince(LocalDate.of(2013, 2, 1));
-            member1.setAdmin(false);
-            member1.setPassword("user");
-            memberRepository.save(member1);
+            if (sponsorRepository.count() == 0) {
+                logger.info("Generating sponsor entities...");
+                ExampleDataGenerator<Sponsor> sponsorRepositoryGenerator = new ExampleDataGenerator<>(Sponsor.class,
+                        LocalDateTime.of(2021, 5, 15, 0, 0, 0));
+                sponsorRepositoryGenerator.setData(Sponsor::setId, DataType.ID);
+                sponsorRepositoryGenerator.setData(Sponsor::setName, DataType.FULL_NAME);
+                sponsorRepositoryGenerator.setData(Sponsor::setLogo, DataType.PROFILE_PICTURE_URL);
+                sponsorRepositoryGenerator.setData(Sponsor::setValidFrom, DataType.DATE_LAST_1_YEAR);
+                sponsorRepositoryGenerator.setData(Sponsor::setValidTo, DataType.DATE_NEXT_1_YEAR);
+                sponsorRepository.saveAll(sponsorRepositoryGenerator.create(100, seed));
+            }
 
-            final var member2 = new Member();
-            member2.setId(2);
-            member2.setFirstName("Marcus");
-            member2.setLastName("Fihlon");
-            member2.setEmail("marcus@fihlon.swiss");
-            member2.setAddress("Winkelriedstrasse 25");
-            member2.setZipCode("6003");
-            member2.setCity("Luzern");
-            member2.setState("Luzern");
-            member2.setCountry("Schweiz");
-            member2.setMemberSince(LocalDate.of(2013, 2, 1));
-            member2.setAdmin(true);
-            member2.setPassword("admin");
-            memberRepository.save(member2);
-
-            logger.info("... generating 100 Sponsor entities...");
-            ExampleDataGenerator<Sponsor> sponsorRepositoryGenerator = new ExampleDataGenerator<>(Sponsor.class,
-                    LocalDateTime.of(2021, 5, 15, 0, 0, 0));
-            sponsorRepositoryGenerator.setData(Sponsor::setId, DataType.ID);
-            sponsorRepositoryGenerator.setData(Sponsor::setName, DataType.FULL_NAME);
-            sponsorRepositoryGenerator.setData(Sponsor::setLogo, DataType.PROFILE_PICTURE_URL);
-            sponsorRepositoryGenerator.setData(Sponsor::setValidFrom, DataType.DATE_LAST_1_YEAR);
-            sponsorRepositoryGenerator.setData(Sponsor::setValidTo, DataType.DATE_NEXT_1_YEAR);
-            sponsorRepository.saveAll(sponsorRepositoryGenerator.create(100, seed));
-
-            logger.info("Generated demo data");
+            logger.info("Demo data ready.");
         };
     }
 
