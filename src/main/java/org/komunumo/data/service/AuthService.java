@@ -16,6 +16,8 @@ import org.komunumo.views.members.MembersView;
 import org.komunumo.views.sponsors.SponsorsView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,9 +30,11 @@ public class AuthService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final MemberRepository memberRepository;
+    private final MailSender mailSender;
 
-    public AuthService(final MemberRepository memberRepository) {
+    public AuthService(final MemberRepository memberRepository, final MailSender mailSender) {
         this.memberRepository = memberRepository;
+        this.mailSender = mailSender;
     }
 
     public void authenticate(final String email, final String password) throws AuthException {
@@ -81,7 +85,15 @@ public class AuthService {
         member.setActive(false);
         member.setActivationCode(RandomStringUtils.randomAlphanumeric(32));
         memberRepository.save(member);
-        logger.info("http://localhost:8080/activate?email={}&code={}", member.getEmail(), member.getActivationCode());
+
+        final var text = "http://localhost:8080/activate?email=%s&code=%s"
+                .formatted(member.getEmail(), member.getActivationCode());
+        final var message = new SimpleMailMessage();
+        message.setTo(member.getEmail());
+        message.setFrom("noreply@example.com"); // TODO configurable: info@jug.ch
+        message.setSubject("Activate your account");
+        message.setText(text);
+        mailSender.send(message);
     }
 
     public void activate(final String email, final String activationCode) throws AuthException {
