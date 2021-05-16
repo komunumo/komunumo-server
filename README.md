@@ -3,8 +3,6 @@
 
 **Open Source Community Manager**
 
-## The Name
-
 *Komunumo* is an esperanto noun with a meaning of *community*.
 
 ## Copyright and License
