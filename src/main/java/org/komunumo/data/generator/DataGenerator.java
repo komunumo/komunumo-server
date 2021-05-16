@@ -59,6 +59,7 @@ public class DataGenerator {
                 member1.setMemberSince(LocalDate.of(2013, 2, 1));
                 member1.setAdmin(false);
                 member1.setPassword("user");
+                member1.setActive(true);
                 memberRepository.save(member1);
 
                 final var member2 = new Member();
@@ -74,6 +75,7 @@ public class DataGenerator {
                 member2.setMemberSince(LocalDate.of(2013, 2, 1));
                 member2.setAdmin(true);
                 member2.setPassword("admin");
+                member2.setActive(true);
                 memberRepository.save(member2);
             }
 
