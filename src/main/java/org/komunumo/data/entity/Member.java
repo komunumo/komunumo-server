@@ -21,6 +21,87 @@ public class Member extends AbstractEntity {
     private LocalDate memberSince;
     private boolean admin;
     private String passwordSalt;
+    private String passwordHash;
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public LocalDate getMemberSince() {
+        return memberSince;
+    }
+
+    public void setMemberSince(LocalDate memberSince) {
+        this.memberSince = memberSince;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
 
     public String getPasswordSalt() {
         return passwordSalt;
@@ -38,69 +119,6 @@ public class Member extends AbstractEntity {
         this.passwordHash = passwordHash;
     }
 
-    private String passwordHash;
-
-    public String getFirstName() {
-        return firstName;
-    }
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-    public String getLastName() {
-        return lastName;
-    }
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public String getAddress() {
-        return address;
-    }
-    public void setAddress(String address) {
-        this.address = address;
-    }
-    public String getZipCode() {
-        return zipCode;
-    }
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
-    }
-    public String getCity() {
-        return city;
-    }
-    public void setCity(String city) {
-        this.city = city;
-    }
-    public String getState() {
-        return state;
-    }
-    public void setState(String state) {
-        this.state = state;
-    }
-    public String getCountry() {
-        return country;
-    }
-    public void setCountry(String country) {
-        this.country = country;
-    }
-    public LocalDate getMemberSince() {
-        return memberSince;
-    }
-    public void setMemberSince(LocalDate memberSince) {
-        this.memberSince = memberSince;
-    }
-    public boolean isAdmin() {
-        return admin;
-    }
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
-    }
-
     public void setPassword(String password) {
         passwordSalt = RandomStringUtils.random(32);
         passwordHash = DigestUtils.sha1Hex(password + passwordSalt);
@@ -109,4 +127,5 @@ public class Member extends AbstractEntity {
     public boolean checkPassword(String password) {
         return DigestUtils.sha1Hex(password + passwordSalt).equals(passwordHash);
     }
+
 }

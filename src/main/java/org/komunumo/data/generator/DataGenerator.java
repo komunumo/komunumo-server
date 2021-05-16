@@ -2,6 +2,7 @@ package org.komunumo.data.generator;
 
 import com.vaadin.flow.spring.annotation.SpringComponent;
 
+import java.time.LocalDate;
 import org.h2.engine.Role;
 import org.komunumo.data.service.EventRepository;
 import org.komunumo.data.entity.Event;
@@ -45,33 +46,37 @@ public class DataGenerator {
             eventRepositoryGenerator.setData(Event::setVisible, DataType.BOOLEAN_50_50);
             eventRepository.saveAll(eventRepositoryGenerator.create(100, seed));
 
-            logger.info("... generating 100 Member entities...");
-            ExampleDataGenerator<Member> memberRepositoryGenerator = new ExampleDataGenerator<>(Member.class,
-                    LocalDateTime.of(2021, 5, 15, 0, 0, 0));
-            memberRepositoryGenerator.setData(Member::setId, DataType.ID);
-            memberRepositoryGenerator.setData(Member::setFirstName, DataType.FIRST_NAME);
-            memberRepositoryGenerator.setData(Member::setLastName, DataType.LAST_NAME);
-            memberRepositoryGenerator.setData(Member::setEmail, DataType.EMAIL);
-            memberRepositoryGenerator.setData(Member::setAddress, DataType.ADDRESS);
-            memberRepositoryGenerator.setData(Member::setZipCode, DataType.ZIP_CODE);
-            memberRepositoryGenerator.setData(Member::setCity, DataType.CITY);
-            memberRepositoryGenerator.setData(Member::setState, DataType.STATE);
-            memberRepositoryGenerator.setData(Member::setCountry, DataType.COUNTRY);
-            memberRepositoryGenerator.setData(Member::setMemberSince, DataType.DATE_LAST_10_YEARS);
-            memberRepositoryGenerator.setData(Member::setAdmin, DataType.BOOLEAN_50_50);
-            memberRepository.saveAll(memberRepositoryGenerator.create(98, seed));
+            logger.info("... generating member entities...");
 
-            final var user = memberRepositoryGenerator.create(1, 456).get(0);
-            user.setEmail("marcus@fihlon.ch");
-            user.setPassword("user");
-            user.setAdmin(false);
-            memberRepository.save(user);
+            final var member1 = new Member();
+            member1.setId(1);
+            member1.setFirstName("Marcus");
+            member1.setLastName("Fihlon");
+            member1.setEmail("marcus@fihlon.ch");
+            member1.setAddress("Winkelriedstrasse 25");
+            member1.setZipCode("6003");
+            member1.setCity("Luzern");
+            member1.setState("Luzern");
+            member1.setCountry("Schweiz");
+            member1.setMemberSince(LocalDate.of(2013, 2, 1));
+            member1.setAdmin(false);
+            member1.setPassword("user");
+            memberRepository.save(member1);
 
-            final var admin = memberRepositoryGenerator.create(1, 789).get(0);
-            admin.setEmail("marcus@fihlon.swiss");
-            admin.setPassword("admin");
-            admin.setAdmin(true);
-            memberRepository.save(admin);
+            final var member2 = new Member();
+            member2.setId(2);
+            member2.setFirstName("Marcus");
+            member2.setLastName("Fihlon");
+            member2.setEmail("marcus@fihlon.swiss");
+            member2.setAddress("Winkelriedstrasse 25");
+            member2.setZipCode("6003");
+            member2.setCity("Luzern");
+            member2.setState("Luzern");
+            member2.setCountry("Schweiz");
+            member2.setMemberSince(LocalDate.of(2013, 2, 1));
+            member2.setAdmin(true);
+            member2.setPassword("admin");
+            memberRepository.save(member2);
 
             logger.info("... generating 100 Sponsor entities...");
             ExampleDataGenerator<Sponsor> sponsorRepositoryGenerator = new ExampleDataGenerator<>(Sponsor.class,

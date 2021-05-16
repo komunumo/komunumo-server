@@ -46,8 +46,8 @@ public class AuthService {
         final var routes = new ArrayList<AuthorizedRoute>();
 
         if (member != null) {
+            routes.add(new AuthorizedRoute("dashboard", "Dashboard", DashboardView.class));
             if (member.isAdmin()) {
-                routes.add(new AuthorizedRoute("dashboard", "Dashboard", DashboardView.class));
                 routes.add(new AuthorizedRoute("events", "Events", EventsView.class));
                 routes.add(new AuthorizedRoute("members", "Members", MembersView.class));
                 routes.add(new AuthorizedRoute("sponsors", "Sponsors", SponsorsView.class));
