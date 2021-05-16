@@ -3,6 +3,7 @@ package org.komunumo.data.service;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.server.VaadinSession;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.komunumo.data.entity.Member;
@@ -57,4 +58,22 @@ public class AuthService {
 
         return routes;
     }
+
+    public void register(final String firstName, final String lastName, final String email,
+                         final String address, final String zipCode, final String city,
+                         final String state, final String country) {
+        final var member = new Member();
+        member.setFirstName(firstName);
+        member.setLastName(lastName);
+        member.setEmail(email);
+        member.setAddress(address);
+        member.setZipCode(zipCode);
+        member.setCity(city);
+        member.setState(state);
+        member.setCountry(country);
+        member.setMemberSince(LocalDate.now());
+        member.setAdmin(false);
+        memberRepository.save(member);
+    }
+
 }
