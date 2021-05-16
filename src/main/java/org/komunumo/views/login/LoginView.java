@@ -1,5 +1,6 @@
 package org.komunumo.views.login;
 
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
@@ -22,21 +23,26 @@ public class LoginView extends Div {
         addClassName("login-view");
 
         final var email = new TextField("Email");
+        email.setAutofocus(true);
         final var password = new PasswordField("Password");
+
+        final var login = new Button("Login", event -> {
+            try {
+                authService.authenticate(email.getValue(), password.getValue());
+                UI.getCurrent().navigate("dashboard");
+            } catch (final AuthException e) {
+                Notification.show("Wrong credentials.");
+            }
+        });
+        login.addClickShortcut(Key.ENTER);
+        login.setThemeName("primary");
+
+        final var register = new RouterLink("Register", RegisterView.class);
 
         add(
                 new H1("Welcome"),
-                email,
-                password,
-                new Button("Login", event -> {
-                    try {
-                        authService.authenticate(email.getValue(), password.getValue());
-                        UI.getCurrent().navigate("dashboard");
-                    } catch (final AuthException e) {
-                        Notification.show("Wrong credentials.");
-                    }
-                }),
-                new RouterLink("Register", RegisterView.class)
+                email, password,
+                login, register
         );
     }
 
