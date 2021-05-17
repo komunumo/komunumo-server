@@ -6,6 +6,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
@@ -21,8 +22,8 @@ public class LoginView extends Div {
     public LoginView(final AuthService authService) {
         addClassName("login-view");
 
-        final var email = new TextField("Email");
-        email.setRequired(true);
+        final var email = new EmailField("Email");
+        email.setRequiredIndicatorVisible(true);
         email.setErrorMessage("Please enter your email address");
         email.setPreventInvalidInput(true);
         email.setAutofocus(true);
