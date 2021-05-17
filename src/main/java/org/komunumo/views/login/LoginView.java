@@ -13,7 +13,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.data.service.AuthService.AuthException;
-import org.komunumo.views.main.MainView;
 
 @Route(value = "login")
 @PageTitle("Login")
@@ -23,15 +22,26 @@ public class LoginView extends Div {
         addClassName("login-view");
 
         final var email = new TextField("Email");
+        email.setRequired(true);
+        email.setErrorMessage("Please enter your email address");
+        email.setPreventInvalidInput(true);
         email.setAutofocus(true);
+
         final var password = new PasswordField("Password");
+        password.setRequired(true);
+        password.setErrorMessage("Please enter your password");
+        password.setPreventInvalidInput(true);
 
         final var login = new Button("Login", event -> {
-            try {
-                authService.authenticate(email.getValue(), password.getValue());
-                UI.getCurrent().navigate("dashboard");
-            } catch (final AuthException e) {
-                Notification.show("Wrong credentials.");
+            if (email.isInvalid() || password.isInvalid()) {
+                Notification.show("Please enter your email address and your password to login.");
+            } else {
+                try {
+                    authService.authenticate(email.getValue(), password.getValue());
+                    UI.getCurrent().navigate("dashboard");
+                } catch (final AuthException e) {
+                    Notification.show("Wrong credentials.");
+                }
             }
         });
         login.addClickShortcut(Key.ENTER);
