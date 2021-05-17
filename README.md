@@ -1,5 +1,4 @@
-*Komunumo Website*
-==================
+# Komunumo Website
 
 **Open Source Community Manager**
 
