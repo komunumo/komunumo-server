@@ -3,9 +3,11 @@ package org.komunumo.views.login;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.data.binder.Binder;
@@ -19,7 +21,7 @@ import org.komunumo.data.service.AuthService.AuthException;
 
 @Route(value = "login")
 @PageTitle("Login")
-public class LoginView extends Div {
+public class LoginView extends VerticalLayout {
 
     public LoginView(final AuthService authService) {
         addClassName("login-view");
@@ -56,15 +58,22 @@ public class LoginView extends Div {
             }
         });
         login.addClickShortcut(Key.ENTER);
-        login.setThemeName("primary");
+        login.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        final var register = new RouterLink("Register", RegisterView.class);
+        final var register = new RouterLink("Register as a new member", RegisterView.class);
+        register.addClassName("register-link");
 
         add(
-                new H1("Welcome"),
-                email, password,
-                login, register
+                new FormLayout(
+                        new H1("Login"),
+                        email, password,
+                        login, register
+                )
         );
+
+        setSizeFull();
+        setAlignItems(Alignment.CENTER); //horizontal center
+        setJustifyContentMode(JustifyContentMode.CENTER); //vertical center
     }
 
 }

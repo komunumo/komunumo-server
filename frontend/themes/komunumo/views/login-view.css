@@ -1,4 +1,22 @@
 .login-view {
-  display: grid;
-  padding: 10% 30%;
+  background-color: var(--lumo-primary-color-10pct);
+}
+
+.login-view vaadin-form-layout {
+  background-color: white;
+  border: 1px solid var(--lumo-primary-text-color);
+  border-radius: 1em;
+  box-shadow: var(--lumo-box-shadow-s);
+  margin-left: calc(50% - 175px);
+  max-width: 350px;
+  padding: 1em;
+}
+
+.login-view h1 {
+  margin: 0 0 0.3em;
+}
+
+.login-view .register-link {
+  margin-top: 1em;
+  text-align: center;
 }
