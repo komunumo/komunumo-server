@@ -19,7 +19,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 @PWA(name = "Komunumo", shortName = "Komunumo", offlineResources = {"images/logo.png"})
 public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         SpringApplication.run(Application.class, args);
     }
 

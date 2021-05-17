@@ -39,7 +39,7 @@ public class MainView extends AppLayout {
     }
 
     private Component createHeaderContent() {
-        HorizontalLayout layout = new HorizontalLayout();
+        final var layout = new HorizontalLayout();
         layout.setId("header");
         layout.getThemeList().set("dark", true);
         layout.setWidthFull();
@@ -52,14 +52,14 @@ public class MainView extends AppLayout {
         return layout;
     }
 
-    private Component createDrawerContent(Tabs menu) {
-        VerticalLayout layout = new VerticalLayout();
+    private Component createDrawerContent(final Tabs menu) {
+        final var layout = new VerticalLayout();
         layout.setSizeFull();
         layout.setPadding(false);
         layout.setSpacing(false);
         layout.getThemeList().set("spacing-s", true);
         layout.setAlignItems(FlexComponent.Alignment.STRETCH);
-        HorizontalLayout logoLayout = new HorizontalLayout();
+        final var logoLayout = new HorizontalLayout();
         logoLayout.setId("logo");
         logoLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         logoLayout.add(new Image("images/logo.png", "Komunumo logo"));
@@ -69,7 +69,7 @@ public class MainView extends AppLayout {
     }
 
     private Tabs createMenu() {
-        final Tabs tabs = new Tabs();
+        final var tabs = new Tabs();
         tabs.setOrientation(Tabs.Orientation.VERTICAL);
         tabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);
         tabs.setId("tabs");
@@ -84,8 +84,8 @@ public class MainView extends AppLayout {
                 .toArray(Component[]::new);
     }
 
-    private static Tab createTab(String text, Class<? extends Component> navigationTarget) {
-        final Tab tab = new Tab();
+    private static Tab createTab(final String text, final Class<? extends Component> navigationTarget) {
+        final var tab = new Tab();
         tab.add(new RouterLink(text, navigationTarget));
         ComponentUtil.setData(tab, Class.class, navigationTarget);
         return tab;
@@ -98,13 +98,13 @@ public class MainView extends AppLayout {
         viewTitle.setText(getCurrentPageTitle());
     }
 
-    private Optional<Tab> getTabForComponent(Component component) {
+    private Optional<Tab> getTabForComponent(final Component component) {
         return menu.getChildren().filter(tab -> ComponentUtil.getData(tab, Class.class).equals(component.getClass()))
                 .findFirst().map(Tab.class::cast);
     }
 
     private String getCurrentPageTitle() {
-        PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
+        final var title = getContent().getClass().getAnnotation(PageTitle.class);
         return title == null ? "" : title.value();
     }
 }

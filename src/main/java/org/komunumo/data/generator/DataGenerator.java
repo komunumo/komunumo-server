@@ -1,19 +1,14 @@
 package org.komunumo.data.generator;
 
 import com.vaadin.flow.spring.annotation.SpringComponent;
-
 import java.time.LocalDate;
-import org.h2.engine.Role;
-import org.komunumo.data.service.EventRepository;
-import org.komunumo.data.entity.Event;
-import org.komunumo.data.service.MemberRepository;
-import org.komunumo.data.entity.Member;
-import org.komunumo.data.service.SponsorRepository;
-import org.komunumo.data.entity.Sponsor;
-
 import java.time.LocalDateTime;
-
-import org.slf4j.Logger;
+import org.komunumo.data.entity.Event;
+import org.komunumo.data.entity.Member;
+import org.komunumo.data.entity.Sponsor;
+import org.komunumo.data.service.EventRepository;
+import org.komunumo.data.service.MemberRepository;
+import org.komunumo.data.service.SponsorRepository;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -28,12 +23,12 @@ public class DataGenerator {
                                       final MemberRepository memberRepository,
                                       final SponsorRepository sponsorRepository) {
         return args -> {
-            Logger logger = LoggerFactory.getLogger(getClass());
+            final var logger = LoggerFactory.getLogger(getClass());
             final int seed = 123;
 
             if (eventRepository.count() == 0L) {
                 logger.info("Generating event entities...");
-                ExampleDataGenerator<Event> eventRepositoryGenerator = new ExampleDataGenerator<>(Event.class,
+                final var eventRepositoryGenerator = new ExampleDataGenerator<>(Event.class,
                         LocalDateTime.of(2021, 5, 15, 0, 0, 0));
                 eventRepositoryGenerator.setData(Event::setId, DataType.ID);
                 eventRepositoryGenerator.setData(Event::setTitle, DataType.TWO_WORDS);
@@ -81,7 +76,7 @@ public class DataGenerator {
 
             if (sponsorRepository.count() == 0) {
                 logger.info("Generating sponsor entities...");
-                ExampleDataGenerator<Sponsor> sponsorRepositoryGenerator = new ExampleDataGenerator<>(Sponsor.class,
+                final var sponsorRepositoryGenerator = new ExampleDataGenerator<>(Sponsor.class,
                         LocalDateTime.of(2021, 5, 15, 0, 0, 0));
                 sponsorRepositoryGenerator.setData(Sponsor::setId, DataType.ID);
                 sponsorRepositoryGenerator.setData(Sponsor::setName, DataType.FULL_NAME);

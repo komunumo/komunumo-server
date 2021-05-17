@@ -56,12 +56,12 @@ public class MembersView extends Div implements BeforeEnterObserver {
 
     private MemberService memberService;
 
-    public MembersView(@Autowired MemberService memberService) {
+    public MembersView(@Autowired final MemberService memberService) {
         this.memberService = memberService;
         addClassNames("members-view", "flex", "flex-col", "h-full");
 
         // Create UI
-        SplitLayout splitLayout = new SplitLayout();
+        final var splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
 
         createGridLayout(splitLayout);
@@ -79,7 +79,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
         grid.addColumn("state").setAutoWidth(true);
         grid.addColumn("country").setAutoWidth(true);
         grid.addColumn("memberSince").setAutoWidth(true);
-        TemplateRenderer<Member> adminRenderer = TemplateRenderer.<Member>of(
+        final var adminRenderer = TemplateRenderer.<Member>of(
                 "<iron-icon hidden='[[!item.admin]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.admin]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
                 .withProperty("admin", Member::isAdmin);
         grid.addColumn(adminRenderer).setHeader("Admin").setAutoWidth(true);
@@ -132,10 +132,10 @@ public class MembersView extends Div implements BeforeEnterObserver {
     }
 
     @Override
-    public void beforeEnter(BeforeEnterEvent event) {
-        Optional<Integer> memberId = event.getRouteParameters().getInteger(MEMBER_ID);
+    public void beforeEnter(final BeforeEnterEvent event) {
+        final var memberId = event.getRouteParameters().getInteger(MEMBER_ID);
         if (memberId.isPresent()) {
-            Optional<Member> memberFromBackend = memberService.get(memberId.get());
+            final var memberFromBackend = memberService.get(memberId.get());
             if (memberFromBackend.isPresent()) {
                 populateForm(memberFromBackend.get());
             } else {
@@ -149,16 +149,16 @@ public class MembersView extends Div implements BeforeEnterObserver {
         }
     }
 
-    private void createEditorLayout(SplitLayout splitLayout) {
-        Div editorLayoutDiv = new Div();
+    private void createEditorLayout(final SplitLayout splitLayout) {
+        final var editorLayoutDiv = new Div();
         editorLayoutDiv.setClassName("flex flex-col");
         editorLayoutDiv.setWidth("400px");
 
-        Div editorDiv = new Div();
+        final var editorDiv = new Div();
         editorDiv.setClassName("p-l flex-grow");
         editorLayoutDiv.add(editorDiv);
 
-        FormLayout formLayout = new FormLayout();
+        final var formLayout = new FormLayout();
         firstName = new TextField("First Name");
         lastName = new TextField("Last Name");
         email = new TextField("Email");
@@ -170,10 +170,10 @@ public class MembersView extends Div implements BeforeEnterObserver {
         memberSince = new DatePicker("Member Since");
         admin = new Checkbox("Admin");
         admin.getStyle().set("padding-top", "var(--lumo-space-m)");
-        Component[] fields = new Component[]{firstName, lastName, email, address, zipCode, city, state, country,
+        final var fields = new Component[]{firstName, lastName, email, address, zipCode, city, state, country,
                 memberSince, admin};
 
-        for (Component field : fields) {
+        for (final Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
         }
         formLayout.add(fields);
@@ -183,8 +183,8 @@ public class MembersView extends Div implements BeforeEnterObserver {
         splitLayout.addToSecondary(editorLayoutDiv);
     }
 
-    private void createButtonLayout(Div editorLayoutDiv) {
-        HorizontalLayout buttonLayout = new HorizontalLayout();
+    private void createButtonLayout(final Div editorLayoutDiv) {
+        final var buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("w-full flex-wrap bg-contrast-5 py-s px-l");
         buttonLayout.setSpacing(true);
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
@@ -193,8 +193,8 @@ public class MembersView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(buttonLayout);
     }
 
-    private void createGridLayout(SplitLayout splitLayout) {
-        Div wrapper = new Div();
+    private void createGridLayout(final SplitLayout splitLayout) {
+        final var wrapper = new Div();
         wrapper.setId("grid-wrapper");
         wrapper.setWidthFull();
         splitLayout.addToPrimary(wrapper);
@@ -210,7 +210,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(Member value) {
+    private void populateForm(final Member value) {
         this.member = value;
         binder.readBean(this.member);
 

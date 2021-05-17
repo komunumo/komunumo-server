@@ -19,25 +19,25 @@ public class Sponsor extends AbstractEntity {
     public String getName() {
         return name;
     }
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
     public String getLogo() {
         return logo;
     }
-    public void setLogo(String logo) {
+    public void setLogo(final String logo) {
         this.logo = logo;
     }
     public LocalDate getValidFrom() {
         return validFrom;
     }
-    public void setValidFrom(LocalDate validFrom) {
+    public void setValidFrom(final LocalDate validFrom) {
         this.validFrom = validFrom;
     }
     public LocalDate getValidTo() {
         return validTo;
     }
-    public void setValidTo(LocalDate validTo) {
+    public void setValidTo(final LocalDate validTo) {
         this.validTo = validTo;
     }
 

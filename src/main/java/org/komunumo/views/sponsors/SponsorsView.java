@@ -58,12 +58,12 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
 
     private SponsorService sponsorService;
 
-    public SponsorsView(@Autowired SponsorService sponsorService) {
+    public SponsorsView(@Autowired final SponsorService sponsorService) {
         this.sponsorService = sponsorService;
         addClassNames("sponsors-view", "flex", "flex-col", "h-full");
 
         // Create UI
-        SplitLayout splitLayout = new SplitLayout();
+        final var splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
 
         createGridLayout(splitLayout);
@@ -73,7 +73,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
 
         // Configure Grid
         grid.addColumn("name").setAutoWidth(true);
-        TemplateRenderer<Sponsor> logoRenderer = TemplateRenderer.<Sponsor>of(
+        final var logoRenderer = TemplateRenderer.<Sponsor>of(
                 "<span style='border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; width: 64px; height: 64px'><img style='max-width: 100%' src='[[item.logo]]' /></span>")
                 .withProperty("logo", Sponsor::getLogo);
         grid.addColumn(logoRenderer).setHeader("Logo").setWidth("96px").setFlexGrow(0);
@@ -131,10 +131,10 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
     }
 
     @Override
-    public void beforeEnter(BeforeEnterEvent event) {
-        Optional<Integer> sponsorId = event.getRouteParameters().getInteger(SPONSOR_ID);
+    public void beforeEnter(final BeforeEnterEvent event) {
+        final var sponsorId = event.getRouteParameters().getInteger(SPONSOR_ID);
         if (sponsorId.isPresent()) {
-            Optional<Sponsor> sponsorFromBackend = sponsorService.get(sponsorId.get());
+            final var sponsorFromBackend = sponsorService.get(sponsorId.get());
             if (sponsorFromBackend.isPresent()) {
                 populateForm(sponsorFromBackend.get());
             } else {
@@ -148,18 +148,18 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
         }
     }
 
-    private void createEditorLayout(SplitLayout splitLayout) {
-        Div editorLayoutDiv = new Div();
+    private void createEditorLayout(final SplitLayout splitLayout) {
+        final var editorLayoutDiv = new Div();
         editorLayoutDiv.setClassName("flex flex-col");
         editorLayoutDiv.setWidth("400px");
 
-        Div editorDiv = new Div();
+        final var editorDiv = new Div();
         editorDiv.setClassName("p-l flex-grow");
         editorLayoutDiv.add(editorDiv);
 
-        FormLayout formLayout = new FormLayout();
+        final var formLayout = new FormLayout();
         name = new TextField("Name");
-        Label logoLabel = new Label("Logo");
+        final var logoLabel = new Label("Logo");
         logoPreview = new Image();
         logoPreview.setWidth("100%");
         logo = new Upload();
@@ -167,9 +167,9 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
         logo.getElement().appendChild(logoPreview.getElement());
         validFrom = new DatePicker("Valid From");
         validTo = new DatePicker("Valid To");
-        Component[] fields = new Component[]{name, logoLabel, logo, validFrom, validTo};
+        final var fields = new Component[]{name, logoLabel, logo, validFrom, validTo};
 
-        for (Component field : fields) {
+        for (final Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
         }
         formLayout.add(fields);
@@ -179,8 +179,8 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
         splitLayout.addToSecondary(editorLayoutDiv);
     }
 
-    private void createButtonLayout(Div editorLayoutDiv) {
-        HorizontalLayout buttonLayout = new HorizontalLayout();
+    private void createButtonLayout(final Div editorLayoutDiv) {
+        final var buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("w-full flex-wrap bg-contrast-5 py-s px-l");
         buttonLayout.setSpacing(true);
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
@@ -189,24 +189,22 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(buttonLayout);
     }
 
-    private void createGridLayout(SplitLayout splitLayout) {
-        Div wrapper = new Div();
+    private void createGridLayout(final SplitLayout splitLayout) {
+        final var wrapper = new Div();
         wrapper.setId("grid-wrapper");
         wrapper.setWidthFull();
         splitLayout.addToPrimary(wrapper);
         wrapper.add(grid);
     }
 
-    private void attachImageUpload(Upload upload, Image preview) {
-        ByteArrayOutputStream uploadBuffer = new ByteArrayOutputStream();
+    private void attachImageUpload(final Upload upload, final Image preview) {
+        final var uploadBuffer = new ByteArrayOutputStream();
         upload.setAcceptedFileTypes("image/*");
-        upload.setReceiver((fileName, mimeType) -> {
-            return uploadBuffer;
-        });
+        upload.setReceiver((fileName, mimeType) -> uploadBuffer);
         upload.addSucceededListener(e -> {
-            String mimeType = e.getMIMEType();
-            String base64ImageData = Base64.getEncoder().encodeToString(uploadBuffer.toByteArray());
-            String dataUrl = "data:" + mimeType + ";base64,"
+            final var mimeType = e.getMIMEType();
+            final var base64ImageData = Base64.getEncoder().encodeToString(uploadBuffer.toByteArray());
+            final var dataUrl = "data:" + mimeType + ";base64,"
                     + UriUtils.encodeQuery(base64ImageData, StandardCharsets.UTF_8);
             upload.getElement().setPropertyJson("files", Json.createArray());
             preview.setSrc(dataUrl);
@@ -224,7 +222,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(Sponsor value) {
+    private void populateForm(final Sponsor value) {
         this.sponsor = value;
         binder.readBean(this.sponsor);
         this.logoPreview.setVisible(value != null);

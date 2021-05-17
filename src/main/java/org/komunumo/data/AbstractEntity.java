@@ -15,7 +15,7 @@ public abstract class AbstractEntity {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(final Integer id) {
         this.id = id;
     }
 
@@ -28,7 +28,7 @@ public abstract class AbstractEntity {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (!(obj instanceof AbstractEntity other)) {
             return false; // null or other class
         }

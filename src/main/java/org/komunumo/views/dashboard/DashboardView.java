@@ -21,34 +21,32 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-//@Route(value = "dashboard", layout = MainView.class)
-//@RouteAlias(value = "", layout = MainView.class)
 @PageTitle("Dashboard")
 public class DashboardView extends Div {
 
-    private Grid<HealthGridItem> grid = new Grid<>();
+    private final Grid<HealthGridItem> grid = new Grid<>();
 
-    private Chart monthlyVisitors = new Chart();
-    private Chart responseTimes = new Chart();
+    private final Chart monthlyVisitors = new Chart();
+    private final Chart responseTimes = new Chart();
     private final H2 usersH2 = new H2();
     private final H2 eventsH2 = new H2();
     private final H2 conversionH2 = new H2();
 
     public DashboardView() {
         addClassName("dashboard-view");
-        Board board = new Board();
+        final var board = new Board();
         board.addRow(createBadge("Users", usersH2, "primary-text", "Current users in the app", "badge"),
                 createBadge("Events", eventsH2, "success-text", "Events from the views", "badge success"),
                 createBadge("Conversion", conversionH2, "error-text", "User conversion rate", "badge error"));
 
         monthlyVisitors.getConfiguration().setTitle("Monthly visitors per city");
         monthlyVisitors.getConfiguration().getChart().setType(ChartType.COLUMN);
-        WrapperCard monthlyVisitorsWrapper = new WrapperCard("wrapper", new Component[]{monthlyVisitors}, "card");
+        final var monthlyVisitorsWrapper = new WrapperCard("wrapper", new Component[]{monthlyVisitors}, "card");
         board.add(monthlyVisitorsWrapper);
 
         grid.addColumn(HealthGridItem::getCity).setHeader("City");
         grid.addColumn(new ComponentRenderer<>(item -> {
-            Span span = new Span(item.getStatus());
+            final var span = new Span(item.getStatus());
             span.getElement().getThemeList().add(item.getTheme());
             return span;
         })).setHeader("Status").setFlexGrow(0).setAutoWidth(true);
@@ -56,9 +54,9 @@ public class DashboardView extends Div {
 
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
-        WrapperCard gridWrapper = new WrapperCard("wrapper", new Component[]{new H3("Service health"), grid}, "card");
+        final var gridWrapper = new WrapperCard("wrapper", new Component[]{new H3("Service health"), grid}, "card");
         responseTimes.getConfiguration().setTitle("Response times");
-        WrapperCard responseTimesWrapper = new WrapperCard("wrapper", new Component[]{responseTimes}, "card");
+        final var responseTimesWrapper = new WrapperCard("wrapper", new Component[]{responseTimes}, "card");
         board.addRow(gridWrapper, responseTimesWrapper);
 
         add(board);
@@ -66,13 +64,14 @@ public class DashboardView extends Div {
         populateCharts();
     }
 
-    private WrapperCard createBadge(String title, H2 h2, String h2ClassName, String description, String badgeTheme) {
-        Span titleSpan = new Span(title);
+    private WrapperCard createBadge(final String title, final H2 h2, final String h2ClassName,
+                                    final String description, final String badgeTheme) {
+        final var titleSpan = new Span(title);
         titleSpan.getElement().setAttribute("theme", badgeTheme);
 
         h2.addClassName(h2ClassName);
 
-        Span descriptionSpan = new Span(description);
+        final var descriptionSpan = new Span(description);
         descriptionSpan.addClassName("secondary-text");
 
         return new WrapperCard("wrapper", new Component[]{titleSpan, h2, descriptionSpan}, "card", "space-m");
@@ -87,7 +86,7 @@ public class DashboardView extends Div {
         conversionH2.setText("18%");
 
         // First chart
-        Configuration configuration = monthlyVisitors.getConfiguration();
+        var configuration = monthlyVisitors.getConfiguration();
         configuration.addSeries(new ListSeries("Tokyo", 49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4,
                 194.1, 95.6, 54.4));
         configuration.addSeries(
@@ -97,17 +96,17 @@ public class DashboardView extends Div {
         configuration.addSeries(
                 new ListSeries("Berlin", 42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1));
 
-        XAxis x = new XAxis();
+        var x = new XAxis();
         x.setCrosshair(new Crosshair());
         x.setCategories("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
         configuration.addxAxis(x);
 
-        YAxis y = new YAxis();
+        var y = new YAxis();
         y.setMin(0);
         configuration.addyAxis(y);
 
         // Grid
-        List<HealthGridItem> gridItems = new ArrayList<>();
+        final var gridItems = new ArrayList<HealthGridItem>();
         gridItems.add(new HealthGridItem(LocalDate.of(2019, 1, 14), "M\u00FCnster", "Germany", "Good", "badge"));
         gridItems.add(new HealthGridItem(LocalDate.of(2019, 1, 14), "Cluj-Napoca", "Romania", "Good", "badge"));
         gridItems.add(new HealthGridItem(LocalDate.of(2019, 1, 14), "Ciudad Victoria", "Mexico", "Good", "badge"));

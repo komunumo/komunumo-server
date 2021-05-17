@@ -1,6 +1,5 @@
 package org.komunumo.views.login;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -14,7 +13,7 @@ import org.komunumo.data.service.AuthService.AuthException;
 
 @Route("activate")
 @PageTitle("Activation")
-public class ActivationView extends Composite implements BeforeEnterObserver {
+public class ActivationView extends Composite<VerticalLayout> implements BeforeEnterObserver {
 
     private final AuthService authService;
 
@@ -25,7 +24,7 @@ public class ActivationView extends Composite implements BeforeEnterObserver {
     }
 
     @Override
-    protected Component initContent() {
+    protected VerticalLayout initContent() {
         layout = new VerticalLayout();
         return layout;
     }

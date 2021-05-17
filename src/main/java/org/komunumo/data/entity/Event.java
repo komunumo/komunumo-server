@@ -16,25 +16,25 @@ public class Event extends AbstractEntity {
     public String getTitle() {
         return title;
     }
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
     public String getSpeaker() {
         return speaker;
     }
-    public void setSpeaker(String speaker) {
+    public void setSpeaker(final String speaker) {
         this.speaker = speaker;
     }
     public LocalDateTime getDate() {
         return date;
     }
-    public void setDate(LocalDateTime date) {
+    public void setDate(final LocalDateTime date) {
         this.date = date;
     }
     public boolean isVisible() {
         return visible;
     }
-    public void setVisible(boolean visible) {
+    public void setVisible(final boolean visible) {
         this.visible = visible;
     }
 

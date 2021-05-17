@@ -29,7 +29,7 @@ public class Member extends AbstractEntity {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    public void setFirstName(final String firstName) {
         this.firstName = firstName;
     }
 
@@ -37,7 +37,7 @@ public class Member extends AbstractEntity {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
+    public void setLastName(final String lastName) {
         this.lastName = lastName;
     }
 
@@ -45,7 +45,7 @@ public class Member extends AbstractEntity {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -53,7 +53,7 @@ public class Member extends AbstractEntity {
         return address;
     }
 
-    public void setAddress(String address) {
+    public void setAddress(final String address) {
         this.address = address;
     }
 
@@ -61,7 +61,7 @@ public class Member extends AbstractEntity {
         return zipCode;
     }
 
-    public void setZipCode(String zipCode) {
+    public void setZipCode(final String zipCode) {
         this.zipCode = zipCode;
     }
 
@@ -69,7 +69,7 @@ public class Member extends AbstractEntity {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(final String city) {
         this.city = city;
     }
 
@@ -77,7 +77,7 @@ public class Member extends AbstractEntity {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(final String state) {
         this.state = state;
     }
 
@@ -85,7 +85,7 @@ public class Member extends AbstractEntity {
         return country;
     }
 
-    public void setCountry(String country) {
+    public void setCountry(final String country) {
         this.country = country;
     }
 
@@ -93,7 +93,7 @@ public class Member extends AbstractEntity {
         return memberSince;
     }
 
-    public void setMemberSince(LocalDate memberSince) {
+    public void setMemberSince(final LocalDate memberSince) {
         this.memberSince = memberSince;
     }
 
@@ -101,7 +101,7 @@ public class Member extends AbstractEntity {
         return admin;
     }
 
-    public void setAdmin(boolean admin) {
+    public void setAdmin(final boolean admin) {
         this.admin = admin;
     }
 
@@ -109,7 +109,7 @@ public class Member extends AbstractEntity {
         return passwordSalt;
     }
 
-    public void setPasswordSalt(String passwordSalt) {
+    public void setPasswordSalt(final String passwordSalt) {
         this.passwordSalt = passwordSalt;
     }
 
@@ -117,16 +117,16 @@ public class Member extends AbstractEntity {
         return passwordHash;
     }
 
-    public void setPasswordHash(String passwordHash) {
+    public void setPasswordHash(final String passwordHash) {
         this.passwordHash = passwordHash;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(final String password) {
         passwordSalt = RandomStringUtils.random(32);
         passwordHash = DigestUtils.sha1Hex(password + passwordSalt);
     }
 
-    public boolean checkPassword(String password) {
+    public boolean checkPassword(final String password) {
         return DigestUtils.sha1Hex(password + passwordSalt).equals(passwordHash);
     }
 
@@ -134,7 +134,7 @@ public class Member extends AbstractEntity {
         return activationCode;
     }
 
-    public void setActivationCode(String activationCode) {
+    public void setActivationCode(final String activationCode) {
         this.activationCode = activationCode;
     }
 
@@ -142,7 +142,7 @@ public class Member extends AbstractEntity {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(final boolean active) {
         this.active = active;
     }
 

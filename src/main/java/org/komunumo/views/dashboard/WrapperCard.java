@@ -5,10 +5,10 @@ import com.vaadin.flow.component.html.Div;
 
 public class WrapperCard extends Div {
 
-    public WrapperCard(String className, Component[] components, String... classes) {
+    public WrapperCard(final String className, final Component[] components, final String... classes) {
         addClassName(className);
 
-        Div card = new Div();
+        final var card = new Div();
         card.addClassNames(classes);
         card.add(components);
 

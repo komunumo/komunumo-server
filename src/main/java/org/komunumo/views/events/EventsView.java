@@ -51,12 +51,12 @@ public class EventsView extends Div implements BeforeEnterObserver {
 
     private EventService eventService;
 
-    public EventsView(@Autowired EventService eventService) {
+    public EventsView(@Autowired final EventService eventService) {
         this.eventService = eventService;
         addClassNames("events-view", "flex", "flex-col", "h-full");
 
         // Create UI
-        SplitLayout splitLayout = new SplitLayout();
+        final var splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
 
         createGridLayout(splitLayout);
@@ -68,7 +68,7 @@ public class EventsView extends Div implements BeforeEnterObserver {
         grid.addColumn("title").setAutoWidth(true);
         grid.addColumn("speaker").setAutoWidth(true);
         grid.addColumn("date").setAutoWidth(true);
-        TemplateRenderer<Event> visibleRenderer = TemplateRenderer.<Event>of(
+        final var visibleRenderer = TemplateRenderer.<Event>of(
                 "<iron-icon hidden='[[!item.visible]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.visible]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
                 .withProperty("visible", Event::isVisible);
         grid.addColumn(visibleRenderer).setHeader("Visible").setAutoWidth(true);
@@ -121,10 +121,10 @@ public class EventsView extends Div implements BeforeEnterObserver {
     }
 
     @Override
-    public void beforeEnter(BeforeEnterEvent event) {
-        Optional<Integer> eventId = event.getRouteParameters().getInteger(EVENT_ID);
+    public void beforeEnter(final BeforeEnterEvent event) {
+        final var eventId = event.getRouteParameters().getInteger(EVENT_ID);
         if (eventId.isPresent()) {
-            Optional<Event> eventFromBackend = eventService.get(eventId.get());
+            final var eventFromBackend = eventService.get(eventId.get());
             if (eventFromBackend.isPresent()) {
                 populateForm(eventFromBackend.get());
             } else {
@@ -138,25 +138,25 @@ public class EventsView extends Div implements BeforeEnterObserver {
         }
     }
 
-    private void createEditorLayout(SplitLayout splitLayout) {
-        Div editorLayoutDiv = new Div();
+    private void createEditorLayout(final SplitLayout splitLayout) {
+        final var editorLayoutDiv = new Div();
         editorLayoutDiv.setClassName("flex flex-col");
         editorLayoutDiv.setWidth("400px");
 
-        Div editorDiv = new Div();
+        final var editorDiv = new Div();
         editorDiv.setClassName("p-l flex-grow");
         editorLayoutDiv.add(editorDiv);
 
-        FormLayout formLayout = new FormLayout();
+        final var formLayout = new FormLayout();
         title = new TextField("Title");
         speaker = new TextField("Speaker");
         date = new DateTimePicker("Date");
         date.setStep(Duration.ofSeconds(1));
         visible = new Checkbox("Visible");
         visible.getStyle().set("padding-top", "var(--lumo-space-m)");
-        Component[] fields = new Component[]{title, speaker, date, visible};
+        final var fields = new Component[]{title, speaker, date, visible};
 
-        for (Component field : fields) {
+        for (final Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
         }
         formLayout.add(fields);
@@ -166,8 +166,8 @@ public class EventsView extends Div implements BeforeEnterObserver {
         splitLayout.addToSecondary(editorLayoutDiv);
     }
 
-    private void createButtonLayout(Div editorLayoutDiv) {
-        HorizontalLayout buttonLayout = new HorizontalLayout();
+    private void createButtonLayout(final Div editorLayoutDiv) {
+        final var buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("w-full flex-wrap bg-contrast-5 py-s px-l");
         buttonLayout.setSpacing(true);
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
@@ -176,8 +176,8 @@ public class EventsView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(buttonLayout);
     }
 
-    private void createGridLayout(SplitLayout splitLayout) {
-        Div wrapper = new Div();
+    private void createGridLayout(final SplitLayout splitLayout) {
+        final var wrapper = new Div();
         wrapper.setId("grid-wrapper");
         wrapper.setWidthFull();
         splitLayout.addToPrimary(wrapper);
@@ -193,7 +193,7 @@ public class EventsView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(Event value) {
+    private void populateForm(final Event value) {
         this.event = value;
         binder.readBean(this.event);
 

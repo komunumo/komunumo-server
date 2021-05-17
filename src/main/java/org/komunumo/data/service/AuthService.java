@@ -14,8 +14,6 @@ import org.komunumo.views.logout.LogoutView;
 import org.komunumo.views.main.MainView;
 import org.komunumo.views.members.MembersView;
 import org.komunumo.views.sponsors.SponsorsView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
@@ -25,9 +23,7 @@ public class AuthService {
 
     public record AuthorizedRoute(String route, String name, Class<? extends Component> view) {}
 
-    public class AuthException extends Exception {}
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    public static class AuthException extends Exception {}
 
     private final MemberRepository memberRepository;
     private final MailSender mailSender;
@@ -48,8 +44,10 @@ public class AuthService {
     }
 
     private void createRoutes(final Member member) {
+        final var configuration = RouteConfiguration.forSessionScope();
+        //noinspection unchecked
         getAuthorizedRoutes(member)
-                .forEach(route -> RouteConfiguration.forSessionScope().setRoute(route.route, route.view, MainView.class));
+                .forEach(route -> configuration.setRoute(route.route, route.view, MainView.class));
     }
 
     public List<AuthorizedRoute> getAuthorizedRoutes(final Member member) {

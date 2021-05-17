@@ -13,11 +13,8 @@ public class HealthGridItem {
     private String status;
     private String theme;
 
-    public HealthGridItem() {
-
-    }
-
-    public HealthGridItem(LocalDate date, String city, String country, String status, String theme) {
+    public HealthGridItem(final LocalDate date, final String city, final String country,
+                          final String status, final String theme) {
         this.date = date;
         this.city = city;
         this.country = country;
@@ -29,7 +26,7 @@ public class HealthGridItem {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(final LocalDate date) {
         this.date = date;
     }
 
@@ -37,7 +34,7 @@ public class HealthGridItem {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(final String city) {
         this.city = city;
     }
 
@@ -45,7 +42,7 @@ public class HealthGridItem {
         return country;
     }
 
-    public void setCountry(String country) {
+    public void setCountry(final String country) {
         this.country = country;
     }
 
@@ -53,7 +50,7 @@ public class HealthGridItem {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 
@@ -61,7 +58,7 @@ public class HealthGridItem {
         return theme;
     }
 
-    public void setTheme(String theme) {
+    public void setTheme(final String theme) {
         this.theme = theme;
     }
 }
