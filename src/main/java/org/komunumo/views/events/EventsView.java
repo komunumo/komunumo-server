@@ -56,21 +56,21 @@ public class EventsView extends Div implements BeforeEnterObserver {
     private final String EVENT_ID = "eventID";
     private final String EVENT_EDIT_ROUTE_TEMPLATE = "events/%d/edit";
 
-    private Grid<Event> grid = new Grid<>(Event.class, false);
+    private final Grid<Event> grid = new Grid<>(Event.class, false);
 
     private TextField title;
     private TextField speaker;
     private DateTimePicker date;
     private Checkbox visible;
 
-    private Button cancel = new Button("Cancel");
-    private Button save = new Button("Save");
+    private final Button cancel = new Button("Cancel");
+    private final Button save = new Button("Save");
 
-    private BeanValidationBinder<Event> binder;
+    private final BeanValidationBinder<Event> binder;
 
     private Event event;
 
-    private EventService eventService;
+    private final EventService eventService;
 
     public EventsView(@Autowired final EventService eventService) {
         this.eventService = eventService;
@@ -138,7 +138,7 @@ public class EventsView extends Div implements BeforeEnterObserver {
                 refreshGrid();
                 Notification.show("Event details stored.");
                 UI.getCurrent().navigate(EventsView.class);
-            } catch (ValidationException validationException) {
+            } catch (final ValidationException validationException) {
                 Notification.show("An exception happened while trying to store the event details.");
             }
         });

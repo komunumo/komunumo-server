@@ -64,7 +64,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
     private final String SPONSOR_ID = "sponsorID";
     private final String SPONSOR_EDIT_ROUTE_TEMPLATE = "sponsors/%d/edit";
 
-    private Grid<Sponsor> grid = new Grid<>(Sponsor.class, false);
+    private final Grid<Sponsor> grid = new Grid<>(Sponsor.class, false);
 
     private TextField name;
     private TextField url;
@@ -74,14 +74,14 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
     private DatePicker validTo;
     private Select<Level> level;
 
-    private Button cancel = new Button("Cancel");
-    private Button save = new Button("Save");
+    private final Button cancel = new Button("Cancel");
+    private final Button save = new Button("Save");
 
-    private BeanValidationBinder<Sponsor> binder;
+    private final BeanValidationBinder<Sponsor> binder;
 
     private Sponsor sponsor;
 
-    private SponsorService sponsorService;
+    private final SponsorService sponsorService;
 
     public SponsorsView(@Autowired final SponsorService sponsorService) {
         this.sponsorService = sponsorService;

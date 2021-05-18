@@ -55,7 +55,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
     private final String MEMBER_ID = "memberID";
     private final String MEMBER_EDIT_ROUTE_TEMPLATE = "members/%d/edit";
 
-    private Grid<Member> grid = new Grid<>(Member.class, false);
+    private final Grid<Member> grid = new Grid<>(Member.class, false);
 
     private TextField firstName;
     private TextField lastName;
@@ -68,14 +68,14 @@ public class MembersView extends Div implements BeforeEnterObserver {
     private DatePicker memberSince;
     private Checkbox admin;
 
-    private Button cancel = new Button("Cancel");
-    private Button save = new Button("Save");
+    private final Button cancel = new Button("Cancel");
+    private final Button save = new Button("Save");
 
-    private BeanValidationBinder<Member> binder;
+    private final BeanValidationBinder<Member> binder;
 
     private Member member;
 
-    private MemberService memberService;
+    private final MemberService memberService;
 
     public MembersView(@Autowired final MemberService memberService) {
         this.memberService = memberService;
@@ -150,7 +150,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
                 refreshGrid();
                 Notification.show("Member details stored.");
                 UI.getCurrent().navigate(MembersView.class);
-            } catch (ValidationException validationException) {
+            } catch (final ValidationException validationException) {
                 Notification.show("An exception happened while trying to store the member details.");
             }
         });
