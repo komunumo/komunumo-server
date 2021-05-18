@@ -31,13 +31,13 @@ You can now also attach breakpoints in code for debugging purposes, by clicking 
 To build the Dockerized version of the project, run
 
 ```
-docker build . -t myapp:latest
+docker build . -t komunumo:latest
 ```
 
 Once the Docker image is correctly built, you can test it locally using
 
 ```
-docker run -p 8080:8080 myapp:latest
+docker run -p 8080:8080 komunumo:latest
 ```
 
 ## Copyright and License
