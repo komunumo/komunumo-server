@@ -1,17 +1,18 @@
 package org.komunumo.data.service;
 
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.router.RouteConfiguration;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.server.ServiceInitEvent;
+import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.spring.annotation.SpringComponent;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.komunumo.data.entity.Member;
 import org.komunumo.views.dashboard.DashboardView;
 import org.komunumo.views.events.EventsView;
+import org.komunumo.views.login.ActivationView;
+import org.komunumo.views.login.LoginView;
 import org.komunumo.views.logout.LogoutView;
-import org.komunumo.views.main.MainView;
 import org.komunumo.views.members.MembersView;
 import org.komunumo.views.sponsors.SponsorsView;
 import org.springframework.mail.MailSender;
@@ -19,11 +20,10 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthService {
+@SpringComponent
+public class AuthService implements VaadinServiceInitListener {
 
-    public record AuthorizedRoute(String route, String name, Class<? extends Component> view) {}
-
-    public static class AuthException extends Exception {}
+    public static class AccessDeniedException extends Exception {}
 
     private final MemberRepository memberRepository;
     private final MailSender mailSender;
@@ -33,37 +33,13 @@ public class AuthService {
         this.mailSender = mailSender;
     }
 
-    public void authenticate(final String email, final String password) throws AuthException {
+    public void authenticate(final String email, final String password) throws AccessDeniedException {
         final var member = memberRepository.getByEmail(email);
         if (member != null && member.isActive() && member.checkPassword(password)) {
             VaadinSession.getCurrent().setAttribute(Member.class, member);
-            createRoutes(member);
         } else {
-            throw new AuthException();
+            throw new AccessDeniedException();
         }
-    }
-
-    private void createRoutes(final Member member) {
-        final var configuration = RouteConfiguration.forSessionScope();
-        //noinspection unchecked
-        getAuthorizedRoutes(member)
-                .forEach(route -> configuration.setRoute(route.route, route.view, MainView.class));
-    }
-
-    public List<AuthorizedRoute> getAuthorizedRoutes(final Member member) {
-        final var routes = new ArrayList<AuthorizedRoute>();
-
-        if (member != null) {
-            routes.add(new AuthorizedRoute("dashboard", "Dashboard", DashboardView.class));
-            if (member.isAdmin()) {
-                routes.add(new AuthorizedRoute("events/:eventID?/:action?(edit)", "Events", EventsView.class));
-                routes.add(new AuthorizedRoute("members/:memberID?/:action?(edit)", "Members", MembersView.class));
-                routes.add(new AuthorizedRoute("sponsors/:sponsorID?/:action?(edit)", "Sponsors", SponsorsView.class));
-            }
-            routes.add(new AuthorizedRoute("logout", "Logout", LogoutView.class));
-        }
-
-        return routes;
     }
 
     public void register(final String firstName, final String lastName, final String email,
@@ -94,13 +70,63 @@ public class AuthService {
         mailSender.send(message);
     }
 
-    public void activate(final String email, final String activationCode) throws AuthException {
+    public void activate(final String email, final String activationCode) throws AccessDeniedException {
         final var member = memberRepository.getByEmail(email);
         if (member != null && member.getActivationCode().equals(activationCode)) {
             member.setActive(true);
             memberRepository.save(member);
         } else {
-            throw new AuthException();
+            throw new AccessDeniedException();
+        }
+    }
+
+    public boolean isUserLoggedIn() {
+        return VaadinSession.getCurrent().getAttribute(Member.class) != null;
+    }
+
+    public boolean isAccessGranted(final Class<?> navigationTarget) {
+        final var member = VaadinSession.getCurrent().getAttribute(Member.class);
+
+        // restrict to members
+        if (member != null) {
+            if (navigationTarget == DashboardView.class
+                    || navigationTarget == LogoutView.class) {
+                return true;
+            }
+
+            // restrict to admins
+            if (member.isAdmin()) {
+                if (navigationTarget == EventsView.class
+                        || navigationTarget == MembersView.class
+                        || navigationTarget == SponsorsView.class) {
+                    return true;
+                }
+            }
+        } else {
+            if (navigationTarget == ActivationView.class) {
+                return true;
+            }
+        }
+
+        // deny access to all other Komunumo views
+        return !navigationTarget.getPackageName().startsWith("org.komunumo");
+    }
+
+    @Override
+    public void serviceInit(final ServiceInitEvent event) {
+        event.getSource().addUIInitListener(uiEvent -> {
+            final var ui = uiEvent.getUI();
+            ui.addBeforeEnterListener(this::beforeEnter);
+        });
+    }
+    private void beforeEnter(final BeforeEnterEvent event) {
+        final boolean accessGranted = isAccessGranted(event.getNavigationTarget());
+        if (!accessGranted) {
+            if (isUserLoggedIn()) {
+                event.rerouteToError(AccessDeniedException.class);
+            } else {
+                event.rerouteTo(LoginView.class);
+            }
         }
     }
 

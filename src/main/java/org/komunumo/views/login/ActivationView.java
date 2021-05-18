@@ -9,7 +9,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 import org.komunumo.data.service.AuthService;
-import org.komunumo.data.service.AuthService.AuthException;
+import org.komunumo.data.service.AuthService.AccessDeniedException;
 
 @Route("activate")
 @PageTitle("Activation")
@@ -40,7 +40,7 @@ public class ActivationView extends Composite<VerticalLayout> implements BeforeE
                     new Text("Account activated."),
                     new RouterLink("Login", LoginView.class)
             );
-        } catch (final AuthException e) {
+        } catch (final AccessDeniedException e) {
             layout.add(new Text("Invalid link."));
         }
     }

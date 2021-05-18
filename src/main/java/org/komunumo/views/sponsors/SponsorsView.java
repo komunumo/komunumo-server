@@ -23,6 +23,7 @@ import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import elemental.json.Json;
 import java.io.ByteArrayOutputStream;
@@ -31,10 +32,12 @@ import java.util.Base64;
 import java.util.Optional;
 import org.komunumo.data.entity.Sponsor;
 import org.komunumo.data.service.SponsorService;
+import org.komunumo.views.main.MainView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.util.UriUtils;
 
+@Route(value = "sponsors/:sponsorID?/:action?(edit)", layout = MainView.class)
 @PageTitle("Sponsors")
 public class SponsorsView extends Div implements BeforeEnterObserver {
 

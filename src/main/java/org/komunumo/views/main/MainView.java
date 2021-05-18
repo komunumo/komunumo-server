@@ -15,10 +15,15 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
-import com.vaadin.flow.server.VaadinSession;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Optional;
-import org.komunumo.data.entity.Member;
 import org.komunumo.data.service.AuthService;
+import org.komunumo.views.dashboard.DashboardView;
+import org.komunumo.views.events.EventsView;
+import org.komunumo.views.logout.LogoutView;
+import org.komunumo.views.members.MembersView;
+import org.komunumo.views.sponsors.SponsorsView;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -26,7 +31,6 @@ import org.komunumo.data.service.AuthService;
 public class MainView extends AppLayout {
 
     private final AuthService authService;
-
     private final Tabs menu;
     private H1 viewTitle;
 
@@ -69,7 +73,7 @@ public class MainView extends AppLayout {
     }
 
     private Tabs createMenu() {
-        final var tabs = new Tabs();
+        final Tabs tabs = new Tabs();
         tabs.setOrientation(Tabs.Orientation.VERTICAL);
         tabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);
         tabs.setId("tabs");
@@ -78,10 +82,23 @@ public class MainView extends AppLayout {
     }
 
     private Component[] createMenuItems() {
-        final var member = VaadinSession.getCurrent().getAttribute(Member.class);
-        return authService.getAuthorizedRoutes(member).stream()
-                .map(r -> createTab(r.name(), r.view()))
-                .toArray(Component[]::new);
+        final var tabs = new ArrayList<Tab>();
+
+        final var views  = new LinkedHashMap<String, Class<? extends Component>>() {{
+            put("Dashboard", DashboardView.class);
+            put("Events", EventsView.class);
+            put("Members", MembersView.class);
+            put("Sponsors", SponsorsView.class);
+            put("Logout", LogoutView.class);
+        }};
+
+        views.forEach((title, klass) -> {
+            if (authService.isAccessGranted(klass)) {
+                tabs.add(createTab(title, klass));
+            }
+        });
+
+        return tabs.toArray(new Tab[0]);
     }
 
     private static Tab createTab(final String text, final Class<? extends Component> navigationTarget) {

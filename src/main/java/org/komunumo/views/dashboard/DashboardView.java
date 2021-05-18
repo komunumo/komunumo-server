@@ -17,10 +17,15 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import org.komunumo.views.main.MainView;
 
+@Route(value = "dashboard", layout = MainView.class)
+@RouteAlias(value = "", layout = MainView.class)
 @PageTitle("Dashboard")
 public class DashboardView extends Div {
 
