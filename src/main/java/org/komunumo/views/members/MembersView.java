@@ -27,6 +27,7 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSortOrderBuilder;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
@@ -41,7 +42,6 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
-import java.util.Optional;
 import org.komunumo.data.entity.Member;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.views.main.MainView;
@@ -120,6 +120,11 @@ public class MembersView extends Div implements BeforeEnterObserver {
                 UI.getCurrent().navigate(MembersView.class);
             }
         });
+
+        grid.sort(new GridSortOrderBuilder<Member>()
+                .thenAsc(grid.getColumnByKey("lastName"))
+                .thenAsc(grid.getColumnByKey("firstName"))
+                .build());
 
         // Configure Form
         binder = new BeanValidationBinder<>(Member.class);

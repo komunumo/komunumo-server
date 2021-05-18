@@ -26,6 +26,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSortOrderBuilder;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
@@ -48,7 +49,6 @@ import elemental.json.Json;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Optional;
 import org.komunumo.data.entity.Sponsor;
 import org.komunumo.data.entity.Sponsor.Level;
 import org.komunumo.data.service.SponsorService;
@@ -122,6 +122,10 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
             }
         });
 
+        grid.sort(new GridSortOrderBuilder<Sponsor>()
+                .thenAsc(grid.getColumnByKey("name"))
+                .build());
+
         // Configure Form
         binder = new BeanValidationBinder<>(Sponsor.class);
 
@@ -149,7 +153,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
                 refreshGrid();
                 Notification.show("Sponsor details stored.");
                 UI.getCurrent().navigate(SponsorsView.class);
-            } catch (ValidationException validationException) {
+            } catch (final ValidationException validationException) {
                 Notification.show("An exception happened while trying to store the sponsor details.");
             }
         });
