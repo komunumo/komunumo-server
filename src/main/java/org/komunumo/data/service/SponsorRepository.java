@@ -18,9 +18,13 @@
 
 package org.komunumo.data.service;
 
+import java.util.List;
 import org.komunumo.data.entity.Sponsor;
+import org.komunumo.data.entity.Sponsor.Level;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SponsorRepository extends JpaRepository<Sponsor, Integer> {
+
+    List<Sponsor> getByLevel(Level level);
 
 }

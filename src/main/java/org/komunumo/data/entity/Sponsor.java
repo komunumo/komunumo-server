@@ -28,35 +28,66 @@ import java.time.LocalDate;
 @Entity
 public class Sponsor extends AbstractEntity {
 
+    public enum Level {
+        PLATIN,
+        GOLD,
+        SILBER
+    }
+
     private String name;
+    private String url;
     @Lob
     private String logo;
     private LocalDate validFrom;
     private LocalDate validTo;
+    private Level level;
 
     public String getName() {
         return name;
     }
+
     public void setName(final String name) {
         this.name = name;
     }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(final String url) {
+        this.url = url;
+    }
+
     public String getLogo() {
         return logo;
     }
+
     public void setLogo(final String logo) {
         this.logo = logo;
     }
+
     public LocalDate getValidFrom() {
         return validFrom;
     }
+
     public void setValidFrom(final LocalDate validFrom) {
         this.validFrom = validFrom;
     }
+
     public LocalDate getValidTo() {
         return validTo;
     }
+
     public void setValidTo(final LocalDate validTo) {
         this.validTo = validTo;
+    }
+
+    public Level getLevel() {
+        return level;
+    }
+
+    public void setLevel(final Level level) {
+        this.level = level;
     }
 
 }

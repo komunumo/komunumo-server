@@ -32,6 +32,7 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
@@ -49,6 +50,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
 import org.komunumo.data.entity.Sponsor;
+import org.komunumo.data.entity.Sponsor.Level;
 import org.komunumo.data.service.SponsorService;
 import org.komunumo.views.main.MainView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,10 +67,12 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
     private Grid<Sponsor> grid = new Grid<>(Sponsor.class, false);
 
     private TextField name;
+    private TextField url;
     private Upload logo;
     private Image logoPreview;
     private DatePicker validFrom;
     private DatePicker validTo;
+    private Select<Level> level;
 
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
@@ -101,6 +105,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
 
         grid.addColumn("validFrom").setAutoWidth(true);
         grid.addColumn("validTo").setAutoWidth(true);
+        grid.addColumn("level").setAutoWidth(true);
         grid.setItems(query -> sponsorService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
@@ -180,6 +185,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
 
         final var formLayout = new FormLayout();
         name = new TextField("Name");
+        url = new TextField("URL");
         final var logoLabel = new Label("Logo");
         logoPreview = new Image();
         logoPreview.setWidth("100%");
@@ -188,7 +194,9 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
         logo.getElement().appendChild(logoPreview.getElement());
         validFrom = new DatePicker("Valid From");
         validTo = new DatePicker("Valid To");
-        final var fields = new Component[]{name, logoLabel, logo, validFrom, validTo};
+        level = new Select<>(Level.values());
+        level.setLabel("Level");
+        final var fields = new Component[]{name, url, logoLabel, logo, validFrom, validTo, level};
 
         for (final Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
