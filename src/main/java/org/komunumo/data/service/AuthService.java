@@ -39,7 +39,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService implements VaadinServiceInitListener {
 
-    public static class AccessDeniedException extends Exception {}
+    public static class AccessDeniedException extends Exception {
+        AccessDeniedException(final String message) {
+            super(message);
+        }
+    }
 
     private final MemberRepository memberRepository;
     private final MailSender mailSender;
@@ -54,7 +58,7 @@ public class AuthService implements VaadinServiceInitListener {
         if (member != null && member.isActive() && member.checkPassword(password)) {
             VaadinSession.getCurrent().setAttribute(Member.class, member);
         } else {
-            throw new AccessDeniedException();
+            throw new AccessDeniedException("Wrong credentials.");
         }
     }
 
@@ -92,7 +96,7 @@ public class AuthService implements VaadinServiceInitListener {
             member.setActive(true);
             memberRepository.save(member);
         } else {
-            throw new AccessDeniedException();
+            throw new AccessDeniedException("Activation failed");
         }
     }
 

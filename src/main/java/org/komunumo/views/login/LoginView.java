@@ -18,80 +18,75 @@
 
 package org.komunumo.views.login;
 
-import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.login.LoginI18n;
+import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.EmailField;
-import com.vaadin.flow.component.textfield.PasswordField;
-import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.validator.EmailValidator;
-import com.vaadin.flow.data.validator.StringLengthValidator;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouterLink;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.data.service.AuthService.AccessDeniedException;
+import org.komunumo.views.dashboard.DashboardView;
 
 @Route(value = "login")
 @PageTitle("Login")
-public class LoginView extends VerticalLayout {
+public class LoginView extends LoginOverlay implements AfterNavigationObserver, BeforeEnterObserver {
+
+    private final AuthService authService;
 
     public LoginView(final AuthService authService) {
-        addClassName("login-view");
+        this.authService = authService;
 
-        final var email = new EmailField("Email");
-        email.setRequiredIndicatorVisible(true);
-        email.setAutofocus(true);
-        email.setValue("");
-        final var emailBinder = new Binder<String>();
-        emailBinder.forField(email)
-                .withValidator(new EmailValidator("Please enter your email address.", false))
-                .bind(o -> null, (o, o2) -> { });
-        email.addBlurListener(event -> emailBinder.validate());
+        final var i18n = LoginI18n.createDefault();
 
-        final var password = new PasswordField("Password");
-        password.setRequired(true);
-        password.setValue("");
-        final var passwordBinder = new Binder<String>();
-        passwordBinder.forField(password)
-                .withValidator(new StringLengthValidator("Please enter your password.", 1, 255))
-                .bind(o -> null, (o, o2) -> { });
-        password.addBlurListener(event -> passwordBinder.validate());
+        i18n.setHeader(new LoginI18n.Header());
+        i18n.getHeader().setTitle("Komunumo");
+        i18n.getHeader().setDescription("Java User Group Switzerland");
+        i18n.setAdditionalInformation(null);
 
-        final var login = new Button("Login", event -> {
-            emailBinder.validate();
-            passwordBinder.validate();
-            if (emailBinder.isValid() && passwordBinder.isValid()) {
-                try {
-                    authService.authenticate(email.getValue(), password.getValue());
-                    UI.getCurrent().navigate("dashboard");
-                } catch (final AccessDeniedException e) {
-                    Notification.show("Wrong credentials.");
-                }
+        i18n.setForm(new LoginI18n.Form());
+        i18n.getForm().setSubmit("Login");
+        i18n.getForm().setTitle("Login");
+        i18n.getForm().setUsername("Email");
+        i18n.getForm().setPassword("Password");
+
+        i18n.getErrorMessage().setTitle("Incorrect email or password");
+        i18n.getErrorMessage().setMessage("Check that you have entered the correct email and password and try again.");
+
+        setI18n(i18n);
+
+        setForgotPasswordButtonVisible(false);
+
+        addLoginListener(event -> {
+            try {
+                authService.authenticate(event.getUsername(), event.getPassword());
+                UI.getCurrent().navigate("dashboard");
+            } catch (final AccessDeniedException e) {
+                setError(true);
+                Notification.show(e.getMessage());
             }
+
         });
-        login.addClickShortcut(Key.ENTER);
-        login.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        final var register = new RouterLink("Register as a new member", RegisterView.class);
-        register.addClassName("register-link");
+        UI.getCurrent().getPage().executeJs("document.getElementById('vaadinLoginUsername').focus();");
+    }
 
-        add(
-                new FormLayout(
-                        new H1("Login"),
-                        email, password,
-                        login, register
-                )
-        );
+    @Override
+    public void beforeEnter(final BeforeEnterEvent event) {
+        if (authService.isUserLoggedIn()) {
+            event.forwardTo(DashboardView.class);
+        } else {
+            setOpened(true);
+        }
+    }
 
-        setSizeFull();
-        setAlignItems(Alignment.CENTER); //horizontal center
-        setJustifyContentMode(JustifyContentMode.CENTER); //vertical center
+    @Override
+    public void afterNavigation(final AfterNavigationEvent event) {
+        setError(event.getLocation().getQueryParameters().getParameters().containsKey("error"));
     }
 
 }
