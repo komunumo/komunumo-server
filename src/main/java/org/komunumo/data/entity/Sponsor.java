@@ -20,6 +20,8 @@ package org.komunumo.data.entity;
 
 import javax.persistence.Entity;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import org.komunumo.data.AbstractEntity;
 import javax.persistence.Lob;
 import java.time.LocalDate;
@@ -40,6 +42,8 @@ public class Sponsor extends AbstractEntity {
     private String logo;
     private LocalDate validFrom;
     private LocalDate validTo;
+
+    @Enumerated(EnumType.STRING)
     private Level level;
 
     public String getName() {

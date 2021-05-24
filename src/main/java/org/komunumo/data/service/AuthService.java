@@ -22,7 +22,6 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.spring.annotation.SpringComponent;
 import java.time.LocalDate;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.komunumo.data.entity.Member;
@@ -38,7 +37,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 @Service
-@SpringComponent
 public class AuthService implements VaadinServiceInitListener {
 
     public static class AccessDeniedException extends Exception {}
@@ -137,6 +135,7 @@ public class AuthService implements VaadinServiceInitListener {
             ui.addBeforeEnterListener(this::beforeEnter);
         });
     }
+
     private void beforeEnter(final BeforeEnterEvent event) {
         final boolean accessGranted = isAccessGranted(event.getNavigationTarget());
         if (!accessGranted) {
