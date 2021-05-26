@@ -18,6 +18,7 @@
 
 package org.komunumo.views.login;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -31,7 +32,7 @@ import org.komunumo.data.service.AuthService.AccessDeniedException;
 
 @Route("activate")
 @PageTitle("Activation")
-public class ActivationView extends Composite<VerticalLayout> implements BeforeEnterObserver {
+public class ActivationView extends Composite<Component> implements BeforeEnterObserver {
 
     private final AuthService authService;
 
