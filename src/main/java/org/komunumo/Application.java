@@ -21,6 +21,7 @@ package org.komunumo;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -35,6 +36,9 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 @Theme(value = "komunumo")
 @PWA(name = "Komunumo", shortName = "Komunumo", offlineResources = {"images/logo.png"})
 public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
+
+    @Value("${application.version}")
+    public static String APPLICATION_VERSION;
 
     public static void main(final String[] args) {
         SpringApplication.run(Application.class, args);
