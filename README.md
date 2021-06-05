@@ -4,6 +4,37 @@
 
 *Komunumo* is an esperanto noun with a meaning of *community*.
 
+## Configuring the server
+
+The file `application.properties` contains only some default values. To override the default values and to specify other configuration options, just set them as environment variables. The following sections describe all available configuration options.
+
+### Server
+
+The server runs on port 8080 by default. If you don't like it, change it:
+
+```
+PORT=80
+```
+
+### Mail
+
+To be able to send mails, you need to specify an SMTP server:
+
+```
+MAIL_HOST=localhost
+MAIL_PORT=25
+```
+
+### Database
+
+*Komunumo* needs a database to permanently store the business data. All JDBC compatible databases are supported. We highly recommend [MariaDB](https://mariadb.org/), just because we are using it during development and it is highly tested with *Komunumo*.
+
+```
+DB_URL=jdbc:mysql://localhost:3306/komunumo?serverTimezone\=Europe/Zurich
+DB_USER=johndoe
+DB_PASS=verysecret
+```
+
 ## Running and debugging the application
 
 ### Running the application from the command line.
