@@ -32,7 +32,7 @@ MAIL_PORT=25
 The `DB_USER` is used during runtime and only needs the privileges `SELECT`, `INSERT`, `UPDATE`, and `DELETE` on the *Komunumo* database. The `DB_ADMIN_USER` is used for database schema migrations only and needs `ALL PRIVILEGES` on the *Komunumo* database.
 
 ```
-DB_URL=jdbc:mysql://localhost:3306/komunumo?serverTimezone\=Europe/Zurich
+DB_URL=jdbc:mariadb://localhost:3306/komunumo?serverTimezone\=Europe/Zurich
 DB_USER=johndoe
 DB_PASS=verysecret
 DB_ADMIN_USER=janedoe
@@ -85,7 +85,7 @@ While developing, sometimes it is very useful to reset the database manually. Yo
 mvn flyway:clean flyway:migrate flyway:info \
     -Dflyway.user='janedoe' \
     -Dflyway.password='extremesecret' \
-    -Dflyway.url='jdbc:mysql://localhost:3306/komunumo?serverTimezone\=Europe/Zurich'
+    -Dflyway.url='jdbc:mariadb://localhost:3306/komunumo?serverTimezone\=Europe/Zurich'
 ```
 
 This command will first clean your database (erase everything). Then it will execute all needed migration steps to recreate all tables, indexes, etc. Last but not least it will inform you, if the migration was successful or not. You need to specify the credentials for a database user with administrative privileges to the database and the database URL.
