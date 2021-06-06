@@ -29,10 +29,14 @@ MAIL_PORT=25
 
 *Komunumo* needs a database to permanently store the business data. All JDBC compatible databases are supported. We highly recommend [MariaDB](https://mariadb.org/), just because we are using it during development and it is highly tested with *Komunumo*.
 
+The `DB_USER` is used during runtime and only needs the privileges `SELECT`, `INSERT`, `UPDATE`, and `DELETE` on the *Komunumo* database. The `DB_ADMIN_USER` is used for database schema migrations only and needs `ALL PRIVILEGES` on the *Komunumo* database.
+
 ```
 DB_URL=jdbc:mysql://localhost:3306/komunumo?serverTimezone\=Europe/Zurich
 DB_USER=johndoe
 DB_PASS=verysecret
+DB_ADMIN_USER=janedoe
+DB_ADMIN_PASS=extremesecret
 ```
 
 ## Running and debugging the server
