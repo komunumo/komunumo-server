@@ -1,0 +1,38 @@
+CREATE TABLE event (
+    id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+
+    title VARCHAR(255) NOT NULL,
+    speaker VARCHAR(255) NOT NULL,
+    date DATETIME NULL,
+    visible BOOLEAN NOT NULL DEFAULT 0
+);
+
+CREATE TABLE member (
+    id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NULL,
+    zip_code VARCHAR(255) NULL,
+    city VARCHAR(255) NULL,
+    state VARCHAR(255) NULL,
+    country VARCHAR(255) NULL,
+    member_since DATETIME NOT NULL,
+    admin BOOLEAN NOT NULL DEFAULT 0,
+    password_salt VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    activation_code VARCHAR(255) NULL,
+    active BOOLEAN NOT NULL DEFAULT 0
+);
+
+CREATE TABLE sponsor (
+    id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+
+    name VARCHAR(255) NOT NULL,
+    url VARCHAR(255) NOT NULL,
+    logo VARCHAR(255) NOT NULL,
+    valid_from DATETIME NOT NULL,
+    valid_to DATETIME NOT NULL,
+    level ENUM('SILBER', 'GOLD', 'PLATIN') NOT NULL
+);
