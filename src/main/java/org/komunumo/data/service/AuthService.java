@@ -25,13 +25,13 @@ import com.vaadin.flow.server.VaadinSession;
 import java.time.LocalDate;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.komunumo.data.entity.Member;
-import org.komunumo.views.dashboard.DashboardView;
-import org.komunumo.views.events.EventsView;
+import org.komunumo.views.admin.dashboard.DashboardView;
+import org.komunumo.views.admin.events.EventsView;
 import org.komunumo.views.login.ActivationView;
 import org.komunumo.views.login.LoginView;
 import org.komunumo.views.logout.LogoutView;
-import org.komunumo.views.members.MembersView;
-import org.komunumo.views.sponsors.SponsorsView;
+import org.komunumo.views.admin.members.MembersView;
+import org.komunumo.views.admin.sponsors.SponsorsView;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
@@ -80,7 +80,7 @@ public class AuthService implements VaadinServiceInitListener {
         member.setActivationCode(RandomStringUtils.randomAlphanumeric(32));
         memberRepository.save(member);
 
-        final var text = "http://localhost:8080/activate?email=%s&code=%s"
+        final var text = "http://localhost:8080/activate?email=%s&code=%s" // TODO configure server URL
                 .formatted(member.getEmail(), member.getActivationCode());
         final var message = new SimpleMailMessage();
         message.setTo(member.getEmail());

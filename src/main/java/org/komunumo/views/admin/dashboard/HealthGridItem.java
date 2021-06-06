@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.views.dashboard;
+package org.komunumo.views.admin.dashboard;
 
 import java.time.LocalDate;
 

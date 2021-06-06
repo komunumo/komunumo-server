@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.views.dashboard;
+package org.komunumo.views.admin.dashboard;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Board;
@@ -32,10 +32,10 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import org.komunumo.views.main.MainView;
+import org.komunumo.views.admin.AdminView;
 
-@Route(value = "dashboard", layout = MainView.class)
-@RouteAlias(value = "", layout = MainView.class)
+@Route(value = "admin/dashboard", layout = AdminView.class)
+@RouteAlias(value = "", layout = AdminView.class)
 @PageTitle("Dashboard")
 public class DashboardView extends Div {
 

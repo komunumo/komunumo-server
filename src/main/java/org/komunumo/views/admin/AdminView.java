@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.views.main;
+package org.komunumo.views.admin;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
@@ -37,22 +37,22 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 import org.komunumo.data.service.AuthService;
-import org.komunumo.views.dashboard.DashboardView;
-import org.komunumo.views.events.EventsView;
+import org.komunumo.views.admin.dashboard.DashboardView;
+import org.komunumo.views.admin.events.EventsView;
 import org.komunumo.views.logout.LogoutView;
-import org.komunumo.views.members.MembersView;
-import org.komunumo.views.sponsors.SponsorsView;
+import org.komunumo.views.admin.members.MembersView;
+import org.komunumo.views.admin.sponsors.SponsorsView;
 
 /**
  * The main view is a top-level placeholder for other views.
  */
-public class MainView extends AppLayout {
+public class AdminView extends AppLayout {
 
     private final AuthService authService;
     private final Tabs menu;
     private H1 viewTitle;
 
-    public MainView(final AuthService authService) {
+    public AdminView(final AuthService authService) {
         this.authService = authService;
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());

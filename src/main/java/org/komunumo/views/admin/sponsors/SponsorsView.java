@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.views.sponsors;
+package org.komunumo.views.admin.sponsors;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
@@ -52,17 +52,17 @@ import java.util.Base64;
 import org.komunumo.data.entity.Sponsor;
 import org.komunumo.data.entity.Sponsor.Level;
 import org.komunumo.data.service.SponsorService;
-import org.komunumo.views.main.MainView;
+import org.komunumo.views.admin.AdminView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.util.UriUtils;
 
-@Route(value = "sponsors/:sponsorID?/:action?(edit)", layout = MainView.class)
-@PageTitle("Sponsors")
+@Route(value = "admin/sponsors/:sponsorID?/:action?(edit)", layout = AdminView.class)
+@PageTitle("Sponsor Administration")
 public class SponsorsView extends Div implements BeforeEnterObserver {
 
     private final String SPONSOR_ID = "sponsorID";
-    private final String SPONSOR_EDIT_ROUTE_TEMPLATE = "sponsors/%d/edit";
+    private final String SPONSOR_EDIT_ROUTE_TEMPLATE = "admin/sponsors/%d/edit";
 
     private final Grid<Sponsor> grid = new Grid<>(Sponsor.class, false);
 

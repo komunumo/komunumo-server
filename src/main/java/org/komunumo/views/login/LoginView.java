@@ -30,7 +30,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.data.service.AuthService.AccessDeniedException;
-import org.komunumo.views.dashboard.DashboardView;
+import org.komunumo.views.admin.dashboard.DashboardView;
 
 @Route(value = "login")
 @PageTitle("Login")
@@ -64,7 +64,7 @@ public class LoginView extends LoginOverlay implements AfterNavigationObserver, 
         addLoginListener(event -> {
             try {
                 authService.authenticate(event.getUsername(), event.getPassword());
-                UI.getCurrent().navigate("dashboard");
+                UI.getCurrent().navigate("admin/dashboard");
             } catch (final AccessDeniedException e) {
                 setError(true);
                 Notification.show(e.getMessage());

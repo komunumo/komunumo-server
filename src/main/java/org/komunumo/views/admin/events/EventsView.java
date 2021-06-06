@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.views.members;
+package org.komunumo.views.admin.events;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
@@ -24,7 +24,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrderBuilder;
@@ -42,44 +42,39 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
-import org.komunumo.data.entity.Member;
-import org.komunumo.data.service.MemberService;
-import org.komunumo.views.main.MainView;
+import java.time.Duration;
+import org.komunumo.data.entity.Event;
+import org.komunumo.data.service.EventService;
+import org.komunumo.views.admin.AdminView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 
-@Route(value = "members/:memberID?/:action?(edit)", layout = MainView.class)
-@PageTitle("Members")
-public class MembersView extends Div implements BeforeEnterObserver {
+@Route(value = "admin/events/:eventID?/:action?(edit)", layout = AdminView.class)
+@PageTitle("Event Administration")
+public class EventsView extends Div implements BeforeEnterObserver {
 
-    private final String MEMBER_ID = "memberID";
-    private final String MEMBER_EDIT_ROUTE_TEMPLATE = "members/%d/edit";
+    private final String EVENT_ID = "eventID";
+    private final String EVENT_EDIT_ROUTE_TEMPLATE = "admin/events/%d/edit";
 
-    private final Grid<Member> grid = new Grid<>(Member.class, false);
+    private final Grid<Event> grid = new Grid<>(Event.class, false);
 
-    private TextField firstName;
-    private TextField lastName;
-    private TextField email;
-    private TextField address;
-    private TextField zipCode;
-    private TextField city;
-    private TextField state;
-    private TextField country;
-    private DatePicker memberSince;
-    private Checkbox admin;
+    private TextField title;
+    private TextField speaker;
+    private DateTimePicker date;
+    private Checkbox visible;
 
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
 
-    private final BeanValidationBinder<Member> binder;
+    private final BeanValidationBinder<Event> binder;
 
-    private Member member;
+    private Event event;
 
-    private final MemberService memberService;
+    private final EventService eventService;
 
-    public MembersView(@Autowired final MemberService memberService) {
-        this.memberService = memberService;
-        addClassNames("members-view", "flex", "flex-col", "h-full");
+    public EventsView(@Autowired final EventService eventService) {
+        this.eventService = eventService;
+        addClassNames("events-view", "flex", "flex-col", "h-full");
 
         // Create UI
         final var splitLayout = new SplitLayout();
@@ -91,21 +86,15 @@ public class MembersView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
-        grid.addColumn("firstName").setAutoWidth(true);
-        grid.addColumn("lastName").setAutoWidth(true);
-        grid.addColumn("email").setAutoWidth(true);
-        grid.addColumn("address").setAutoWidth(true);
-        grid.addColumn("zipCode").setAutoWidth(true);
-        grid.addColumn("city").setAutoWidth(true);
-        grid.addColumn("state").setAutoWidth(true);
-        grid.addColumn("country").setAutoWidth(true);
-        grid.addColumn("memberSince").setAutoWidth(true);
-        final var adminRenderer = TemplateRenderer.<Member>of(
-                "<iron-icon hidden='[[!item.admin]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.admin]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
-                .withProperty("admin", Member::isAdmin);
-        grid.addColumn(adminRenderer).setHeader("Admin").setAutoWidth(true);
+        grid.addColumn("title").setAutoWidth(true);
+        grid.addColumn("speaker").setAutoWidth(true);
+        grid.addColumn("date").setAutoWidth(true);
+        final var visibleRenderer = TemplateRenderer.<Event>of(
+                "<iron-icon hidden='[[!item.visible]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.visible]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
+                .withProperty("visible", Event::isVisible);
+        grid.addColumn(visibleRenderer).setHeader("Visible").setAutoWidth(true);
 
-        grid.setItems(query -> memberService.list(
+        grid.setItems(query -> eventService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
@@ -114,20 +103,19 @@ public class MembersView extends Div implements BeforeEnterObserver {
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
-                UI.getCurrent().navigate(String.format(MEMBER_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
+                UI.getCurrent().navigate(String.format(EVENT_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
             } else {
                 clearForm();
-                UI.getCurrent().navigate(MembersView.class);
+                UI.getCurrent().navigate(EventsView.class);
             }
         });
 
-        grid.sort(new GridSortOrderBuilder<Member>()
-                .thenAsc(grid.getColumnByKey("lastName"))
-                .thenAsc(grid.getColumnByKey("firstName"))
+        grid.sort(new GridSortOrderBuilder<Event>()
+                .thenDesc(grid.getColumnByKey("date"))
                 .build());
 
         // Configure Form
-        binder = new BeanValidationBinder<>(Member.class);
+        binder = new BeanValidationBinder<>(Event.class);
 
         // Bind fields. This where you'd define e.g. validation rules
 
@@ -140,18 +128,18 @@ public class MembersView extends Div implements BeforeEnterObserver {
 
         save.addClickListener(e -> {
             try {
-                if (this.member == null) {
-                    this.member = new Member();
+                if (this.event == null) {
+                    this.event = new Event();
                 }
-                binder.writeBean(this.member);
+                binder.writeBean(this.event);
 
-                memberService.update(this.member);
+                eventService.update(this.event);
                 clearForm();
                 refreshGrid();
-                Notification.show("Member details stored.");
-                UI.getCurrent().navigate(MembersView.class);
+                Notification.show("Event details stored.");
+                UI.getCurrent().navigate(EventsView.class);
             } catch (final ValidationException validationException) {
-                Notification.show("An exception happened while trying to store the member details.");
+                Notification.show("An exception happened while trying to store the event details.");
             }
         });
 
@@ -159,18 +147,18 @@ public class MembersView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(final BeforeEnterEvent event) {
-        final var memberId = event.getRouteParameters().getInteger(MEMBER_ID);
-        if (memberId.isPresent()) {
-            final var memberFromBackend = memberService.get(memberId.get());
-            if (memberFromBackend.isPresent()) {
-                populateForm(memberFromBackend.get());
+        final var eventId = event.getRouteParameters().getInteger(EVENT_ID);
+        if (eventId.isPresent()) {
+            final var eventFromBackend = eventService.get(eventId.get());
+            if (eventFromBackend.isPresent()) {
+                populateForm(eventFromBackend.get());
             } else {
-                Notification.show(String.format("The requested member was not found, ID = %d", memberId.get()), 3000,
+                Notification.show(String.format("The requested event was not found, ID = %d", eventId.get()), 3000,
                         Notification.Position.BOTTOM_START);
                 // when a row is selected but the data is no longer available,
                 // refresh grid
                 refreshGrid();
-                event.forwardTo(MembersView.class);
+                event.forwardTo(EventsView.class);
             }
         }
     }
@@ -185,19 +173,13 @@ public class MembersView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         final var formLayout = new FormLayout();
-        firstName = new TextField("First Name");
-        lastName = new TextField("Last Name");
-        email = new TextField("Email");
-        address = new TextField("Address");
-        zipCode = new TextField("Zip Code");
-        city = new TextField("City");
-        state = new TextField("State");
-        country = new TextField("Country");
-        memberSince = new DatePicker("Member Since");
-        admin = new Checkbox("Admin");
-        admin.getStyle().set("padding-top", "var(--lumo-space-m)");
-        final var fields = new Component[]{firstName, lastName, email, address, zipCode, city, state, country,
-                memberSince, admin};
+        title = new TextField("Title");
+        speaker = new TextField("Speaker");
+        date = new DateTimePicker("Date");
+        date.setStep(Duration.ofSeconds(1));
+        visible = new Checkbox("Visible");
+        visible.getStyle().set("padding-top", "var(--lumo-space-m)");
+        final var fields = new Component[]{title, speaker, date, visible};
 
         for (final Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
@@ -236,9 +218,9 @@ public class MembersView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(final Member value) {
-        this.member = value;
-        binder.readBean(this.member);
+    private void populateForm(final Event value) {
+        this.event = value;
+        binder.readBean(this.event);
 
     }
 }
