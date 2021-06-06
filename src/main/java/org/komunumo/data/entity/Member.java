@@ -140,7 +140,7 @@ public class Member extends AbstractEntity {
     }
 
     public void setPassword(final String password) {
-        passwordSalt = RandomStringUtils.random(32);
+        passwordSalt = RandomStringUtils.randomAscii(32);
         passwordHash = DigestUtils.sha1Hex(password + passwordSalt);
     }
 
