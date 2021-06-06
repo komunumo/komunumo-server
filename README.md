@@ -75,6 +75,21 @@ Once the Docker image is correctly built, you can test it locally using
 docker run -p 8080:8080 komunumo:latest
 ```
 
+## Development
+
+### Database
+
+While developing, sometimes it is very useful to reset the database manually. You can this very easily using Maven and Flyway:
+
+```
+mvn flyway:clean flyway:migrate flyway:info \
+    -Dflyway.user='janedoe' \
+    -Dflyway.password='extremesecret' \
+    -Dflyway.url='jdbc:mysql://localhost:3306/komunumo?serverTimezone\=Europe/Zurich'
+```
+
+This command will first clean your database (erase everything). Then it will execute all needed migration steps to recreate all tables, indexes, etc. Last but not least it will inform you, if the migration was successful or not. You need to specify the credentials for a database user with administrative privileges to the database and the database URL.
+
 ## Copyright and License
 
 [AGPL License](https://www.gnu.org/licenses/agpl-3.0.de.html)
