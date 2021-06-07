@@ -18,23 +18,36 @@
 
 package org.komunumo.data.service;
 
-import org.komunumo.data.entity.Event;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Optional;
+import java.util.stream.Stream;
+import org.jooq.DSLContext;
+import org.komunumo.data.db.tables.records.EventRecord;
 import org.springframework.stereotype.Service;
-import org.vaadin.artur.helpers.CrudService;
+
+import static org.komunumo.data.db.tables.Event.EVENT;
 
 @Service
-public class EventService extends CrudService<Event, Integer> {
+public class EventService {
 
-    private final EventRepository repository;
+    private final DSLContext dsl;
 
-    public EventService(@Autowired final EventRepository repository) {
-        this.repository = repository;
+    public EventService(final DSLContext dsl) {
+        this.dsl = dsl;
     }
 
-    @Override
-    protected EventRepository getRepository() {
-        return repository;
+    public Stream<EventRecord> list(final int offset, final int limit) {
+        return dsl.selectFrom(EVENT).offset(offset).limit(limit).stream();
     }
 
+    public void update(final EventRecord event) {
+        event.update();
+    }
+
+    public Optional<EventRecord> get(final Long id) {
+        return Optional.ofNullable(dsl.selectFrom(EVENT).where(EVENT.ID.eq(id)).fetchOne());
+    }
+
+    public void store(final EventRecord event) {
+        event.store();
+    }
 }

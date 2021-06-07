@@ -41,13 +41,11 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import java.time.Duration;
-import org.komunumo.data.entity.Event;
+import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.service.EventService;
 import org.komunumo.views.admin.AdminView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 
 @Route(value = "admin/events/:eventID?/:action?(edit)", layout = AdminView.class)
 @PageTitle("Event Administration")
@@ -56,7 +54,7 @@ public class EventsView extends Div implements BeforeEnterObserver {
     private final String EVENT_ID = "eventID";
     private final String EVENT_EDIT_ROUTE_TEMPLATE = "admin/events/%d/edit";
 
-    private final Grid<Event> grid = new Grid<>(Event.class, false);
+    private final Grid<EventRecord> grid = new Grid<>(EventRecord.class, false);
 
     private TextField title;
     private TextField speaker;
@@ -66,9 +64,9 @@ public class EventsView extends Div implements BeforeEnterObserver {
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
 
-    private final BeanValidationBinder<Event> binder;
+    private final BeanValidationBinder<EventRecord> binder;
 
-    private Event event;
+    private EventRecord event;
 
     private final EventService eventService;
 
@@ -89,14 +87,12 @@ public class EventsView extends Div implements BeforeEnterObserver {
         grid.addColumn("title").setAutoWidth(true);
         grid.addColumn("speaker").setAutoWidth(true);
         grid.addColumn("date").setAutoWidth(true);
-        final var visibleRenderer = TemplateRenderer.<Event>of(
+        final var visibleRenderer = TemplateRenderer.<EventRecord>of(
                 "<iron-icon hidden='[[!item.visible]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.visible]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
-                .withProperty("visible", Event::isVisible);
+                .withProperty("visible", EventRecord::getVisible);
         grid.addColumn(visibleRenderer).setHeader("Visible").setAutoWidth(true);
 
-        grid.setItems(query -> eventService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
+        grid.setItems(query -> eventService.list(query.getOffset(), query.getLimit()));
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setHeightFull();
 
@@ -110,12 +106,12 @@ public class EventsView extends Div implements BeforeEnterObserver {
             }
         });
 
-        grid.sort(new GridSortOrderBuilder<Event>()
+        grid.sort(new GridSortOrderBuilder<EventRecord>()
                 .thenDesc(grid.getColumnByKey("date"))
                 .build());
 
         // Configure Form
-        binder = new BeanValidationBinder<>(Event.class);
+        binder = new BeanValidationBinder<>(EventRecord.class);
 
         // Bind fields. This where you'd define e.g. validation rules
 
@@ -129,7 +125,7 @@ public class EventsView extends Div implements BeforeEnterObserver {
         save.addClickListener(e -> {
             try {
                 if (this.event == null) {
-                    this.event = new Event();
+                    this.event = new EventRecord();
                 }
                 binder.writeBean(this.event);
 
@@ -147,7 +143,7 @@ public class EventsView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(final BeforeEnterEvent event) {
-        final var eventId = event.getRouteParameters().getInteger(EVENT_ID);
+        final var eventId = event.getRouteParameters().getLong(EVENT_ID);
         if (eventId.isPresent()) {
             final var eventFromBackend = eventService.get(eventId.get());
             if (eventFromBackend.isPresent()) {
@@ -218,7 +214,7 @@ public class EventsView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(final Event value) {
+    private void populateForm(final EventRecord value) {
         this.event = value;
         binder.readBean(this.event);
 

@@ -39,9 +39,9 @@ import java.util.Optional;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.views.admin.dashboard.DashboardView;
 import org.komunumo.views.admin.events.EventsView;
-import org.komunumo.views.logout.LogoutView;
 import org.komunumo.views.admin.members.MembersView;
 import org.komunumo.views.admin.sponsors.SponsorsView;
+import org.komunumo.views.logout.LogoutView;
 
 /**
  * The main view is a top-level placeholder for other views.

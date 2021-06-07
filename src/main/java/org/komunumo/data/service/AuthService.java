@@ -22,16 +22,17 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.server.VaadinSession;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.komunumo.data.entity.Member;
+import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.views.admin.dashboard.DashboardView;
 import org.komunumo.views.admin.events.EventsView;
+import org.komunumo.views.admin.members.MembersView;
+import org.komunumo.views.admin.sponsors.SponsorsView;
 import org.komunumo.views.login.ActivationView;
 import org.komunumo.views.login.LoginView;
 import org.komunumo.views.logout.LogoutView;
-import org.komunumo.views.admin.members.MembersView;
-import org.komunumo.views.admin.sponsors.SponsorsView;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
@@ -45,27 +46,31 @@ public class AuthService implements VaadinServiceInitListener {
         }
     }
 
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final MailSender mailSender;
 
-    public AuthService(final MemberRepository memberRepository, final MailSender mailSender) {
-        this.memberRepository = memberRepository;
+    public AuthService(final MemberService memberService, final MailSender mailSender) {
+        this.memberService = memberService;
         this.mailSender = mailSender;
     }
 
     public void authenticate(final String email, final String password) throws AccessDeniedException {
-        final var member = memberRepository.getByEmail(email);
-        if (member != null && member.isActive() && member.checkPassword(password)) {
-            VaadinSession.getCurrent().setAttribute(Member.class, member);
+        final var member = memberService.getByEmail(email).orElse(null);
+        if (member != null && member.getActive() && checkPassword(member, password)) {
+            VaadinSession.getCurrent().setAttribute(MemberRecord.class, member);
         } else {
             throw new AccessDeniedException("Wrong credentials.");
         }
     }
 
+    private boolean checkPassword(final MemberRecord member, final String password) {
+        return getPasswordHash(password, member.getPasswordSalt()).equals(member.getPasswordHash());
+    }
+
     public void register(final String firstName, final String lastName, final String email,
                          final String address, final String zipCode, final String city,
                          final String state, final String country) {
-        final var member = new Member();
+        final var member = new MemberRecord();
         member.setFirstName(firstName);
         member.setLastName(lastName);
         member.setEmail(email);
@@ -74,14 +79,14 @@ public class AuthService implements VaadinServiceInitListener {
         member.setCity(city);
         member.setState(state);
         member.setCountry(country);
-        member.setMemberSince(LocalDate.now());
+        member.setMemberSince(LocalDateTime.now());
         member.setAdmin(false);
         member.setActive(false);
         member.setActivationCode(RandomStringUtils.randomAlphanumeric(32));
-        memberRepository.save(member);
+        memberService.store(member);
 
-        final var text = "http://localhost:8080/activate?email=%s&code=%s" // TODO configure server URL
-                .formatted(member.getEmail(), member.getActivationCode());
+        final var text = String.format("http://localhost:8080/activate?email=%s&code=%s", // TODO configure server URL
+                member.getEmail(), member.getActivationCode());
         final var message = new SimpleMailMessage();
         message.setTo(member.getEmail());
         message.setFrom("noreply@example.com"); // TODO configurable: info@jug.ch
@@ -91,21 +96,21 @@ public class AuthService implements VaadinServiceInitListener {
     }
 
     public void activate(final String email, final String activationCode) throws AccessDeniedException {
-        final var member = memberRepository.getByEmail(email);
+        final var member = memberService.getByEmail(email).orElse(null);
         if (member != null && member.getActivationCode().equals(activationCode)) {
             member.setActive(true);
-            memberRepository.save(member);
+            memberService.store(member);
         } else {
             throw new AccessDeniedException("Activation failed");
         }
     }
 
     public boolean isUserLoggedIn() {
-        return VaadinSession.getCurrent().getAttribute(Member.class) != null;
+        return VaadinSession.getCurrent().getAttribute(MemberRecord.class) != null;
     }
 
     public boolean isAccessGranted(final Class<?> navigationTarget) {
-        final var member = VaadinSession.getCurrent().getAttribute(Member.class);
+        final var member = VaadinSession.getCurrent().getAttribute(MemberRecord.class);
 
         // restrict to members
         if (member != null) {
@@ -115,7 +120,7 @@ public class AuthService implements VaadinServiceInitListener {
             }
 
             // restrict to admins
-            if (member.isAdmin()) {
+            if (member.getAdmin()) {
                 if (navigationTarget == EventsView.class
                         || navigationTarget == MembersView.class
                         || navigationTarget == SponsorsView.class) {
@@ -149,6 +154,14 @@ public class AuthService implements VaadinServiceInitListener {
                 event.rerouteTo(LoginView.class);
             }
         }
+    }
+
+    public String createPasswordSalt() {
+        return RandomStringUtils.randomAscii(32);
+    }
+
+    public String getPasswordHash(final String password, final String passwordSalt) {
+        return DigestUtils.sha1Hex(password + passwordSalt);
     }
 
 }

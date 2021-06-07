@@ -44,17 +44,15 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import elemental.json.Json;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import org.komunumo.data.entity.Sponsor;
-import org.komunumo.data.entity.Sponsor.Level;
+import org.komunumo.data.db.enums.SponsorLevel;
+import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.data.service.SponsorService;
 import org.komunumo.views.admin.AdminView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.util.UriUtils;
 
 @Route(value = "admin/sponsors/:sponsorID?/:action?(edit)", layout = AdminView.class)
@@ -64,7 +62,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
     private final String SPONSOR_ID = "sponsorID";
     private final String SPONSOR_EDIT_ROUTE_TEMPLATE = "admin/sponsors/%d/edit";
 
-    private final Grid<Sponsor> grid = new Grid<>(Sponsor.class, false);
+    private final Grid<SponsorRecord> grid = new Grid<>(SponsorRecord.class, false);
 
     private TextField name;
     private TextField url;
@@ -72,14 +70,14 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
     private Image logoPreview;
     private DatePicker validFrom;
     private DatePicker validTo;
-    private Select<Level> level;
+    private Select<SponsorLevel> level;
 
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
 
-    private final BeanValidationBinder<Sponsor> binder;
+    private final BeanValidationBinder<SponsorRecord> binder;
 
-    private Sponsor sponsor;
+    private SponsorRecord sponsor;
 
     private final SponsorService sponsorService;
 
@@ -98,17 +96,15 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
 
         // Configure Grid
         grid.addColumn("name").setAutoWidth(true);
-        final var logoRenderer = TemplateRenderer.<Sponsor>of(
+        final var logoRenderer = TemplateRenderer.<SponsorRecord>of(
                 "<span style='border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; width: 64px; height: 64px'><img style='max-width: 100%' src='[[item.logo]]' /></span>")
-                .withProperty("logo", Sponsor::getLogo);
+                .withProperty("logo", SponsorRecord::getLogo);
         grid.addColumn(logoRenderer).setHeader("Logo").setWidth("96px").setFlexGrow(0);
 
         grid.addColumn("validFrom").setAutoWidth(true);
         grid.addColumn("validTo").setAutoWidth(true);
         grid.addColumn("level").setAutoWidth(true);
-        grid.setItems(query -> sponsorService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
+        grid.setItems(query -> sponsorService.list(query.getOffset(), query.getLimit()));
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setHeightFull();
 
@@ -122,12 +118,12 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
             }
         });
 
-        grid.sort(new GridSortOrderBuilder<Sponsor>()
+        grid.sort(new GridSortOrderBuilder<SponsorRecord>()
                 .thenAsc(grid.getColumnByKey("name"))
                 .build());
 
         // Configure Form
-        binder = new BeanValidationBinder<>(Sponsor.class);
+        binder = new BeanValidationBinder<>(SponsorRecord.class);
 
         // Bind fields. This where you'd define e.g. validation rules
 
@@ -143,7 +139,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
         save.addClickListener(e -> {
             try {
                 if (this.sponsor == null) {
-                    this.sponsor = new Sponsor();
+                    this.sponsor = new SponsorRecord();
                 }
                 binder.writeBean(this.sponsor);
                 this.sponsor.setLogo(logoPreview.getSrc());
@@ -162,7 +158,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(final BeforeEnterEvent event) {
-        final var sponsorId = event.getRouteParameters().getInteger(SPONSOR_ID);
+        final var sponsorId = event.getRouteParameters().getLong(SPONSOR_ID);
         if (sponsorId.isPresent()) {
             final var sponsorFromBackend = sponsorService.get(sponsorId.get());
             if (sponsorFromBackend.isPresent()) {
@@ -198,7 +194,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
         logo.getElement().appendChild(logoPreview.getElement());
         validFrom = new DatePicker("Valid From");
         validTo = new DatePicker("Valid To");
-        level = new Select<>(Level.values());
+        level = new Select<>(SponsorLevel.values());
         level.setLabel("Level");
         final var fields = new Component[]{name, url, logoLabel, logo, validFrom, validTo, level};
 
@@ -255,7 +251,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(final Sponsor value) {
+    private void populateForm(final SponsorRecord value) {
         this.sponsor = value;
         binder.readBean(this.sponsor);
         this.logoPreview.setVisible(value != null);

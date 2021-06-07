@@ -41,12 +41,10 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
-import org.komunumo.data.entity.Member;
+import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.views.admin.AdminView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 
 @Route(value = "admin/members/:memberID?/:action?(edit)", layout = AdminView.class)
 @PageTitle("Member Administration")
@@ -55,7 +53,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
     private final String MEMBER_ID = "memberID";
     private final String MEMBER_EDIT_ROUTE_TEMPLATE = "admin/members/%d/edit";
 
-    private final Grid<Member> grid = new Grid<>(Member.class, false);
+    private final Grid<MemberRecord> grid = new Grid<>(MemberRecord.class, false);
 
     private TextField firstName;
     private TextField lastName;
@@ -71,9 +69,9 @@ public class MembersView extends Div implements BeforeEnterObserver {
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
 
-    private final BeanValidationBinder<Member> binder;
+    private final BeanValidationBinder<MemberRecord> binder;
 
-    private Member member;
+    private MemberRecord member;
 
     private final MemberService memberService;
 
@@ -100,14 +98,12 @@ public class MembersView extends Div implements BeforeEnterObserver {
         grid.addColumn("state").setAutoWidth(true);
         grid.addColumn("country").setAutoWidth(true);
         grid.addColumn("memberSince").setAutoWidth(true);
-        final var adminRenderer = TemplateRenderer.<Member>of(
+        final var adminRenderer = TemplateRenderer.<MemberRecord>of(
                 "<iron-icon hidden='[[!item.admin]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.admin]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
-                .withProperty("admin", Member::isAdmin);
+                .withProperty("admin", MemberRecord::getAdmin);
         grid.addColumn(adminRenderer).setHeader("Admin").setAutoWidth(true);
 
-        grid.setItems(query -> memberService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
+        grid.setItems(query -> memberService.list(query.getOffset(), query.getLimit()));
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setHeightFull();
 
@@ -121,13 +117,13 @@ public class MembersView extends Div implements BeforeEnterObserver {
             }
         });
 
-        grid.sort(new GridSortOrderBuilder<Member>()
+        grid.sort(new GridSortOrderBuilder<MemberRecord>()
                 .thenAsc(grid.getColumnByKey("lastName"))
                 .thenAsc(grid.getColumnByKey("firstName"))
                 .build());
 
         // Configure Form
-        binder = new BeanValidationBinder<>(Member.class);
+        binder = new BeanValidationBinder<>(MemberRecord.class);
 
         // Bind fields. This where you'd define e.g. validation rules
 
@@ -141,7 +137,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
         save.addClickListener(e -> {
             try {
                 if (this.member == null) {
-                    this.member = new Member();
+                    this.member = new MemberRecord();
                 }
                 binder.writeBean(this.member);
 
@@ -159,7 +155,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(final BeforeEnterEvent event) {
-        final var memberId = event.getRouteParameters().getInteger(MEMBER_ID);
+        final var memberId = event.getRouteParameters().getLong(MEMBER_ID);
         if (memberId.isPresent()) {
             final var memberFromBackend = memberService.get(memberId.get());
             if (memberFromBackend.isPresent()) {
@@ -236,7 +232,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(final Member value) {
+    private void populateForm(final MemberRecord value) {
         this.member = value;
         binder.readBean(this.member);
 

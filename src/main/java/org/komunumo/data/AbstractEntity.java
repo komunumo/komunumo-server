@@ -38,23 +38,4 @@ public abstract class AbstractEntity {
         this.id = id;
     }
 
-    @Override
-    public int hashCode() {
-        if (id != null) {
-            return id.hashCode();
-        }
-        return super.hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (!(obj instanceof AbstractEntity other)) {
-            return false; // null or other class
-        }
-
-        if (id != null) {
-            return id.equals(other.id);
-        }
-        return super.equals(other);
-    }
 }

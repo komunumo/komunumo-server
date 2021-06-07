@@ -18,23 +18,41 @@
 
 package org.komunumo.data.service;
 
-import org.komunumo.data.entity.Member;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Optional;
+import java.util.stream.Stream;
+import org.jooq.DSLContext;
+import org.komunumo.data.db.tables.records.MemberRecord;
 import org.springframework.stereotype.Service;
-import org.vaadin.artur.helpers.CrudService;
+
+import static org.komunumo.data.db.tables.Member.MEMBER;
 
 @Service
-public class MemberService extends CrudService<Member, Integer> {
+public class MemberService {
 
-    private final MemberRepository repository;
+    private final DSLContext dsl;
 
-    public MemberService(@Autowired final MemberRepository repository) {
-        this.repository = repository;
+    public MemberService(final DSLContext dsl) {
+        this.dsl = dsl;
     }
 
-    @Override
-    protected MemberRepository getRepository() {
-        return repository;
+    public Stream<MemberRecord> list(final int offset, final int limit) {
+        return dsl.selectFrom(MEMBER).offset(offset).limit(limit).stream();
+    }
+
+    public void update(final MemberRecord member) {
+        member.update();
+    }
+
+    public Optional<MemberRecord> get(final Long id) {
+        return Optional.ofNullable(dsl.selectFrom(MEMBER).where(MEMBER.ID.eq(id)).fetchOne());
+    }
+
+    public Optional<MemberRecord> getByEmail(final String email) {
+        return Optional.ofNullable(dsl.selectFrom(MEMBER).where(MEMBER.EMAIL.eq(email)).fetchOne());
+    }
+
+    public void store(final MemberRecord member) {
+        member.store();
     }
 
 }

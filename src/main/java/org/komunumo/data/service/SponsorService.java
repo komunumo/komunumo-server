@@ -18,23 +18,36 @@
 
 package org.komunumo.data.service;
 
-import org.komunumo.data.entity.Sponsor;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Optional;
+import java.util.stream.Stream;
+import org.jooq.DSLContext;
+import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.springframework.stereotype.Service;
-import org.vaadin.artur.helpers.CrudService;
+
+import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
 
 @Service
-public class SponsorService extends CrudService<Sponsor, Integer> {
+public class SponsorService {
 
-    private final SponsorRepository repository;
+    private final DSLContext dsl;
 
-    public SponsorService(@Autowired final SponsorRepository repository) {
-        this.repository = repository;
+    public SponsorService(final DSLContext dsl) {
+        this.dsl = dsl;
     }
 
-    @Override
-    protected SponsorRepository getRepository() {
-        return repository;
+    public Stream<SponsorRecord> list(final int offset, final int limit) {
+        return dsl.selectFrom(SPONSOR).offset(offset).limit(limit).stream();
     }
 
+    public void update(final SponsorRecord sponsor) {
+        sponsor.update();
+    }
+
+    public Optional<SponsorRecord> get(final Long id) {
+        return Optional.ofNullable(dsl.selectFrom(SPONSOR).where(SPONSOR.ID.eq(id)).fetchOne());
+    }
+
+    public void store(final SponsorRecord sponsor) {
+        sponsor.store();
+    }
 }
