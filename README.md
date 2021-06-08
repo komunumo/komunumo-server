@@ -4,7 +4,11 @@
 
 *Komunumo* is an esperanto noun with a meaning of *community*.
 
-## Configuring the server
+## Architecture
+
+The server of *Komunumo* is written using the [Java programming language](https://en.wikipedia.org/wiki/Java_(programming_language)). The main framework is [Spring](https://spring.io/). For the user interface, we use [Vaadin Flow](https://vaadin.com/flow). To access the database, we rely on [jOOQ](https://www.jooq.org/).
+
+## Configuration
 
 The file `application.properties` contains only some default values. To override the default values and to specify other configuration options, just set them as environment variables. The following sections describe all available configuration options.
 
