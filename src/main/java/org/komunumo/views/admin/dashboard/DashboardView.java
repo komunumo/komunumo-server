@@ -32,6 +32,8 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import java.time.Year;
+import org.komunumo.data.service.EventService;
 import org.komunumo.views.admin.AdminView;
 
 @Route(value = "admin/dashboard", layout = AdminView.class)
@@ -44,13 +46,17 @@ public class DashboardView extends Div {
     private final H2 eventsH2 = new H2();
     private final H2 conversionH2 = new H2();
 
-    public DashboardView() {
+    private final EventService eventService;
+
+    public DashboardView(final EventService eventService) {
+        this.eventService = eventService;
+
         addClassName("dashboard-view");
 
         final var board = new Board();
         board.addRow(
-                createBadge("Registrations", usersH2, "primary-text", "Registrations made this year", "badge"),
-                createBadge("Events", eventsH2, "success-text", "Events made this year", "badge success"),
+                createBadge("Registrations", usersH2, "primary-text", "Registrations this year", "badge"),
+                createBadge("Events", eventsH2, "success-text", "Events this year", "badge success"),
                 createBadge("No-shows", conversionH2, "error-text", "No-show-rate this year", "badge error")
         );
 
@@ -81,7 +87,7 @@ public class DashboardView extends Div {
 
         // Top row widgets
         usersH2.setText("1'174");
-        eventsH2.setText("42");
+        eventsH2.setText(Integer.toString(eventService.countByYear(Year.now())));
         conversionH2.setText("24%");
 
         // First chart

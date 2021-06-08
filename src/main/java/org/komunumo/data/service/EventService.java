@@ -18,12 +18,16 @@
 
 package org.komunumo.data.service;
 
+import java.time.LocalTime;
+import java.time.Year;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.jooq.DSLContext;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.springframework.stereotype.Service;
 
+import static java.time.Month.DECEMBER;
+import static java.time.Month.JANUARY;
 import static org.komunumo.data.db.tables.Event.EVENT;
 
 @Service
@@ -53,5 +57,11 @@ public class EventService {
 
     public void store(final EventRecord event) {
         event.store();
+    }
+
+    public int countByYear(final Year year) {
+        final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
+        final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
+        return dsl.fetchCount(EVENT, EVENT.DATE.between(firstDay, lastDay));
     }
 }
