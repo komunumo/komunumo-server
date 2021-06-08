@@ -35,6 +35,10 @@ public class SponsorService {
         this.dsl = dsl;
     }
 
+    public SponsorRecord newRecord() {
+        return dsl.newRecord(SPONSOR);
+    }
+
     public Stream<SponsorRecord> list(final int offset, final int limit) {
         return dsl.selectFrom(SPONSOR).offset(offset).limit(limit).stream();
     }

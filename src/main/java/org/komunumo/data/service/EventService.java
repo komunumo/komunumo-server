@@ -35,6 +35,10 @@ public class EventService {
         this.dsl = dsl;
     }
 
+    public EventRecord newRecord() {
+        return dsl.newRecord(EVENT);
+    }
+
     public Stream<EventRecord> list(final int offset, final int limit) {
         return dsl.selectFrom(EVENT).offset(offset).limit(limit).stream();
     }

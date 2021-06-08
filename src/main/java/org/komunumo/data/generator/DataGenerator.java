@@ -47,21 +47,21 @@ public class DataGenerator {
             if (eventService.get(1L).isEmpty()) {
                 logger.info("Generating event entities...");
 
-                final var event1 = new EventRecord();
+                final var event1 = eventService.newRecord();
                 event1.setTitle("Testevent One");
                 event1.setSpeaker("John Doe");
                 event1.setDate(LocalDateTime.of(2021, 10, 1, 18, 0, 0));
                 event1.setVisible(true);
                 eventService.store(event1);
 
-                final var event2 = new EventRecord();
+                final var event2 = eventService.newRecord();
                 event2.setTitle("Testevent Two");
                 event2.setSpeaker("Jane Doe");
                 event2.setDate(LocalDateTime.of(2021, 11, 1, 18, 0, 0));
                 event2.setVisible(true);
                 eventService.store(event2);
 
-                final var event3 = new EventRecord();
+                final var event3 = eventService.newRecord();
                 event3.setTitle("Testevent Three");
                 event3.setSpeaker("Jill Doe");
                 event3.setDate(LocalDateTime.of(2021, 12, 1, 18, 0, 0));
@@ -72,7 +72,7 @@ public class DataGenerator {
             if (memberService.get(1L).isEmpty()) {
                 logger.info("Generating member entities...");
 
-                final var member1 = new MemberRecord();
+                final var member1 = memberService.newRecord();
                 member1.setFirstName("Marcus");
                 member1.setLastName("Fihlon");
                 member1.setEmail("marcus@fihlon.ch");
@@ -88,7 +88,7 @@ public class DataGenerator {
                 member1.setActive(true);
                 memberService.store(member1);
 
-                final var member2 = new MemberRecord();
+                final var member2 = memberService.newRecord();
                 member2.setFirstName("Marcus");
                 member2.setLastName("Fihlon");
                 member2.setEmail("marcus@fihlon.swiss");
@@ -108,7 +108,7 @@ public class DataGenerator {
             if (sponsorService.get(1L).isEmpty()) {
                 logger.info("Generating sponsor entities...");
 
-                final var sponsor1 = new SponsorRecord();
+                final var sponsor1 = sponsorService.newRecord();
                 sponsor1.setName("mimacom ag");
                 sponsor1.setUrl("https://www.mimacom.com/");
                 sponsor1.setLogo("https://www.jug.ch/images/sponsors/mimacom_platin.jpg");
@@ -117,7 +117,7 @@ public class DataGenerator {
                 sponsor1.setLevel(SponsorLevel.PLATIN);
                 sponsorService.store(sponsor1);
 
-                final var sponsor2 = new SponsorRecord();
+                final var sponsor2 = sponsorService.newRecord();
                 sponsor2.setName("Netcetera");
                 sponsor2.setUrl("https://www.netcetera.com/");
                 sponsor2.setLogo("https://www.jug.ch/images/sponsors/netcetera.gif");
@@ -126,7 +126,7 @@ public class DataGenerator {
                 sponsor2.setLevel(SponsorLevel.GOLD);
                 sponsorService.store(sponsor2);
 
-                final var sponsor3 = new SponsorRecord();
+                final var sponsor3 = sponsorService.newRecord();
                 sponsor3.setName("CSS Versicherung");
                 sponsor3.setUrl("https://www.css.ch/");
                 sponsor3.setLogo("https://www.jug.ch/images/sponsors/CSS.png");

@@ -35,6 +35,10 @@ public class MemberService {
         this.dsl = dsl;
     }
 
+    public MemberRecord newRecord() {
+        return dsl.newRecord(MEMBER);
+    }
+
     public Stream<MemberRecord> list(final int offset, final int limit) {
         return dsl.selectFrom(MEMBER).offset(offset).limit(limit).stream();
     }
