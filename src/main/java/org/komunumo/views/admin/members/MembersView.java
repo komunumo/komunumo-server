@@ -24,7 +24,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrderBuilder;
@@ -63,7 +63,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
     private TextField city;
     private TextField state;
     private TextField country;
-    private DatePicker memberSince;
+    private DateTimePicker memberSince;
     private Checkbox admin;
 
     private final Button cancel = new Button("Cancel");
@@ -189,7 +189,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
         city = new TextField("City");
         state = new TextField("State");
         country = new TextField("Country");
-        memberSince = new DatePicker("Member Since");
+        memberSince = new DateTimePicker("Member Since");
         admin = new Checkbox("Admin");
         admin.getStyle().set("padding-top", "var(--lumo-space-m)");
         final var fields = new Component[]{firstName, lastName, email, address, zipCode, city, state, country,
