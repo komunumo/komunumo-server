@@ -29,6 +29,7 @@ import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.views.admin.dashboard.DashboardView;
 import org.komunumo.views.admin.events.EventsView;
 import org.komunumo.views.admin.members.MembersView;
+import org.komunumo.views.admin.speakers.SpeakersView;
 import org.komunumo.views.admin.sponsors.SponsorsView;
 import org.komunumo.views.login.ActivationView;
 import org.komunumo.views.login.LoginView;
@@ -123,6 +124,7 @@ public class AuthService implements VaadinServiceInitListener {
             if (member.getAdmin()) {
                 if (navigationTarget == EventsView.class
                         || navigationTarget == MembersView.class
+                        || navigationTarget == SpeakersView.class
                         || navigationTarget == SponsorsView.class) {
                     return true;
                 }

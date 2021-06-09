@@ -40,6 +40,7 @@ import org.komunumo.data.service.AuthService;
 import org.komunumo.views.admin.dashboard.DashboardView;
 import org.komunumo.views.admin.events.EventsView;
 import org.komunumo.views.admin.members.MembersView;
+import org.komunumo.views.admin.speakers.SpeakersView;
 import org.komunumo.views.admin.sponsors.SponsorsView;
 import org.komunumo.views.logout.LogoutView;
 
@@ -106,6 +107,7 @@ public class AdminView extends AppLayout {
             put("Dashboard", DashboardView.class);
             put("Events", EventsView.class);
             put("Members", MembersView.class);
+            put("Speakers", SpeakersView.class);
             put("Sponsors", SponsorsView.class);
             put("Logout", LogoutView.class);
         }};
