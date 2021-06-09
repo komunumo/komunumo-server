@@ -33,6 +33,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
@@ -57,7 +58,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
 
     private TextField firstName;
     private TextField lastName;
-    private TextField email;
+    private EmailField email;
     private TextField address;
     private TextField zipCode;
     private TextField city;
@@ -183,7 +184,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
         final var formLayout = new FormLayout();
         firstName = new TextField("First Name");
         lastName = new TextField("Last Name");
-        email = new TextField("Email");
+        email = new EmailField("Email");
         address = new TextField("Address");
         zipCode = new TextField("Zip Code");
         city = new TextField("City");
