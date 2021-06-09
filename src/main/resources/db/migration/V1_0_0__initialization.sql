@@ -40,7 +40,7 @@ CREATE TABLE sponsor (
 
     name VARCHAR(255) NOT NULL,
     url VARCHAR(255) NOT NULL,
-    logo VARCHAR(255) NOT NULL,
+    logo MEDIUMTEXT NOT NULL,
     valid_from DATE NOT NULL,
     valid_to DATE NOT NULL,
     level ENUM('SILBER', 'GOLD', 'PLATIN') NOT NULL,
