@@ -43,10 +43,6 @@ public class MemberService {
         return dsl.selectFrom(MEMBER).offset(offset).limit(limit).stream();
     }
 
-    public void update(final MemberRecord member) {
-        member.update();
-    }
-
     public Optional<MemberRecord> get(final Long id) {
         return Optional.ofNullable(dsl.selectFrom(MEMBER).where(MEMBER.ID.eq(id)).fetchOne());
     }

@@ -139,12 +139,12 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
         save.addClickListener(e -> {
             try {
                 if (this.sponsor == null) {
-                    this.sponsor = new SponsorRecord();
+                    this.sponsor = sponsorService.newRecord();
                 }
                 binder.writeBean(this.sponsor);
                 this.sponsor.setLogo(logoPreview.getSrc());
 
-                sponsorService.update(this.sponsor);
+                sponsorService.store(this.sponsor);
                 clearForm();
                 refreshGrid();
                 Notification.show("Sponsor details stored.");

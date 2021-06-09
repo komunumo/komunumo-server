@@ -47,10 +47,6 @@ public class EventService {
         return dsl.selectFrom(EVENT).offset(offset).limit(limit).stream();
     }
 
-    public void update(final EventRecord event) {
-        event.update();
-    }
-
     public Optional<EventRecord> get(final Long id) {
         return Optional.ofNullable(dsl.selectFrom(EVENT).where(EVENT.ID.eq(id)).fetchOne());
     }

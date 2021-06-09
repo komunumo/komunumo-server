@@ -125,11 +125,11 @@ public class EventsView extends Div implements BeforeEnterObserver {
         save.addClickListener(e -> {
             try {
                 if (this.event == null) {
-                    this.event = new EventRecord();
+                    this.event = eventService.newRecord();
                 }
                 binder.writeBean(this.event);
 
-                eventService.update(this.event);
+                eventService.store(this.event);
                 clearForm();
                 refreshGrid();
                 Notification.show("Event details stored.");

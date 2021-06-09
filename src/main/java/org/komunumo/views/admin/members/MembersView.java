@@ -137,11 +137,11 @@ public class MembersView extends Div implements BeforeEnterObserver {
         save.addClickListener(e -> {
             try {
                 if (this.member == null) {
-                    this.member = new MemberRecord();
+                    this.member = memberService.newRecord();
                 }
                 binder.writeBean(this.member);
 
-                memberService.update(this.member);
+                memberService.store(this.member);
                 clearForm();
                 refreshGrid();
                 Notification.show("Member details stored.");

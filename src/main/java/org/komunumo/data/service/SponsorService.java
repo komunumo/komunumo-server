@@ -43,10 +43,6 @@ public class SponsorService {
         return dsl.selectFrom(SPONSOR).offset(offset).limit(limit).stream();
     }
 
-    public void update(final SponsorRecord sponsor) {
-        sponsor.update();
-    }
-
     public Optional<SponsorRecord> get(final Long id) {
         return Optional.ofNullable(dsl.selectFrom(SPONSOR).where(SPONSOR.ID.eq(id)).fetchOne());
     }
