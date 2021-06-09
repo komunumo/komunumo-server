@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.data.service.EventService;
+import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.data.service.SponsorService;
@@ -39,7 +40,8 @@ public class DataGenerator {
                                       final EventService eventService,
                                       final MemberService memberService,
                                       final SpeakerService speakerService,
-                                      final SponsorService sponsorService) {
+                                      final SponsorService sponsorService,
+                                      final EventSpeakerService eventSpeakerService) {
         return args -> {
             final var logger = LoggerFactory.getLogger(getClass());
 
@@ -77,6 +79,26 @@ public class DataGenerator {
                 event3.setDate(LocalDateTime.of(2021, 12, 1, 18, 0, 0));
                 event3.setVisible(false);
                 eventService.store(event3);
+
+                final var eventSpeaker1 = eventSpeakerService.newRecord();
+                eventSpeaker1.setEventId(1L);
+                eventSpeaker1.setSpeakerId(1L);
+                eventSpeakerService.store(eventSpeaker1);
+
+                final var eventSpeaker2 = eventSpeakerService.newRecord();
+                eventSpeaker2.setEventId(2L);
+                eventSpeaker2.setSpeakerId(2L);
+                eventSpeakerService.store(eventSpeaker2);
+
+                final var eventSpeaker3 = eventSpeakerService.newRecord();
+                eventSpeaker3.setEventId(3L);
+                eventSpeaker3.setSpeakerId(1L);
+                eventSpeakerService.store(eventSpeaker3);
+
+                final var eventSpeaker4 = eventSpeakerService.newRecord();
+                eventSpeaker4.setEventId(3L);
+                eventSpeaker4.setSpeakerId(2L);
+                eventSpeakerService.store(eventSpeaker4);
             }
 
             if (memberService.get(1L).isEmpty()) {
