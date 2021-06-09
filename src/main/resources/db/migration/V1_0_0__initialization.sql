@@ -2,7 +2,6 @@ CREATE TABLE event (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 
     title VARCHAR(255) NOT NULL,
-    speaker VARCHAR(255) NOT NULL,
     date DATETIME NULL,
     visible BOOLEAN NOT NULL DEFAULT 0,
 
@@ -34,6 +33,38 @@ CREATE TABLE member (
 
 CREATE INDEX member_names ON member (last_name, first_name);
 CREATE INDEX member_email ON member (email);
+
+CREATE TABLE speaker (
+    id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    company VARCHAR(255) NULL,
+    bio TEXT NULL,
+    photo MEDIUMTEXT NULL,
+    email VARCHAR(255) NULL,
+    twitter VARCHAR(255) NULL,
+    linkedin varchar(255) NULL,
+    website VARCHAR(255) NULL,
+    address VARCHAR(255) NULL,
+    zip_code VARCHAR(255) NULL,
+    city VARCHAR(255) NULL,
+    state VARCHAR(255) NULL,
+    country VARCHAR(255) NULL,
+
+    PRIMARY KEY (id)
+);
+
+CREATE INDEX speaker_names ON speaker (last_name, first_name);
+
+CREATE TABLE event_speaker (
+   event_id INTEGER UNSIGNED NOT NULL,
+   speaker_id INTEGER UNSIGNED NOT NULL,
+
+   PRIMARY KEY (event_id, speaker_id),
+   CONSTRAINT fk_event_id FOREIGN KEY (event_id) REFERENCES event(id),
+   CONSTRAINT fk_speaker_id FOREIGN KEY (speaker_id) REFERENCES speaker(id)
+);
 
 CREATE TABLE sponsor (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
