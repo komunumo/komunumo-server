@@ -25,6 +25,7 @@ import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.MemberService;
+import org.komunumo.data.service.SpeakerService;
 import org.komunumo.data.service.SponsorService;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -37,30 +38,42 @@ public class DataGenerator {
     public CommandLineRunner loadData(final AuthService authService,
                                       final EventService eventService,
                                       final MemberService memberService,
+                                      final SpeakerService speakerService,
                                       final SponsorService sponsorService) {
         return args -> {
             final var logger = LoggerFactory.getLogger(getClass());
+
+            if (speakerService.get(1L).isEmpty()) {
+                logger.info("Generating speaker entities...");
+
+                final var speaker1 = speakerService.newRecord();
+                speaker1.setFirstName("John");
+                speaker1.setLastName("Doe");
+                speakerService.store(speaker1);
+
+                final var speaker2 = speakerService.newRecord();
+                speaker2.setFirstName("Jane");
+                speaker2.setLastName("Doe");
+                speakerService.store(speaker2);
+            }
 
             if (eventService.get(1L).isEmpty()) {
                 logger.info("Generating event entities...");
 
                 final var event1 = eventService.newRecord();
                 event1.setTitle("Testevent One");
-                event1.setSpeaker("John Doe");
                 event1.setDate(LocalDateTime.of(2021, 10, 1, 18, 0, 0));
                 event1.setVisible(true);
                 eventService.store(event1);
 
                 final var event2 = eventService.newRecord();
                 event2.setTitle("Testevent Two");
-                event2.setSpeaker("Jane Doe");
                 event2.setDate(LocalDateTime.of(2021, 11, 1, 18, 0, 0));
                 event2.setVisible(true);
                 eventService.store(event2);
 
                 final var event3 = eventService.newRecord();
                 event3.setTitle("Testevent Three");
-                event3.setSpeaker("Jill Doe");
                 event3.setDate(LocalDateTime.of(2021, 12, 1, 18, 0, 0));
                 event3.setVisible(false);
                 eventService.store(event3);
