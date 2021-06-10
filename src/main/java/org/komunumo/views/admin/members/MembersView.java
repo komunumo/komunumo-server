@@ -93,11 +93,6 @@ public class MembersView extends Div implements BeforeEnterObserver {
         grid.addColumn("firstName").setAutoWidth(true);
         grid.addColumn("lastName").setAutoWidth(true);
         grid.addColumn("email").setAutoWidth(true);
-        grid.addColumn("address").setAutoWidth(true);
-        grid.addColumn("zipCode").setAutoWidth(true);
-        grid.addColumn("city").setAutoWidth(true);
-        grid.addColumn("state").setAutoWidth(true);
-        grid.addColumn("country").setAutoWidth(true);
         grid.addColumn("memberSince").setAutoWidth(true);
         final var adminRenderer = TemplateRenderer.<MemberRecord>of(
                 "<iron-icon hidden='[[!item.admin]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.admin]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
