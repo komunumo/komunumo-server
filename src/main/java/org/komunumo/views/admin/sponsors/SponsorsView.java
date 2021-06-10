@@ -255,7 +255,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
         this.sponsor = value;
         binder.readBean(this.sponsor);
         this.logoPreview.setVisible(value != null);
-        if (value == null) {
+        if (value == null || value.getLogo() == null) {
             this.logoPreview.setSrc("");
         } else {
             this.logoPreview.setSrc(value.getLogo());
