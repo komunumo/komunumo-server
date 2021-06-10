@@ -52,7 +52,8 @@
     "lit-html": "1.4.1",
     "lumo-css-framework": "^3.0.11",
     "construct-style-sheets-polyfill": "2.4.16",
-    "@vaadin/vaadin-messages": "20.0.0"
+    "@vaadin/vaadin-messages": "20.0.0",
+    "multiselect-combo-box": "2.4.2"
   },
   "devDependencies": {
     "@types/validator": "13.1.0",
@@ -133,7 +134,8 @@
       "lit-element": "2.5.1",
       "lit-html": "1.4.1",
       "construct-style-sheets-polyfill": "2.4.16",
-      "@vaadin/vaadin-messages": "20.0.0"
+      "@vaadin/vaadin-messages": "20.0.0",
+      "multiselect-combo-box": "2.4.2"
     },
     "devDependencies": {
       "@types/validator": "13.1.0",
@@ -160,6 +162,6 @@
       "workbox-webpack-plugin": "6.1.0",
       "fork-ts-checker-webpack-plugin": "6.2.1"
     },
-    "hash": "08635bf4881d51737624bb72b2611bb1baec9c3cc5ea2353ee4561b44d05bdd0"
+    "hash": "bf0fd4d5a6fd91e4e3c98e852d800ad82a441c1ab2f217c067afe7982bfc4a63"
   }
 }

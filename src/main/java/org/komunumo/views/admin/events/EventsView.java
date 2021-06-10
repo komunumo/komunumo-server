@@ -41,14 +41,15 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import java.time.Duration;
-
-import org.komunumo.components.speaker.SpeakerSearchField;
 import org.komunumo.data.db.tables.records.EventRecord;
+import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.views.admin.AdminView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.gatanaso.MultiselectComboBox;
+
+import java.time.Duration;
 
 @Route(value = "admin/events/:eventID?/:action?(edit)", layout = AdminView.class)
 @PageTitle("Event Administration")
@@ -60,7 +61,7 @@ public class EventsView extends Div implements BeforeEnterObserver {
     private final Grid<EventRecord> grid = new Grid<>(EventRecord.class, false);
 
     private TextField title;
-    private SpeakerSearchField speaker;
+    private MultiselectComboBox<SpeakerRecord> speaker;
     private DateTimePicker date;
     private Checkbox visible;
 
@@ -177,7 +178,11 @@ public class EventsView extends Div implements BeforeEnterObserver {
 
         final var formLayout = new FormLayout();
         title = new TextField("Title");
-        speaker = new SpeakerSearchField(speakerService);
+        speaker = new MultiselectComboBox<>("Speaker");
+        speaker.setOrdered(true);
+        speaker.setItemLabelGenerator(speakerRecord -> String.format("%s %s",
+                speakerRecord.getFirstName(), speakerRecord.getLastName()));
+        speaker.setItems(speakerService.list(0, Integer.MAX_VALUE));
         date = new DateTimePicker("Date");
         date.setStep(Duration.ofSeconds(1));
         visible = new Checkbox("Visible");
