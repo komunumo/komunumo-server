@@ -42,8 +42,11 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import java.time.Duration;
+
+import org.komunumo.components.speaker.SpeakerSearchField;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.service.EventService;
+import org.komunumo.data.service.SpeakerService;
 import org.komunumo.views.admin.AdminView;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -57,7 +60,7 @@ public class EventsView extends Div implements BeforeEnterObserver {
     private final Grid<EventRecord> grid = new Grid<>(EventRecord.class, false);
 
     private TextField title;
-    private TextField speaker;
+    private SpeakerSearchField speaker;
     private DateTimePicker date;
     private Checkbox visible;
 
@@ -69,9 +72,13 @@ public class EventsView extends Div implements BeforeEnterObserver {
     private EventRecord event;
 
     private final EventService eventService;
+    private final SpeakerService speakerService;
 
-    public EventsView(@Autowired final EventService eventService) {
+    public EventsView(@Autowired final EventService eventService,
+                      @Autowired final SpeakerService speakerService) {
         this.eventService = eventService;
+        this.speakerService = speakerService;
+
         addClassNames("events-view", "flex", "flex-col", "h-full");
 
         // Create UI
@@ -85,7 +92,7 @@ public class EventsView extends Div implements BeforeEnterObserver {
 
         // Configure Grid
         grid.addColumn("title").setAutoWidth(true);
-        grid.addColumn("speaker").setAutoWidth(true);
+        // TODO grid.addColumn("speaker").setAutoWidth(true);
         grid.addColumn("date").setAutoWidth(true);
         final var visibleRenderer = TemplateRenderer.<EventRecord>of(
                 "<iron-icon hidden='[[!item.visible]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.visible]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
@@ -170,7 +177,7 @@ public class EventsView extends Div implements BeforeEnterObserver {
 
         final var formLayout = new FormLayout();
         title = new TextField("Title");
-        speaker = new TextField("Speaker");
+        speaker = new SpeakerSearchField(speakerService);
         date = new DateTimePicker("Date");
         date.setStep(Duration.ofSeconds(1));
         visible = new Checkbox("Visible");

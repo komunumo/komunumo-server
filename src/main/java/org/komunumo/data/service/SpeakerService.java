@@ -41,7 +41,11 @@ public class SpeakerService {
     }
 
     public Stream<SpeakerRecord> list(final int offset, final int limit) {
-        return dsl.selectFrom(SPEAKER).offset(offset).limit(limit).stream();
+        return dsl.selectFrom(SPEAKER)
+                .orderBy(SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME)
+                .offset(offset)
+                .limit(limit)
+                .stream();
     }
 
     public Optional<SpeakerRecord> get(final Long id) {
