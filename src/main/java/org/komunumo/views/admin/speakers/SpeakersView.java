@@ -268,7 +268,7 @@ public class SpeakersView extends Div implements BeforeEnterObserver {
         this.speaker = value;
         binder.readBean(this.speaker);
         this.photoPreview.setVisible(value != null);
-        if (value == null) {
+        if (value == null || value.getPhoto() == null) {
             this.photoPreview.setSrc("");
         } else {
             this.photoPreview.setSrc(value.getPhoto());
