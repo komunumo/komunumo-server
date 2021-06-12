@@ -18,10 +18,18 @@
 
 package org.komunumo.views.admin.events;
 
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.KeyModifier;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -43,27 +51,32 @@ import static org.komunumo.data.db.tables.Event.EVENT;
 public class EventsView extends Div {
 
     private final EventService eventService;
+    private final TextField filterField;
+    private final Grid<Record5<Long, String, String, LocalDateTime, Boolean>> grid;
 
     public EventsView(@Autowired final EventService eventService) {
         this.eventService = eventService;
         addClassNames("events-view", "flex", "flex-col", "h-full");
 
-        final var grid = createGrid();
-        final var filter = createFilter(grid);
+        grid = createGrid();
+        filterField = createFilter();
         final var newEventButton = createNewEventButton();
 
-        final var optionBar = new HorizontalLayout(filter, newEventButton);
+        final var optionBar = new HorizontalLayout(filterField, newEventButton);
         optionBar.setPadding(true);
 
         add(optionBar, grid);
     }
 
-    private TextField createFilter(final Grid<Record5<Long, String, String, LocalDateTime, Boolean>> grid) {
+    private TextField createFilter() {
         final var filter = new TextField();
         filter.setPlaceholder("Filter");
         filter.setValueChangeMode(ValueChangeMode.EAGER);
         filter.focus();
-        filter.addValueChangeListener(event -> grid.setItems(query -> eventService.eventsWithSpeakers(query.getOffset(), query.getLimit(), filter.getValue())));
+        filter.addValueChangeListener(
+                event -> grid.setItems(
+                        query -> eventService.eventsWithSpeakers(
+                                query.getOffset(), query.getLimit(), filterField.getValue())));
         return filter;
     }
 
@@ -86,7 +99,51 @@ public class EventsView extends Div {
 
     private Button createNewEventButton() {
         final var button = new Button("New Event");
-        button.addClickListener(event -> Notification.show("Sorry, this feature is not available yet! Please come back later…"));
+        button.addClickListener(event -> showNewEventDialog());
         return button;
+    }
+
+    private void showNewEventDialog() {
+        final var dialog = new Dialog();
+        dialog.setCloseOnEsc(true);
+        dialog.setCloseOnOutsideClick(false);
+
+        final var title = new H2("New Event");
+        title.getStyle().set("margin-top", "0");
+
+        final var titleField = new TextField("Title");
+        final var dateField = new DateTimePicker("Date");
+        final var visibleField = new Checkbox("Visible");
+
+        final var form = new FormLayout();
+        form.add(titleField, dateField, visibleField);
+
+        final var saveButton = new Button("Save");
+        saveButton.setDisableOnClick(true);
+        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        saveButton.addClickListener(event -> {
+            if (titleField.getValue().isBlank()) {
+                Notification.show("Please enter at least the title!");
+                saveButton.setEnabled(true);
+            } else {
+                final var newEvent = eventService.newRecord();
+                newEvent.setTitle(titleField.getValue());
+                newEvent.setDate(dateField.getValue());
+                newEvent.setVisible(visibleField.getValue());
+                newEvent.store();
+                Notification.show("Event saved.");
+                grid.setItems(query -> eventService.eventsWithSpeakers(
+                        query.getOffset(), query.getLimit(), filterField.getValue()));
+                dialog.close();
+            }
+        });
+        saveButton.addClickShortcut(Key.ENTER, KeyModifier.CONTROL);
+        final var cancelButton = new Button("Cancel", event -> dialog.close());
+        final var buttonBar = new HorizontalLayout(saveButton, cancelButton);
+
+        dialog.add(title, form, buttonBar);
+
+        dialog.open();
+        titleField.focus();
     }
 }
