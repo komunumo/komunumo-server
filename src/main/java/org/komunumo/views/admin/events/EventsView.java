@@ -161,6 +161,9 @@ public class EventsView extends Div {
             if (titleField.getValue().isBlank()) {
                 Notification.show("Please enter at least the title!");
                 saveButton.setEnabled(true);
+            } else if (dateField.getValue() != null && dateField.getValue().isBefore(LocalDateTime.now())) {
+                Notification.show("Please enter a date in the future!");
+                saveButton.setEnabled(true);
             } else {
                 final var newEvent = eventService.newRecord();
                 newEvent.setTitle(titleField.getValue());
