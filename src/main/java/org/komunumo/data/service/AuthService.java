@@ -115,6 +115,10 @@ public class AuthService implements VaadinServiceInitListener {
         return VaadinSession.getCurrent().getAttribute(MemberRecord.class) != null;
     }
 
+    public MemberRecord getCurrentUser() {
+        return VaadinSession.getCurrent().getAttribute(MemberRecord.class);
+    }
+
     public boolean isAccessGranted(final Class<?> navigationTarget) {
         final var member = VaadinSession.getCurrent().getAttribute(MemberRecord.class);
 

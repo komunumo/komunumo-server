@@ -36,6 +36,8 @@ import com.vaadin.flow.router.RouterLink;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Optional;
+
+import org.apache.commons.codec.digest.DigestUtils;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.views.admin.dashboard.DashboardView;
 import org.komunumo.views.admin.events.EventsView;
@@ -71,8 +73,21 @@ public class AdminView extends AppLayout {
         layout.add(new DrawerToggle());
         viewTitle = new H1();
         layout.add(viewTitle);
-        layout.add(new Avatar());
+        layout.add(createAvatar());
         return layout;
+    }
+
+    private Avatar createAvatar() {
+        final var member = authService.getCurrentUser();
+        if (member != null) {
+            final var email = member.getEmail().toLowerCase();
+            final var md5 = DigestUtils.md5Hex(email);
+            final var avatar = new Avatar(String.format("%s %s", member.getFirstName(), member.getLastName()));
+            avatar.setImage("https://www.gravatar.com/avatar/" + md5);
+            return avatar;
+        } else {
+            return new Avatar();
+        }
     }
 
     private Component createDrawerContent(final Tabs menu) {
