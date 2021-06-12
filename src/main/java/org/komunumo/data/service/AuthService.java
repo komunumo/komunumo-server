@@ -42,7 +42,12 @@ import org.springframework.stereotype.Service;
 public class AuthService implements VaadinServiceInitListener {
 
     public static class AccessDeniedException extends Exception {
-        AccessDeniedException(final String message) {
+        @SuppressWarnings("unused") // used by reflection from Vaadin
+        public AccessDeniedException() {
+            super();
+        }
+
+        public AccessDeniedException(final String message) {
             super(message);
         }
     }
