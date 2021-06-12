@@ -78,4 +78,8 @@ public class EventService {
                 .stream();
     }
 
+    public void deleteEvent(final Long eventId) {
+        dsl.delete(EVENT).where(EVENT.ID.eq(eventId)).execute();
+    }
+
 }

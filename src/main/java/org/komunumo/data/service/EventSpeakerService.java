@@ -49,4 +49,8 @@ public class EventSpeakerService {
         eventSpeaker.store();
     }
 
+    public void deleteEventSpeakers(final Long eventId) {
+        dsl.delete(EVENT_SPEAKER).where(EVENT_SPEAKER.EVENT_ID.eq(eventId)).execute();
+    }
+
 }

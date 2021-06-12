@@ -23,6 +23,7 @@ import com.vaadin.flow.component.KeyModifier;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -30,9 +31,12 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
@@ -79,6 +83,8 @@ public class EventsView extends Div {
         optionBar.setPadding(true);
 
         add(optionBar, grid);
+
+        reloadGridItems();
     }
 
     private TextField createFilter() {
@@ -86,10 +92,7 @@ public class EventsView extends Div {
         filter.setPlaceholder("Filter");
         filter.setValueChangeMode(ValueChangeMode.EAGER);
         filter.focus();
-        filter.addValueChangeListener(
-                event -> grid.setItems(
-                        query -> eventService.eventsWithSpeakers(
-                                query.getOffset(), query.getLimit(), filterField.getValue())));
+        filter.addValueChangeListener(event -> reloadGridItems());
         return filter;
     }
 
@@ -109,7 +112,22 @@ public class EventsView extends Div {
                 .withProperty("visible", record -> record.get(EVENT.VISIBLE));
         grid.addColumn(visibleRenderer).setHeader("Visible").setAutoWidth(true);
 
-        grid.setItems(query -> eventService.eventsWithSpeakers(query.getOffset(), query.getLimit(), null));
+        grid.addColumn(new ComponentRenderer<>(record -> new Button(new Icon(VaadinIcon.TRASH), event ->
+                new ConfirmDialog("Confirm deletion",
+                    String.format("Are you sure you want to permanently delete the event \"%s\"?", record.get(EVENT.TITLE)),
+                    "Delete", (dialogEvent) -> {
+                        final var eventId = record.get(EVENT.ID);
+                        eventSpeakerService.deleteEventSpeakers(eventId);
+                        eventService.deleteEvent(eventId);
+                        reloadGridItems();
+                        dialogEvent.getSource().close();
+                    },
+                    "Cancel", (dialogEvent) -> dialogEvent.getSource().close())
+                .open())))
+            .setHeader("Actions")
+            .setFlexGrow(0)
+            .setFrozen(true);
+
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setHeightFull();
 
@@ -166,8 +184,7 @@ public class EventsView extends Div {
                 });
 
                 Notification.show("Event saved.");
-                grid.setItems(query -> eventService.eventsWithSpeakers(
-                        query.getOffset(), query.getLimit(), filterField.getValue()));
+                reloadGridItems();
                 dialog.close();
             }
         });
@@ -179,5 +196,9 @@ public class EventsView extends Div {
 
         dialog.open();
         titleField.focus();
+    }
+
+    private void reloadGridItems() {
+        grid.setItems(query -> eventService.eventsWithSpeakers(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 }
