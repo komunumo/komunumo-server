@@ -64,7 +64,7 @@ public class LoginView extends LoginOverlay implements AfterNavigationObserver, 
         addLoginListener(event -> {
             try {
                 authService.authenticate(event.getUsername(), event.getPassword());
-                UI.getCurrent().navigate("admin/dashboard");
+                UI.getCurrent().getPage().reload();
             } catch (final AccessDeniedException e) {
                 setError(true);
                 Notification.show(e.getMessage());
