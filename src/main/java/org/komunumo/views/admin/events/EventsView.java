@@ -108,7 +108,7 @@ public class EventsView extends Div {
                 });
         grid.addColumn(dateRenderer).setHeader("Date").setAutoWidth(true);
         final var visibleRenderer = TemplateRenderer.<Record5<Long, String, String, LocalDateTime, Boolean>>of(
-                "<iron-icon hidden='[[!item.visible]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.visible]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
+                "<iron-icon hidden='[[!item.visible]]' icon='vaadin:eye' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.visible]]' icon='vaadin:eye-slash' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
                 .withProperty("visible", record -> record.get(EVENT.VISIBLE));
         grid.addColumn(visibleRenderer).setHeader("Visible").setAutoWidth(true);
 
