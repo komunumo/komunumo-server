@@ -18,6 +18,8 @@
 
 package org.komunumo.data.service;
 
+import java.util.Optional;
+
 import org.jooq.DSLContext;
 import org.komunumo.data.db.tables.records.EventSpeakerRecord;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,12 @@ public class EventSpeakerService {
 
     public EventSpeakerRecord newRecord() {
         return dsl.newRecord(EVENT_SPEAKER);
+    }
+
+    public Optional<EventSpeakerRecord> get(final Long eventId, final Long speakerId) {
+        return Optional.ofNullable(dsl.selectFrom(EVENT_SPEAKER)
+                .where(EVENT_SPEAKER.EVENT_ID.eq(eventId).and(EVENT_SPEAKER.SPEAKER_ID.eq(speakerId)))
+                .fetchOne());
     }
 
     public void store(final EventSpeakerRecord eventSpeaker) {

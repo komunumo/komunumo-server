@@ -38,11 +38,17 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.jooq.Record5;
+import org.komunumo.data.db.tables.records.EventSpeakerRecord;
+import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.EventService;
+import org.komunumo.data.service.EventSpeakerService;
+import org.komunumo.data.service.SpeakerService;
 import org.komunumo.views.admin.AdminView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
+
+import org.vaadin.gatanaso.MultiselectComboBox;
 
 import static org.komunumo.data.db.tables.Event.EVENT;
 
@@ -51,11 +57,19 @@ import static org.komunumo.data.db.tables.Event.EVENT;
 public class EventsView extends Div {
 
     private final EventService eventService;
+    private final SpeakerService speakerService;
+    private final EventSpeakerService eventSpeakerService;
+
     private final TextField filterField;
     private final Grid<Record5<Long, String, String, LocalDateTime, Boolean>> grid;
 
-    public EventsView(@Autowired final EventService eventService) {
+    public EventsView(@Autowired final EventService eventService,
+                      @Autowired final SpeakerService speakerService,
+                      @Autowired final EventSpeakerService eventSpeakerService) {
         this.eventService = eventService;
+        this.speakerService = speakerService;
+        this.eventSpeakerService = eventSpeakerService;
+
         addClassNames("events-view", "flex", "flex-col", "h-full");
 
         grid = createGrid();
@@ -112,11 +126,16 @@ public class EventsView extends Div {
         title.getStyle().set("margin-top", "0");
 
         final var titleField = new TextField("Title");
+        final var speakerField = new MultiselectComboBox<SpeakerRecord>("Speaker");
+        speakerField.setOrdered(true);
+        speakerField.setItemLabelGenerator(speakerRecord -> String.format("%s %s",
+                speakerRecord.getFirstName(), speakerRecord.getLastName()));
+        speakerField.setItems(speakerService.list(0, Integer.MAX_VALUE));
         final var dateField = new DateTimePicker("Date");
         final var visibleField = new Checkbox("Visible");
 
         final var form = new FormLayout();
-        form.add(titleField, dateField, visibleField);
+        form.add(titleField, speakerField, dateField, visibleField);
 
         final var saveButton = new Button("Save");
         saveButton.setDisableOnClick(true);
@@ -131,6 +150,16 @@ public class EventsView extends Div {
                 newEvent.setDate(dateField.getValue());
                 newEvent.setVisible(visibleField.getValue());
                 newEvent.store();
+
+                speakerField.getValue().forEach(speakerRecord -> {
+                    if (eventSpeakerService.get(newEvent.getId(), speakerRecord.getId()).isEmpty()) {
+                        final var eventSpeaker = eventSpeakerService.newRecord();
+                        eventSpeaker.setEventId(newEvent.getId());
+                        eventSpeaker.setSpeakerId(speakerRecord.getId());
+                        eventSpeaker.store();
+                    }
+                });
+
                 Notification.show("Event saved.");
                 grid.setItems(query -> eventService.eventsWithSpeakers(
                         query.getOffset(), query.getLimit(), filterField.getValue()));
