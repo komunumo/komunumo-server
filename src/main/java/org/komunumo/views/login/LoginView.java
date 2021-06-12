@@ -72,7 +72,8 @@ public class LoginView extends LoginOverlay implements AfterNavigationObserver, 
 
         });
 
-        UI.getCurrent().getPage().executeJs("document.getElementById('vaadinLoginUsername').focus();");
+        UI.getCurrent().getPage().executeJs(
+                "var field = document.getElementById('vaadinLoginUsername'); if (field !== null) { field.focus(); }");
     }
 
     @Override
