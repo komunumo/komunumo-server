@@ -18,13 +18,16 @@
 
 package org.komunumo.data.service;
 
-import java.util.Optional;
-
 import org.jooq.DSLContext;
 import org.komunumo.data.db.tables.records.EventSpeakerRecord;
+import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+import java.util.stream.Stream;
+
 import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
+import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
 @Service
 public class EventSpeakerService {
@@ -53,4 +56,15 @@ public class EventSpeakerService {
         dsl.delete(EVENT_SPEAKER).where(EVENT_SPEAKER.EVENT_ID.eq(eventId)).execute();
     }
 
+    // TODO remove SpeakerService dependency
+    public Stream<SpeakerRecord> getSpeakersForEvent(final Long eventId, final SpeakerService speakerService) {
+        return dsl.select(SPEAKER.asterisk())
+                .from(SPEAKER)
+                .leftJoin(EVENT_SPEAKER).on(SPEAKER.ID.eq(EVENT_SPEAKER.SPEAKER_ID))
+                .where(EVENT_SPEAKER.EVENT_ID.eq(eventId))
+                .orderBy(SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME)
+                .fetch()
+                .stream()
+                .map(record -> speakerService.get(record.get(SPEAKER.ID)).orElse(null));
+    }
 }

@@ -41,6 +41,9 @@ import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
+import java.util.stream.Collectors;
+
 import org.jooq.Record5;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.EventService;
@@ -77,7 +80,7 @@ public class EventsView extends Div {
 
         grid = createGrid();
         filterField = createFilter();
-        final var newEventButton = new Button(new Icon(VaadinIcon.FILE_ADD), event -> showNewEventDialog());
+        final var newEventButton = new Button(new Icon(VaadinIcon.FILE_ADD), event -> showEventDialog(null));
 
         final var optionBar = new HorizontalLayout(filterField, newEventButton);
         optionBar.setPadding(true);
@@ -112,18 +115,24 @@ public class EventsView extends Div {
                 .withProperty("visible", record -> record.get(EVENT.VISIBLE));
         grid.addColumn(visibleRenderer).setHeader("Visible").setAutoWidth(true);
 
-        grid.addColumn(new ComponentRenderer<>(record -> new Button(new Icon(VaadinIcon.TRASH), event ->
-                new ConfirmDialog("Confirm deletion",
-                    String.format("Are you sure you want to permanently delete the event \"%s\"?", record.get(EVENT.TITLE)),
-                    "Delete", (dialogEvent) -> {
-                        final var eventId = record.get(EVENT.ID);
-                        eventSpeakerService.deleteEventSpeakers(eventId);
-                        eventService.deleteEvent(eventId);
-                        reloadGridItems();
-                        dialogEvent.getSource().close();
-                    },
-                    "Cancel", (dialogEvent) -> dialogEvent.getSource().close())
-                .open())))
+        grid.addColumn(new ComponentRenderer<>(record ->
+                new HorizontalLayout(
+                        new Button(new Icon(VaadinIcon.EDIT), event -> showEventDialog(record)),
+                        new Button(new Icon(VaadinIcon.TRASH), event ->
+                                new ConfirmDialog("Confirm deletion",
+                                        String.format("Are you sure you want to permanently delete the event \"%s\"?", record.get(EVENT.TITLE)),
+                                        "Delete", (dialogEvent) -> {
+                                            final var eventId = record.get(EVENT.ID);
+                                            eventSpeakerService.deleteEventSpeakers(eventId);
+                                            eventService.deleteEvent(eventId);
+                                            reloadGridItems();
+                                            dialogEvent.getSource().close();
+                                        },
+                                        "Cancel", (dialogEvent) -> dialogEvent.getSource().close()
+                                ).open()
+                        )
+                )
+            ))
             .setHeader("Actions")
             .setFlexGrow(0)
             .setFrozen(true);
@@ -134,12 +143,12 @@ public class EventsView extends Div {
         return grid;
     }
 
-    private void showNewEventDialog() {
+    private void showEventDialog(final Record5<Long, String, String, LocalDateTime, Boolean> record) {
         final var dialog = new Dialog();
         dialog.setCloseOnEsc(true);
         dialog.setCloseOnOutsideClick(false);
 
-        final var title = new H2("New Event");
+        final var title = new H2(record == null ? "New event" : "Edit event");
         title.getStyle().set("margin-top", "0");
 
         final var titleField = new TextField("Title");
@@ -150,6 +159,14 @@ public class EventsView extends Div {
         speakerField.setItems(speakerService.list(0, Integer.MAX_VALUE));
         final var dateField = new DateTimePicker("Date");
         final var visibleField = new Checkbox("Visible");
+
+        if (record != null) {
+            titleField.setValue(record.get(EVENT.TITLE));
+            speakerField.setValue(eventSpeakerService.getSpeakersForEvent(record.get(EVENT.ID), speakerService)
+                    .collect(Collectors.toSet()));
+            dateField.setValue(record.get(EVENT.DATE));
+            visibleField.setValue(record.get(EVENT.VISIBLE));
+        }
 
         final var form = new FormLayout();
         form.add(titleField, speakerField, dateField, visibleField);
@@ -165,16 +182,19 @@ public class EventsView extends Div {
                 Notification.show("Please enter a date in the future!");
                 saveButton.setEnabled(true);
             } else {
-                final var newEvent = eventService.newRecord();
-                newEvent.setTitle(titleField.getValue());
-                newEvent.setDate(dateField.getValue());
-                newEvent.setVisible(visibleField.getValue());
-                newEvent.store();
+                final var eventRecord = record != null
+                        ? eventService.get(record.get(EVENT.ID)).orElse(eventService.newRecord())
+                        : eventService.newRecord();
+                eventRecord.setTitle(titleField.getValue());
+                eventRecord.setDate(dateField.getValue());
+                eventRecord.setVisible(visibleField.getValue());
+                eventRecord.store();
 
+                eventSpeakerService.deleteEventSpeakers(eventRecord.getId());
                 speakerField.getValue().forEach(speakerRecord -> {
-                    if (eventSpeakerService.get(newEvent.getId(), speakerRecord.getId()).isEmpty()) {
+                    if (eventSpeakerService.get(eventRecord.getId(), speakerRecord.getId()).isEmpty()) {
                         final var eventSpeaker = eventSpeakerService.newRecord();
-                        eventSpeaker.setEventId(newEvent.getId());
+                        eventSpeaker.setEventId(eventRecord.getId());
                         eventSpeaker.setSpeakerId(speakerRecord.getId());
                         eventSpeaker.store();
                     }
