@@ -140,6 +140,10 @@ public class AuthService implements VaadinServiceInitListener {
             }
         }
 
+        if (navigationTarget == LoginView.class) {
+            return true;
+        }
+
         // deny access to all other Komunumo views
         return !navigationTarget.getPackageName().startsWith("org.komunumo");
     }
