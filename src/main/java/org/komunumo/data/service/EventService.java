@@ -33,6 +33,7 @@ import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
 import static org.jooq.impl.DSL.concat;
 import static org.jooq.impl.DSL.groupConcat;
+import static org.jooq.impl.DSL.when;
 import static org.komunumo.data.db.tables.Event.EVENT;
 import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
@@ -71,7 +72,7 @@ public class EventService {
                 .leftJoin(SPEAKER).on(EVENT_SPEAKER.SPEAKER_ID.eq(SPEAKER.ID))
                 .where(filterValue == null ? DSL.noCondition() : EVENT.TITLE.like(filterValue).or(SPEAKER.FIRST_NAME.like(filterValue).or(SPEAKER.LAST_NAME.like(filterValue))))
                 .groupBy(EVENT.ID)
-                .orderBy(EVENT.DATE.desc())
+                .orderBy(when(EVENT.DATE.isNull(), 0).otherwise(1), EVENT.DATE.desc())
                 .offset(offset)
                 .limit(limit)
                 .stream();
