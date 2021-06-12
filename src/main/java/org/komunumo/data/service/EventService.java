@@ -18,17 +18,24 @@
 
 package org.komunumo.data.service;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Year;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.jooq.DSLContext;
+import org.jooq.Record5;
+import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.springframework.stereotype.Service;
 
 import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
+import static org.jooq.impl.DSL.concat;
+import static org.jooq.impl.DSL.groupConcat;
 import static org.komunumo.data.db.tables.Event.EVENT;
+import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
+import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
 @Service
 public class EventService {
@@ -41,10 +48,6 @@ public class EventService {
 
     public EventRecord newRecord() {
         return dsl.newRecord(EVENT);
-    }
-
-    public Stream<EventRecord> list(final int offset, final int limit) {
-        return dsl.selectFrom(EVENT).offset(offset).limit(limit).stream();
     }
 
     public Optional<EventRecord> get(final Long id) {
@@ -60,4 +63,18 @@ public class EventService {
         final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
         return dsl.fetchCount(EVENT, EVENT.DATE.between(firstDay, lastDay));
     }
+
+    public Stream<Record5<Long, String, String, LocalDateTime, Boolean>> eventsWithSpeakers(final int offset, final int limit, final String filter) {
+        final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter + "%";
+        return dsl.select(EVENT.ID, EVENT.TITLE, groupConcat(concat(concat(SPEAKER.FIRST_NAME, " "), SPEAKER.LAST_NAME)).separator(", ").as("speaker"), EVENT.DATE, EVENT.VISIBLE).from(EVENT)
+                .leftJoin(EVENT_SPEAKER).on(EVENT.ID.eq(EVENT_SPEAKER.EVENT_ID))
+                .leftJoin(SPEAKER).on(EVENT_SPEAKER.SPEAKER_ID.eq(SPEAKER.ID))
+                .where(filterValue == null ? DSL.noCondition() : EVENT.TITLE.like(filterValue).or(SPEAKER.FIRST_NAME.like(filterValue).or(SPEAKER.LAST_NAME.like(filterValue))))
+                .groupBy(EVENT.ID)
+                .orderBy(EVENT.DATE.desc())
+                .offset(offset)
+                .limit(limit)
+                .stream();
+    }
+
 }

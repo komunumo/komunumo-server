@@ -18,217 +18,75 @@
 
 package org.komunumo.views.admin.events;
 
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.HasStyle;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.datetimepicker.DateTimePicker;
-import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridSortOrderBuilder;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import org.komunumo.data.db.tables.records.EventRecord;
-import org.komunumo.data.db.tables.records.SpeakerRecord;
+import org.jooq.Record5;
 import org.komunumo.data.service.EventService;
-import org.komunumo.data.service.SpeakerService;
 import org.komunumo.views.admin.AdminView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.gatanaso.MultiselectComboBox;
 
-import java.time.Duration;
+import java.time.LocalDateTime;
 
-@Route(value = "admin/events/:eventID?/:action?(edit)", layout = AdminView.class)
+import static org.komunumo.data.db.tables.Event.EVENT;
+
+@Route(value = "admin/events", layout = AdminView.class)
 @PageTitle("Event Administration")
-public class EventsView extends Div implements BeforeEnterObserver {
-
-    private final String EVENT_ID = "eventID";
-    private final String EVENT_EDIT_ROUTE_TEMPLATE = "admin/events/%d/edit";
-
-    private final Grid<EventRecord> grid = new Grid<>(EventRecord.class, false);
-
-    private TextField title;
-    private MultiselectComboBox<SpeakerRecord> speaker;
-    private DateTimePicker date;
-    private Checkbox visible;
-
-    private final Button cancel = new Button("Cancel");
-    private final Button save = new Button("Save");
-
-    private final BeanValidationBinder<EventRecord> binder;
-
-    private EventRecord event;
+public class EventsView extends Div {
 
     private final EventService eventService;
-    private final SpeakerService speakerService;
 
-    public EventsView(@Autowired final EventService eventService,
-                      @Autowired final SpeakerService speakerService) {
+    public EventsView(@Autowired final EventService eventService) {
         this.eventService = eventService;
-        this.speakerService = speakerService;
-
         addClassNames("events-view", "flex", "flex-col", "h-full");
 
-        // Create UI
-        final var splitLayout = new SplitLayout();
-        splitLayout.setSizeFull();
+        final var grid = createGrid();
+        final var filter = createFilter(grid);
+        final var newEventButton = createNewEventButton();
 
-        createGridLayout(splitLayout);
-        createEditorLayout(splitLayout);
+        final var optionBar = new HorizontalLayout(filter, newEventButton);
+        optionBar.setPadding(true);
 
-        add(splitLayout);
+        add(optionBar, grid);
+    }
 
-        // Configure Grid
-        grid.addColumn("title").setAutoWidth(true);
-        // TODO grid.addColumn("speaker").setAutoWidth(true);
-        grid.addColumn("date").setAutoWidth(true);
-        final var visibleRenderer = TemplateRenderer.<EventRecord>of(
+    private TextField createFilter(final Grid<Record5<Long, String, String, LocalDateTime, Boolean>> grid) {
+        final var filter = new TextField();
+        filter.setPlaceholder("Filter");
+        filter.setValueChangeMode(ValueChangeMode.EAGER);
+        filter.focus();
+        filter.addValueChangeListener(event -> grid.setItems(query -> eventService.eventsWithSpeakers(query.getOffset(), query.getLimit(), filter.getValue())));
+        return filter;
+    }
+
+    private Grid<Record5<Long, String, String, LocalDateTime, Boolean>> createGrid() {
+        final var grid = new Grid<Record5<Long, String, String, LocalDateTime, Boolean>>();
+        grid.addColumn(record -> record.get(EVENT.TITLE)).setAutoWidth(true).setHeader("Title");
+        grid.addColumn(record -> record.get("speaker")).setAutoWidth(true).setHeader("Speaker");
+        grid.addColumn(record -> record.get(EVENT.DATE)).setAutoWidth(true).setHeader("Date");
+        final var visibleRenderer = TemplateRenderer.<Record5<Long, String, String, LocalDateTime, Boolean>>of(
                 "<iron-icon hidden='[[!item.visible]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.visible]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
-                .withProperty("visible", EventRecord::getVisible);
+                .withProperty("visible", record -> record.get(EVENT.VISIBLE));
         grid.addColumn(visibleRenderer).setHeader("Visible").setAutoWidth(true);
 
-        grid.setItems(query -> eventService.list(query.getOffset(), query.getLimit()));
+        grid.setItems(query -> eventService.eventsWithSpeakers(query.getOffset(), query.getLimit(), null));
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setHeightFull();
 
-        // when a row is selected or deselected, populate form
-        grid.asSingleSelect().addValueChangeListener(event -> {
-            if (event.getValue() != null) {
-                UI.getCurrent().navigate(String.format(EVENT_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
-            } else {
-                clearForm();
-                UI.getCurrent().navigate(EventsView.class);
-            }
-        });
-
-        grid.sort(new GridSortOrderBuilder<EventRecord>()
-                .thenDesc(grid.getColumnByKey("date"))
-                .build());
-
-        // Configure Form
-        binder = new BeanValidationBinder<>(EventRecord.class);
-
-        // Bind fields. This where you'd define e.g. validation rules
-
-        binder.bindInstanceFields(this);
-
-        cancel.addClickListener(e -> {
-            clearForm();
-            refreshGrid();
-        });
-
-        save.addClickListener(e -> {
-            try {
-                if (this.event == null) {
-                    this.event = eventService.newRecord();
-                }
-                binder.writeBean(this.event);
-
-                eventService.store(this.event);
-                clearForm();
-                refreshGrid();
-                Notification.show("Event details stored.");
-                UI.getCurrent().navigate(EventsView.class);
-            } catch (final ValidationException validationException) {
-                Notification.show("An exception happened while trying to store the event details.");
-            }
-        });
-
+        return grid;
     }
 
-    @Override
-    public void beforeEnter(final BeforeEnterEvent event) {
-        final var eventId = event.getRouteParameters().getLong(EVENT_ID);
-        if (eventId.isPresent()) {
-            final var eventFromBackend = eventService.get(eventId.get());
-            if (eventFromBackend.isPresent()) {
-                populateForm(eventFromBackend.get());
-            } else {
-                Notification.show(String.format("The requested event was not found, ID = %d", eventId.get()), 3000,
-                        Notification.Position.BOTTOM_START);
-                // when a row is selected but the data is no longer available,
-                // refresh grid
-                refreshGrid();
-                event.forwardTo(EventsView.class);
-            }
-        }
-    }
-
-    private void createEditorLayout(final SplitLayout splitLayout) {
-        final var editorLayoutDiv = new Div();
-        editorLayoutDiv.setClassName("flex flex-col");
-        editorLayoutDiv.setWidth("400px");
-
-        final var editorDiv = new Div();
-        editorDiv.setClassName("p-l flex-grow");
-        editorLayoutDiv.add(editorDiv);
-
-        final var formLayout = new FormLayout();
-        title = new TextField("Title");
-        speaker = new MultiselectComboBox<>("Speaker");
-        speaker.setOrdered(true);
-        speaker.setItemLabelGenerator(speakerRecord -> String.format("%s %s",
-                speakerRecord.getFirstName(), speakerRecord.getLastName()));
-        speaker.setItems(speakerService.list(0, Integer.MAX_VALUE));
-        date = new DateTimePicker("Date");
-        date.setStep(Duration.ofSeconds(1));
-        visible = new Checkbox("Visible");
-        visible.getStyle().set("padding-top", "var(--lumo-space-m)");
-        final var fields = new Component[]{title, speaker, date, visible};
-
-        for (final Component field : fields) {
-            ((HasStyle) field).addClassName("full-width");
-        }
-        formLayout.add(fields);
-        editorDiv.add(formLayout);
-        createButtonLayout(editorLayoutDiv);
-
-        splitLayout.addToSecondary(editorLayoutDiv);
-    }
-
-    private void createButtonLayout(final Div editorLayoutDiv) {
-        final var buttonLayout = new HorizontalLayout();
-        buttonLayout.setClassName("w-full flex-wrap bg-contrast-5 py-s px-l");
-        buttonLayout.setSpacing(true);
-        cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(save, cancel);
-        editorLayoutDiv.add(buttonLayout);
-    }
-
-    private void createGridLayout(final SplitLayout splitLayout) {
-        final var wrapper = new Div();
-        wrapper.setId("grid-wrapper");
-        wrapper.setWidthFull();
-        splitLayout.addToPrimary(wrapper);
-        wrapper.add(grid);
-    }
-
-    private void refreshGrid() {
-        grid.select(null);
-        grid.getLazyDataView().refreshAll();
-    }
-
-    private void clearForm() {
-        populateForm(null);
-    }
-
-    private void populateForm(final EventRecord value) {
-        this.event = value;
-        binder.readBean(this.event);
-
+    private Button createNewEventButton() {
+        final var button = new Button("New Event");
+        button.addClickListener(event -> Notification.show("Sorry, this feature is not available yet! Please come back later…"));
+        return button;
     }
 }
