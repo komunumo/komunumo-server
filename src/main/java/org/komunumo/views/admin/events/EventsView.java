@@ -38,17 +38,16 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.jooq.Record5;
-import org.komunumo.data.db.tables.records.EventSpeakerRecord;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.views.admin.AdminView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.time.LocalDateTime;
-
-import org.vaadin.gatanaso.MultiselectComboBox;
+import java.time.format.DateTimeFormatter;
 
 import static org.komunumo.data.db.tables.Event.EVENT;
 
@@ -96,9 +95,15 @@ public class EventsView extends Div {
 
     private Grid<Record5<Long, String, String, LocalDateTime, Boolean>> createGrid() {
         final var grid = new Grid<Record5<Long, String, String, LocalDateTime, Boolean>>();
-        grid.addColumn(record -> record.get(EVENT.TITLE)).setAutoWidth(true).setHeader("Title");
-        grid.addColumn(record -> record.get("speaker")).setAutoWidth(true).setHeader("Speaker");
-        grid.addColumn(record -> record.get(EVENT.DATE)).setAutoWidth(true).setHeader("Date");
+        grid.addColumn(record -> record.get(EVENT.TITLE)).setHeader("Title").setAutoWidth(true);
+        grid.addColumn(record -> record.get("speaker")).setHeader("Speaker").setAutoWidth(true);
+        final var dateRenderer = TemplateRenderer.<Record5<Long, String, String, LocalDateTime, Boolean>>of(
+                "[[item.date]]")
+                .withProperty("date", record -> {
+                    final var date = record.get(EVENT.DATE);
+                    return date == null ? "" : date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                });
+        grid.addColumn(dateRenderer).setHeader("Date").setAutoWidth(true);
         final var visibleRenderer = TemplateRenderer.<Record5<Long, String, String, LocalDateTime, Boolean>>of(
                 "<iron-icon hidden='[[!item.visible]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.visible]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
                 .withProperty("visible", record -> record.get(EVENT.VISIBLE));
