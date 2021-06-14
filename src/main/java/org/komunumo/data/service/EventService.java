@@ -71,7 +71,11 @@ public class EventService {
 
     public Stream<EventGridItem> eventsForGrid(final int offset, final int limit, final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter + "%";
-        return dsl.select(EVENT.asterisk(), groupConcat(concat(concat(SPEAKER.FIRST_NAME, " "), SPEAKER.LAST_NAME)).separator(", ").as("speaker")).from(EVENT)
+        return dsl.select(
+                    EVENT.ID, EVENT.TITLE, EVENT.SUBTITLE, EVENT.ABSTRACT, EVENT.AGENDA,
+                    EVENT.LEVEL, EVENT.LANGUAGE, EVENT.LOCATION, EVENT.DATE, EVENT.VISIBLE,
+                    groupConcat(concat(concat(SPEAKER.FIRST_NAME, " "), SPEAKER.LAST_NAME)).separator(", ").as("speaker"))
+                .from(EVENT)
                 .leftJoin(EVENT_SPEAKER).on(EVENT.ID.eq(EVENT_SPEAKER.EVENT_ID))
                 .leftJoin(SPEAKER).on(EVENT_SPEAKER.SPEAKER_ID.eq(SPEAKER.ID))
                 .where(filterValue == null ? DSL.noCondition() : EVENT.TITLE.like(filterValue).or(SPEAKER.FIRST_NAME.like(filterValue).or(SPEAKER.LAST_NAME.like(filterValue))))
