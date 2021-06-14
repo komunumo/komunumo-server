@@ -18,13 +18,13 @@
 
 package org.komunumo.views.admin.events;
 
+import com.vaadin.componentfactory.EnhancedDatePicker;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.KeyModifier;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
-import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -36,15 +36,12 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-
-import java.time.Duration;
-import java.util.stream.Collectors;
-
 import org.jooq.Record5;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.EventService;
@@ -54,8 +51,11 @@ import org.komunumo.views.admin.AdminView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 
 import static org.komunumo.data.db.tables.Event.EVENT;
 
@@ -158,22 +158,25 @@ public class EventsView extends Div {
         speakerField.setItemLabelGenerator(speakerRecord -> String.format("%s %s",
                 speakerRecord.getFirstName(), speakerRecord.getLastName()));
         speakerField.setItems(speakerService.list(0, Integer.MAX_VALUE));
-        final var dateField = new DateTimePicker("Date");
+        final var dateField = new EnhancedDatePicker("Date");
+        dateField.setPattern("yyyy-MM-dd");
+        dateField.setMin(LocalDate.now());
         dateField.setWeekNumbersVisible(true);
-        dateField.setStep(Duration.ofHours(1));
-        dateField.setMin(LocalDateTime.now().plusHours(1).withMinute(0));
+        final var timeField = new TimePicker("Time");
+        timeField.setStep(Duration.ofHours(1));
         final var visibleField = new Checkbox("Visible");
 
         if (record != null) {
             titleField.setValue(record.get(EVENT.TITLE));
             speakerField.setValue(eventSpeakerService.getSpeakersForEvent(record.get(EVENT.ID))
                     .collect(Collectors.toSet()));
-            dateField.setValue(record.get(EVENT.DATE));
+            dateField.setValue(record.get(EVENT.DATE).toLocalDate());
+            timeField.setValue(record.get(EVENT.DATE).toLocalTime());
             visibleField.setValue(record.get(EVENT.VISIBLE));
         }
 
         final var form = new FormLayout();
-        form.add(titleField, speakerField, dateField, visibleField);
+        form.add(titleField, speakerField, dateField, timeField, visibleField);
 
         final var saveButton = new Button("Save");
         saveButton.setDisableOnClick(true);
@@ -183,15 +186,19 @@ public class EventsView extends Div {
             if (titleField.getValue().isBlank()) {
                 Notification.show("Please enter at least the title!");
                 saveButton.setEnabled(true);
-            } else if (dateField.getValue() != null && dateField.getValue().isBefore(LocalDateTime.now())) {
-                Notification.show("Please enter a date in the future!");
+            } else if (dateField.getValue() == null || timeField.getValue() == null) {
+                Notification.show("Please enter a date and a time or none of them!");
+                saveButton.setEnabled(true);
+            } else if (LocalDateTime.of(dateField.getValue(), timeField.getValue()).isBefore(LocalDateTime.now())) {
+                Notification.show("Please enter a date and time in the future!");
                 saveButton.setEnabled(true);
             } else {
                 final var eventRecord = record != null
                         ? eventService.get(record.get(EVENT.ID)).orElse(eventService.newRecord())
                         : eventService.newRecord();
                 eventRecord.setTitle(titleField.getValue());
-                eventRecord.setDate(dateField.getValue());
+                eventRecord.setDate(dateField.getValue() == null || timeField.getValue() == null ? null
+                        : LocalDateTime.of(dateField.getValue(), timeField.getValue()));
                 eventRecord.setVisible(visibleField.getValue());
                 eventRecord.store();
 
