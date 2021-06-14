@@ -42,9 +42,11 @@ import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 public class EventService {
 
     private final DSLContext dsl;
+    private final EventSpeakerService eventSpeakerService;
 
-    public EventService(final DSLContext dsl) {
+    public EventService(final DSLContext dsl, final EventSpeakerService eventSpeakerService) {
         this.dsl = dsl;
+        this.eventSpeakerService = eventSpeakerService;
     }
 
     public EventRecord newRecord() {
@@ -79,6 +81,7 @@ public class EventService {
     }
 
     public void deleteEvent(final Long eventId) {
+        eventSpeakerService.deleteEventSpeakers(eventId);
         dsl.delete(EVENT).where(EVENT.ID.eq(eventId)).execute();
     }
 

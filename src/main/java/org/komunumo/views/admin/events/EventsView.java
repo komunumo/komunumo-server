@@ -123,7 +123,6 @@ public class EventsView extends Div {
                                         String.format("Are you sure you want to permanently delete the event \"%s\"?", record.get(EVENT.TITLE)),
                                         "Delete", (dialogEvent) -> {
                                             final var eventId = record.get(EVENT.ID);
-                                            eventSpeakerService.deleteEventSpeakers(eventId);
                                             eventService.deleteEvent(eventId);
                                             reloadGridItems();
                                             dialogEvent.getSource().close();
