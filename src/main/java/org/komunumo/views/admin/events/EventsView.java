@@ -86,6 +86,7 @@ public class EventsView extends Div {
         final var grid = new Grid<EventGridItem>();
         grid.addColumn(EventGridItem::getTitle).setHeader("Title").setAutoWidth(true);
         grid.addColumn(EventGridItem::getSpeaker).setHeader("Speaker").setAutoWidth(true);
+
         final var dateRenderer = TemplateRenderer.<EventGridItem>of(
                 "[[item.date]]")
                 .withProperty("date", record -> {
@@ -93,6 +94,7 @@ public class EventsView extends Div {
                     return date == null ? "" : date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
                 });
         grid.addColumn(dateRenderer).setHeader("Date").setAutoWidth(true);
+
         final var visibleRenderer = TemplateRenderer.<EventGridItem>of(
                 "<iron-icon hidden='[[!item.visible]]' icon='vaadin:eye' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.visible]]' icon='vaadin:eye-slash' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
                 .withProperty("visible", EventGridItem::getVisible);
