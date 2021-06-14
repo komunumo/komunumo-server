@@ -24,7 +24,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
-import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -41,9 +40,6 @@ import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-
-import java.util.stream.Collectors;
-
 import org.jooq.Record5;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.EventService;
@@ -52,9 +48,13 @@ import org.komunumo.data.service.SpeakerService;
 import org.komunumo.views.admin.AdminView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.gatanaso.MultiselectComboBox;
+import org.vaadin.miki.shared.dates.DatePattern;
+import org.vaadin.miki.superfields.dates.SuperDateTimePicker;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 
 import static org.komunumo.data.db.tables.Event.EVENT;
 
@@ -157,7 +157,11 @@ public class EventsView extends Div {
         speakerField.setItemLabelGenerator(speakerRecord -> String.format("%s %s",
                 speakerRecord.getFirstName(), speakerRecord.getLastName()));
         speakerField.setItems(speakerService.list(0, Integer.MAX_VALUE));
-        final var dateField = new DateTimePicker("Date");
+        final var dateField = new SuperDateTimePicker("Date");
+        dateField.setDatePattern(new DatePattern("yyyy-MM-dd"));
+        dateField.setWeekNumbersVisible(true);
+        dateField.setStep(Duration.ofHours(1));
+        dateField.setMin(LocalDateTime.now().plusHours(1).withMinute(0));
         final var visibleField = new Checkbox("Visible");
 
         if (record != null) {

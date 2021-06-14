@@ -100,6 +100,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.vaadin.miki</groupId>
+            <artifactId>superfields</artifactId>
+            <version>0.10.1</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
             <scope>runtime</scope>
