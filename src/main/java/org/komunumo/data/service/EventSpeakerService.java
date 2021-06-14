@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static org.jooq.impl.DSL.select;
 import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
@@ -33,11 +34,9 @@ import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 public class EventSpeakerService {
 
     private final DSLContext dsl;
-    private final SpeakerService speakerService;
 
-    public EventSpeakerService(final DSLContext dsl, final SpeakerService speakerService) {
+    public EventSpeakerService(final DSLContext dsl) {
         this.dsl = dsl;
-        this.speakerService = speakerService;
     }
 
     public EventSpeakerRecord newRecord() {
@@ -59,14 +58,14 @@ public class EventSpeakerService {
     }
 
     public Stream<SpeakerRecord> getSpeakersForEvent(final Long eventId) {
-        return dsl.select(SPEAKER.asterisk())
-                .from(SPEAKER)
-                .leftJoin(EVENT_SPEAKER).on(SPEAKER.ID.eq(EVENT_SPEAKER.SPEAKER_ID))
-                .where(EVENT_SPEAKER.EVENT_ID.eq(eventId))
-                .orderBy(SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME)
+        return dsl
+                .selectFrom(SPEAKER)
+                .where(SPEAKER.ID.in(
+                        select(EVENT_SPEAKER.SPEAKER_ID)
+                                .from(EVENT_SPEAKER)
+                                .where(EVENT_SPEAKER.EVENT_ID.eq(eventId))
+                ))
                 .fetch()
-                .stream()
-                .map(record -> speakerService.get(record.get(SPEAKER.ID)).orElse(null));
-        // TODO get rid of the last map operation by help of jOOQ
+                .stream();
     }
 }
