@@ -42,6 +42,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import java.time.Duration;
 import java.util.stream.Collectors;
 
 import org.jooq.Record5;
@@ -158,6 +159,9 @@ public class EventsView extends Div {
                 speakerRecord.getFirstName(), speakerRecord.getLastName()));
         speakerField.setItems(speakerService.list(0, Integer.MAX_VALUE));
         final var dateField = new DateTimePicker("Date");
+        dateField.setWeekNumbersVisible(true);
+        dateField.setStep(Duration.ofHours(1));
+        dateField.setMin(LocalDateTime.now().plusHours(1).withMinute(0));
         final var visibleField = new Checkbox("Visible");
 
         if (record != null) {
