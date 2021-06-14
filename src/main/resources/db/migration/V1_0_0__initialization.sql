@@ -31,6 +31,7 @@ CREATE TABLE member (
     admin BOOLEAN NOT NULL DEFAULT 0,
     password_salt VARCHAR(255) NULL,
     password_hash VARCHAR(255) NULL,
+    password_change BOOLEAN NOT NULL DEFAULT 0,
     activation_code VARCHAR(255) NULL,
     active BOOLEAN NOT NULL DEFAULT 0,
 

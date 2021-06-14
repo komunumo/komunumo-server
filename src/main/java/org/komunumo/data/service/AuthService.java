@@ -18,6 +18,7 @@
 
 package org.komunumo.data.service;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
@@ -33,6 +34,7 @@ import org.komunumo.views.admin.speakers.SpeakersView;
 import org.komunumo.views.admin.sponsors.SponsorsView;
 import org.komunumo.views.login.ActivationView;
 import org.komunumo.views.login.LoginView;
+import org.komunumo.views.login.ChangePasswordView;
 import org.komunumo.views.logout.LogoutView;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
@@ -64,8 +66,13 @@ public class AuthService implements VaadinServiceInitListener {
         final var member = memberService.getByEmail(email).orElse(null);
         if (member != null && member.getActive() && checkPassword(member, password)) {
             VaadinSession.getCurrent().setAttribute(MemberRecord.class, member);
+            if (member.getPasswordChange()) {
+                UI.getCurrent().navigate(ChangePasswordView.class);
+            } else {
+                UI.getCurrent().getPage().reload();
+            }
         } else {
-            throw new AccessDeniedException("Wrong credentials.");
+            throw new AccessDeniedException("Access denied.");
         }
     }
 
@@ -111,6 +118,43 @@ public class AuthService implements VaadinServiceInitListener {
         }
     }
 
+    public void sendPasswordResetMail(final String email) {
+        final var member = memberService.getByEmail(email);
+        if (member.isPresent()) {
+            final var record = member.get();
+            if (record.getActive()) {
+                final var password = RandomStringUtils.randomAscii(32);
+                final var passwordSalt = createPasswordSalt();
+                final var passwordHash = getPasswordHash(password, passwordSalt);
+                record.setPasswordSalt(passwordSalt);
+                record.setPasswordHash(passwordHash);
+                record.setPasswordChange(true);
+                memberService.store(record);
+
+                final var message = new SimpleMailMessage();
+                message.setTo(email);
+                message.setFrom("noreply@example.com"); // TODO configurable: info@jug.ch
+                message.setSubject("Reset your password");
+                message.setText("To reset your password, use the following one time password to login: " + password);
+                mailSender.send(message);
+            }
+        }
+    }
+
+    public void changePassword(final String oldPassword, final String newPassword) throws AccessDeniedException {
+        final var member = getCurrentUser();
+        if (checkPassword(member, oldPassword)) {
+            final var passwordSalt = createPasswordSalt();
+            final var passwordHash = getPasswordHash(newPassword, passwordSalt);
+            member.setPasswordSalt(passwordSalt);
+            member.setPasswordHash(passwordHash);
+            member.setPasswordChange(false);
+            memberService.store(member);
+        } else {
+            throw new AccessDeniedException("Password change denied!");
+        }
+    }
+
     public boolean isUserLoggedIn() {
         return VaadinSession.getCurrent().getAttribute(MemberRecord.class) != null;
     }
@@ -123,8 +167,9 @@ public class AuthService implements VaadinServiceInitListener {
         final var member = VaadinSession.getCurrent().getAttribute(MemberRecord.class);
 
         // restrict to members
-        if (member != null) {
-            if (navigationTarget == DashboardView.class
+        if (member != null && member.getActive()) {
+            if (navigationTarget == DashboardView.class // TODO only for admins / use profile page for members instead
+                    || navigationTarget == ChangePasswordView.class
                     || navigationTarget == LogoutView.class) {
                 return true;
             }

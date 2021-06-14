@@ -53,24 +53,40 @@ public class LoginView extends LoginOverlay implements AfterNavigationObserver, 
         i18n.getForm().setTitle("Login");
         i18n.getForm().setUsername("Email");
         i18n.getForm().setPassword("Password");
+        i18n.getForm().setForgotPassword("I forgot my password");
 
         i18n.getErrorMessage().setTitle("Incorrect email or password");
         i18n.getErrorMessage().setMessage("Check that you have entered the correct email and password and try again.");
 
         setI18n(i18n);
 
-        setForgotPasswordButtonVisible(false);
+        setForgotPasswordButtonVisible(true);
 
         addLoginListener(event -> {
             try {
                 authService.authenticate(event.getUsername(), event.getPassword());
-                UI.getCurrent().getPage().reload();
             } catch (final AccessDeniedException e) {
                 setError(true);
                 Notification.show(e.getMessage());
             }
 
         });
+
+        addForgotPasswordListener(event -> UI.getCurrent().getPage().executeJs(
+            "var field = document.getElementById('vaadinLoginUsername'); if (field !== null) { return field.value; } else { return null; }")
+            .then(String.class, email -> {
+                if (email.isBlank()) {
+                    Notification.show("Please enter your email address first.");
+                    UI.getCurrent().getPage().executeJs(
+                            "var field = document.getElementById('vaadinLoginUsername'); if (field !== null) { field.focus(); }");
+                } else {
+                    authService.sendPasswordResetMail(email);
+                    Notification.show("Please check your email account for further instructions.");
+                    UI.getCurrent().getPage().executeJs(
+                            "var field = document.getElementById('vaadinLoginPassword'); if (field !== null) { field.focus(); }");
+                }
+            }
+        ));
 
         UI.getCurrent().getPage().executeJs(
                 "var field = document.getElementById('vaadinLoginUsername'); if (field !== null) { field.focus(); }");
