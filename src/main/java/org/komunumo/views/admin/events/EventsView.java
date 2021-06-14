@@ -151,6 +151,7 @@ public class EventsView extends Div {
         title.getStyle().set("margin-top", "0");
 
         final var titleField = new TextField("Title");
+        titleField.setRequiredIndicatorVisible(true);
         final var speakerField = new MultiselectComboBox<SpeakerRecord>("Speaker");
         speakerField.setOrdered(true);
         speakerField.setItemLabelGenerator(speakerRecord -> String.format("%s %s",
