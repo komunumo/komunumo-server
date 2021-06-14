@@ -161,7 +161,7 @@ public class EventsView extends Div {
 
         if (record != null) {
             titleField.setValue(record.get(EVENT.TITLE));
-            speakerField.setValue(eventSpeakerService.getSpeakersForEvent(record.get(EVENT.ID), speakerService)
+            speakerField.setValue(eventSpeakerService.getSpeakersForEvent(record.get(EVENT.ID))
                     .collect(Collectors.toSet()));
             dateField.setValue(record.get(EVENT.DATE));
             visibleField.setValue(record.get(EVENT.VISIBLE));

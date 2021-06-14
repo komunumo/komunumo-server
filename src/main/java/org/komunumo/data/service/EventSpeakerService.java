@@ -33,9 +33,11 @@ import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 public class EventSpeakerService {
 
     private final DSLContext dsl;
+    private final SpeakerService speakerService;
 
-    public EventSpeakerService(final DSLContext dsl) {
+    public EventSpeakerService(final DSLContext dsl, final SpeakerService speakerService) {
         this.dsl = dsl;
+        this.speakerService = speakerService;
     }
 
     public EventSpeakerRecord newRecord() {
@@ -56,8 +58,7 @@ public class EventSpeakerService {
         dsl.delete(EVENT_SPEAKER).where(EVENT_SPEAKER.EVENT_ID.eq(eventId)).execute();
     }
 
-    // TODO remove SpeakerService dependency
-    public Stream<SpeakerRecord> getSpeakersForEvent(final Long eventId, final SpeakerService speakerService) {
+    public Stream<SpeakerRecord> getSpeakersForEvent(final Long eventId) {
         return dsl.select(SPEAKER.asterisk())
                 .from(SPEAKER)
                 .leftJoin(EVENT_SPEAKER).on(SPEAKER.ID.eq(EVENT_SPEAKER.SPEAKER_ID))
@@ -66,5 +67,6 @@ public class EventSpeakerService {
                 .fetch()
                 .stream()
                 .map(record -> speakerService.get(record.get(SPEAKER.ID)).orElse(null));
+        // TODO get rid of the last map operation by help of jOOQ
     }
 }
