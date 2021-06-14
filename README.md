@@ -83,7 +83,7 @@ docker run -p 8080:8080 komunumo:latest
 
 ### Database
 
-While developing, sometimes it is very useful to reset the database manually. You can this very easily using Maven and Flyway:
+While developing, sometimes it is very useful to reset the database manually. You can do this very easily using Maven and Flyway:
 
 ```
 mvn flyway:clean flyway:migrate flyway:info \
