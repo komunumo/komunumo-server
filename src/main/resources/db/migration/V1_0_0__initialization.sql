@@ -2,6 +2,12 @@ CREATE TABLE event (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 
     title VARCHAR(255) NOT NULL,
+    subtitle VARCHAR(255) NULL,
+    abstract MEDIUMTEXT NULL,
+    agenda MEDIUMTEXT NULL,
+    level ENUM('Beginner', 'Intermediate', 'Advanced') NULL,
+    language CHAR(2) NULL,
+    location VARCHAR(255) NULL,
     date DATETIME NULL,
     visible BOOLEAN NOT NULL DEFAULT 0,
 
