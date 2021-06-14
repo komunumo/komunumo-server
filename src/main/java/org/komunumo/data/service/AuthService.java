@@ -179,4 +179,10 @@ public class AuthService implements VaadinServiceInitListener {
         return DigestUtils.sha1Hex(password + passwordSalt);
     }
 
+    public void logout() {
+        VaadinSession.getCurrent().getSession().invalidate();
+        VaadinSession.getCurrent().close();
+        UI.getCurrent().getPage().setLocation("login");
+    }
+
 }
