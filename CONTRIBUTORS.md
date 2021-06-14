@@ -6,6 +6,7 @@ In alphabetical order by GitHub username:
 
 * [Interactiondesigner](https://github.com/Interactiondesigner)
 * [McPringle](https://github.com/McPringle)
+* [simasch](https://github.com/simasch)
 
 ## I would like to join this list. How can I help the project?
 
