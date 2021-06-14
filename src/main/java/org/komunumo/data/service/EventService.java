@@ -24,6 +24,7 @@ import java.time.Year;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.jooq.Record5;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.EventRecord;
@@ -70,7 +71,7 @@ public class EventService {
 
     public Stream<EventGridItem> eventsForGrid(final int offset, final int limit, final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter + "%";
-        return dsl.select(EVENT.ID, EVENT.TITLE, groupConcat(concat(concat(SPEAKER.FIRST_NAME, " "), SPEAKER.LAST_NAME)).separator(", ").as("speaker"), EVENT.DATE, EVENT.VISIBLE).from(EVENT)
+        return dsl.select(EVENT.asterisk(), groupConcat(concat(concat(SPEAKER.FIRST_NAME, " "), SPEAKER.LAST_NAME)).separator(", ").as("speaker")).from(EVENT)
                 .leftJoin(EVENT_SPEAKER).on(EVENT.ID.eq(EVENT_SPEAKER.EVENT_ID))
                 .leftJoin(SPEAKER).on(EVENT_SPEAKER.SPEAKER_ID.eq(SPEAKER.ID))
                 .where(filterValue == null ? DSL.noCondition() : EVENT.TITLE.like(filterValue).or(SPEAKER.FIRST_NAME.like(filterValue).or(SPEAKER.LAST_NAME.like(filterValue))))

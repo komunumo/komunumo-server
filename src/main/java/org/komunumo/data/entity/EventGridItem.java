@@ -18,7 +18,10 @@
 
 package org.komunumo.data.entity;
 
-import org.jooq.Record5;
+import org.jooq.Record;
+import org.komunumo.data.db.enums.EventLanguage;
+import org.komunumo.data.db.enums.EventLevel;
+import org.komunumo.data.db.enums.EventLocation;
 
 import java.time.LocalDateTime;
 
@@ -26,9 +29,9 @@ import static org.komunumo.data.db.tables.Event.EVENT;
 
 public class EventGridItem {
 
-    private final Record5<Long, String, String, LocalDateTime, Boolean> record;
+    private final Record record;
 
-    public EventGridItem(final Record5<Long, String, String, LocalDateTime, Boolean> record) {
+    public EventGridItem(final Record record) {
         this.record = record;
     }
 
@@ -40,8 +43,32 @@ public class EventGridItem {
         return record.get(EVENT.TITLE);
     }
 
+    public String getSubtitle() {
+        return record.get(EVENT.SUBTITLE);
+    }
+
     public String getSpeaker() {
         return (String) record.get("speaker");
+    }
+
+    public String getAbstract() {
+        return record.get(EVENT.ABSTRACT);
+    }
+
+    public String getAgenda() {
+        return record.get(EVENT.AGENDA);
+    }
+
+    public EventLevel getLevel() {
+        return record.get(EVENT.LEVEL);
+    }
+
+    public EventLanguage getLanguage() {
+        return record.get(EVENT.LANGUAGE);
+    }
+
+    public EventLocation getLocation() {
+        return record.get(EVENT.LOCATION);
     }
 
     public LocalDateTime getDate() {

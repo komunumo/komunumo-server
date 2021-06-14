@@ -35,6 +35,8 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -42,6 +44,9 @@ import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.komunumo.data.db.enums.EventLanguage;
+import org.komunumo.data.db.enums.EventLevel;
+import org.komunumo.data.db.enums.EventLocation;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.entity.EventGridItem;
 import org.komunumo.data.service.EventService;
@@ -151,11 +156,20 @@ public class EventsView extends Div {
 
         final var titleField = new TextField("Title");
         titleField.setRequiredIndicatorVisible(true);
+        final var subtitleField = new TextField("Subtitle");
         final var speakerField = new MultiselectComboBox<SpeakerRecord>("Speaker");
         speakerField.setOrdered(true);
         speakerField.setItemLabelGenerator(speakerRecord -> String.format("%s %s",
                 speakerRecord.getFirstName(), speakerRecord.getLastName()));
         speakerField.setItems(speakerService.list(0, Integer.MAX_VALUE));
+        final var abstractField = new TextArea("Abstract");
+        final var agendaField = new TextArea("Agenda");
+        final var levelField = new Select<>(EventLevel.values());
+        levelField.setLabel("Level");
+        final var languageField = new Select<>(EventLanguage.values());
+        languageField.setLabel("Language");
+        final var locationField = new Select<>(EventLocation.values());
+        locationField.setLabel("Location");
         final var dateField = new EnhancedDatePicker("Date");
         dateField.setPattern("yyyy-MM-dd");
         dateField.setMin(LocalDate.now());
@@ -166,15 +180,23 @@ public class EventsView extends Div {
 
         if (record != null) {
             titleField.setValue(record.getTitle());
+            subtitleField.setValue(record.getSubtitle());
             speakerField.setValue(eventSpeakerService.getSpeakersForEvent(record.getId())
                     .collect(Collectors.toSet()));
+            abstractField.setValue(record.getAbstract());
+            agendaField.setValue(record.getAgenda());
+            levelField.setValue(record.getLevel());
+            languageField.setValue(record.getLanguage());
+            locationField.setValue(record.getLocation());
             dateField.setValue(record.getDate().toLocalDate());
             timeField.setValue(record.getDate().toLocalTime());
             visibleField.setValue(record.getVisible());
         }
 
         final var form = new FormLayout();
-        form.add(titleField, speakerField, dateField, timeField, visibleField);
+        form.add(titleField, subtitleField, speakerField, levelField,
+                abstractField, agendaField, languageField, locationField,
+                dateField, timeField, visibleField);
 
         final var saveButton = new Button("Save");
         saveButton.setDisableOnClick(true);
@@ -195,6 +217,12 @@ public class EventsView extends Div {
                         ? eventService.get(record.getId()).orElse(eventService.newRecord())
                         : eventService.newRecord();
                 eventRecord.setTitle(titleField.getValue());
+                eventRecord.setSubtitle(subtitleField.getValue());
+                eventRecord.setAbstract(abstractField.getValue());
+                eventRecord.setAgenda(agendaField.getValue());
+                eventRecord.setLevel(levelField.getValue());
+                eventRecord.setLanguage(languageField.getValue());
+                eventRecord.setLocation(locationField.getValue());
                 eventRecord.setDate(dateField.getValue() == null || timeField.getValue() == null ? null
                         : LocalDateTime.of(dateField.getValue(), timeField.getValue()));
                 eventRecord.setVisible(visibleField.getValue());
