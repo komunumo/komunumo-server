@@ -42,8 +42,8 @@ import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import org.jooq.Record5;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
+import org.komunumo.data.entity.EventGridItem;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.SpeakerService;
@@ -57,8 +57,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
-import static org.komunumo.data.db.tables.Event.EVENT;
-
 @Route(value = "admin/events", layout = AdminView.class)
 @PageTitle("Event Administration")
 public class EventsView extends Div {
@@ -68,7 +66,7 @@ public class EventsView extends Div {
     private final EventSpeakerService eventSpeakerService;
 
     private final TextField filterField;
-    private final Grid<Record5<Long, String, String, LocalDateTime, Boolean>> grid;
+    private final Grid<EventGridItem> grid;
 
     public EventsView(@Autowired final EventService eventService,
                       @Autowired final SpeakerService speakerService,
@@ -100,20 +98,20 @@ public class EventsView extends Div {
         return filter;
     }
 
-    private Grid<Record5<Long, String, String, LocalDateTime, Boolean>> createGrid() {
-        final var grid = new Grid<Record5<Long, String, String, LocalDateTime, Boolean>>();
-        grid.addColumn(record -> record.get(EVENT.TITLE)).setHeader("Title").setAutoWidth(true);
-        grid.addColumn(record -> record.get("speaker")).setHeader("Speaker").setAutoWidth(true);
-        final var dateRenderer = TemplateRenderer.<Record5<Long, String, String, LocalDateTime, Boolean>>of(
+    private Grid<EventGridItem> createGrid() {
+        final var grid = new Grid<EventGridItem>();
+        grid.addColumn(EventGridItem::getTitle).setHeader("Title").setAutoWidth(true);
+        grid.addColumn(EventGridItem::getSpeaker).setHeader("Speaker").setAutoWidth(true);
+        final var dateRenderer = TemplateRenderer.<EventGridItem>of(
                 "[[item.date]]")
                 .withProperty("date", record -> {
-                    final var date = record.get(EVENT.DATE);
+                    final var date = record.getDate();
                     return date == null ? "" : date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
                 });
         grid.addColumn(dateRenderer).setHeader("Date").setAutoWidth(true);
-        final var visibleRenderer = TemplateRenderer.<Record5<Long, String, String, LocalDateTime, Boolean>>of(
+        final var visibleRenderer = TemplateRenderer.<EventGridItem>of(
                 "<iron-icon hidden='[[!item.visible]]' icon='vaadin:eye' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.visible]]' icon='vaadin:eye-slash' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
-                .withProperty("visible", record -> record.get(EVENT.VISIBLE));
+                .withProperty("visible", EventGridItem::getVisible);
         grid.addColumn(visibleRenderer).setHeader("Visible").setAutoWidth(true);
 
         grid.addColumn(new ComponentRenderer<>(record ->
@@ -121,9 +119,9 @@ public class EventsView extends Div {
                         new Button(new Icon(VaadinIcon.EDIT), event -> showEventDialog(record)),
                         new Button(new Icon(VaadinIcon.TRASH), event ->
                                 new ConfirmDialog("Confirm deletion",
-                                        String.format("Are you sure you want to permanently delete the event \"%s\"?", record.get(EVENT.TITLE)),
+                                        String.format("Are you sure you want to permanently delete the event \"%s\"?", record.getTitle()),
                                         "Delete", (dialogEvent) -> {
-                                            final var eventId = record.get(EVENT.ID);
+                                            final var eventId = record.getId();
                                             eventService.deleteEvent(eventId);
                                             reloadGridItems();
                                             dialogEvent.getSource().close();
@@ -143,7 +141,7 @@ public class EventsView extends Div {
         return grid;
     }
 
-    private void showEventDialog(final Record5<Long, String, String, LocalDateTime, Boolean> record) {
+    private void showEventDialog(final EventGridItem record) {
         final var dialog = new Dialog();
         dialog.setCloseOnEsc(true);
         dialog.setCloseOnOutsideClick(false);
@@ -167,12 +165,12 @@ public class EventsView extends Div {
         final var visibleField = new Checkbox("Visible");
 
         if (record != null) {
-            titleField.setValue(record.get(EVENT.TITLE));
-            speakerField.setValue(eventSpeakerService.getSpeakersForEvent(record.get(EVENT.ID))
+            titleField.setValue(record.getTitle());
+            speakerField.setValue(eventSpeakerService.getSpeakersForEvent(record.getId())
                     .collect(Collectors.toSet()));
-            dateField.setValue(record.get(EVENT.DATE).toLocalDate());
-            timeField.setValue(record.get(EVENT.DATE).toLocalTime());
-            visibleField.setValue(record.get(EVENT.VISIBLE));
+            dateField.setValue(record.getDate().toLocalDate());
+            timeField.setValue(record.getDate().toLocalTime());
+            visibleField.setValue(record.getVisible());
         }
 
         final var form = new FormLayout();
@@ -181,7 +179,7 @@ public class EventsView extends Div {
         final var saveButton = new Button("Save");
         saveButton.setDisableOnClick(true);
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        saveButton.setEnabled(record == null || record.get(EVENT.DATE).isAfter(LocalDateTime.now()));
+        saveButton.setEnabled(record == null || record.getDate().isAfter(LocalDateTime.now()));
         saveButton.addClickListener(event -> {
             if (titleField.getValue().isBlank()) {
                 Notification.show("Please enter at least the title!");
@@ -194,7 +192,7 @@ public class EventsView extends Div {
                 saveButton.setEnabled(true);
             } else {
                 final var eventRecord = record != null
-                        ? eventService.get(record.get(EVENT.ID)).orElse(eventService.newRecord())
+                        ? eventService.get(record.getId()).orElse(eventService.newRecord())
                         : eventService.newRecord();
                 eventRecord.setTitle(titleField.getValue());
                 eventRecord.setDate(dateField.getValue() == null || timeField.getValue() == null ? null
@@ -228,6 +226,6 @@ public class EventsView extends Div {
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> eventService.eventsWithSpeakers(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> eventService.eventsForGrid(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 }

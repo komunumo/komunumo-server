@@ -27,6 +27,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record5;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.EventRecord;
+import org.komunumo.data.entity.EventGridItem;
 import org.springframework.stereotype.Service;
 
 import static java.time.Month.DECEMBER;
@@ -67,7 +68,7 @@ public class EventService {
         return dsl.fetchCount(EVENT, EVENT.DATE.between(firstDay, lastDay));
     }
 
-    public Stream<Record5<Long, String, String, LocalDateTime, Boolean>> eventsWithSpeakers(final int offset, final int limit, final String filter) {
+    public Stream<EventGridItem> eventsForGrid(final int offset, final int limit, final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter + "%";
         return dsl.select(EVENT.ID, EVENT.TITLE, groupConcat(concat(concat(SPEAKER.FIRST_NAME, " "), SPEAKER.LAST_NAME)).separator(", ").as("speaker"), EVENT.DATE, EVENT.VISIBLE).from(EVENT)
                 .leftJoin(EVENT_SPEAKER).on(EVENT.ID.eq(EVENT_SPEAKER.EVENT_ID))
@@ -77,7 +78,8 @@ public class EventService {
                 .orderBy(when(EVENT.DATE.isNull(), 0).otherwise(1), EVENT.DATE.desc())
                 .offset(offset)
                 .limit(limit)
-                .stream();
+                .stream()
+                .map(EventGridItem::new);
     }
 
     public void deleteEvent(final Long eventId) {
