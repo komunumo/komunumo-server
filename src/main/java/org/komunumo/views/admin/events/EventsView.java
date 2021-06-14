@@ -63,7 +63,7 @@ public class EventsView extends Div {
 
         grid = createGrid();
         filterField = createFilter();
-        final var newEventButton = new Button(new Icon(VaadinIcon.FILE_ADD), event -> showEventDialog(null));
+        final var newEventButton = new Button(new Icon(VaadinIcon.FILE_ADD), event -> editEvent(null));
 
         final var optionBar = new HorizontalLayout(filterField, newEventButton);
         optionBar.setPadding(true);
@@ -100,19 +100,8 @@ public class EventsView extends Div {
 
         grid.addColumn(new ComponentRenderer<>(record ->
                 new HorizontalLayout(
-                        new Button(new Icon(VaadinIcon.EDIT), event -> showEventDialog(record)),
-                        new Button(new Icon(VaadinIcon.TRASH), event ->
-                                new ConfirmDialog("Confirm deletion",
-                                        String.format("Are you sure you want to permanently delete the event \"%s\"?", record.getTitle()),
-                                        "Delete", (dialogEvent) -> {
-                                            final var eventId = record.getId();
-                                            eventService.deleteEvent(eventId);
-                                            reloadGridItems();
-                                            dialogEvent.getSource().close();
-                                        },
-                                        "Cancel", (dialogEvent) -> dialogEvent.getSource().close()
-                                ).open()
-                        )
+                        new Button(new Icon(VaadinIcon.EDIT), event -> editEvent(record)),
+                        new Button(new Icon(VaadinIcon.TRASH), event -> deleteEvent(record))
                 )
             ))
             .setHeader("Actions")
@@ -125,10 +114,23 @@ public class EventsView extends Div {
         return grid;
     }
 
-    private void showEventDialog(final EventGridItem record) {
+    private void editEvent(final EventGridItem record) {
         final var dialog = new EventDetailView(record, eventService, speakerService, eventSpeakerService);
         dialog.addDialogCloseActionListener(event -> reloadGridItems());
         dialog.open();
+    }
+
+    private void deleteEvent(final EventGridItem record) {
+        new ConfirmDialog("Confirm deletion",
+                String.format("Are you sure you want to permanently delete the event \"%s\"?", record.getTitle()),
+                "Delete", (dialogEvent) -> {
+            final var eventId = record.getId();
+            eventService.deleteEvent(eventId);
+            reloadGridItems();
+            dialogEvent.getSource().close();
+        },
+                "Cancel", (dialogEvent) -> dialogEvent.getSource().close()
+        ).open();
     }
 
     private void reloadGridItems() {
