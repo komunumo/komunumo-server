@@ -174,6 +174,7 @@ public class EventsView extends Div {
         final var saveButton = new Button("Save");
         saveButton.setDisableOnClick(true);
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        saveButton.setEnabled(record == null || record.get(EVENT.DATE).isAfter(LocalDateTime.now()));
         saveButton.addClickListener(event -> {
             if (titleField.getValue().isBlank()) {
                 Notification.show("Please enter at least the title!");
