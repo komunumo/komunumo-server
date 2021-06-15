@@ -59,7 +59,7 @@
     "@vaadin/stats-plugin": "./target/plugins/stats-plugin",
     "@vaadin/theme-live-reload-plugin": "./target/plugins/theme-live-reload-plugin",
     "@vaadin/theme-loader": "./target/plugins/theme-loader",
-    "chokidar": "3.5.1",
+    "chokidar": "3.5.2",
     "compression-webpack-plugin": "4.0.1",
     "css-loader": "4.2.1",
     "extra-watch-webpack-plugin": "1.0.3",
