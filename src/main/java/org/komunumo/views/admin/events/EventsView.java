@@ -117,7 +117,7 @@ public class EventsView extends Div {
     }
 
     private void editEvent(final EventGridItem record) {
-        final var dialog = new EventDetailView(record, eventService, speakerService, eventSpeakerService);
+        final var dialog = new EventDialog(record, eventService, speakerService, eventSpeakerService);
         dialog.addDialogCloseActionListener(event -> reloadGridItems());
         dialog.open();
     }

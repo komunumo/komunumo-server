@@ -51,14 +51,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
-public class EventDetailView extends Dialog {
+public class EventDialog extends Dialog {
 
     private final Focusable<? extends Component> focusField;
 
-    public EventDetailView(final EventGridItem record,
-                           final EventService eventService,
-                           final SpeakerService speakerService,
-                           final EventSpeakerService eventSpeakerService) {
+    public EventDialog(final EventGridItem record,
+                       final EventService eventService,
+                       final SpeakerService speakerService,
+                       final EventSpeakerService eventSpeakerService) {
         setCloseOnEsc(true);
         setCloseOnOutsideClick(false);
 
