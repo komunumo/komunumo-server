@@ -25,6 +25,7 @@ import org.komunumo.data.entity.EventGridItem;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.SpeakerService;
+import org.komunumo.util.LocalizedEnhancedDatePickerI18NProvider;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.time.Duration;
@@ -65,6 +66,7 @@ public class EventDetailView extends Dialog {
         final var dateField = new EnhancedDatePicker("Date");
         dateField.setPattern("yyyy-MM-dd");
         dateField.setMin(LocalDate.now());
+        dateField.setI18n(new LocalizedEnhancedDatePickerI18NProvider());
         dateField.setWeekNumbersVisible(true);
         final var timeField = new TimePicker("Time");
         timeField.setStep(Duration.ofHours(1));
