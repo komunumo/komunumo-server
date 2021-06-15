@@ -85,30 +85,3 @@ CREATE TABLE sponsor (
 
     PRIMARY KEY (id)
 );
-
-
-
--- Example Data
-
-INSERT INTO speaker (first_name, last_name, email) VALUES
-        ("John", "Doe", "john.doe@komunumo.org"),
-        ("Jane", "Doe", "jane.doe@komunumo.org");
-
-INSERT INTO event (title, date, visible) VALUES
-        ("Event One", "2021-10-01 18:00:00", TRUE),
-        ("Event Two", "2021-11-01 18:00:00", TRUE),
-        ("Event Three", "2021-12-01 18:00:00", FALSE);
-
-INSERT INTO event_speaker (event_id, speaker_id) VALUES
-        (1, 1), (2, 2), (3, 1), (3, 2);
-
-INSERT INTO member (first_name, last_name, email, member_since, admin, password_salt, password_hash, active) VALUES
-        ("Marcus", "Fihlon", "marcus@fihlon.swiss", "2021-01-01", TRUE, "w9fT9}qBjzNnB75$ClFQ7Ggl5{mYvd,?", "f6c866154ed2279bc446774b48d7ce7e3a3c668d", TRUE),
-        ("Marcus", "Fihlon", "marcus@fihlon.ch", "2021-02-01", FALSE, "<\"wCc+GKwQ~C:**#hd;^muH<h'zo#+mk", "c924b6fe42d3ed371c4d7d5145836f0ead10608a", TRUE),
-        ("John", "Doe", "john.doe@komunumo.org", "2021-03-01", FALSE, NULL, NULL, FALSE),
-        ("Jane", "Doe", "jane.doe@komunumo.org", "2021-04-01", FALSE, NULL, NULL, FALSE);
-
-INSERT INTO sponsor (name, url, logo, valid_from, valid_to, level) VALUES
-        ("mimacom ag", "https://www.mimacom.com/", "https://www.jug.ch/images/sponsors/mimacom_platin.jpg", "2000-01-01", "2099-12-31", "PLATIN"),
-        ("Netcetera", "https://www.netcetera.com/", "https://www.jug.ch/images/sponsors/netcetera.gif", "2000-01-01", "2099-12-31", "GOLD"),
-        ("CSS Versicherung", "https://www.css.ch/", "https://www.jug.ch/images/sponsors/CSS.png", "2000-01-01", "2099-12-31", "SILBER");
