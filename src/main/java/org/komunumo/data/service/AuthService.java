@@ -118,7 +118,7 @@ public class AuthService implements VaadinServiceInitListener {
         }
     }
 
-    public void sendPasswordResetMail(final String email) {
+    public void resetPassword(final String email) {
         final var member = memberService.getByEmail(email);
         if (member.isPresent()) {
             final var record = member.get();

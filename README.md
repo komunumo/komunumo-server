@@ -43,6 +43,10 @@ DB_ADMIN_USER=janedoe
 DB_ADMIN_PASS=extremesecret
 ```
 
+### Admin
+
+Only members with administrative privileges are allowed to login to the backend. If you specify the email address of an admin in the environment variable `KOMUNUMO_ADMIN_EMAIL`, *Komunumo* will make sure that the member with this email address has administrative privileges. If there is no member with this email address, *Komunumo* will create a new one and send an email with a one time password. At the first login, the user is forced to specify a new password.
+
 ## Running and debugging the server
 
 ### Running the server from the command line.

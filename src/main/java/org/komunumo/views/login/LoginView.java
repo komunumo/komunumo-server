@@ -80,7 +80,7 @@ public class LoginView extends LoginOverlay implements AfterNavigationObserver, 
                     UI.getCurrent().getPage().executeJs(
                             "var field = document.getElementById('vaadinLoginUsername'); if (field !== null) { field.focus(); }");
                 } else {
-                    authService.sendPasswordResetMail(email);
+                    authService.resetPassword(email);
                     Notification.show("Please check your email account for further instructions.");
                     UI.getCurrent().getPage().executeJs(
                             "var field = document.getElementById('vaadinLoginPassword'); if (field !== null) { field.focus(); }");
