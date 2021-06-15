@@ -2,7 +2,7 @@
   "dependencies": {
     "@polymer/iron-icon": "3.0.1",
     "@polymer/iron-list": "3.1.0",
-    "@polymer/polymer": "3.2.0",
+    "@polymer/polymer": "3.4.1",
     "@vaadin/flow-frontend": "./target/flow-frontend",
     "@vaadin/form": "./target/flow-frontend/form",
     "@vaadin/router": "1.7.4",
