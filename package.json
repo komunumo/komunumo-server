@@ -61,7 +61,7 @@
     "@vaadin/theme-loader": "./target/plugins/theme-loader",
     "chokidar": "3.5.1",
     "compression-webpack-plugin": "4.0.1",
-    "css-loader": "4.2.1",
+    "css-loader": "5.2.6",
     "extra-watch-webpack-plugin": "1.0.3",
     "extract-loader": "5.1.0",
     "file-loader": "6.2.0",
