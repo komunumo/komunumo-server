@@ -20,11 +20,13 @@ package org.komunumo.data.service;
 
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
+import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.db.tables.records.EventSpeakerRecord;
-import org.komunumo.data.db.tables.records.SpeakerRecord;
+import org.komunumo.data.entity.Speaker;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.jooq.impl.DSL.select;
@@ -35,13 +37,12 @@ import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 public class EventSpeakerService {
 
     private final DSLContext dsl;
+    private final SpeakerService speakerService;
 
-    public EventSpeakerService(@NotNull final DSLContext dsl) {
+    public EventSpeakerService(@NotNull final DSLContext dsl,
+                               @NotNull final SpeakerService speakerService) {
         this.dsl = dsl;
-    }
-
-    public EventSpeakerRecord newRecord() {
-        return dsl.newRecord(EVENT_SPEAKER);
+        this.speakerService = speakerService;
     }
 
     public Optional<EventSpeakerRecord> get(@NotNull final Long eventId,
@@ -55,11 +56,7 @@ public class EventSpeakerService {
         eventSpeaker.store();
     }
 
-    public void deleteEventSpeakers(@NotNull final Long eventId) {
-        dsl.delete(EVENT_SPEAKER).where(EVENT_SPEAKER.EVENT_ID.eq(eventId)).execute();
-    }
-
-    public Stream<SpeakerRecord> getSpeakersForEvent(@NotNull final Long eventId) {
+    public Stream<Speaker> getSpeakersForEvent(@NotNull final Long eventId) {
         return dsl
                 .selectFrom(SPEAKER)
                 .where(SPEAKER.ID.in(
@@ -68,6 +65,47 @@ public class EventSpeakerService {
                                 .where(EVENT_SPEAKER.EVENT_ID.eq(eventId))
                 ))
                 .fetch()
-                .stream();
+                .stream()
+                .map(Speaker::new);
+    }
+
+    public void setEventSpeakers(@NotNull final EventRecord event,
+                                 @NotNull final Set<Speaker> speakers) {
+        synchronized (speakers) {
+            getSpeakersForEvent(event.getId()).forEach(speaker -> {
+                if (speakers.contains(speaker)) {
+                    speakers.remove(speaker);
+                } else {
+                    removeSpeakerFromEvent(event, speaker);
+                    speakerService.updateEventCount(speaker);
+                }
+            });
+            speakers.forEach(speaker -> {
+                addSpeakerToEvent(event, speaker);
+                speakerService.updateEventCount(speaker);
+            });
+        }
+    }
+
+    private void addSpeakerToEvent(@NotNull final EventRecord event,
+                                   @NotNull final Speaker speaker) {
+        final var eventSpeaker = dsl.newRecord(EVENT_SPEAKER);
+        eventSpeaker.setEventId(event.getId());
+        eventSpeaker.setSpeakerId(speaker.getId());
+        eventSpeaker.store();
+    }
+
+    private void removeSpeakerFromEvent(@NotNull final EventRecord event,
+                                        @NotNull final Speaker speaker) {
+        dsl.delete(EVENT_SPEAKER)
+                .where(EVENT_SPEAKER.EVENT_ID.eq(event.getId()))
+                .and(EVENT_SPEAKER.SPEAKER_ID.eq(speaker.getId()))
+                .execute();
+    }
+
+    public void removeAllSpeakersFromEvent(@NotNull final EventRecord event) {
+        dsl.delete(EVENT_SPEAKER)
+                .where(EVENT_SPEAKER.EVENT_ID.eq(event.getId()))
+                .execute();
     }
 }

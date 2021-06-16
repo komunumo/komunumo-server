@@ -58,6 +58,7 @@ CREATE TABLE speaker (
     city VARCHAR(255) NOT NULL DEFAULT '',
     state VARCHAR(255) NOT NULL DEFAULT '',
     country VARCHAR(255) NOT NULL DEFAULT '',
+    event_count INTEGER UNSIGNED NOT NULL DEFAULT 0,
 
     PRIMARY KEY (id)
 );

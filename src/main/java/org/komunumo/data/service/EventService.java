@@ -18,6 +18,7 @@
 
 package org.komunumo.data.service;
 
+import com.vaadin.flow.router.NotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
@@ -89,8 +90,9 @@ public class EventService {
     }
 
     public void deleteEvent(@NotNull final Long eventId) {
-        eventSpeakerService.deleteEventSpeakers(eventId);
-        dsl.delete(EVENT).where(EVENT.ID.eq(eventId)).execute();
+        final var event = get(eventId).orElseThrow(NotFoundException::new); // TODO use event object as parameter
+        eventSpeakerService.removeAllSpeakersFromEvent(event);
+        dsl.delete(EVENT).where(EVENT.ID.eq(event.getId())).execute();
     }
 
 }

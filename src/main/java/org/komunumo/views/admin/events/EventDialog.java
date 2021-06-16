@@ -40,8 +40,8 @@ import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
 import org.komunumo.data.db.enums.EventLocation;
-import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.entity.EventGridItem;
+import org.komunumo.data.entity.Speaker;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.SpeakerService;
@@ -70,11 +70,10 @@ public class EventDialog extends Dialog {
         final var titleField = new TextField("Title");
         titleField.setRequiredIndicatorVisible(true);
         final var subtitleField = new TextField("Subtitle");
-        final var speakerField = new MultiselectComboBox<SpeakerRecord>("Speaker");
+        final var speakerField = new MultiselectComboBox<Speaker>("Speaker");
         speakerField.setOrdered(true);
-        speakerField.setItemLabelGenerator(speakerRecord -> String.format("%s %s",
-                speakerRecord.getFirstName(), speakerRecord.getLastName()));
-        speakerField.setItems(speakerService.list(0, Integer.MAX_VALUE));
+        speakerField.setItemLabelGenerator(Speaker::getFullName);
+        speakerField.setItems(speakerService.find(0, Integer.MAX_VALUE, null));
         final var abstractField = new TextArea("Abstract");
         final var agendaField = new TextArea("Agenda");
         final var levelField = new Select<>(EventLevel.values());
@@ -148,15 +147,7 @@ public class EventDialog extends Dialog {
                 eventRecord.setVisible(visibleField.getValue());
                 eventRecord.store();
 
-                eventSpeakerService.deleteEventSpeakers(eventRecord.getId());
-                speakerField.getValue().forEach(speakerRecord -> {
-                    if (eventSpeakerService.get(eventRecord.getId(), speakerRecord.getId()).isEmpty()) {
-                        final var eventSpeaker = eventSpeakerService.newRecord();
-                        eventSpeaker.setEventId(eventRecord.getId());
-                        eventSpeaker.setSpeakerId(speakerRecord.getId());
-                        eventSpeaker.store();
-                    }
-                });
+                eventSpeakerService.setEventSpeakers(eventRecord, speakerField.getValue());
 
                 Notification.show("Event saved.");
                 close();
