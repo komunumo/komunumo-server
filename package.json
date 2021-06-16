@@ -67,7 +67,7 @@
     "file-loader": "6.2.0",
     "fork-ts-checker-webpack-plugin": "6.2.10",
     "glob": "7.1.7",
-    "html-webpack-plugin": "4.5.2",
+    "html-webpack-plugin": "5.3.1",
     "lit-css-loader": "0.1.0",
     "loader-utils": "2.0.0",
     "style-loader": "2.0.0",
