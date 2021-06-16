@@ -124,10 +124,12 @@ public class EventDialog extends Dialog {
             if (titleField.getValue().isBlank()) {
                 Notification.show("Please enter at least the title!");
                 saveButton.setEnabled(true);
-            } else if (dateField.getValue() == null || timeField.getValue() == null) {
+            } else if (dateField.getValue() == null && timeField.getValue() != null
+                    || dateField.getValue() != null && timeField.getValue() == null) {
                 Notification.show("Please enter a date and a time or none of them!");
                 saveButton.setEnabled(true);
-            } else if (LocalDateTime.of(dateField.getValue(), timeField.getValue()).isBefore(LocalDateTime.now())) {
+            } else if (dateField.getValue() != null && timeField.getValue() != null
+                    && LocalDateTime.of(dateField.getValue(), timeField.getValue()).isBefore(LocalDateTime.now())) {
                 Notification.show("Please enter a date and time in the future!");
                 saveButton.setEnabled(true);
             } else {
