@@ -64,9 +64,10 @@ public class EventsView extends Div {
 
         grid = createGrid();
         filterField = createFilter();
-        final var newEventButton = new Button(new Icon(VaadinIcon.FILE_ADD), event -> editEvent(null));
 
-        final var optionBar = new HorizontalLayout(filterField, newEventButton);
+        final var newEventButton = new Button(new Icon(VaadinIcon.FILE_ADD), event -> editEvent(null));
+        final var refreshEventsButton = new Button(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
+        final var optionBar = new HorizontalLayout(filterField, newEventButton, refreshEventsButton);
         optionBar.setPadding(true);
 
         add(optionBar, grid);
