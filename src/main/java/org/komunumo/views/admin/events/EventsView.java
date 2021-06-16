@@ -128,11 +128,11 @@ public class EventsView extends Div {
         new ConfirmDialog("Confirm deletion",
                 String.format("Are you sure you want to permanently delete the event \"%s\"?", record.getTitle()),
                 "Delete", (dialogEvent) -> {
-            final var eventId = record.getId();
-            eventService.deleteEvent(eventId);
-            reloadGridItems();
-            dialogEvent.getSource().close();
-        },
+                    final var eventId = record.getId();
+                    eventService.deleteEvent(eventId);
+                    reloadGridItems();
+                    dialogEvent.getSource().close();
+                },
                 "Cancel", (dialogEvent) -> dialogEvent.getSource().close()
         ).open();
     }
