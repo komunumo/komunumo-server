@@ -82,6 +82,7 @@ public class EventsView extends Div implements HasUrlParameter<String> {
     private TextField createFilter() {
         final var filter = new TextField();
         filter.setPlaceholder("Filter");
+        filter.setClearButtonVisible(true);
         filter.setValueChangeMode(ValueChangeMode.EAGER);
         filter.focus();
         filter.addValueChangeListener(event -> reloadGridItems());
