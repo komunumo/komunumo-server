@@ -3,6 +3,7 @@
     "config:base"
   ],
   "ignorePaths": [
+    "Dockerfile",
     "package.json",
     "pnpm-lock.yaml"
   ]
