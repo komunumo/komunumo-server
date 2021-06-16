@@ -28,6 +28,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -35,6 +36,10 @@ import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Speaker;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.views.admin.AdminView;
+
+import java.net.URLEncoder;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Route(value = "admin/speakers/", layout = AdminView.class)
 @PageTitle("Speaker Administration")
@@ -79,7 +84,12 @@ public class SpeakersView extends Div {
         grid.addColumn(Speaker::getCompany).setHeader("Company").setAutoWidth(true);
         grid.addColumn(Speaker::getEmail).setHeader("Email").setAutoWidth(true);
         grid.addColumn(Speaker::getTwitter).setHeader("Twitter").setAutoWidth(true);
-        grid.addColumn(Speaker::getEventCount).setHeader("Events").setAutoWidth(true);
+
+        final var eventCountRenderer = TemplateRenderer.<Speaker>of(
+                "<a href=\"/admin/events?filter=[[item.filterValue]]\">[[item.eventCount]]</a>")
+                .withProperty("eventCount", Speaker::getEventCount)
+                .withProperty("filterValue", (speaker) -> URLEncoder.encode(speaker.getFullName(), UTF_8));
+        grid.addColumn(eventCountRenderer).setHeader("Events").setAutoWidth(true);
 
         grid.addColumn(new ComponentRenderer<>(record -> {
             final var editButton = new Button(new Icon(VaadinIcon.EDIT), event -> editSpeaker(record));
