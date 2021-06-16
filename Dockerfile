@@ -26,7 +26,7 @@ COPY --chown=myuser:myuser package-lock.json* pnpm-lock.yaml* webpack.config.js*
 RUN mvn clean package -DskipTests -Pproduction
 
 # Running stage: the part that is used for running the application
-FROM openjdk:16-jdk-slim
+FROM openjdk:18-jdk-slim
 COPY --from=build /usr/src/app/target/*.jar /usr/app/app.jar
 RUN useradd -m myuser
 USER myuser
