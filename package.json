@@ -17,7 +17,7 @@
     "@vaadin/vaadin-confirm-dialog": "20.0.0",
     "@vaadin/vaadin-context-menu": "20.0.0",
     "@vaadin/vaadin-cookie-consent": "20.0.0",
-    "@vaadin/vaadin-core-shrinkwrap": "20.0.2",
+    "@vaadin/vaadin-core-shrinkwrap": "20.0.3",
     "@vaadin/vaadin-crud": "20.0.0",
     "@vaadin/vaadin-custom-field": "20.0.0",
     "@vaadin/vaadin-date-picker": "20.0.0",
