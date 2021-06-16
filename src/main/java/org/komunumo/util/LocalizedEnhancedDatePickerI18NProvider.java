@@ -26,13 +26,15 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
+
 public class LocalizedEnhancedDatePickerI18NProvider extends EnhancedDatePicker.DatePickerI18n {
 
     public LocalizedEnhancedDatePickerI18NProvider() {
         this(Locale.getDefault());
     }
 
-    public LocalizedEnhancedDatePickerI18NProvider(final Locale locale) {
+    public LocalizedEnhancedDatePickerI18NProvider(@NotNull final Locale locale) {
         final var symbols = new DateFormatSymbols(locale);
         this.setMonthNames(Arrays.asList(symbols.getMonths()));
         this.setFirstDayOfWeek(Calendar.getInstance(locale).getFirstDayOfWeek() == Calendar.MONDAY ? 1 : 0);

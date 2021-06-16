@@ -44,10 +44,11 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import elemental.json.Json;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.views.admin.AdminView;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.UriUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -88,7 +89,7 @@ public class SpeakersView extends Div implements BeforeEnterObserver {
 
     private final SpeakerService speakerService;
 
-    public SpeakersView(@Autowired final SpeakerService speakerService) {
+    public SpeakersView(@NotNull final SpeakerService speakerService) {
         this.speakerService = speakerService;
         addClassNames("speakers-view", "flex", "flex-col", "h-full");
 
@@ -162,7 +163,7 @@ public class SpeakersView extends Div implements BeforeEnterObserver {
     }
 
     @Override
-    public void beforeEnter(final BeforeEnterEvent event) {
+    public void beforeEnter(@NotNull final BeforeEnterEvent event) {
         final var speakerId = event.getRouteParameters().getLong(SPEAKER_ID);
         if (speakerId.isPresent()) {
             final var speakerFromBackend = speakerService.get(speakerId.get());
@@ -179,7 +180,7 @@ public class SpeakersView extends Div implements BeforeEnterObserver {
         }
     }
 
-    private void createEditorLayout(final SplitLayout splitLayout) {
+    private void createEditorLayout(@NotNull final SplitLayout splitLayout) {
         final var editorLayoutDiv = new Div();
         editorLayoutDiv.setClassName("flex flex-col");
         editorLayoutDiv.setWidth("400px");
@@ -221,7 +222,7 @@ public class SpeakersView extends Div implements BeforeEnterObserver {
         splitLayout.addToSecondary(editorLayoutDiv);
     }
 
-    private void createButtonLayout(final Div editorLayoutDiv) {
+    private void createButtonLayout(@NotNull final Div editorLayoutDiv) {
         final var buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("w-full flex-wrap bg-contrast-5 py-s px-l");
         buttonLayout.setSpacing(true);
@@ -231,7 +232,7 @@ public class SpeakersView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(buttonLayout);
     }
 
-    private void createGridLayout(final SplitLayout splitLayout) {
+    private void createGridLayout(@NotNull final SplitLayout splitLayout) {
         final var wrapper = new Div();
         wrapper.setId("grid-wrapper");
         wrapper.setWidthFull();
@@ -239,7 +240,8 @@ public class SpeakersView extends Div implements BeforeEnterObserver {
         wrapper.add(grid);
     }
 
-    private void attachImageUpload(final Upload upload, final Image preview) {
+    private void attachImageUpload(@NotNull final Upload upload,
+                                   @NotNull final Image preview) {
         final var uploadBuffer = new ByteArrayOutputStream();
         upload.setAcceptedFileTypes("image/*");
         upload.setReceiver((fileName, mimeType) -> uploadBuffer);
@@ -264,7 +266,7 @@ public class SpeakersView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(final SpeakerRecord value) {
+    private void populateForm(@Nullable final SpeakerRecord value) {
         this.speaker = value;
         binder.readBean(this.speaker);
         this.photoPreview.setVisible(value != null);

@@ -33,6 +33,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import java.time.Year;
+
+import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.EventService;
 import org.komunumo.views.admin.AdminView;
 
@@ -48,7 +50,7 @@ public class DashboardView extends Div {
 
     private final EventService eventService;
 
-    public DashboardView(final EventService eventService) {
+    public DashboardView(@NotNull final EventService eventService) {
         this.eventService = eventService;
 
         addClassName("dashboard-view");
@@ -69,8 +71,8 @@ public class DashboardView extends Div {
         populateCharts();
     }
 
-    private WrapperCard createBadge(final String title, final H2 h2, final String h2ClassName,
-                                    final String description, final String badgeTheme) {
+    private WrapperCard createBadge(@NotNull final String title, @NotNull final H2 h2, @NotNull final String h2ClassName,
+                                    @NotNull final String description, @NotNull final String badgeTheme) {
         final var titleSpan = new Span(title);
         titleSpan.getElement().setAttribute("theme", badgeTheme);
 

@@ -22,13 +22,14 @@ import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.AuthService;
 
 @Route("logout")
 @PageTitle("Logout")
 public class LogoutView extends Composite<VerticalLayout> {
 
-    public LogoutView(final AuthService authService) {
+    public LogoutView(@NotNull final AuthService authService) {
         authService.logout();
     }
 

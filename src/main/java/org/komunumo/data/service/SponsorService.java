@@ -20,6 +20,8 @@ package org.komunumo.data.service;
 
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.springframework.stereotype.Service;
@@ -31,7 +33,7 @@ public class SponsorService {
 
     private final DSLContext dsl;
 
-    public SponsorService(final DSLContext dsl) {
+    public SponsorService(@NotNull final DSLContext dsl) {
         this.dsl = dsl;
     }
 
@@ -43,11 +45,11 @@ public class SponsorService {
         return dsl.selectFrom(SPONSOR).offset(offset).limit(limit).stream();
     }
 
-    public Optional<SponsorRecord> get(final Long id) {
+    public Optional<SponsorRecord> get(@NotNull final Long id) {
         return Optional.ofNullable(dsl.selectFrom(SPONSOR).where(SPONSOR.ID.eq(id)).fetchOne());
     }
 
-    public void store(final SponsorRecord sponsor) {
+    public void store(@NotNull final SponsorRecord sponsor) {
         sponsor.store();
     }
 }

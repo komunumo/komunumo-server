@@ -27,6 +27,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
+import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.data.service.AuthService.AccessDeniedException;
 
@@ -38,7 +39,7 @@ public class ActivationView extends Composite<Component> implements BeforeEnterO
 
     private VerticalLayout layout;
 
-    public ActivationView(final AuthService authService) {
+    public ActivationView(@NotNull final AuthService authService) {
         this.authService = authService;
     }
 
@@ -49,7 +50,7 @@ public class ActivationView extends Composite<Component> implements BeforeEnterO
     }
 
     @Override
-    public void beforeEnter(final BeforeEnterEvent event) {
+    public void beforeEnter(@NotNull final BeforeEnterEvent event) {
         try {
             final var params = event.getLocation().getQueryParameters().getParameters();
             final var email = params.get("email").get(0);

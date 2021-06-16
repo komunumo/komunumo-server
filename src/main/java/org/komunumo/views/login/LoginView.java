@@ -28,6 +28,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.data.service.AuthService.AccessDeniedException;
 import org.komunumo.views.admin.dashboard.DashboardView;
@@ -38,7 +39,7 @@ public class LoginView extends LoginOverlay implements AfterNavigationObserver, 
 
     private final AuthService authService;
 
-    public LoginView(final AuthService authService) {
+    public LoginView(@NotNull final AuthService authService) {
         this.authService = authService;
 
         final var i18n = LoginI18n.createDefault();
@@ -93,7 +94,7 @@ public class LoginView extends LoginOverlay implements AfterNavigationObserver, 
     }
 
     @Override
-    public void beforeEnter(final BeforeEnterEvent event) {
+    public void beforeEnter(@NotNull final BeforeEnterEvent event) {
         if (authService.isUserLoggedIn()) {
             event.forwardTo(DashboardView.class);
         } else {
@@ -102,7 +103,7 @@ public class LoginView extends LoginOverlay implements AfterNavigationObserver, 
     }
 
     @Override
-    public void afterNavigation(final AfterNavigationEvent event) {
+    public void afterNavigation(@NotNull final AfterNavigationEvent event) {
         setError(event.getLocation().getQueryParameters().getParameters().containsKey("error"));
     }
 

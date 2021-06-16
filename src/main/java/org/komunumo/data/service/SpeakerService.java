@@ -18,6 +18,7 @@
 
 package org.komunumo.data.service;
 
+import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class SpeakerService {
 
     private final DSLContext dsl;
 
-    public SpeakerService(final DSLContext dsl) {
+    public SpeakerService(@NotNull final DSLContext dsl) {
         this.dsl = dsl;
     }
 
@@ -48,11 +49,11 @@ public class SpeakerService {
                 .stream();
     }
 
-    public Optional<SpeakerRecord> get(final Long id) {
+    public Optional<SpeakerRecord> get(@NotNull final Long id) {
         return Optional.ofNullable(dsl.selectFrom(SPEAKER).where(SPEAKER.ID.eq(id)).fetchOne());
     }
 
-    public void store(final SpeakerRecord speaker) {
+    public void store(@NotNull final SpeakerRecord speaker) {
         speaker.store();
     }
 

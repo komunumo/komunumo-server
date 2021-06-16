@@ -20,6 +20,8 @@ package org.komunumo.data.service;
 
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.komunumo.data.db.tables.records.MemberRecord;
 import org.springframework.stereotype.Service;
@@ -31,7 +33,7 @@ public class MemberService {
 
     private final DSLContext dsl;
 
-    public MemberService(final DSLContext dsl) {
+    public MemberService(@NotNull final DSLContext dsl) {
         this.dsl = dsl;
     }
 
@@ -43,15 +45,15 @@ public class MemberService {
         return dsl.selectFrom(MEMBER).offset(offset).limit(limit).stream();
     }
 
-    public Optional<MemberRecord> get(final Long id) {
+    public Optional<MemberRecord> get(@NotNull final Long id) {
         return Optional.ofNullable(dsl.selectFrom(MEMBER).where(MEMBER.ID.eq(id)).fetchOne());
     }
 
-    public Optional<MemberRecord> getByEmail(final String email) {
+    public Optional<MemberRecord> getByEmail(@NotNull final String email) {
         return Optional.ofNullable(dsl.selectFrom(MEMBER).where(MEMBER.EMAIL.eq(email)).fetchOne());
     }
 
-    public void store(final MemberRecord member) {
+    public void store(@NotNull final MemberRecord member) {
         member.store();
     }
 

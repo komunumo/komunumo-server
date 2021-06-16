@@ -42,10 +42,11 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.views.admin.AdminView;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = "admin/members/:memberID?/:action?(edit)", layout = AdminView.class)
 @PageTitle("Member Administration")
@@ -76,7 +77,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
 
     private final MemberService memberService;
 
-    public MembersView(@Autowired final MemberService memberService) {
+    public MembersView(@NotNull final MemberService memberService) {
         this.memberService = memberService;
         addClassNames("members-view", "flex", "flex-col", "h-full");
 
@@ -150,7 +151,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
     }
 
     @Override
-    public void beforeEnter(final BeforeEnterEvent event) {
+    public void beforeEnter(@NotNull final BeforeEnterEvent event) {
         final var memberId = event.getRouteParameters().getLong(MEMBER_ID);
         if (memberId.isPresent()) {
             final var memberFromBackend = memberService.get(memberId.get());
@@ -167,7 +168,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
         }
     }
 
-    private void createEditorLayout(final SplitLayout splitLayout) {
+    private void createEditorLayout(@NotNull final SplitLayout splitLayout) {
         final var editorLayoutDiv = new Div();
         editorLayoutDiv.setClassName("flex flex-col");
         editorLayoutDiv.setWidth("400px");
@@ -201,7 +202,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
         splitLayout.addToSecondary(editorLayoutDiv);
     }
 
-    private void createButtonLayout(final Div editorLayoutDiv) {
+    private void createButtonLayout(@NotNull final Div editorLayoutDiv) {
         final var buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("w-full flex-wrap bg-contrast-5 py-s px-l");
         buttonLayout.setSpacing(true);
@@ -211,7 +212,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(buttonLayout);
     }
 
-    private void createGridLayout(final SplitLayout splitLayout) {
+    private void createGridLayout(@NotNull final SplitLayout splitLayout) {
         final var wrapper = new Div();
         wrapper.setId("grid-wrapper");
         wrapper.setWidthFull();
@@ -228,9 +229,8 @@ public class MembersView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(final MemberRecord value) {
+    private void populateForm(@Nullable final MemberRecord value) {
         this.member = value;
         binder.readBean(this.member);
-
     }
 }

@@ -38,6 +38,7 @@ import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.views.admin.dashboard.DashboardView;
 import org.komunumo.views.admin.events.EventsView;
@@ -55,7 +56,7 @@ public class AdminView extends AppLayout {
     private final Tabs menu;
     private H1 viewTitle;
 
-    public AdminView(final AuthService authService) {
+    public AdminView(@NotNull final AuthService authService) {
         this.authService = authService;
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
@@ -90,7 +91,7 @@ public class AdminView extends AppLayout {
         }
     }
 
-    private Component createDrawerContent(final Tabs menu) {
+    private Component createDrawerContent(@NotNull final Tabs menu) {
         final var layout = new VerticalLayout();
         layout.setSizeFull();
         layout.setPadding(false);
@@ -136,7 +137,8 @@ public class AdminView extends AppLayout {
         return tabs.toArray(new Tab[0]);
     }
 
-    private static Tab createTab(final String text, final Class<? extends Component> navigationTarget) {
+    private static Tab createTab(@NotNull final String text,
+                                 @NotNull final Class<? extends Component> navigationTarget) {
         final var tab = new Tab();
         tab.add(new RouterLink(text, navigationTarget));
         ComponentUtil.setData(tab, Class.class, navigationTarget);
@@ -150,7 +152,7 @@ public class AdminView extends AppLayout {
         viewTitle.setText(getCurrentPageTitle());
     }
 
-    private Optional<Tab> getTabForComponent(final Component component) {
+    private Optional<Tab> getTabForComponent(@NotNull final Component component) {
         return menu.getChildren().filter(tab -> ComponentUtil.getData(tab, Class.class).equals(component.getClass()))
                 .findFirst().map(Tab.class::cast);
     }

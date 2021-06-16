@@ -26,6 +26,8 @@ import com.vaadin.flow.server.VaadinSession;
 import java.time.LocalDateTime;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.views.admin.dashboard.DashboardView;
 import org.komunumo.views.admin.events.EventsView;
@@ -57,12 +59,15 @@ public class AuthService implements VaadinServiceInitListener {
     private final MemberService memberService;
     private final MailSender mailSender;
 
-    public AuthService(final MemberService memberService, final MailSender mailSender) {
+    public AuthService(@NotNull final MemberService memberService,
+                       @NotNull final MailSender mailSender) {
         this.memberService = memberService;
         this.mailSender = mailSender;
     }
 
-    public void authenticate(final String email, final String password) throws AccessDeniedException {
+    public void authenticate(@NotNull final String email,
+                             @NotNull final String password)
+            throws AccessDeniedException {
         final var member = memberService.getByEmail(email).orElse(null);
         if (member != null && member.getActive() && checkPassword(member, password)) {
             VaadinSession.getCurrent().setAttribute(MemberRecord.class, member);
@@ -76,13 +81,14 @@ public class AuthService implements VaadinServiceInitListener {
         }
     }
 
-    private boolean checkPassword(final MemberRecord member, final String password) {
+    private boolean checkPassword(@NotNull final MemberRecord member,
+                                  @NotNull final String password) {
         return getPasswordHash(password, member.getPasswordSalt()).equals(member.getPasswordHash());
     }
 
-    public void register(final String firstName, final String lastName, final String email,
-                         final String address, final String zipCode, final String city,
-                         final String state, final String country) {
+    public void register(@NotNull final String firstName, @NotNull final String lastName, @NotNull final String email,
+                         @Nullable final String address, @Nullable final String zipCode, @Nullable final String city,
+                         @Nullable final String state, @Nullable final String country) {
         final var member = new MemberRecord();
         member.setFirstName(firstName);
         member.setLastName(lastName);
@@ -108,7 +114,9 @@ public class AuthService implements VaadinServiceInitListener {
         mailSender.send(message);
     }
 
-    public void activate(final String email, final String activationCode) throws AccessDeniedException {
+    public void activate(@NotNull final String email,
+                         @NotNull final String activationCode)
+            throws AccessDeniedException {
         final var member = memberService.getByEmail(email).orElse(null);
         if (member != null && member.getActivationCode().equals(activationCode)) {
             member.setActive(true);
@@ -118,7 +126,7 @@ public class AuthService implements VaadinServiceInitListener {
         }
     }
 
-    public void resetPassword(final String email) {
+    public void resetPassword(@NotNull final String email) {
         final var member = memberService.getByEmail(email);
         if (member.isPresent()) {
             final var record = member.get();
@@ -141,7 +149,9 @@ public class AuthService implements VaadinServiceInitListener {
         }
     }
 
-    public void changePassword(final String oldPassword, final String newPassword) throws AccessDeniedException {
+    public void changePassword(@NotNull final String oldPassword,
+                               @NotNull final String newPassword)
+            throws AccessDeniedException {
         final var member = getCurrentUser();
         if (checkPassword(member, oldPassword)) {
             final var passwordSalt = createPasswordSalt();
@@ -198,14 +208,14 @@ public class AuthService implements VaadinServiceInitListener {
     }
 
     @Override
-    public void serviceInit(final ServiceInitEvent event) {
+    public void serviceInit(@NotNull final ServiceInitEvent event) {
         event.getSource().addUIInitListener(uiEvent -> {
             final var ui = uiEvent.getUI();
             ui.addBeforeEnterListener(this::beforeEnter);
         });
     }
 
-    private void beforeEnter(final BeforeEnterEvent event) {
+    private void beforeEnter(@NotNull final BeforeEnterEvent event) {
         final boolean accessGranted = isAccessGranted(event.getNavigationTarget());
         if (!accessGranted) {
             if (isUserLoggedIn()) {
@@ -220,7 +230,8 @@ public class AuthService implements VaadinServiceInitListener {
         return RandomStringUtils.randomAscii(32);
     }
 
-    public String getPasswordHash(final String password, final String passwordSalt) {
+    public String getPasswordHash(@NotNull final String password,
+                                  @NotNull final String passwordSalt) {
         return DigestUtils.sha1Hex(password + passwordSalt);
     }
 

@@ -18,6 +18,7 @@
 
 package org.komunumo.data.service;
 
+import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.komunumo.data.db.tables.records.EventSpeakerRecord;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
@@ -35,7 +36,7 @@ public class EventSpeakerService {
 
     private final DSLContext dsl;
 
-    public EventSpeakerService(final DSLContext dsl) {
+    public EventSpeakerService(@NotNull final DSLContext dsl) {
         this.dsl = dsl;
     }
 
@@ -43,21 +44,22 @@ public class EventSpeakerService {
         return dsl.newRecord(EVENT_SPEAKER);
     }
 
-    public Optional<EventSpeakerRecord> get(final Long eventId, final Long speakerId) {
+    public Optional<EventSpeakerRecord> get(@NotNull final Long eventId,
+                                            @NotNull final Long speakerId) {
         return Optional.ofNullable(dsl.selectFrom(EVENT_SPEAKER)
                 .where(EVENT_SPEAKER.EVENT_ID.eq(eventId).and(EVENT_SPEAKER.SPEAKER_ID.eq(speakerId)))
                 .fetchOne());
     }
 
-    public void store(final EventSpeakerRecord eventSpeaker) {
+    public void store(@NotNull final EventSpeakerRecord eventSpeaker) {
         eventSpeaker.store();
     }
 
-    public void deleteEventSpeakers(final Long eventId) {
+    public void deleteEventSpeakers(@NotNull final Long eventId) {
         dsl.delete(EVENT_SPEAKER).where(EVENT_SPEAKER.EVENT_ID.eq(eventId)).execute();
     }
 
-    public Stream<SpeakerRecord> getSpeakersForEvent(final Long eventId) {
+    public Stream<SpeakerRecord> getSpeakersForEvent(@NotNull final Long eventId) {
         return dsl
                 .selectFrom(SPEAKER)
                 .where(SPEAKER.ID.in(

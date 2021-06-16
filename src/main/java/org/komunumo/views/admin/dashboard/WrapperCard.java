@@ -20,10 +20,13 @@ package org.komunumo.views.admin.dashboard;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
+import org.jetbrains.annotations.NotNull;
 
 public class WrapperCard extends Div {
 
-    public WrapperCard(final String className, final Component[] components, final String... classes) {
+    public WrapperCard(@NotNull final String className,
+                       @NotNull final Component[] components,
+                       @NotNull final String... classes) {
         addClassName(className);
 
         final var card = new Div();

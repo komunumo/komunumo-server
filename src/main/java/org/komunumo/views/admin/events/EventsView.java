@@ -32,12 +32,13 @@ import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.EventGridItem;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.views.admin.AdminView;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.format.DateTimeFormatter;
 
@@ -52,9 +53,9 @@ public class EventsView extends Div {
     private final TextField filterField;
     private final Grid<EventGridItem> grid;
 
-    public EventsView(@Autowired final EventService eventService,
-                      @Autowired final SpeakerService speakerService,
-                      @Autowired final EventSpeakerService eventSpeakerService) {
+    public EventsView(@NotNull final EventService eventService,
+                      @NotNull final SpeakerService speakerService,
+                      @NotNull final EventSpeakerService eventSpeakerService) {
         this.eventService = eventService;
         this.speakerService = speakerService;
         this.eventSpeakerService = eventSpeakerService;
@@ -116,13 +117,13 @@ public class EventsView extends Div {
         return grid;
     }
 
-    private void editEvent(final EventGridItem record) {
+    private void editEvent(@Nullable final EventGridItem record) {
         final var dialog = new EventDialog(record, eventService, speakerService, eventSpeakerService);
         dialog.addDialogCloseActionListener(event -> reloadGridItems());
         dialog.open();
     }
 
-    private void deleteEvent(final EventGridItem record) {
+    private void deleteEvent(@NotNull final EventGridItem record) {
         new ConfirmDialog("Confirm deletion",
                 String.format("Are you sure you want to permanently delete the event \"%s\"?", record.getTitle()),
                 "Delete", (dialogEvent) -> {

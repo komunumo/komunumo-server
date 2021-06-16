@@ -18,6 +18,7 @@
 
 package org.komunumo.data.entity;
 
+import org.jetbrains.annotations.NotNull;
 import org.jooq.Record;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
@@ -31,7 +32,7 @@ public class EventGridItem {
 
     private final Record record;
 
-    public EventGridItem(final Record record) {
+    public EventGridItem(@NotNull final Record record) {
         this.record = record;
     }
 

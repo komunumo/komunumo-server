@@ -35,6 +35,8 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
 import org.komunumo.data.db.enums.EventLocation;
@@ -55,10 +57,10 @@ public class EventDialog extends Dialog {
 
     private final Focusable<? extends Component> focusField;
 
-    public EventDialog(final EventGridItem record,
-                       final EventService eventService,
-                       final SpeakerService speakerService,
-                       final EventSpeakerService eventSpeakerService) {
+    public EventDialog(@Nullable final EventGridItem record,
+                       @NotNull final EventService eventService,
+                       @NotNull final SpeakerService speakerService,
+                       @NotNull final EventSpeakerService eventSpeakerService) {
         setCloseOnEsc(true);
         setCloseOnOutsideClick(false);
 

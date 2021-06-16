@@ -45,15 +45,17 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import elemental.json.Json;
-import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.data.service.SponsorService;
 import org.komunumo.views.admin.AdminView;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.UriUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 @Route(value = "admin/sponsors/:sponsorID?/:action?(edit)", layout = AdminView.class)
 @PageTitle("Sponsor Administration")
@@ -81,7 +83,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
 
     private final SponsorService sponsorService;
 
-    public SponsorsView(@Autowired final SponsorService sponsorService) {
+    public SponsorsView(@NotNull final SponsorService sponsorService) {
         this.sponsorService = sponsorService;
         addClassNames("sponsors-view", "flex", "flex-col", "h-full");
 
@@ -157,7 +159,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
     }
 
     @Override
-    public void beforeEnter(final BeforeEnterEvent event) {
+    public void beforeEnter(@NotNull final BeforeEnterEvent event) {
         final var sponsorId = event.getRouteParameters().getLong(SPONSOR_ID);
         if (sponsorId.isPresent()) {
             final var sponsorFromBackend = sponsorService.get(sponsorId.get());
@@ -174,7 +176,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
         }
     }
 
-    private void createEditorLayout(final SplitLayout splitLayout) {
+    private void createEditorLayout(@NotNull final SplitLayout splitLayout) {
         final var editorLayoutDiv = new Div();
         editorLayoutDiv.setClassName("flex flex-col");
         editorLayoutDiv.setWidth("400px");
@@ -208,7 +210,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
         splitLayout.addToSecondary(editorLayoutDiv);
     }
 
-    private void createButtonLayout(final Div editorLayoutDiv) {
+    private void createButtonLayout(@NotNull final Div editorLayoutDiv) {
         final var buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("w-full flex-wrap bg-contrast-5 py-s px-l");
         buttonLayout.setSpacing(true);
@@ -218,7 +220,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(buttonLayout);
     }
 
-    private void createGridLayout(final SplitLayout splitLayout) {
+    private void createGridLayout(@NotNull final SplitLayout splitLayout) {
         final var wrapper = new Div();
         wrapper.setId("grid-wrapper");
         wrapper.setWidthFull();
@@ -226,7 +228,8 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
         wrapper.add(grid);
     }
 
-    private void attachImageUpload(final Upload upload, final Image preview) {
+    private void attachImageUpload(@NotNull final Upload upload,
+                                   @NotNull final Image preview) {
         final var uploadBuffer = new ByteArrayOutputStream();
         upload.setAcceptedFileTypes("image/*");
         upload.setReceiver((fileName, mimeType) -> uploadBuffer);
@@ -251,7 +254,7 @@ public class SponsorsView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(final SponsorRecord value) {
+    private void populateForm(@Nullable final SponsorRecord value) {
         this.sponsor = value;
         binder.readBean(this.sponsor);
         this.logoPreview.setVisible(value != null);

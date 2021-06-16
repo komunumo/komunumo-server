@@ -22,6 +22,7 @@ import com.vaadin.flow.spring.annotation.SpringComponent;
 
 import java.time.LocalDateTime;
 
+import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.data.service.MemberService;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,8 +37,8 @@ public class DataInitializer {
 
     @Bean
     public CommandLineRunner initializeData(
-            final MemberService memberService,
-            final AuthService authService) {
+            @NotNull final MemberService memberService,
+            @NotNull final AuthService authService) {
         return args -> {
             if (adminEmail != null && !adminEmail.isBlank()) {
                 final var member = memberService.getByEmail(adminEmail);

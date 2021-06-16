@@ -20,6 +20,8 @@ package org.komunumo.views.admin.dashboard;
 
 import java.time.LocalDate;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Simple DTO class for the inbox list to demonstrate complex object data
  */
@@ -31,8 +33,8 @@ public class HealthGridItem {
     private String status;
     private String theme;
 
-    public HealthGridItem(final LocalDate date, final String city, final String country,
-                          final String status, final String theme) {
+    public HealthGridItem(@NotNull final LocalDate date, @NotNull final String city, @NotNull final String country,
+                          @NotNull final String status, @NotNull final String theme) {
         this.date = date;
         this.city = city;
         this.country = country;
@@ -44,7 +46,7 @@ public class HealthGridItem {
         return date;
     }
 
-    public void setDate(final LocalDate date) {
+    public void setDate(@NotNull final LocalDate date) {
         this.date = date;
     }
 
@@ -52,7 +54,7 @@ public class HealthGridItem {
         return city;
     }
 
-    public void setCity(final String city) {
+    public void setCity(@NotNull final String city) {
         this.city = city;
     }
 
@@ -60,7 +62,7 @@ public class HealthGridItem {
         return country;
     }
 
-    public void setCountry(final String country) {
+    public void setCountry(@NotNull final String country) {
         this.country = country;
     }
 
@@ -68,7 +70,7 @@ public class HealthGridItem {
         return status;
     }
 
-    public void setStatus(final String status) {
+    public void setStatus(@NotNull final String status) {
         this.status = status;
     }
 
@@ -76,7 +78,7 @@ public class HealthGridItem {
         return theme;
     }
 
-    public void setTheme(final String theme) {
+    public void setTheme(@NotNull final String theme) {
         this.theme = theme;
     }
 }

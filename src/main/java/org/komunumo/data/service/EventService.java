@@ -18,18 +18,18 @@
 
 package org.komunumo.data.service;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Year;
-import java.util.Optional;
-import java.util.stream.Stream;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Record5;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.entity.EventGridItem;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalTime;
+import java.time.Year;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
@@ -46,7 +46,8 @@ public class EventService {
     private final DSLContext dsl;
     private final EventSpeakerService eventSpeakerService;
 
-    public EventService(final DSLContext dsl, final EventSpeakerService eventSpeakerService) {
+    public EventService(@NotNull final DSLContext dsl,
+                        @NotNull final EventSpeakerService eventSpeakerService) {
         this.dsl = dsl;
         this.eventSpeakerService = eventSpeakerService;
     }
@@ -55,21 +56,21 @@ public class EventService {
         return dsl.newRecord(EVENT);
     }
 
-    public Optional<EventRecord> get(final Long id) {
+    public Optional<EventRecord> get(@NotNull final Long id) {
         return Optional.ofNullable(dsl.selectFrom(EVENT).where(EVENT.ID.eq(id)).fetchOne());
     }
 
-    public void store(final EventRecord event) {
+    public void store(@NotNull final EventRecord event) {
         event.store();
     }
 
-    public int countByYear(final Year year) {
+    public int countByYear(@NotNull final Year year) {
         final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
         final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
         return dsl.fetchCount(EVENT, EVENT.DATE.between(firstDay, lastDay));
     }
 
-    public Stream<EventGridItem> eventsForGrid(final int offset, final int limit, final String filter) {
+    public Stream<EventGridItem> eventsForGrid(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter + "%";
         return dsl.select(
                     EVENT.ID, EVENT.TITLE, EVENT.SUBTITLE, EVENT.ABSTRACT, EVENT.AGENDA,
@@ -87,7 +88,7 @@ public class EventService {
                 .map(EventGridItem::new);
     }
 
-    public void deleteEvent(final Long eventId) {
+    public void deleteEvent(@NotNull final Long eventId) {
         eventSpeakerService.deleteEventSpeakers(eventId);
         dsl.delete(EVENT).where(EVENT.ID.eq(eventId)).execute();
     }

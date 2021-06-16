@@ -26,13 +26,14 @@ import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.AuthService;
 
 @Route("register")
 @PageTitle("Register")
 public class RegisterView extends Div {
 
-    public RegisterView(final AuthService authService) {
+    public RegisterView(@NotNull final AuthService authService) {
         addClassName("register-view");
 
         final var firstName = new TextField("First Name");

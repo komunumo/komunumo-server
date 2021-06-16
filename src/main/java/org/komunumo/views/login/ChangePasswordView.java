@@ -30,6 +30,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.data.service.AuthService.AccessDeniedException;
 
@@ -37,7 +38,7 @@ import org.komunumo.data.service.AuthService.AccessDeniedException;
 @PageTitle("Change Password")
 public class ChangePasswordView extends VerticalLayout {
 
-    public ChangePasswordView(final AuthService authService) {
+    public ChangePasswordView(@NotNull final AuthService authService) {
         final var title = new H2("Change password");
         final var oldPassword = new PasswordField("Old password (or one time password)");
         oldPassword.setRequired(true);

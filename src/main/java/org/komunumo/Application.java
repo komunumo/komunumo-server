@@ -21,6 +21,7 @@ package org.komunumo;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -42,7 +43,7 @@ public class Application extends SpringBootServletInitializer implements AppShel
     @Value("${application.version}")
     public static String APPLICATION_VERSION;
 
-    public static void main(final String[] args) {
+    public static void main(@NotNull final String[] args) {
         SpringApplication.run(Application.class, args);
     }
 
