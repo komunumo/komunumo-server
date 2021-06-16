@@ -30,6 +30,9 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.jetbrains.annotations.NotNull;
@@ -41,10 +44,11 @@ import org.komunumo.data.service.SpeakerService;
 import org.komunumo.views.admin.AdminView;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Route(value = "admin/events", layout = AdminView.class)
 @PageTitle("Event Administration")
-public class EventsView extends Div {
+public class EventsView extends Div implements HasUrlParameter<String> {
 
     private final EventService eventService;
     private final SpeakerService speakerService;
@@ -82,6 +86,16 @@ public class EventsView extends Div {
         filter.focus();
         filter.addValueChangeListener(event -> reloadGridItems());
         return filter;
+    }
+
+    @Override
+    public void setParameter(@NotNull final BeforeEvent event,
+                             @Nullable @OptionalParameter String parameter) {
+        final var location = event.getLocation();
+        final var queryParameters = location.getQueryParameters();
+        final var parameters = queryParameters.getParameters();
+        final var filterValue = parameters.getOrDefault("filter", List.of("")).get(0);
+        filterField.setValue(filterValue);
     }
 
     private Grid<EventGridItem> createGrid() {
