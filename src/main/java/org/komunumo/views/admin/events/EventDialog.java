@@ -102,8 +102,10 @@ public class EventDialog extends Dialog {
             levelField.setValue(record.getLevel());
             languageField.setValue(record.getLanguage());
             locationField.setValue(record.getLocation());
-            dateField.setValue(record.getDate().toLocalDate());
-            timeField.setValue(record.getDate().toLocalTime());
+            if (record.getDate() != null) {
+                dateField.setValue(record.getDate().toLocalDate());
+                timeField.setValue(record.getDate().toLocalTime());
+            }
             visibleField.setValue(record.getVisible());
         }
 
@@ -115,7 +117,9 @@ public class EventDialog extends Dialog {
         final var saveButton = new Button("Save");
         saveButton.setDisableOnClick(true);
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        saveButton.setEnabled(record == null || record.getDate().isAfter(LocalDateTime.now()));
+        saveButton.setEnabled(record == null
+                || record.getDate() == null
+                || record.getDate().isAfter(LocalDateTime.now()));
         saveButton.addClickListener(event -> {
             if (titleField.getValue().isBlank()) {
                 Notification.show("Please enter at least the title!");
