@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.views.login;
+package org.komunumo.ui.view.login;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.login.LoginI18n;
@@ -31,7 +31,7 @@ import com.vaadin.flow.router.Route;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.data.service.AuthService.AccessDeniedException;
-import org.komunumo.views.admin.dashboard.DashboardView;
+import org.komunumo.ui.view.admin.dashboard.DashboardView;
 
 @Route(value = "login")
 @PageTitle("Login")

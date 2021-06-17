@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.views.admin.events;
+package org.komunumo.ui.view.admin.events;
 
 import com.vaadin.componentfactory.EnhancedDatePicker;
 import com.vaadin.flow.component.Component;

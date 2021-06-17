@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.views.login;
+package org.komunumo.ui.view.login;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;

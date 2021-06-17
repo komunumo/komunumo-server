@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.views.admin.speakers;
+package org.komunumo.ui.view.admin.speakers;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;

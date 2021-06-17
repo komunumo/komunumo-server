@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.views.admin.dashboard;
+package org.komunumo.ui.view.admin.dashboard;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Board;
@@ -36,7 +36,7 @@ import java.time.Year;
 
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.EventService;
-import org.komunumo.views.admin.AdminView;
+import org.komunumo.ui.view.admin.AdminView;
 
 @Route(value = "admin/dashboard", layout = AdminView.class)
 @RouteAlias(value = "", layout = AdminView.class)

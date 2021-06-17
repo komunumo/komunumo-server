@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.views.admin;
+package org.komunumo.ui.view.admin;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
@@ -40,12 +40,12 @@ import java.util.Optional;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.AuthService;
-import org.komunumo.views.admin.dashboard.DashboardView;
-import org.komunumo.views.admin.events.EventsView;
-import org.komunumo.views.admin.members.MembersView;
-import org.komunumo.views.admin.speakers.SpeakersView;
-import org.komunumo.views.admin.sponsors.SponsorsView;
-import org.komunumo.views.logout.LogoutView;
+import org.komunumo.ui.view.admin.dashboard.DashboardView;
+import org.komunumo.ui.view.admin.events.EventsView;
+import org.komunumo.ui.view.admin.members.MembersView;
+import org.komunumo.ui.view.admin.speakers.SpeakersView;
+import org.komunumo.ui.view.admin.sponsors.SponsorsView;
+import org.komunumo.ui.view.logout.LogoutView;
 
 /**
  * The main view is a top-level placeholder for other views.

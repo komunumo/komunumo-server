@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.views.admin.members;
+package org.komunumo.ui.view.admin.members;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
@@ -46,7 +46,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.service.MemberService;
-import org.komunumo.views.admin.AdminView;
+import org.komunumo.ui.view.admin.AdminView;
 
 @Route(value = "admin/members/:memberID?/:action?(edit)", layout = AdminView.class)
 @PageTitle("Member Administration")

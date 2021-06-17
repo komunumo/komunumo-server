@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.views.admin.sponsors;
+package org.komunumo.ui.view.admin.sponsors;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
@@ -50,7 +50,7 @@ import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.data.service.SponsorService;
-import org.komunumo.views.admin.AdminView;
+import org.komunumo.ui.view.admin.AdminView;
 import org.springframework.web.util.UriUtils;
 
 import java.io.ByteArrayOutputStream;

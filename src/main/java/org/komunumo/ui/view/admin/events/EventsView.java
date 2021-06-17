@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.views.admin.events;
+package org.komunumo.ui.view.admin.events;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -41,7 +41,7 @@ import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.FilterField;
-import org.komunumo.views.admin.AdminView;
+import org.komunumo.ui.view.admin.AdminView;
 
 import java.net.URLEncoder;
 import java.time.format.DateTimeFormatter;
