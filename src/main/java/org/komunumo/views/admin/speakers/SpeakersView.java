@@ -29,22 +29,20 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
-import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-
-import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.SpeakerService;
+import org.komunumo.ui.component.FilterField;
 import org.komunumo.views.admin.AdminView;
 
 import java.net.URLEncoder;
+import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -63,7 +61,8 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
         addClassNames("speakers-view", "flex", "flex-col", "h-full");
 
         grid = createGrid();
-        filterField = createFilter();
+        filterField = new FilterField();
+        filterField.addValueChangeListener(event -> reloadGridItems());
 
         final var newSpeakerButton = new Button(new Icon(VaadinIcon.FILE_ADD), event -> editSpeaker(speakerService.newSpeaker()));
         final var refreshSpeakersButton = new Button(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
@@ -71,18 +70,8 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
         optionBar.setPadding(true);
 
         add(optionBar, grid);
-
         reloadGridItems();
-    }
-
-    private TextField createFilter() {
-        final var filter = new TextField();
-        filter.setPlaceholder("Filter");
-        filter.setClearButtonVisible(true);
-        filter.setValueChangeMode(ValueChangeMode.EAGER);
-        filter.focus();
-        filter.addValueChangeListener(event -> reloadGridItems());
-        return filter;
+        filterField.focus();
     }
 
     @Override
