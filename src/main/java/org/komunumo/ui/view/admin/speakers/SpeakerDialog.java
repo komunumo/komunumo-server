@@ -67,6 +67,7 @@ public class SpeakerDialog extends Dialog {
         bioField.setValue(speaker.getBio());
 
         final var photoField = new ImageUploadField("Photo");
+        photoField.setPreviewWidth("150px");
         photoField.setValue(speaker.getPhoto());
 
         final var emailField = new EmailField("Email");

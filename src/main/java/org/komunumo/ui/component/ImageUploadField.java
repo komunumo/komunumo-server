@@ -100,4 +100,8 @@ public class ImageUploadField extends CustomField<String> {
         }
     }
 
+    public void setPreviewWidth(@NotNull final String width) {
+        preview.setWidth(width);
+    }
+
 }
