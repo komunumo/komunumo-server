@@ -36,6 +36,9 @@ import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.ImageUploadField;
+import org.komunumo.util.GravatarUtil;
+
+import static org.komunumo.util.GravatarUtil.GRAVATAR_URL;
 
 public class SpeakerDialog extends Dialog {
 
@@ -68,6 +71,15 @@ public class SpeakerDialog extends Dialog {
 
         final var emailField = new EmailField("Email");
         emailField.setValue(speaker.getEmail());
+        emailField.addValueChangeListener(changeEvent -> {
+            final var email = changeEvent.getValue();
+            final var photo = photoField.getValue();
+            if (!email.isBlank() && (photo.isBlank() || photo.startsWith(GRAVATAR_URL))) {
+                photoField.setValue(GravatarUtil.getGravatarAddress(email));
+            } else if (email.isBlank() && photo.startsWith(GRAVATAR_URL)) {
+                photoField.setValue("");
+            }
+        });
 
         final var twitterField = new TextField("Twitter");
         twitterField.setValue(speaker.getTwitter());

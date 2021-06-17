@@ -23,8 +23,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class GravatarUtil {
 
+    public static final String GRAVATAR_URL = "https://www.gravatar.com/avatar/";
+
     public static String getGravatarAddress(@NotNull final String email) {
-        return "https://www.gravatar.com/avatar/" + DigestUtils.md5Hex(email);
+        return GRAVATAR_URL + DigestUtils.md5Hex(email);
     }
 
 }
