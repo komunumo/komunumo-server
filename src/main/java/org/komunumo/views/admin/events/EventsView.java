@@ -37,7 +37,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.komunumo.data.entity.EventGridItem;
+import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.SpeakerService;
@@ -55,7 +55,7 @@ public class EventsView extends Div implements HasUrlParameter<String> {
     private final EventSpeakerService eventSpeakerService;
 
     private final TextField filterField;
-    private final Grid<EventGridItem> grid;
+    private final Grid<EventRecord> grid;
 
     public EventsView(@NotNull final EventService eventService,
                       @NotNull final SpeakerService speakerService,
@@ -69,7 +69,7 @@ public class EventsView extends Div implements HasUrlParameter<String> {
         grid = createGrid();
         filterField = createFilter();
 
-        final var newEventButton = new Button(new Icon(VaadinIcon.FILE_ADD), event -> editEvent(null));
+        final var newEventButton = new Button(new Icon(VaadinIcon.FILE_ADD), event -> editEvent(eventService.newEvent()));
         final var refreshEventsButton = new Button(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
         final var optionBar = new HorizontalLayout(filterField, newEventButton, refreshEventsButton);
         optionBar.setPadding(true);
@@ -99,12 +99,12 @@ public class EventsView extends Div implements HasUrlParameter<String> {
         filterField.setValue(filterValue);
     }
 
-    private Grid<EventGridItem> createGrid() {
-        final var grid = new Grid<EventGridItem>();
-        grid.addColumn(EventGridItem::getTitle).setHeader("Title").setAutoWidth(true);
-        grid.addColumn(EventGridItem::getSpeaker).setHeader("Speaker").setAutoWidth(true);
+    private Grid<EventRecord> createGrid() {
+        final var grid = new Grid<EventRecord>();
+        grid.addColumn(EventRecord::getTitle).setHeader("Title").setAutoWidth(true);
+        grid.addColumn(EventRecord::getSpeaker).setHeader("Speaker").setAutoWidth(true);
 
-        final var dateRenderer = TemplateRenderer.<EventGridItem>of(
+        final var dateRenderer = TemplateRenderer.<EventRecord>of(
                 "[[item.date]]")
                 .withProperty("date", record -> {
                     final var date = record.getDate();
@@ -112,9 +112,9 @@ public class EventsView extends Div implements HasUrlParameter<String> {
                 });
         grid.addColumn(dateRenderer).setHeader("Date").setAutoWidth(true);
 
-        final var visibleRenderer = TemplateRenderer.<EventGridItem>of(
+        final var visibleRenderer = TemplateRenderer.<EventRecord>of(
                 "<iron-icon hidden='[[!item.visible]]' icon='vaadin:eye' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.visible]]' icon='vaadin:eye-slash' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
-                .withProperty("visible", EventGridItem::getVisible);
+                .withProperty("visible", EventRecord::getVisible);
         grid.addColumn(visibleRenderer).setHeader("Visible").setAutoWidth(true);
 
         grid.addColumn(new ComponentRenderer<>(record ->
@@ -133,18 +133,17 @@ public class EventsView extends Div implements HasUrlParameter<String> {
         return grid;
     }
 
-    private void editEvent(@Nullable final EventGridItem record) {
-        final var dialog = new EventDialog(record, eventService, speakerService, eventSpeakerService);
-        dialog.addOpenedChangeListener(event -> { if (!event.isOpened()) { reloadGridItems(); } } );
+    private void editEvent(@NotNull final EventRecord event) {
+        final var dialog = new EventDialog(event, eventService, speakerService, eventSpeakerService);
+        dialog.addOpenedChangeListener(changeEvent -> { if (!changeEvent.isOpened()) { reloadGridItems(); } } );
         dialog.open();
     }
 
-    private void deleteEvent(@NotNull final EventGridItem record) {
+    private void deleteEvent(@NotNull final EventRecord event) {
         new ConfirmDialog("Confirm deletion",
-                String.format("Are you sure you want to permanently delete the event \"%s\"?", record.getTitle()),
+                String.format("Are you sure you want to permanently delete the event \"%s\"?", event.getTitle()),
                 "Delete", (dialogEvent) -> {
-                    final var eventId = record.getId();
-                    eventService.deleteEvent(eventId);
+                    eventService.deleteEvent(event);
                     reloadGridItems();
                     dialogEvent.getSource().close();
                 },

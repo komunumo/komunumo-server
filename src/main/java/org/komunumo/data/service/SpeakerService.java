@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
-import org.komunumo.data.entity.Speaker;
+import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -39,16 +39,17 @@ public class SpeakerService {
         this.dsl = dsl;
     }
 
-    public Speaker newSpeaker() {
-        return new Speaker(dsl.newRecord(SPEAKER))
-                .setFirstName("")
-                .setLastName("")
-                .setCompany("")
-                .setEmail("")
-                .setTwitter("");
+    public SpeakerRecord newSpeaker() {
+        final var speaker = dsl.newRecord(SPEAKER);
+        speaker.setFirstName("");
+        speaker.setLastName("");
+        speaker.setCompany("");
+        speaker.setEmail("");
+        speaker.setTwitter("");
+        return speaker;
     }
 
-    public Stream<Speaker> find(final int offset, final int limit, @Nullable final String filter) {
+    public Stream<SpeakerRecord> find(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter + "%";
         return dsl.selectFrom(SPEAKER)
                 .where(filterValue == null ? DSL.noCondition() :
@@ -61,21 +62,19 @@ public class SpeakerService {
                 .offset(offset)
                 .limit(limit)
                 .fetch()
-                .stream()
-                .map(Speaker::new);
+                .stream();
     }
 
-    public Optional<Speaker> get(@NotNull final Long id) {
-        final var record = dsl.selectFrom(SPEAKER).where(SPEAKER.ID.eq(id)).fetchOne();
-        return Optional.ofNullable(record == null ? null : new Speaker(record));
+    public Optional<SpeakerRecord> get(@NotNull final Long id) {
+        return Optional.ofNullable(dsl.selectFrom(SPEAKER).where(SPEAKER.ID.eq(id)).fetchOne());
     }
 
-    public void store(@NotNull final Speaker speaker) {
-        speaker.getRecord().store();
+    public void store(@NotNull final SpeakerRecord speaker) {
+        speaker.store();
     }
 
-    public void delete(@NotNull final Speaker speaker) {
-        speaker.getRecord().delete();
+    public void delete(@NotNull final SpeakerRecord speaker) {
+        speaker.delete();
     }
 
 }

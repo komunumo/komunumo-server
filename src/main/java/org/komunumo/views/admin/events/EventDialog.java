@@ -36,12 +36,11 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
 import org.komunumo.data.db.enums.EventLocation;
-import org.komunumo.data.entity.EventGridItem;
-import org.komunumo.data.entity.Speaker;
+import org.komunumo.data.db.tables.records.EventRecord;
+import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.SpeakerService;
@@ -57,56 +56,65 @@ public class EventDialog extends Dialog {
 
     private final Focusable<? extends Component> focusField;
 
-    public EventDialog(@Nullable final EventGridItem record,
+    public EventDialog(@NotNull final EventRecord event,
                        @NotNull final EventService eventService,
                        @NotNull final SpeakerService speakerService,
                        @NotNull final EventSpeakerService eventSpeakerService) {
         setCloseOnEsc(true);
         setCloseOnOutsideClick(false);
 
-        final var title = new H2(record == null ? "New event" : "Edit event");
+        final var title = new H2(event.getId() == null ? "New event" : "Edit event");
         title.getStyle().set("margin-top", "0");
 
         final var titleField = new TextField("Title");
         titleField.setRequiredIndicatorVisible(true);
+        titleField.setValue(event.getTitle());
+
         final var subtitleField = new TextField("Subtitle");
-        final var speakerField = new MultiselectComboBox<Speaker>("Speaker");
+        subtitleField.setValue(event.getSubtitle());
+
+        final var speakerField = new MultiselectComboBox<SpeakerRecord>("Speaker");
         speakerField.setOrdered(true);
-        speakerField.setItemLabelGenerator(Speaker::getFullName);
+        speakerField.setItemLabelGenerator(speaker -> String.format("%s %s", speaker.getFirstName(), speaker.getLastName()));
         speakerField.setItems(speakerService.find(0, Integer.MAX_VALUE, null));
+        speakerField.setValue(eventSpeakerService.getSpeakersForEvent(event)
+                .collect(Collectors.toSet()));
+
         final var abstractField = new TextArea("Abstract");
+        abstractField.setValue(event.getAbstract());
+
         final var agendaField = new TextArea("Agenda");
+        agendaField.setValue(event.getAgenda());
+
         final var levelField = new Select<>(EventLevel.values());
         levelField.setLabel("Level");
+        levelField.setValue(event.getLevel());
+
         final var languageField = new Select<>(EventLanguage.values());
         languageField.setLabel("Language");
+        languageField.setValue(event.getLanguage());
+
         final var locationField = new Select<>(EventLocation.values());
         locationField.setLabel("Location");
+        locationField.setValue(event.getLocation());
+
         final var dateField = new EnhancedDatePicker("Date");
         dateField.setPattern("yyyy-MM-dd");
         dateField.setMin(LocalDate.now());
         dateField.setI18n(new LocalizedEnhancedDatePickerI18NProvider());
         dateField.setWeekNumbersVisible(true);
+        if (event.getDate() != null) {
+            dateField.setValue(event.getDate().toLocalDate());
+        }
+
         final var timeField = new TimePicker("Time");
         timeField.setStep(Duration.ofHours(1));
-        final var visibleField = new Checkbox("Visible");
-
-        if (record != null) {
-            titleField.setValue(record.getTitle());
-            subtitleField.setValue(record.getSubtitle());
-            speakerField.setValue(eventSpeakerService.getSpeakersForEvent(record.getId())
-                    .collect(Collectors.toSet()));
-            abstractField.setValue(record.getAbstract());
-            agendaField.setValue(record.getAgenda());
-            levelField.setValue(record.getLevel());
-            languageField.setValue(record.getLanguage());
-            locationField.setValue(record.getLocation());
-            if (record.getDate() != null) {
-                dateField.setValue(record.getDate().toLocalDate());
-                timeField.setValue(record.getDate().toLocalTime());
-            }
-            visibleField.setValue(record.getVisible());
+        if (event.getDate() != null) {
+            timeField.setValue(event.getDate().toLocalTime());
         }
+
+        final var visibleField = new Checkbox("Visible");
+        visibleField.setValue(event.getVisible());
 
         final var form = new FormLayout();
         form.add(titleField, subtitleField, speakerField, levelField,
@@ -114,47 +122,38 @@ public class EventDialog extends Dialog {
                 dateField, timeField, visibleField);
 
         final var saveButton = new Button("Save");
-        saveButton.setDisableOnClick(true);
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        saveButton.setEnabled(record == null
-                || record.getDate() == null
-                || record.getDate().isAfter(LocalDateTime.now()));
-        saveButton.addClickListener(event -> {
+        saveButton.setEnabled(event.getDate() == null || event.getDate().isAfter(LocalDateTime.now()));
+        saveButton.addClickListener(clickEvent -> {
             if (titleField.getValue().isBlank()) {
                 Notification.show("Please enter at least the title!");
-                saveButton.setEnabled(true);
             } else if (dateField.getValue() == null && timeField.getValue() != null
                     || dateField.getValue() != null && timeField.getValue() == null) {
                 Notification.show("Please enter a date and a time or none of them!");
-                saveButton.setEnabled(true);
             } else if (dateField.getValue() != null && timeField.getValue() != null
                     && LocalDateTime.of(dateField.getValue(), timeField.getValue()).isBefore(LocalDateTime.now())) {
                 Notification.show("Please enter a date and time in the future!");
-                saveButton.setEnabled(true);
             } else {
-                final var eventRecord = record != null
-                        ? eventService.get(record.getId()).orElse(eventService.newRecord())
-                        : eventService.newRecord();
-                eventRecord.setTitle(titleField.getValue());
-                eventRecord.setSubtitle(subtitleField.getValue());
-                eventRecord.setAbstract(abstractField.getValue());
-                eventRecord.setAgenda(agendaField.getValue());
-                eventRecord.setLevel(levelField.getValue());
-                eventRecord.setLanguage(languageField.getValue());
-                eventRecord.setLocation(locationField.getValue());
-                eventRecord.setDate(dateField.getValue() == null || timeField.getValue() == null ? null
+                saveButton.setEnabled(false);
+                event.setTitle(titleField.getValue());
+                event.setSubtitle(subtitleField.getValue());
+                event.setAbstract(abstractField.getValue());
+                event.setAgenda(agendaField.getValue());
+                event.setLevel(levelField.getValue());
+                event.setLanguage(languageField.getValue());
+                event.setLocation(locationField.getValue());
+                event.setDate(dateField.getValue() == null || timeField.getValue() == null ? null
                         : LocalDateTime.of(dateField.getValue(), timeField.getValue()));
-                eventRecord.setVisible(visibleField.getValue());
-                eventRecord.store();
-
-                eventSpeakerService.setEventSpeakers(eventRecord, speakerField.getValue());
+                event.setVisible(visibleField.getValue());
+                eventService.store(event);
+                eventSpeakerService.setEventSpeakers(event, speakerField.getValue());
 
                 Notification.show("Event saved.");
                 close();
             }
         });
         saveButton.addClickShortcut(Key.ENTER, KeyModifier.CONTROL);
-        final var cancelButton = new Button("Cancel", event -> close());
+        final var cancelButton = new Button("Cancel", clickEvent -> close());
         final var buttonBar = new HorizontalLayout(saveButton, cancelButton);
 
         add(title, form, buttonBar);

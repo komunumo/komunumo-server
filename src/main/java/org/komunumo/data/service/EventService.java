@@ -18,13 +18,11 @@
 
 package org.komunumo.data.service;
 
-import com.vaadin.flow.router.NotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.EventRecord;
-import org.komunumo.data.entity.EventGridItem;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -49,8 +47,14 @@ public class EventService {
         this.eventSpeakerService = eventSpeakerService;
     }
 
-    public EventRecord newRecord() {
-        return dsl.newRecord(EVENT);
+    public EventRecord newEvent() {
+        final var event = dsl.newRecord(EVENT);
+        event.setTitle("");
+        event.setSubtitle("");
+        event.setAbstract("");
+        event.setAgenda("");
+        event.setVisible(false);
+        return event;
     }
 
     public Optional<EventRecord> get(@NotNull final Long id) {
@@ -67,7 +71,7 @@ public class EventService {
         return dsl.fetchCount(EVENT, EVENT.DATE.between(firstDay, lastDay));
     }
 
-    public Stream<EventGridItem> eventsForGrid(final int offset, final int limit, @Nullable final String filter) {
+    public Stream<EventRecord> eventsForGrid(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter + "%";
         return dsl.selectFrom(EVENT)
                 .where(filterValue == null ? DSL.noCondition()
@@ -77,12 +81,10 @@ public class EventService {
                 .orderBy(when(EVENT.DATE.isNull(), 0).otherwise(1), EVENT.DATE.desc())
                 .offset(offset)
                 .limit(limit)
-                .stream()
-                .map(EventGridItem::new);
+                .stream();
     }
 
-    public void deleteEvent(@NotNull final Long eventId) {
-        final var event = get(eventId).orElseThrow(NotFoundException::new); // TODO use event object as parameter
+    public void deleteEvent(@NotNull final EventRecord event) {
         eventSpeakerService.removeAllSpeakersFromEvent(event);
         dsl.delete(EVENT).where(EVENT.ID.eq(event.getId())).execute();
     }

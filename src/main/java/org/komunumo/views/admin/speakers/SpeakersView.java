@@ -33,7 +33,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.entity.Speaker;
+import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.views.admin.AdminView;
 
@@ -48,7 +48,7 @@ public class SpeakersView extends Div {
     private final SpeakerService speakerService;
 
     private final TextField filterField;
-    private final Grid<Speaker> grid;
+    private final Grid<SpeakerRecord> grid;
 
     public SpeakersView(@NotNull final SpeakerService speakerService) {
         this.speakerService = speakerService;
@@ -77,18 +77,22 @@ public class SpeakersView extends Div {
         return filter;
     }
 
-    private Grid<Speaker> createGrid() {
-        final var grid = new Grid<Speaker>();
-        grid.addColumn(Speaker::getFirstName).setHeader("First name").setAutoWidth(true);
-        grid.addColumn(Speaker::getLastName).setHeader("Last name").setAutoWidth(true);
-        grid.addColumn(Speaker::getCompany).setHeader("Company").setAutoWidth(true);
-        grid.addColumn(Speaker::getEmail).setHeader("Email").setAutoWidth(true);
-        grid.addColumn(Speaker::getTwitter).setHeader("Twitter").setAutoWidth(true);
+    private String getFullName(@NotNull final SpeakerRecord speaker) {
+        return String.format("%s %s", speaker.getFirstName(), speaker.getLastName());
+    }
 
-        final var eventCountRenderer = TemplateRenderer.<Speaker>of(
+    private Grid<SpeakerRecord> createGrid() {
+        final var grid = new Grid<SpeakerRecord>();
+        grid.addColumn(SpeakerRecord::getFirstName).setHeader("First name").setAutoWidth(true);
+        grid.addColumn(SpeakerRecord::getLastName).setHeader("Last name").setAutoWidth(true);
+        grid.addColumn(SpeakerRecord::getCompany).setHeader("Company").setAutoWidth(true);
+        grid.addColumn(SpeakerRecord::getEmail).setHeader("Email").setAutoWidth(true);
+        grid.addColumn(SpeakerRecord::getTwitter).setHeader("Twitter").setAutoWidth(true);
+
+        final var eventCountRenderer = TemplateRenderer.<SpeakerRecord>of(
                 "<a href=\"/admin/events?filter=[[item.filterValue]]\">[[item.eventCount]]</a>")
-                .withProperty("eventCount", Speaker::getEventCount)
-                .withProperty("filterValue", (speaker) -> URLEncoder.encode(speaker.getFullName(), UTF_8));
+                .withProperty("eventCount", SpeakerRecord::getEventCount)
+                .withProperty("filterValue", (speaker) -> URLEncoder.encode(getFullName(speaker), UTF_8));
         grid.addColumn(eventCountRenderer).setHeader("Events").setAutoWidth(true);
 
         grid.addColumn(new ComponentRenderer<>(record -> {
@@ -107,15 +111,15 @@ public class SpeakersView extends Div {
         return grid;
     }
 
-    private void editSpeaker(@NotNull final Speaker speaker) {
+    private void editSpeaker(@NotNull final SpeakerRecord speaker) {
         final var dialog = new SpeakerDialog(speaker, speakerService);
-        dialog.addOpenedChangeListener(event -> { if (!event.isOpened()) { reloadGridItems(); } } );
+        dialog.addOpenedChangeListener(changeEvent -> { if (!changeEvent.isOpened()) { reloadGridItems(); } } );
         dialog.open();
     }
 
-    private void deleteSpeaker(@NotNull final Speaker speaker) {
+    private void deleteSpeaker(@NotNull final SpeakerRecord speaker) {
         new ConfirmDialog("Confirm deletion",
-                String.format("Are you sure you want to permanently delete the speaker \"%s\"?", speaker.getFullName()),
+                String.format("Are you sure you want to permanently delete the speaker \"%s\"?", getFullName(speaker)),
                 "Delete", (dialogEvent) -> {
                     speakerService.delete(speaker);
                     reloadGridItems();

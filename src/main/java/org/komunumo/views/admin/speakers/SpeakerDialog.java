@@ -32,14 +32,14 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.entity.Speaker;
+import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.SpeakerService;
 
 public class SpeakerDialog extends Dialog {
 
     private final Focusable<? extends Component> focusField;
 
-    public SpeakerDialog(@NotNull final Speaker speaker,
+    public SpeakerDialog(@NotNull final SpeakerRecord speaker,
                          @NotNull final SpeakerService speakerService) {
         setCloseOnEsc(true);
         setCloseOnOutsideClick(false);
@@ -70,18 +70,18 @@ public class SpeakerDialog extends Dialog {
 
         final var saveButton = new Button("Save");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        saveButton.addClickListener(event -> {
+        saveButton.addClickListener(clickEvent -> {
             if (firstNameField.getValue().isBlank()) {
                 Notification.show("Please enter the first name of the speaker!");
             } else if (lastNameField.getValue().isBlank()) {
                 Notification.show("Please enter the last name of the speaker!");
             } else {
                 saveButton.setEnabled(false);
-                speaker.setFirstName(firstNameField.getValue())
-                        .setLastName(lastNameField.getValue())
-                        .setCompany(companyField.getValue())
-                        .setEmail(emailField.getValue())
-                        .setTwitter(twitterField.getValue());
+                speaker.setFirstName(firstNameField.getValue());
+                speaker.setLastName(lastNameField.getValue());
+                speaker.setCompany(companyField.getValue());
+                speaker.setEmail(emailField.getValue());
+                speaker.setTwitter(twitterField.getValue());
                 speakerService.store(speaker);
 
                 Notification.show("Speaker saved.");
@@ -89,7 +89,7 @@ public class SpeakerDialog extends Dialog {
             }
         });
         saveButton.addClickShortcut(Key.ENTER, KeyModifier.CONTROL);
-        final var cancelButton = new Button("Cancel", event -> close());
+        final var cancelButton = new Button("Cancel", clickEvent -> close());
         final var buttonBar = new HorizontalLayout(saveButton, cancelButton);
 
         add(title, form, buttonBar);

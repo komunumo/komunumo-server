@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.db.tables.records.EventSpeakerRecord;
-import org.komunumo.data.entity.Speaker;
+import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -49,27 +49,22 @@ public class EventSpeakerService {
                 .fetchOne());
     }
 
-    public void store(@NotNull final EventSpeakerRecord eventSpeaker) {
-        eventSpeaker.store();
-    }
-
-    public Stream<Speaker> getSpeakersForEvent(@NotNull final Long eventId) {
+    public Stream<SpeakerRecord> getSpeakersForEvent(@NotNull final EventRecord event) {
         return dsl
                 .selectFrom(SPEAKER)
                 .where(SPEAKER.ID.in(
                         select(EVENT_SPEAKER.SPEAKER_ID)
                                 .from(EVENT_SPEAKER)
-                                .where(EVENT_SPEAKER.EVENT_ID.eq(eventId))
+                                .where(EVENT_SPEAKER.EVENT_ID.eq(event.getId()))
                 ))
                 .fetch()
-                .stream()
-                .map(Speaker::new);
+                .stream();
     }
 
     public void setEventSpeakers(@NotNull final EventRecord event,
-                                 @NotNull final Set<Speaker> speakers) {
+                                 @NotNull final Set<SpeakerRecord> speakers) {
         synchronized (speakers) {
-            getSpeakersForEvent(event.getId()).forEach(speaker -> {
+            getSpeakersForEvent(event).forEach(speaker -> {
                 if (speakers.contains(speaker)) {
                     speakers.remove(speaker);
                 } else {
@@ -81,7 +76,7 @@ public class EventSpeakerService {
     }
 
     private void addSpeakerToEvent(@NotNull final EventRecord event,
-                                   @NotNull final Speaker speaker) {
+                                   @NotNull final SpeakerRecord speaker) {
         final var eventSpeaker = dsl.newRecord(EVENT_SPEAKER);
         eventSpeaker.setEventId(event.getId());
         eventSpeaker.setSpeakerId(speaker.getId());
@@ -89,7 +84,7 @@ public class EventSpeakerService {
     }
 
     private void removeSpeakerFromEvent(@NotNull final EventRecord event,
-                                        @NotNull final Speaker speaker) {
+                                        @NotNull final SpeakerRecord speaker) {
         dsl.delete(EVENT_SPEAKER)
                 .where(EVENT_SPEAKER.EVENT_ID.eq(event.getId()))
                 .and(EVENT_SPEAKER.SPEAKER_ID.eq(speaker.getId()))
