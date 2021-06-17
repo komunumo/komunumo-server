@@ -100,7 +100,9 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
         grid.addColumn(TemplateRenderer.<SpeakerRecord>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
                 .withProperty("email", SpeakerRecord::getEmail))
                 .setHeader("Email").setAutoWidth(true);
-        grid.addColumn(SpeakerRecord::getTwitter).setHeader("Twitter").setAutoWidth(true);
+        grid.addColumn(TemplateRenderer.<SpeakerRecord>of("<a href=\"https://twitter.com/[[item.twitter]]\" target=\"_blank\">[[item.twitter]]</a>")
+                .withProperty("twitter", SpeakerRecord::getTwitter))
+                .setHeader("Twitter").setAutoWidth(true);
 
         final var eventCountRenderer = TemplateRenderer.<SpeakerRecord>of(
                 "<a href=\"/admin/events?filter=[[item.filterValue]]\">[[item.eventCount]]</a>")
