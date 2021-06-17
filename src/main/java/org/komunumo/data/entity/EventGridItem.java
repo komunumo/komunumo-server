@@ -49,7 +49,7 @@ public class EventGridItem {
     }
 
     public String getSpeaker() {
-        return record.get("speaker", String.class);
+        return record.get(EVENT.SPEAKER);
     }
 
     public String getAbstract() {

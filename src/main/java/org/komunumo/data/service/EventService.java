@@ -34,12 +34,8 @@ import java.util.stream.Stream;
 
 import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
-import static org.jooq.impl.DSL.concat;
-import static org.jooq.impl.DSL.groupConcat;
 import static org.jooq.impl.DSL.when;
 import static org.komunumo.data.db.tables.Event.EVENT;
-import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
-import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
 @Service
 public class EventService {
@@ -73,17 +69,11 @@ public class EventService {
 
     public Stream<EventGridItem> eventsForGrid(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter + "%";
-        return dsl.select(
-                    EVENT.ID, EVENT.TITLE, EVENT.SUBTITLE, EVENT.ABSTRACT, EVENT.AGENDA,
-                    EVENT.LEVEL, EVENT.LANGUAGE, EVENT.LOCATION, EVENT.DATE, EVENT.VISIBLE,
-                    groupConcat(concat(concat(SPEAKER.FIRST_NAME, " "), SPEAKER.LAST_NAME)).separator(", ").as("speaker"))
-                .from(EVENT)
-                .leftJoin(EVENT_SPEAKER).on(EVENT.ID.eq(EVENT_SPEAKER.EVENT_ID))
-                .leftJoin(SPEAKER).on(EVENT_SPEAKER.SPEAKER_ID.eq(SPEAKER.ID))
+        return dsl.selectFrom(EVENT)
                 .where(filterValue == null ? DSL.noCondition()
                         : EVENT.TITLE.like(filterValue)
-                        .or(concat(concat(SPEAKER.FIRST_NAME, " "), SPEAKER.LAST_NAME).like(filterValue)))
-                .groupBy(EVENT.ID)
+                        .or(EVENT.SUBTITLE.like(filterValue))
+                        .or(EVENT.SPEAKER.like(filterValue)))
                 .orderBy(when(EVENT.DATE.isNull(), 0).otherwise(1), EVENT.DATE.desc())
                 .offset(offset)
                 .limit(limit)

@@ -3,6 +3,7 @@ CREATE TABLE event (
 
     title VARCHAR(255) NOT NULL,
     subtitle VARCHAR(255) NOT NULL DEFAULT '',
+    speaker VARCHAR(255) NOT NULL DEFAULT '',
     abstract MEDIUMTEXT NOT NULL DEFAULT '',
     agenda MEDIUMTEXT NOT NULL DEFAULT '',
     level ENUM('Beginner', 'Intermediate', 'Advanced') NULL,
@@ -81,6 +82,12 @@ CREATE TRIGGER speaker_event_insert
         UPDATE speaker
             SET event_count = (SELECT COUNT(*) FROM event_speaker WHERE speaker_id = NEW.speaker_id)
             WHERE id = NEW.speaker_id;
+        UPDATE event
+            SET speaker = (SELECT GROUP_CONCAT(CONCAT(first_name, ' ', last_name)
+                ORDER BY first_name, last_name SEPARATOR ', ') AS full_name
+                FROM speaker, event_speaker
+                WHERE event_speaker.speaker_id = speaker.id AND event_speaker.event_id = NEW.event_id)
+            WHERE id = NEW.event_id;
     END;
 
 CREATE TRIGGER speaker_event_delete
@@ -90,6 +97,12 @@ CREATE TRIGGER speaker_event_delete
         UPDATE speaker
             SET event_count = (SELECT COUNT(*) FROM event_speaker WHERE speaker_id = OLD.speaker_id)
             WHERE id = OLD.speaker_id;
+        UPDATE event
+            SET speaker = (SELECT GROUP_CONCAT(CONCAT(first_name, ' ', last_name)
+                ORDER BY first_name, last_name SEPARATOR ', ') AS full_name
+                FROM speaker, event_speaker
+                WHERE event_speaker.speaker_id = speaker.id AND event_speaker.event_id = OLD.event_id)
+            WHERE id = OLD.event_id;
     END;
 
 CREATE TABLE sponsor (
