@@ -30,9 +30,16 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.views.admin.AdminView;
@@ -43,7 +50,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Route(value = "admin/speakers/", layout = AdminView.class)
 @PageTitle("Speaker Administration")
-public class SpeakersView extends Div {
+public class SpeakersView extends Div implements HasUrlParameter<String> {
 
     private final SpeakerService speakerService;
 
@@ -71,10 +78,21 @@ public class SpeakersView extends Div {
     private TextField createFilter() {
         final var filter = new TextField();
         filter.setPlaceholder("Filter");
+        filter.setClearButtonVisible(true);
         filter.setValueChangeMode(ValueChangeMode.EAGER);
         filter.focus();
         filter.addValueChangeListener(event -> reloadGridItems());
         return filter;
+    }
+
+    @Override
+    public void setParameter(@NotNull final BeforeEvent event,
+                             @Nullable @OptionalParameter String parameter) {
+        final var location = event.getLocation();
+        final var queryParameters = location.getQueryParameters();
+        final var parameters = queryParameters.getParameters();
+        final var filterValue = parameters.getOrDefault("filter", List.of("")).get(0);
+        filterField.setValue(filterValue);
     }
 
     private String getFullName(@NotNull final SpeakerRecord speaker) {

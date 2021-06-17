@@ -35,6 +35,13 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
+import java.net.URLEncoder;
+
+import java.util.Arrays;
+
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.tables.records.EventRecord;
@@ -45,6 +52,8 @@ import org.komunumo.views.admin.AdminView;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Route(value = "admin/events", layout = AdminView.class)
 @PageTitle("Event Administration")
@@ -102,7 +111,10 @@ public class EventsView extends Div implements HasUrlParameter<String> {
     private Grid<EventRecord> createGrid() {
         final var grid = new Grid<EventRecord>();
         grid.addColumn(EventRecord::getTitle).setHeader("Title").setAutoWidth(true);
-        grid.addColumn(EventRecord::getSpeaker).setHeader("Speaker").setAutoWidth(true);
+
+        grid.addColumn(TemplateRenderer.<EventRecord>of("<span inner-h-t-m-l=\"[[item.speaker]]\"></span>")
+                .withProperty("speaker", this::renderSpeakerLinks))
+                .setHeader("Speaker").setAutoWidth(true);
 
         final var dateRenderer = TemplateRenderer.<EventRecord>of(
                 "[[item.date]]")
@@ -131,6 +143,17 @@ public class EventsView extends Div implements HasUrlParameter<String> {
         grid.setHeightFull();
 
         return grid;
+    }
+
+    private String renderSpeakerLinks(@NotNull EventRecord event) {
+        final var speaker = event.getSpeaker();
+        if (speaker == null || speaker.isBlank()) {
+            return "";
+        }
+        return Arrays.stream(speaker.split(","))
+                .map(String::trim)
+                .map(s -> String.format("<a href=\"/admin/speakers?filter=%s\">%s</a>", URLEncoder.encode(s, UTF_8), s))
+                .collect(Collectors.joining(", "));
     }
 
     private void editEvent(@NotNull final EventRecord event) {

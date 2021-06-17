@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static org.jooq.impl.DSL.concat;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
 @Service
@@ -50,11 +51,10 @@ public class SpeakerService {
     }
 
     public Stream<SpeakerRecord> find(final int offset, final int limit, @Nullable final String filter) {
-        final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter + "%";
+        final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl.selectFrom(SPEAKER)
                 .where(filterValue == null ? DSL.noCondition() :
-                        SPEAKER.FIRST_NAME.like(filterValue)
-                                .or(SPEAKER.LAST_NAME.like(filterValue))
+                        concat(concat(SPEAKER.FIRST_NAME, " "), SPEAKER.LAST_NAME).like(filterValue)
                                 .or(SPEAKER.COMPANY.like(filterValue))
                                 .or(SPEAKER.EMAIL.like(filterValue))
                                 .or(SPEAKER.TWITTER.like(filterValue)))
