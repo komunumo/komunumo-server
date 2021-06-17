@@ -90,6 +90,7 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
 
     private Grid<SpeakerRecord> createGrid() {
         final var grid = new Grid<SpeakerRecord>();
+        grid.setSelectionMode(Grid.SelectionMode.NONE);
 
         grid.addColumn(TemplateRenderer.<SpeakerRecord>of("<span style=\"font-weight: bold;\">[[item.firstName]] [[item.lastName]]</span>")
                 .withProperty("firstName", SpeakerRecord::getFirstName)
