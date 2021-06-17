@@ -95,8 +95,9 @@ public class SpeakerDialog extends Dialog {
 
         final var form = new FormLayout();
         form.add(firstNameField, lastNameField, companyField, bioField,
-                photoField, emailField, twitterField, linkedinField, websiteField,
-                addressField, zipCodeField, cityField, stateField, countryField);
+                emailField, twitterField, linkedinField, websiteField,
+                addressField, zipCodeField, cityField, stateField,
+                countryField, photoField);
 
         final var saveButton = new Button("Save");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
