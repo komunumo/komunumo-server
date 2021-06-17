@@ -33,11 +33,6 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Optional;
-
-import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.ui.view.admin.dashboard.DashboardView;
@@ -46,6 +41,11 @@ import org.komunumo.ui.view.admin.members.MembersView;
 import org.komunumo.ui.view.admin.speakers.SpeakersView;
 import org.komunumo.ui.view.admin.sponsors.SponsorsView;
 import org.komunumo.ui.view.logout.LogoutView;
+import org.komunumo.util.GravatarUtil;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Optional;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -81,10 +81,8 @@ public class AdminView extends AppLayout {
     private Avatar createAvatar() {
         final var member = authService.getCurrentUser();
         if (member != null) {
-            final var email = member.getEmail().toLowerCase();
-            final var md5 = DigestUtils.md5Hex(email);
             final var avatar = new Avatar(String.format("%s %s", member.getFirstName(), member.getLastName()));
-            avatar.setImage("https://www.gravatar.com/avatar/" + md5);
+            avatar.setImage(GravatarUtil.getGravatarAddress(member.getEmail().toLowerCase()));
             return avatar;
         } else {
             return new Avatar();
