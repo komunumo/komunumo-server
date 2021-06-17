@@ -30,10 +30,12 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.SpeakerService;
+import org.komunumo.ui.component.ImageUploadField;
 
 public class SpeakerDialog extends Dialog {
 
@@ -58,15 +60,43 @@ public class SpeakerDialog extends Dialog {
         final var companyField = new TextField("Company");
         companyField.setValue(speaker.getCompany());
 
+        final var bioField = new TextArea("Bio");
+        bioField.setValue(speaker.getBio());
+
+        final var photoField = new ImageUploadField("Photo");
+        photoField.setValue(speaker.getPhoto());
+
         final var emailField = new EmailField("Email");
         emailField.setValue(speaker.getEmail());
 
         final var twitterField = new TextField("Twitter");
         twitterField.setValue(speaker.getTwitter());
 
+        final var linkedinField = new TextField("LinkedIn");
+        linkedinField.setValue(speaker.getLinkedin());
+
+        final var websiteField = new TextField("Website");
+        websiteField.setValue(speaker.getWebsite());
+
+        final var addressField = new TextField("Address");
+        addressField.setValue(speaker.getAddress());
+
+        final var zipCodeField = new TextField("Zip code");
+        zipCodeField.setValue(speaker.getZipCode());
+
+        final var cityField = new TextField("City");
+        cityField.setValue(speaker.getCity());
+
+        final var stateField = new TextField("State");
+        stateField.setValue(speaker.getState());
+
+        final var countryField = new TextField("Country");
+        countryField.setValue(speaker.getCountry());
+
         final var form = new FormLayout();
-        form.add(firstNameField, lastNameField, companyField,
-                emailField, twitterField);
+        form.add(firstNameField, lastNameField, companyField, bioField,
+                photoField, emailField, twitterField, linkedinField, websiteField,
+                addressField, zipCodeField, cityField, stateField, countryField);
 
         final var saveButton = new Button("Save");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -80,8 +110,17 @@ public class SpeakerDialog extends Dialog {
                 speaker.setFirstName(firstNameField.getValue());
                 speaker.setLastName(lastNameField.getValue());
                 speaker.setCompany(companyField.getValue());
+                speaker.setBio(bioField.getValue());
+                speaker.setPhoto(photoField.getValue());
                 speaker.setEmail(emailField.getValue());
                 speaker.setTwitter(twitterField.getValue());
+                speaker.setLinkedin(linkedinField.getValue());
+                speaker.setWebsite(websiteField.getValue());
+                speaker.setAddress(addressField.getValue());
+                speaker.setZipCode(zipCodeField.getValue());
+                speaker.setCity(cityField.getValue());
+                speaker.setState(stateField.getValue());
+                speaker.setCountry(countryField.getValue());
                 speakerService.store(speaker);
 
                 Notification.show("Speaker saved.");

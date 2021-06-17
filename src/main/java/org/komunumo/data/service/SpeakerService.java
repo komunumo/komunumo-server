@@ -45,8 +45,17 @@ public class SpeakerService {
         speaker.setFirstName("");
         speaker.setLastName("");
         speaker.setCompany("");
+        speaker.setBio("");
+        speaker.setPhoto("");
         speaker.setEmail("");
         speaker.setTwitter("");
+        speaker.setLinkedin("");
+        speaker.setWebsite("");
+        speaker.setAddress("");
+        speaker.setZipCode("");
+        speaker.setCity("");
+        speaker.setState("");
+        speaker.setCountry("");
         return speaker;
     }
 
