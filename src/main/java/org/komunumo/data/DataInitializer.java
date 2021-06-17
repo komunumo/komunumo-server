@@ -36,7 +36,7 @@ public class DataInitializer {
     private String adminEmail;
 
     @Bean
-    public CommandLineRunner initializeData(
+    public CommandLineRunner createAdminAccount(
             @NotNull final MemberService memberService,
             @NotNull final AuthService authService) {
         return args -> {
