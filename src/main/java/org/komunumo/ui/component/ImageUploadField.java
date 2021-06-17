@@ -20,6 +20,7 @@ package org.komunumo.ui.component;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.upload.Upload;
@@ -36,14 +37,14 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class ImageUploadField extends CustomField<String> {
 
     private final Image preview;
-    private final Button remove;
+    private final Div remove;
     private final Upload upload;
 
     public ImageUploadField() {
         preview = new Image();
         preview.setWidth("100%");
 
-        remove = new Button("Remove", clickEvent -> setPresentationValue(""));
+        remove = new Div(new Button("Remove", clickEvent -> setPresentationValue("")));
 
         upload = new Upload();
         upload.setMaxFiles(1);
