@@ -21,6 +21,7 @@ package org.komunumo.ui.component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.dom.Element;
 import elemental.json.Json;
@@ -45,6 +46,8 @@ public class ImageUploadField extends CustomField<String> {
         remove = new Button("Remove", clickEvent -> setPresentationValue(""));
 
         upload = new Upload();
+        upload.setMaxFiles(1);
+        upload.setMaxFileSize(1_000_000);
         upload.getStyle().set("box-sizing", "border-box");
         upload.getElement().appendChild(preview.getElement());
 
@@ -59,6 +62,8 @@ public class ImageUploadField extends CustomField<String> {
             setPresentationValue(dataUrl);
             uploadBuffer.reset();
         });
+        upload.addFailedListener(failedEvent -> Notification.show(failedEvent.getReason().getMessage()));
+        upload.addFileRejectedListener(fileRejectedEvent -> Notification.show(fileRejectedEvent.getErrorMessage()));
 
         add(upload);
     }
