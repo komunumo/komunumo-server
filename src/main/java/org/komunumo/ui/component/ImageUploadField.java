@@ -18,30 +18,27 @@
 
 package org.komunumo.ui.component;
 
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.upload.Upload;
-
 import elemental.json.Json;
-
-import java.io.ByteArrayOutputStream;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.util.UriUtils;
 
-public class ImageUploadField extends Div {
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
+public class ImageUploadField extends CustomField<String> {
 
     private final Image preview;
+    private final Upload upload;
 
-    public ImageUploadField(@NotNull final String label) {
-
+    public ImageUploadField() {
         preview = new Image();
         preview.setWidth("100%");
-        final var upload = new Upload();
+
+        upload = new Upload();
         upload.getStyle().set("box-sizing", "border-box");
         upload.getElement().appendChild(preview.getElement());
 
@@ -58,14 +55,22 @@ public class ImageUploadField extends Div {
             uploadBuffer.reset();
         });
 
-        add(new Label(label), new Div(upload));
+        add(upload);
     }
 
-    public String getValue() {
+    public ImageUploadField(@NotNull final String label) {
+        this();
+        setLabel(label);
+    }
+
+    @Override
+    protected String generateModelValue() {
         return preview.getSrc();
     }
 
-    public void setValue(@NotNull final String value) {
+    @Override
+    protected void setPresentationValue(@NotNull final String value) {
         preview.setSrc(value);
     }
+
 }
