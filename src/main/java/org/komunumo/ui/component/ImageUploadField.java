@@ -18,25 +18,31 @@
 
 package org.komunumo.ui.component;
 
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.dom.Element;
 import elemental.json.Json;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.util.UriUtils;
 
 import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ImageUploadField extends CustomField<String> {
 
     private final Image preview;
+    private final Button remove;
     private final Upload upload;
 
     public ImageUploadField() {
         preview = new Image();
         preview.setWidth("100%");
+
+        remove = new Button("Remove", clickEvent -> setPresentationValue(""));
 
         upload = new Upload();
         upload.getStyle().set("box-sizing", "border-box");
@@ -45,13 +51,12 @@ public class ImageUploadField extends CustomField<String> {
         final var uploadBuffer = new ByteArrayOutputStream();
         upload.setAcceptedFileTypes("image/*");
         upload.setReceiver((fileName, mimeType) -> uploadBuffer);
-        upload.addSucceededListener(e -> {
-            final var mimeType = e.getMIMEType();
+        upload.addSucceededListener(succeededEvent -> {
+            final var mimeType = succeededEvent.getMIMEType();
             final var base64ImageData = Base64.getEncoder().encodeToString(uploadBuffer.toByteArray());
-            final var dataUrl = "data:" + mimeType + ";base64,"
-                    + UriUtils.encodeQuery(base64ImageData, StandardCharsets.UTF_8);
+            final var dataUrl = "data:" + mimeType + ";base64," + UriUtils.encodeQuery(base64ImageData, UTF_8);
             upload.getElement().setPropertyJson("files", Json.createArray());
-            preview.setSrc(dataUrl);
+            setPresentationValue(dataUrl);
             uploadBuffer.reset();
         });
 
@@ -71,6 +76,23 @@ public class ImageUploadField extends CustomField<String> {
     @Override
     protected void setPresentationValue(@NotNull final String value) {
         preview.setSrc(value);
+        if (value.isBlank()) {
+            removeChild(preview.getElement());
+            removeChild(remove.getElement());
+        } else {
+            appendChild(preview.getElement());
+            appendChild(remove.getElement());
+        }
+    }
+
+    private void appendChild(@NotNull final Element element) {
+        upload.getElement().appendChild(element);
+    }
+
+    private void removeChild(@NotNull final Element element) {
+        if (element.getParent() != null) {
+            upload.getElement().removeChild(element);
+        }
     }
 
 }
