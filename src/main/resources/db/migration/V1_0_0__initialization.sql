@@ -75,36 +75,6 @@ CREATE TABLE event_speaker (
    CONSTRAINT fk_speaker_id FOREIGN KEY (speaker_id) REFERENCES speaker(id)
 );
 
-CREATE TRIGGER speaker_event_insert
-    AFTER INSERT ON event_speaker
-    FOR EACH ROW
-    BEGIN
-        UPDATE speaker
-            SET event_count = (SELECT COUNT(*) FROM event_speaker WHERE speaker_id = NEW.speaker_id)
-            WHERE id = NEW.speaker_id;
-        UPDATE event
-            SET speaker = (SELECT GROUP_CONCAT(CONCAT(first_name, ' ', last_name)
-                ORDER BY first_name, last_name SEPARATOR ', ') AS full_name
-                FROM speaker, event_speaker
-                WHERE event_speaker.speaker_id = speaker.id AND event_speaker.event_id = NEW.event_id)
-            WHERE id = NEW.event_id;
-    END;
-
-CREATE TRIGGER speaker_event_delete
-    AFTER DELETE ON event_speaker
-    FOR EACH ROW
-    BEGIN
-        UPDATE speaker
-            SET event_count = (SELECT COUNT(*) FROM event_speaker WHERE speaker_id = OLD.speaker_id)
-            WHERE id = OLD.speaker_id;
-        UPDATE event
-            SET speaker = (SELECT GROUP_CONCAT(CONCAT(first_name, ' ', last_name)
-                ORDER BY first_name, last_name SEPARATOR ', ') AS full_name
-                FROM speaker, event_speaker
-                WHERE event_speaker.speaker_id = speaker.id AND event_speaker.event_id = OLD.event_id)
-            WHERE id = OLD.event_id;
-    END;
-
 CREATE TABLE sponsor (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 
@@ -117,3 +87,37 @@ CREATE TABLE sponsor (
 
     PRIMARY KEY (id)
 );
+
+-- [jooq ignore start]
+
+CREATE TRIGGER speaker_event_insert
+    AFTER INSERT ON event_speaker
+    FOR EACH ROW
+BEGIN
+    UPDATE speaker
+    SET event_count = (SELECT COUNT(*) FROM event_speaker WHERE speaker_id = NEW.speaker_id)
+    WHERE id = NEW.speaker_id;
+    UPDATE event
+    SET speaker = (SELECT GROUP_CONCAT(CONCAT(first_name, ' ', last_name)
+                                       ORDER BY first_name, last_name SEPARATOR ', ') AS full_name
+                   FROM speaker, event_speaker
+                   WHERE event_speaker.speaker_id = speaker.id AND event_speaker.event_id = NEW.event_id)
+    WHERE id = NEW.event_id;
+END;
+
+CREATE TRIGGER speaker_event_delete
+    AFTER DELETE ON event_speaker
+    FOR EACH ROW
+BEGIN
+    UPDATE speaker
+    SET event_count = (SELECT COUNT(*) FROM event_speaker WHERE speaker_id = OLD.speaker_id)
+    WHERE id = OLD.speaker_id;
+    UPDATE event
+    SET speaker = (SELECT GROUP_CONCAT(CONCAT(first_name, ' ', last_name)
+                                       ORDER BY first_name, last_name SEPARATOR ', ') AS full_name
+                   FROM speaker, event_speaker
+                   WHERE event_speaker.speaker_id = speaker.id AND event_speaker.event_id = OLD.event_id)
+    WHERE id = OLD.event_id;
+END;
+
+-- [jooq ignore stop]
