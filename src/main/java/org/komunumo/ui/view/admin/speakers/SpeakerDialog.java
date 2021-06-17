@@ -76,7 +76,7 @@ public class SpeakerDialog extends Dialog {
             final var email = changeEvent.getValue();
             final var photo = photoField.getValue();
             if (!email.isBlank() && (photo.isBlank() || photo.startsWith(GRAVATAR_URL))) {
-                photoField.setValue(GravatarUtil.getGravatarAddress(email));
+                photoField.setValue(GravatarUtil.getGravatarAddress(email, 150));
             } else if (email.isBlank() && photo.startsWith(GRAVATAR_URL)) {
                 photoField.setValue("");
             }
