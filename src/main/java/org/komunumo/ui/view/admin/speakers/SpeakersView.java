@@ -90,8 +90,11 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
 
     private Grid<SpeakerRecord> createGrid() {
         final var grid = new Grid<SpeakerRecord>();
-        grid.addColumn(SpeakerRecord::getFirstName).setHeader("First name").setAutoWidth(true);
-        grid.addColumn(SpeakerRecord::getLastName).setHeader("Last name").setAutoWidth(true);
+
+        grid.addColumn(TemplateRenderer.<SpeakerRecord>of("<span style=\"font-weight: bold;\">[[item.firstName]] [[item.lastName]]</span>")
+                .withProperty("firstName", SpeakerRecord::getFirstName)
+                .withProperty("lastName", SpeakerRecord::getLastName))
+                .setHeader("Name").setAutoWidth(true);
         grid.addColumn(SpeakerRecord::getCompany).setHeader("Company").setAutoWidth(true);
         grid.addColumn(SpeakerRecord::getEmail).setHeader("Email").setAutoWidth(true);
         grid.addColumn(SpeakerRecord::getTwitter).setHeader("Twitter").setAutoWidth(true);
