@@ -44,7 +44,7 @@ public class ImageUploadField extends CustomField<String> {
         preview = new Image();
         preview.setWidth("100%");
 
-        remove = new Div(new Button("Remove", clickEvent -> setPresentationValue("")));
+        remove = new Div(new Button("Remove", clickEvent -> setValue("")));
 
         upload = new Upload();
         upload.setMaxFiles(1);
@@ -60,7 +60,7 @@ public class ImageUploadField extends CustomField<String> {
             final var base64ImageData = Base64.getEncoder().encodeToString(uploadBuffer.toByteArray());
             final var dataUrl = "data:" + mimeType + ";base64," + UriUtils.encodeQuery(base64ImageData, UTF_8);
             upload.getElement().setPropertyJson("files", Json.createArray());
-            setPresentationValue(dataUrl);
+            setValue(dataUrl);
             uploadBuffer.reset();
         });
         upload.addFailedListener(failedEvent -> Notification.show(failedEvent.getReason().getMessage()));
