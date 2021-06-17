@@ -175,6 +175,6 @@ public class EventsView extends Div implements HasUrlParameter<String> {
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> eventService.eventsForGrid(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> eventService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 }

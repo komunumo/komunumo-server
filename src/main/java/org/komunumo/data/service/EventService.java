@@ -71,8 +71,8 @@ public class EventService {
         return dsl.fetchCount(EVENT, EVENT.DATE.between(firstDay, lastDay));
     }
 
-    public Stream<EventRecord> eventsForGrid(final int offset, final int limit, @Nullable final String filter) {
-        final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter + "%";
+    public Stream<EventRecord> find(final int offset, final int limit, @Nullable final String filter) {
+        final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl.selectFrom(EVENT)
                 .where(filterValue == null ? DSL.noCondition()
                         : EVENT.TITLE.like(filterValue)
