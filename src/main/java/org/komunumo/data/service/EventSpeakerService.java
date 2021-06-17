@@ -37,12 +37,9 @@ import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 public class EventSpeakerService {
 
     private final DSLContext dsl;
-    private final SpeakerService speakerService;
 
-    public EventSpeakerService(@NotNull final DSLContext dsl,
-                               @NotNull final SpeakerService speakerService) {
+    public EventSpeakerService(@NotNull final DSLContext dsl) {
         this.dsl = dsl;
-        this.speakerService = speakerService;
     }
 
     public Optional<EventSpeakerRecord> get(@NotNull final Long eventId,
@@ -77,13 +74,9 @@ public class EventSpeakerService {
                     speakers.remove(speaker);
                 } else {
                     removeSpeakerFromEvent(event, speaker);
-                    speakerService.updateEventCount(speaker);
                 }
             });
-            speakers.forEach(speaker -> {
-                addSpeakerToEvent(event, speaker);
-                speakerService.updateEventCount(speaker);
-            });
+            speakers.forEach(speaker -> addSpeakerToEvent(event, speaker));
         }
     }
 

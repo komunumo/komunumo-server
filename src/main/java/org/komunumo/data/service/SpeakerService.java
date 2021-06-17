@@ -28,8 +28,6 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.jooq.impl.DSL.count;
-import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
 @Service
@@ -78,17 +76,6 @@ public class SpeakerService {
 
     public void delete(@NotNull final Speaker speaker) {
         speaker.getRecord().delete();
-    }
-
-    public void updateEventCount(@NotNull final Speaker speaker) {
-        final var record = speaker.getRecord();
-        final var result = dsl.select(count())
-                .from(EVENT_SPEAKER)
-                .where(EVENT_SPEAKER.SPEAKER_ID.eq(speaker.getId()))
-                .fetchOne();
-        final var eventCount = result != null ? result.value1().longValue() : 0;
-        record.set(SPEAKER.EVENT_COUNT, eventCount);
-        record.store();
     }
 
 }
