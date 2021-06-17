@@ -97,7 +97,9 @@ public class EventsView extends Div implements HasUrlParameter<String> {
 
     private Grid<EventRecord> createGrid() {
         final var grid = new Grid<EventRecord>();
-        grid.addColumn(EventRecord::getTitle).setHeader("Title").setAutoWidth(true);
+        grid.addColumn(TemplateRenderer.<EventRecord>of("<span style=\"font-weight: bold;\">[[item.title]]</span>")
+                .withProperty("title", EventRecord::getTitle))
+                .setHeader("Title").setAutoWidth(true);
 
         grid.addColumn(TemplateRenderer.<EventRecord>of("<span inner-h-t-m-l=\"[[item.speaker]]\"></span>")
                 .withProperty("speaker", this::renderSpeakerLinks))
