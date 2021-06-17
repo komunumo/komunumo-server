@@ -97,7 +97,9 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
                 .withProperty("lastName", SpeakerRecord::getLastName))
                 .setHeader("Name").setAutoWidth(true);
         grid.addColumn(SpeakerRecord::getCompany).setHeader("Company").setAutoWidth(true);
-        grid.addColumn(SpeakerRecord::getEmail).setHeader("Email").setAutoWidth(true);
+        grid.addColumn(TemplateRenderer.<SpeakerRecord>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
+                .withProperty("email", SpeakerRecord::getEmail))
+                .setHeader("Email").setAutoWidth(true);
         grid.addColumn(SpeakerRecord::getTwitter).setHeader("Twitter").setAutoWidth(true);
 
         final var eventCountRenderer = TemplateRenderer.<SpeakerRecord>of(
