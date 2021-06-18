@@ -70,7 +70,6 @@ public class SpeakerService {
                 .orderBy(SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME)
                 .offset(offset)
                 .limit(limit)
-                .fetch()
                 .stream();
     }
 
