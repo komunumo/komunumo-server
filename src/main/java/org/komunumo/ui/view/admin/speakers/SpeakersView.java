@@ -46,7 +46,7 @@ import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-@Route(value = "admin/speakers/", layout = AdminView.class)
+@Route(value = "admin/speakers", layout = AdminView.class)
 @PageTitle("Speaker Administration")
 public class SpeakersView extends Div implements HasUrlParameter<String> {
 
