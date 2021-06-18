@@ -18,7 +18,6 @@
 
 package org.komunumo.ui.view.admin.events;
 
-import com.vaadin.componentfactory.EnhancedDatePicker;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.Key;
@@ -44,13 +43,13 @@ import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.SpeakerService;
-import org.komunumo.util.LocalizedEnhancedDatePickerI18NProvider;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
+
+import static org.komunumo.util.DatePickerUtil.createDatePicker;
 
 public class EventDialog extends Dialog {
 
@@ -98,14 +97,7 @@ public class EventDialog extends Dialog {
         locationField.setLabel("Location");
         locationField.setValue(event.getLocation());
 
-        final var dateField = new EnhancedDatePicker("Date");
-        dateField.setPattern("yyyy-MM-dd");
-        dateField.setMin(LocalDate.now());
-        dateField.setI18n(new LocalizedEnhancedDatePickerI18NProvider());
-        dateField.setWeekNumbersVisible(true);
-        if (event.getDate() != null) {
-            dateField.setValue(event.getDate().toLocalDate());
-        }
+        final var dateField = createDatePicker("Date", event.getDate().toLocalDate());
 
         final var timeField = new TimePicker("Time");
         timeField.setStep(Duration.ofHours(1));
