@@ -79,11 +79,11 @@ CREATE TABLE sponsor (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 
     name VARCHAR(255) NOT NULL,
-    url VARCHAR(255) NOT NULL,
-    logo MEDIUMTEXT NOT NULL,
-    valid_from DATE NOT NULL,
-    valid_to DATE NOT NULL,
-    level ENUM('SILBER', 'GOLD', 'PLATIN') NOT NULL,
+    website VARCHAR(255) NOT NULL DEFAULT '',
+    logo MEDIUMTEXT NOT NULL DEFAULT '',
+    valid_from DATE NULL,
+    valid_to DATE NULL,
+    level ENUM('SILBER', 'GOLD', 'PLATIN') NULL,
 
     PRIMARY KEY (id)
 );

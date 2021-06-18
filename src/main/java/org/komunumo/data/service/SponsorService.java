@@ -18,13 +18,15 @@
 
 package org.komunumo.data.service;
 
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
 
@@ -37,12 +39,21 @@ public class SponsorService {
         this.dsl = dsl;
     }
 
-    public SponsorRecord newRecord() {
-        return dsl.newRecord(SPONSOR);
+    public SponsorRecord newSponsor() {
+        final var sponsor = dsl.newRecord(SPONSOR);
+        sponsor.setName("");
+        sponsor.setWebsite("");
+        sponsor.setLogo("");
+        return sponsor;
     }
 
-    public Stream<SponsorRecord> list(final int offset, final int limit) {
-        return dsl.selectFrom(SPONSOR).offset(offset).limit(limit).stream();
+    public Stream<SponsorRecord> find(final int offset, final int limit, @Nullable final String filter) {
+        final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
+        return dsl.selectFrom(SPONSOR)
+                .where(filterValue == null ? DSL.noCondition() : SPONSOR.NAME.like(filterValue))
+                .offset(offset)
+                .limit(limit)
+                .stream();
     }
 
     public Optional<SponsorRecord> get(@NotNull final Long id) {
@@ -52,4 +63,9 @@ public class SponsorService {
     public void store(@NotNull final SponsorRecord sponsor) {
         sponsor.store();
     }
+
+    public void delete(@NotNull final SponsorRecord sponsor) {
+        sponsor.delete();
+    }
+
 }
