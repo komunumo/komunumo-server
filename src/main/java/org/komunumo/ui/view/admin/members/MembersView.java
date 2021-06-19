@@ -60,6 +60,7 @@ public class MembersView extends Div implements BeforeEnterObserver {
     private TextField firstName;
     private TextField lastName;
     private EmailField email;
+    private Checkbox active;
     private TextField address;
     private TextField zipCode;
     private TextField city;
@@ -187,6 +188,8 @@ public class MembersView extends Div implements BeforeEnterObserver {
         firstName = new TextField("First Name");
         lastName = new TextField("Last Name");
         email = new EmailField("Email");
+        active = new Checkbox("Email validation succeeded");
+        active.getStyle().set("padding-top", "var(--lumo-space-m)");
         address = new TextField("Address");
         zipCode = new TextField("Zip Code");
         city = new TextField("City");
@@ -198,9 +201,9 @@ public class MembersView extends Div implements BeforeEnterObserver {
         blocked = new Checkbox("Blocked");
         blocked.getStyle().set("padding-top", "var(--lumo-space-m)");
         blockedReason = new TextField("Reason");
-        final var fields = new Component[]{firstName, lastName, email,
-                address, zipCode, city, state, country, memberSince,
-                admin, blocked, blockedReason};
+        final var fields = new Component[]{firstName, lastName, email, active,
+                address, zipCode, city, state, country, memberSince, admin,
+                blocked, blockedReason};
 
         for (final Component field : fields) {
             ((HasStyle) field).addClassName("full-width");
