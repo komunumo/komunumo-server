@@ -25,6 +25,22 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "komunumo")
 public class Configuration {
 
+    public static class Admin {
+
+        /**
+         * The email address of the administrator.
+         */
+        private String email;
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(@NotNull final String email) {
+            this.email = email;
+        }
+    }
+
     public static class Email {
 
         /**
@@ -42,9 +58,22 @@ public class Configuration {
     }
 
     /**
+     * Configure the administrator.
+     */
+    private Admin admin;
+
+    /**
      * Configure email settings.
      */
     private Email email;
+
+    public Admin getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(@NotNull final Admin admin) {
+        this.admin = admin;
+    }
 
     public Email getEmail() {
         return email;

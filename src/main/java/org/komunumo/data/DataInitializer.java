@@ -19,45 +19,43 @@
 package org.komunumo.data;
 
 import com.vaadin.flow.spring.annotation.SpringComponent;
-
-import java.time.LocalDateTime;
-
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.Configuration;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.data.service.MemberService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+
+import java.time.LocalDateTime;
 
 @SpringComponent
 public class DataInitializer {
 
-    @Value("${komunumo.admin.email:}")
-    private String adminEmail;
-
     @Bean
     public CommandLineRunner createAdminAccount(
+            @NotNull final Configuration configuration,
             @NotNull final MemberService memberService,
             @NotNull final AuthService authService) {
         return args -> {
-            if (adminEmail != null && !adminEmail.isBlank()) {
-                final var member = memberService.getByEmail(adminEmail);
+            final var admin = configuration.getAdmin();
+            if (admin != null && admin.getEmail() != null) {
+                final var member = memberService.getByEmail(admin.getEmail());
                 if (member.isPresent()) {
-                    final var admin = member.get();
-                    if (!admin.getAdmin()) {
-                        admin.setAdmin(true);
-                        memberService.store(admin);
+                    final var record = member.get();
+                    if (!record.getAdmin()) {
+                        record.setAdmin(true);
+                        memberService.store(record);
                     }
                 } else {
-                    final var admin = memberService.newRecord();
-                    admin.setFirstName("Admin");
-                    admin.setLastName("Admin");
-                    admin.setEmail(adminEmail);
-                    admin.setAdmin(true);
-                    admin.setActive(true);
-                    admin.setMemberSince(LocalDateTime.now());
-                    memberService.store(admin);
-                    authService.resetPassword(adminEmail);
+                    final var record = memberService.newRecord();
+                    record.setFirstName("Admin");
+                    record.setLastName("Admin");
+                    record.setEmail(admin.getEmail());
+                    record.setAdmin(true);
+                    record.setActive(true);
+                    record.setMemberSince(LocalDateTime.now());
+                    memberService.store(record);
+                    authService.resetPassword(admin.getEmail());
                 }
             }
         };

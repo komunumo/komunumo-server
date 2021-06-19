@@ -37,7 +37,9 @@ public class ConfigurationTest {
 
     @Test
     public void whenNestedPropertyQueriedThenReturnsPropertyValue() {
-        assertEquals("Incorrectly bound email sender",
+        assertEquals("Incorrectly bound admin email property",
+                "root@localhost", configuration.getAdmin().getEmail());
+        assertEquals("Incorrectly bound email sender property",
                 "noreply@localhost", configuration.getEmail().getAddress());
     }
 
