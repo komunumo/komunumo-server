@@ -35,6 +35,8 @@ CREATE TABLE member (
     password_change BOOLEAN NOT NULL DEFAULT 0,
     activation_code VARCHAR(255) NULL,
     active BOOLEAN NOT NULL DEFAULT 0,
+    blocked BOOLEAN NOT NULL DEFAULT 0,
+    blocked_reason VARCHAR(255) NOT NULL DEFAULT '',
 
     PRIMARY KEY (id)
 );

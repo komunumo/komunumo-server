@@ -67,6 +67,8 @@ public class MembersView extends Div implements BeforeEnterObserver {
     private TextField country;
     private DateTimePicker memberSince;
     private Checkbox admin;
+    private Checkbox blocked;
+    private TextField blockedReason;
 
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
@@ -132,6 +134,10 @@ public class MembersView extends Div implements BeforeEnterObserver {
         });
 
         save.addClickListener(e -> {
+            if (blocked.getValue() && blockedReason.getValue().isBlank()) {
+                Notification.show("If you block this user, you must enter a reason!");
+                return;
+            }
             try {
                 if (this.member == null) {
                     this.member = memberService.newRecord();
@@ -189,8 +195,12 @@ public class MembersView extends Div implements BeforeEnterObserver {
         memberSince = new DateTimePicker("Member Since");
         admin = new Checkbox("Admin");
         admin.getStyle().set("padding-top", "var(--lumo-space-m)");
-        final var fields = new Component[]{firstName, lastName, email, address, zipCode, city, state, country,
-                memberSince, admin};
+        blocked = new Checkbox("Blocked");
+        blocked.getStyle().set("padding-top", "var(--lumo-space-m)");
+        blockedReason = new TextField("Reason");
+        final var fields = new Component[]{firstName, lastName, email,
+                address, zipCode, city, state, country, memberSince,
+                admin, blocked, blockedReason};
 
         for (final Component field : fields) {
             ((HasStyle) field).addClassName("full-width");

@@ -35,6 +35,7 @@ import org.komunumo.ui.view.admin.members.MembersView;
 import org.komunumo.ui.view.admin.speakers.SpeakersView;
 import org.komunumo.ui.view.admin.sponsors.SponsorsView;
 import org.komunumo.ui.view.login.ActivationView;
+import org.komunumo.ui.view.login.BlockedView;
 import org.komunumo.ui.view.login.LoginView;
 import org.komunumo.ui.view.login.ChangePasswordView;
 import org.komunumo.ui.view.logout.LogoutView;
@@ -71,7 +72,9 @@ public class AuthService implements VaadinServiceInitListener {
         final var member = memberService.getByEmail(email).orElse(null);
         if (member != null && member.getActive() && checkPassword(member, password)) {
             VaadinSession.getCurrent().setAttribute(MemberRecord.class, member);
-            if (member.getPasswordChange()) {
+            if (member.getBlocked()) {
+                UI.getCurrent().navigate(BlockedView.class);
+            } else if (member.getPasswordChange()) {
                 UI.getCurrent().navigate(ChangePasswordView.class);
             } else {
                 UI.getCurrent().getPage().reload();
@@ -177,7 +180,7 @@ public class AuthService implements VaadinServiceInitListener {
         final var member = VaadinSession.getCurrent().getAttribute(MemberRecord.class);
 
         // restrict to members
-        if (member != null && member.getActive()) {
+        if (member != null && member.getActive() && !member.getBlocked()) {
             if (navigationTarget == DashboardView.class // TODO only for admins / use profile page for members instead
                     || navigationTarget == ChangePasswordView.class
                     || navigationTarget == LogoutView.class) {
@@ -192,6 +195,10 @@ public class AuthService implements VaadinServiceInitListener {
                         || navigationTarget == SponsorsView.class) {
                     return true;
                 }
+            }
+        } else if (member != null && member.getBlocked()) {
+            if (navigationTarget == BlockedView.class) {
+                return true;
             }
         } else {
             if (navigationTarget == ActivationView.class) {
