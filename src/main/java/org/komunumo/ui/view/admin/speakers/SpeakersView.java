@@ -51,7 +51,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class SpeakersView extends Div implements HasUrlParameter<String> {
 
     private final SpeakerService speakerService;
-
     private final TextField filterField;
     private final Grid<SpeakerRecord> grid;
 

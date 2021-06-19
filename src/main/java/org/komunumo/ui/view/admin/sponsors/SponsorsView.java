@@ -48,7 +48,6 @@ import java.util.List;
 public class SponsorsView extends Div implements HasUrlParameter<String> {
 
     private final SponsorService sponsorService;
-
     private final TextField filterField;
     private final Grid<SponsorRecord> grid;
 
