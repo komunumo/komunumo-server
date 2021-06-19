@@ -18,14 +18,18 @@
 
 package org.komunumo.data.service;
 
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.MemberRecord;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static org.jooq.impl.DSL.concat;
 import static org.komunumo.data.db.tables.Member.MEMBER;
 
 @Service
@@ -37,12 +41,34 @@ public class MemberService {
         this.dsl = dsl;
     }
 
-    public MemberRecord newRecord() {
-        return dsl.newRecord(MEMBER);
+    public MemberRecord newMember() {
+        final var member = dsl.newRecord(MEMBER);
+        member.setFirstName("");
+        member.setLastName("");
+        member.setEmail("");
+        member.setAdmin(false);
+        member.setAddress("");
+        member.setZipCode("");
+        member.setCity("");
+        member.setState("");
+        member.setCountry("");
+        member.setMemberSince(LocalDateTime.now());
+        member.setAdmin(false);
+        member.setActive(false);
+        member.setBlocked(false);
+        member.setBlockedReason("");
+        return member;
     }
 
-    public Stream<MemberRecord> list(final int offset, final int limit) {
-        return dsl.selectFrom(MEMBER).offset(offset).limit(limit).stream();
+    public Stream<MemberRecord> find(final int offset, final int limit, @Nullable final String filter) {
+        final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
+        return dsl.selectFrom(MEMBER)
+                .where(filterValue == null ? DSL.noCondition() :
+                        concat(concat(MEMBER.FIRST_NAME, " "), MEMBER.LAST_NAME).like(filterValue))
+                .orderBy(MEMBER.FIRST_NAME, MEMBER.LAST_NAME)
+                .offset(offset)
+                .limit(limit)
+                .stream();
     }
 
     public Optional<MemberRecord> get(@NotNull final Long id) {
@@ -55,6 +81,10 @@ public class MemberService {
 
     public void store(@NotNull final MemberRecord member) {
         member.store();
+    }
+
+    public void delete(@NotNull final MemberRecord member) {
+        member.delete();
     }
 
 }

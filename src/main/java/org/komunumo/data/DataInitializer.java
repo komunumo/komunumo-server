@@ -47,13 +47,12 @@ public class DataInitializer {
                         memberService.store(record);
                     }
                 } else {
-                    final var record = memberService.newRecord();
+                    final var record = memberService.newMember();
                     record.setFirstName("Admin");
                     record.setLastName("Admin");
                     record.setEmail(admin.getEmail());
                     record.setAdmin(true);
                     record.setActive(true);
-                    record.setMemberSince(LocalDateTime.now());
                     memberService.store(record);
                     authService.resetPassword(admin.getEmail());
                 }
