@@ -29,6 +29,12 @@ MAIL_HOST=localhost
 MAIL_PORT=25
 ```
 
+You can optionally configure the sender address (highly recommended):
+
+```
+KOMUNUMO_EMAIL_ADDRESS=noreply@localhost
+```
+
 ### Database
 
 *Komunumo* needs a database to permanently store the business data. All JDBC compatible databases are supported. We highly recommend [MariaDB](https://mariadb.org/), just because we are using it during development and it is highly tested with *Komunumo*.

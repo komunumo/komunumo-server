@@ -23,11 +23,11 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.server.VaadinSession;
-import java.time.LocalDateTime;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.komunumo.Configuration;
 import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.ui.view.admin.dashboard.DashboardView;
 import org.komunumo.ui.view.admin.events.EventsView;
@@ -36,12 +36,14 @@ import org.komunumo.ui.view.admin.speakers.SpeakersView;
 import org.komunumo.ui.view.admin.sponsors.SponsorsView;
 import org.komunumo.ui.view.login.ActivationView;
 import org.komunumo.ui.view.login.BlockedView;
-import org.komunumo.ui.view.login.LoginView;
 import org.komunumo.ui.view.login.ChangePasswordView;
+import org.komunumo.ui.view.login.LoginView;
 import org.komunumo.ui.view.logout.LogoutView;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class AuthService implements VaadinServiceInitListener {
@@ -57,11 +59,14 @@ public class AuthService implements VaadinServiceInitListener {
         }
     }
 
+    private final Configuration configuration;
     private final MemberService memberService;
     private final MailSender mailSender;
 
-    public AuthService(@NotNull final MemberService memberService,
+    public AuthService(@NotNull final Configuration configuration,
+                       @NotNull final MemberService memberService,
                        @NotNull final MailSender mailSender) {
+        this.configuration = configuration;
         this.memberService = memberService;
         this.mailSender = mailSender;
     }
@@ -111,7 +116,7 @@ public class AuthService implements VaadinServiceInitListener {
                 member.getEmail(), member.getActivationCode());
         final var message = new SimpleMailMessage();
         message.setTo(member.getEmail());
-        message.setFrom("noreply@example.com"); // TODO configurable: info@jug.ch
+        message.setFrom(configuration.getEmail().getAddress());
         message.setSubject("Activate your account");
         message.setText(text);
         mailSender.send(message);
@@ -144,7 +149,7 @@ public class AuthService implements VaadinServiceInitListener {
 
                 final var message = new SimpleMailMessage();
                 message.setTo(email);
-                message.setFrom("noreply@example.com"); // TODO configurable: info@jug.ch
+                message.setFrom(configuration.getEmail().getAddress());
                 message.setSubject("Reset your password");
                 message.setText("To reset your password, use the following one time password to login: " + password);
                 mailSender.send(message);
