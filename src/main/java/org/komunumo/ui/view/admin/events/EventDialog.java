@@ -97,7 +97,7 @@ public class EventDialog extends Dialog {
         locationField.setLabel("Location");
         locationField.setValue(event.getLocation());
 
-        final var dateField = createDatePicker("Date", event.getDate().toLocalDate());
+        final var dateField = createDatePicker("Date", event.getDate() == null ? null : event.getDate().toLocalDate());
 
         final var timeField = new TimePicker("Time");
         timeField.setStep(Duration.ofHours(1));
