@@ -92,7 +92,7 @@ CREATE TABLE sponsor (
 
 -- [jooq ignore start]
 
-CREATE TRIGGER speaker_event_insert
+CREATE TRIGGER event_speaker_insert
     AFTER INSERT ON event_speaker
     FOR EACH ROW
 BEGIN
@@ -107,7 +107,7 @@ BEGIN
     WHERE id = NEW.event_id;
 END;
 
-CREATE TRIGGER speaker_event_delete
+CREATE TRIGGER event_speaker_delete
     AFTER DELETE ON event_speaker
     FOR EACH ROW
 BEGIN
