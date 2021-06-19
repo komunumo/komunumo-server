@@ -64,7 +64,8 @@ public class MemberService {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl.selectFrom(MEMBER)
                 .where(filterValue == null ? DSL.noCondition() :
-                        concat(concat(MEMBER.FIRST_NAME, " "), MEMBER.LAST_NAME).like(filterValue))
+                        concat(concat(MEMBER.FIRST_NAME, " "), MEMBER.LAST_NAME).like(filterValue)
+                                .or(MEMBER.EMAIL.like(filterValue)))
                 .orderBy(MEMBER.FIRST_NAME, MEMBER.LAST_NAME)
                 .offset(offset)
                 .limit(limit)

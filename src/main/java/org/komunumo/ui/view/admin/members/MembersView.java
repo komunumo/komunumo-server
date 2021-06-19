@@ -59,7 +59,7 @@ public class MembersView extends Div implements HasUrlParameter<String> {
         grid = createGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
-        filterField.setTitle("Filter members by name");
+        filterField.setTitle("Filter members by name or email");
 
         final var newMemberButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> editMember(memberService.newMember()));
         newMemberButton.setTitle("Add a new member");
