@@ -18,7 +18,6 @@
 
 package org.komunumo.ui.view.admin.events;
 
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -40,6 +39,7 @@ import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.SpeakerService;
+import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.view.admin.AdminView;
 
@@ -74,9 +74,12 @@ public class EventsView extends Div implements HasUrlParameter<String> {
         grid = createGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
+        filterField.setTitle("Filter events by title, subtitle, or speaker");
 
-        final var newEventButton = new Button(new Icon(VaadinIcon.FILE_ADD), event -> editEvent(eventService.newEvent()));
-        final var refreshEventsButton = new Button(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
+        final var newEventButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> editEvent(eventService.newEvent()));
+        newEventButton.setTitle("Add a new event");
+        final var refreshEventsButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
+        refreshEventsButton.setTitle("Refresh the list of events");
         final var optionBar = new HorizontalLayout(filterField, newEventButton, refreshEventsButton);
         optionBar.setPadding(true);
 
@@ -120,12 +123,14 @@ public class EventsView extends Div implements HasUrlParameter<String> {
                 .withProperty("visible", EventRecord::getVisible);
         grid.addColumn(visibleRenderer).setHeader("Visible").setAutoWidth(true);
 
-        grid.addColumn(new ComponentRenderer<>(record ->
-                new HorizontalLayout(
-                        new Button(new Icon(VaadinIcon.EDIT), event -> editEvent(record)),
-                        new Button(new Icon(VaadinIcon.TRASH), event -> deleteEvent(record))
-                )
-            ))
+        grid.addColumn(new ComponentRenderer<>(record -> {
+            final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editEvent(record));
+            editButton.setTitle("Edit this event");
+            final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), event -> deleteEvent(record));
+            deleteButton.setTitle("Delete this event");
+            return new HorizontalLayout(editButton, deleteButton);
+
+        }))
             .setHeader("Actions")
             .setFlexGrow(0)
             .setFrozen(true);

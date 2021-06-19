@@ -18,7 +18,6 @@
 
 package org.komunumo.ui.view.admin.sponsors;
 
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -38,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.data.service.SponsorService;
+import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.view.admin.AdminView;
 
@@ -59,9 +59,12 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
         grid = createGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
+        filterField.setTitle("Filter sponsors by name");
 
-        final var newSponsorButton = new Button(new Icon(VaadinIcon.FILE_ADD), event -> editSponsor(sponsorService.newSponsor()));
-        final var refreshSpeakersButton = new Button(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
+        final var newSponsorButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> editSponsor(sponsorService.newSponsor()));
+        newSponsorButton.setTitle("Add a new sponsor");
+        final var refreshSpeakersButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
+        refreshSpeakersButton.setTitle("Refresh the list of sponsors");
         final var optionBar = new HorizontalLayout(filterField, newSponsorButton, refreshSpeakersButton);
         optionBar.setPadding(true);
 
@@ -99,8 +102,10 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
         grid.addColumn(SponsorRecord::getValidTo).setHeader("Valid to").setAutoWidth(true);
 
         grid.addColumn(new ComponentRenderer<>(record -> {
-            final var editButton = new Button(new Icon(VaadinIcon.EDIT), event -> editSponsor(record));
-            final var deleteButton = new Button(new Icon(VaadinIcon.TRASH), event -> deleteSponsor(record));
+            final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editSponsor(record));
+            editButton.setTitle("Edit this sponsor");
+            final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), event -> deleteSponsor(record));
+            deleteButton.setTitle("Delete this sponsor");
             return new HorizontalLayout(editButton, deleteButton);
         }))
                 .setHeader("Actions")

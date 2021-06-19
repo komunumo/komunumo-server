@@ -18,7 +18,6 @@
 
 package org.komunumo.ui.view.admin.speakers;
 
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -38,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.SpeakerService;
+import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.view.admin.AdminView;
 
@@ -62,9 +62,12 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
         grid = createGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
+        filterField.setTitle("Filter speakers by name, company, email, or twitter");
 
-        final var newSpeakerButton = new Button(new Icon(VaadinIcon.FILE_ADD), event -> editSpeaker(speakerService.newSpeaker()));
-        final var refreshSpeakersButton = new Button(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
+        final var newSpeakerButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> editSpeaker(speakerService.newSpeaker()));
+        newSpeakerButton.setTitle("Add a new speaker");
+        final var refreshSpeakersButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
+        refreshSpeakersButton.setTitle("Refresh the list of speakers");
         final var optionBar = new HorizontalLayout(filterField, newSpeakerButton, refreshSpeakersButton);
         optionBar.setPadding(true);
 
@@ -110,8 +113,10 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
         grid.addColumn(eventCountRenderer).setHeader("Events").setAutoWidth(true);
 
         grid.addColumn(new ComponentRenderer<>(record -> {
-            final var editButton = new Button(new Icon(VaadinIcon.EDIT), event -> editSpeaker(record));
-            final var deleteButton = new Button(new Icon(VaadinIcon.TRASH), event -> deleteSpeaker(record));
+            final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editSpeaker(record));
+            editButton.setTitle("Edit this speaker");
+            final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), event -> deleteSpeaker(record));
+            deleteButton.setTitle("Delete this speaker");
             deleteButton.setEnabled(record.getEventCount() == 0);
             return new HorizontalLayout(editButton, deleteButton);
         }))

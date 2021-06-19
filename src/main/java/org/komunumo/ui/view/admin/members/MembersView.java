@@ -18,7 +18,6 @@
 
 package org.komunumo.ui.view.admin.members;
 
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -38,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.service.MemberService;
+import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.view.admin.AdminView;
 
@@ -59,9 +59,12 @@ public class MembersView extends Div implements HasUrlParameter<String> {
         grid = createGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
+        filterField.setTitle("Filter members by name");
 
-        final var newMemberButton = new Button(new Icon(VaadinIcon.FILE_ADD), event -> editMember(memberService.newMember()));
-        final var refreshMembersButton = new Button(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
+        final var newMemberButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> editMember(memberService.newMember()));
+        newMemberButton.setTitle("Add a new member");
+        final var refreshMembersButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
+        refreshMembersButton.setTitle("Refresh the list of members");
         final var optionBar = new HorizontalLayout(filterField, newMemberButton, refreshMembersButton);
         optionBar.setPadding(true);
 
@@ -106,8 +109,10 @@ public class MembersView extends Div implements HasUrlParameter<String> {
                 .setHeader("Blocked").setAutoWidth(true);
 
         grid.addColumn(new ComponentRenderer<>(record -> {
-            final var editButton = new Button(new Icon(VaadinIcon.EDIT), event -> editMember(record));
-            final var deleteButton = new Button(new Icon(VaadinIcon.TRASH), event -> deleteMember(record));
+            final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editMember(record));
+            editButton.setTitle("Edit this member");
+            final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), event -> deleteMember(record));
+            deleteButton.setTitle("Delete this member");
             return new HorizontalLayout(editButton, deleteButton);
         }))
                 .setHeader("Actions")
