@@ -36,6 +36,12 @@ public class ConfigurationTest {
     private Configuration configuration;
 
     @Test
+    public void whenSimplePropertyQueriedThenReturnsPropertyValue() {
+        assertEquals("Incorrectly bound version property",
+                "1.0-SNAPSHOT", configuration.getVersion());
+    }
+
+    @Test
     public void whenNestedPropertyQueriedThenReturnsPropertyValue() {
         assertEquals("Incorrectly bound admin email property",
                 "root@localhost", configuration.getAdmin().getEmail());

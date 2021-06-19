@@ -58,6 +58,11 @@ public class Configuration {
     }
 
     /**
+     * Version information of Komunumo.
+     */
+    private String version;
+
+    /**
      * Configure the administrator.
      */
     private Admin admin;
@@ -66,6 +71,14 @@ public class Configuration {
      * Configure email settings.
      */
     private Email email;
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(@NotNull final String version) {
+        this.version = version;
+    }
 
     public Admin getAdmin() {
         return admin;
