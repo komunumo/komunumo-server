@@ -226,7 +226,7 @@ public class AuthService implements VaadinServiceInitListener {
         final boolean accessGranted = isAccessGranted(event.getNavigationTarget());
         if (!accessGranted) {
             if (isUserLoggedIn()) {
-                event.rerouteToError(AccessDeniedException.class);
+                event.rerouteToError(AccessDeniedException.class); // TODO redirect to default page
             } else {
                 event.rerouteTo(LoginView.class);
             }
