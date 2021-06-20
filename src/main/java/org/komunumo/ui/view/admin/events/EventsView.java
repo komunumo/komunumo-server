@@ -122,6 +122,8 @@ public class EventsView extends Div implements HasUrlParameter<String> {
                 });
         grid.addColumn(dateRenderer).setHeader("Date").setAutoWidth(true);
 
+        grid.addColumn(record -> record.get(EVENT.LOCATION)).setHeader("Location").setAutoWidth(true);
+
         final var visibleRenderer = TemplateRenderer.<Record>of(
                 "<iron-icon hidden='[[!item.visible]]' icon='vaadin:eye' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.visible]]' icon='vaadin:eye-slash' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
                 .withProperty("visible", record -> record.get(EVENT.VISIBLE));
