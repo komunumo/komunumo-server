@@ -107,6 +107,20 @@ public class EventDialog extends Dialog {
 
         final var visibleField = new Checkbox("Visible");
         visibleField.setValue(event.getVisible());
+        visibleField.addValueChangeListener(changeEvent -> {
+            if (changeEvent.getValue() && (titleField.isEmpty()
+                    || speakerField.isEmpty()
+                    || levelField.isEmpty()
+                    || abstractField.isEmpty()
+                    || agendaField.isEmpty()
+                    || languageField.isEmpty()
+                    || locationField.isEmpty()
+                    || dateField.isEmpty()
+                    || timeField.isEmpty())) {
+                Notification.show("To make an event visible on the website, you have to fill out all fields!");
+                visibleField.setValue(false);
+            }
+        });
 
         final var form = new FormLayout();
         form.add(titleField, subtitleField, speakerField, levelField,
