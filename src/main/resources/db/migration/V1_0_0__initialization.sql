@@ -3,7 +3,6 @@ CREATE TABLE event (
 
     title VARCHAR(255) NOT NULL,
     subtitle VARCHAR(255) NOT NULL DEFAULT '',
-    speaker VARCHAR(255) NOT NULL DEFAULT '',
     abstract MEDIUMTEXT NOT NULL DEFAULT '',
     agenda MEDIUMTEXT NOT NULL DEFAULT '',
     level ENUM('Beginner', 'Intermediate', 'Advanced') NULL,
@@ -88,31 +87,3 @@ CREATE TABLE sponsor (
 
     PRIMARY KEY (id)
 );
-
--- [jooq ignore start]
-
-CREATE TRIGGER event_speaker_insert
-    AFTER INSERT ON event_speaker
-    FOR EACH ROW
-BEGIN
-    UPDATE event
-    SET speaker = (SELECT GROUP_CONCAT(CONCAT(first_name, ' ', last_name)
-                                       ORDER BY first_name, last_name SEPARATOR ', ') AS full_name
-                   FROM speaker, event_speaker
-                   WHERE event_speaker.speaker_id = speaker.id AND event_speaker.event_id = NEW.event_id)
-    WHERE id = NEW.event_id;
-END;
-
-CREATE TRIGGER event_speaker_delete
-    AFTER DELETE ON event_speaker
-    FOR EACH ROW
-BEGIN
-    UPDATE event
-    SET speaker = (SELECT GROUP_CONCAT(CONCAT(first_name, ' ', last_name)
-                                       ORDER BY first_name, last_name SEPARATOR ', ') AS full_name
-                   FROM speaker, event_speaker
-                   WHERE event_speaker.speaker_id = speaker.id AND event_speaker.event_id = OLD.event_id)
-    WHERE id = OLD.event_id;
-END;
-
--- [jooq ignore stop]

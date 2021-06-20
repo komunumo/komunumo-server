@@ -24,6 +24,7 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -35,6 +36,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jooq.Record;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
@@ -50,6 +52,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.komunumo.data.db.tables.Event.EVENT;
 
 @Route(value = "admin/events", layout = AdminView.class)
 @PageTitle("Event Administration")
@@ -60,7 +63,7 @@ public class EventsView extends Div implements HasUrlParameter<String> {
     private final EventSpeakerService eventSpeakerService;
 
     private final TextField filterField;
-    private final Grid<EventRecord> grid;
+    private final Grid<Record> grid;
 
     public EventsView(@NotNull final EventService eventService,
                       @NotNull final SpeakerService speakerService,
@@ -76,7 +79,7 @@ public class EventsView extends Div implements HasUrlParameter<String> {
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter events by title, subtitle, or speaker");
 
-        final var newEventButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> editEvent(eventService.newEvent()));
+        final var newEventButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> newEvent());
         newEventButton.setTitle("Add a new event");
         final var refreshEventsButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
         refreshEventsButton.setTitle("Refresh the list of events");
@@ -98,36 +101,36 @@ public class EventsView extends Div implements HasUrlParameter<String> {
         filterField.setValue(filterValue);
     }
 
-    private Grid<EventRecord> createGrid() {
-        final var grid = new Grid<EventRecord>();
+    private Grid<Record> createGrid() {
+        final var grid = new Grid<Record>();
         grid.setSelectionMode(Grid.SelectionMode.NONE);
 
-        grid.addColumn(TemplateRenderer.<EventRecord>of("<span style=\"font-weight: bold;\">[[item.title]]</span><br/><span>[[item.subtitle]]</span>")
-                .withProperty("title", EventRecord::getTitle)
-                .withProperty("subtitle", EventRecord::getSubtitle))
+        grid.addColumn(TemplateRenderer.<Record>of("<span style=\"font-weight: bold;\">[[item.title]]</span><br/><span>[[item.subtitle]]</span>")
+                .withProperty("title", record -> record.get(EVENT.TITLE))
+                .withProperty("subtitle", record -> record.get(EVENT.SUBTITLE)))
                 .setHeader("Title").setAutoWidth(true);
 
-        grid.addColumn(TemplateRenderer.<EventRecord>of("<span inner-h-t-m-l=\"[[item.speaker]]\"></span>")
+        grid.addColumn(TemplateRenderer.<Record>of("<span inner-h-t-m-l=\"[[item.speaker]]\"></span>")
                 .withProperty("speaker", this::renderSpeakerLinks))
                 .setHeader("Speaker").setAutoWidth(true);
 
-        final var dateRenderer = TemplateRenderer.<EventRecord>of(
+        final var dateRenderer = TemplateRenderer.<Record>of(
                 "[[item.date]]")
                 .withProperty("date", record -> {
-                    final var date = record.getDate();
+                    final var date = record.get(EVENT.DATE);
                     return date == null ? "" : date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
                 });
         grid.addColumn(dateRenderer).setHeader("Date").setAutoWidth(true);
 
-        final var visibleRenderer = TemplateRenderer.<EventRecord>of(
+        final var visibleRenderer = TemplateRenderer.<Record>of(
                 "<iron-icon hidden='[[!item.visible]]' icon='vaadin:eye' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.visible]]' icon='vaadin:eye-slash' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
-                .withProperty("visible", EventRecord::getVisible);
+                .withProperty("visible", record -> record.get(EVENT.VISIBLE));
         grid.addColumn(visibleRenderer).setHeader("Visible").setAutoWidth(true);
 
         grid.addColumn(new ComponentRenderer<>(record -> {
-            final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editEvent(record));
+            final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editEvent(record.get(EVENT.ID)));
             editButton.setTitle("Edit this event");
-            final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), event -> deleteEvent(record));
+            final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), event -> deleteEvent(record.get(EVENT.ID)));
             deleteButton.setTitle("Delete this event");
             return new HorizontalLayout(editButton, deleteButton);
 
@@ -142,8 +145,8 @@ public class EventsView extends Div implements HasUrlParameter<String> {
         return grid;
     }
 
-    private String renderSpeakerLinks(@NotNull EventRecord event) {
-        final var speaker = event.getSpeaker();
+    private String renderSpeakerLinks(@NotNull Record record) {
+        final var speaker = record.get("speaker", String.class);
         if (speaker == null || speaker.isBlank()) {
             return "";
         }
@@ -153,22 +156,44 @@ public class EventsView extends Div implements HasUrlParameter<String> {
                 .collect(Collectors.joining(", "));
     }
 
-    private void editEvent(@NotNull final EventRecord event) {
+    private void newEvent() {
+        showEventDialog(eventService.newEvent());
+    }
+
+    private void editEvent(@NotNull final Long eventId) {
+        final var event = eventService.get(eventId);
+        if (event.isPresent()) {
+            showEventDialog(event.get());
+        } else {
+            Notification.show("This event does not exist anymore. Refreshing view…");
+            reloadGridItems();
+        }
+    }
+
+    private void showEventDialog(@NotNull final EventRecord event) {
         final var dialog = new EventDialog(event, eventService, speakerService, eventSpeakerService);
-        dialog.addOpenedChangeListener(changeEvent -> { if (!changeEvent.isOpened()) { reloadGridItems(); } } );
+        dialog.addOpenedChangeListener(changeEvent -> {
+            if (!changeEvent.isOpened()) { reloadGridItems(); }
+        });
         dialog.open();
     }
 
-    private void deleteEvent(@NotNull final EventRecord event) {
-        new ConfirmDialog("Confirm deletion",
-                String.format("Are you sure you want to permanently delete the event \"%s\"?", event.getTitle()),
-                "Delete", (dialogEvent) -> {
-                    eventService.deleteEvent(event);
-                    reloadGridItems();
-                    dialogEvent.getSource().close();
-                },
-                "Cancel", (dialogEvent) -> dialogEvent.getSource().close()
-        ).open();
+    private void deleteEvent(@NotNull final Long eventId) {
+        final var event = eventService.get(eventId);
+        if (event.isPresent()) {
+            new ConfirmDialog("Confirm deletion",
+                    String.format("Are you sure you want to permanently delete the event \"%s\"?", event.get().getTitle()),
+                    "Delete", (dialogEvent) -> {
+                eventService.deleteEvent(event.get());
+                reloadGridItems();
+                dialogEvent.getSource().close();
+            },
+                    "Cancel", (dialogEvent) -> dialogEvent.getSource().close()
+            ).open();
+        } else {
+            Notification.show("This event does not exist anymore. Refreshing view…");
+            reloadGridItems();
+        }
     }
 
     private void reloadGridItems() {
