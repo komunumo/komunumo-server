@@ -165,7 +165,7 @@ public class EventsView extends Div implements HasUrlParameter<String> {
         if (event.isPresent()) {
             showEventDialog(event.get());
         } else {
-            Notification.show("This event does not exist anymore. Refreshing view…");
+            Notification.show("This event does not exist anymore. Reloading view…");
             reloadGridItems();
         }
     }
@@ -191,7 +191,7 @@ public class EventsView extends Div implements HasUrlParameter<String> {
                     "Cancel", (dialogEvent) -> dialogEvent.getSource().close()
             ).open();
         } else {
-            Notification.show("This event does not exist anymore. Refreshing view…");
+            Notification.show("This event does not exist anymore. Reloading view…");
             reloadGridItems();
         }
     }

@@ -147,7 +147,7 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
         if (speaker.isPresent()) {
             showSpeakerDialog(speaker.get());
         } else {
-            Notification.show("This speaker does not exist anymore. Refreshing view…");
+            Notification.show("This speaker does not exist anymore. Reloading view…");
             reloadGridItems();
         }
     }
@@ -175,7 +175,7 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
                     "Cancel", (dialogEvent) -> dialogEvent.getSource().close()
             ).open();
         } else {
-            Notification.show("This speaker does not exist anymore. Refreshing view…");
+            Notification.show("This speaker does not exist anymore. Reloading view…");
             reloadGridItems();
         }
     }
