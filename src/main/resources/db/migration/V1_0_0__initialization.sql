@@ -61,7 +61,6 @@ CREATE TABLE speaker (
     city VARCHAR(255) NOT NULL DEFAULT '',
     state VARCHAR(255) NOT NULL DEFAULT '',
     country VARCHAR(255) NOT NULL DEFAULT '',
-    event_count INTEGER UNSIGNED NOT NULL DEFAULT 0,
 
     PRIMARY KEY (id)
 );
@@ -96,9 +95,6 @@ CREATE TRIGGER event_speaker_insert
     AFTER INSERT ON event_speaker
     FOR EACH ROW
 BEGIN
-    UPDATE speaker
-    SET event_count = (SELECT COUNT(*) FROM event_speaker WHERE speaker_id = NEW.speaker_id)
-    WHERE id = NEW.speaker_id;
     UPDATE event
     SET speaker = (SELECT GROUP_CONCAT(CONCAT(first_name, ' ', last_name)
                                        ORDER BY first_name, last_name SEPARATOR ', ') AS full_name
@@ -111,9 +107,6 @@ CREATE TRIGGER event_speaker_delete
     AFTER DELETE ON event_speaker
     FOR EACH ROW
 BEGIN
-    UPDATE speaker
-    SET event_count = (SELECT COUNT(*) FROM event_speaker WHERE speaker_id = OLD.speaker_id)
-    WHERE id = OLD.speaker_id;
     UPDATE event
     SET speaker = (SELECT GROUP_CONCAT(CONCAT(first_name, ' ', last_name)
                                        ORDER BY first_name, last_name SEPARATOR ', ') AS full_name

@@ -102,8 +102,9 @@ public class EventsView extends Div implements HasUrlParameter<String> {
         final var grid = new Grid<EventRecord>();
         grid.setSelectionMode(Grid.SelectionMode.NONE);
 
-        grid.addColumn(TemplateRenderer.<EventRecord>of("<span style=\"font-weight: bold;\">[[item.title]]</span>")
-                .withProperty("title", EventRecord::getTitle))
+        grid.addColumn(TemplateRenderer.<EventRecord>of("<span style=\"font-weight: bold;\">[[item.title]]</span><br/><span>[[item.subtitle]]</span>")
+                .withProperty("title", EventRecord::getTitle)
+                .withProperty("subtitle", EventRecord::getSubtitle))
                 .setHeader("Title").setAutoWidth(true);
 
         grid.addColumn(TemplateRenderer.<EventRecord>of("<span inner-h-t-m-l=\"[[item.speaker]]\"></span>")

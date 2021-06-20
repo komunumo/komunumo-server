@@ -75,7 +75,7 @@ public class EventDialog extends Dialog {
         final var speakerField = new MultiselectComboBox<SpeakerRecord>("Speaker");
         speakerField.setOrdered(true);
         speakerField.setItemLabelGenerator(speaker -> String.format("%s %s", speaker.getFirstName(), speaker.getLastName()));
-        speakerField.setItems(speakerService.find(0, Integer.MAX_VALUE, null));
+        speakerField.setItems(speakerService.getAllSpeakers());
         speakerField.setValue(eventSpeakerService.getSpeakersForEvent(event)
                 .collect(Collectors.toSet()));
 

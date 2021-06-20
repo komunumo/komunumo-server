@@ -21,6 +21,7 @@ package org.komunumo.data.service;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.jooq.impl.DSL.concat;
+import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
 @Service
@@ -59,14 +61,23 @@ public class SpeakerService {
         return speaker;
     }
 
-    public Stream<SpeakerRecord> find(final int offset, final int limit, @Nullable final String filter) {
-        final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
+    public Stream<SpeakerRecord> getAllSpeakers() {
         return dsl.selectFrom(SPEAKER)
+                .orderBy(SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME)
+                .stream();
+    }
+
+    public @NotNull Stream<Record> find(final int offset, final int limit, @Nullable final String filter) {
+        final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
+        return dsl.select(SPEAKER.asterisk(), DSL.count(EVENT_SPEAKER.EVENT_ID).as("event_count"))
+                .from(SPEAKER)
+                .leftJoin(EVENT_SPEAKER).on(SPEAKER.ID.eq(EVENT_SPEAKER.SPEAKER_ID))
                 .where(filterValue == null ? DSL.noCondition() :
                         concat(concat(SPEAKER.FIRST_NAME, " "), SPEAKER.LAST_NAME).like(filterValue)
                                 .or(SPEAKER.COMPANY.like(filterValue))
                                 .or(SPEAKER.EMAIL.like(filterValue))
                                 .or(SPEAKER.TWITTER.like(filterValue)))
+                .groupBy(SPEAKER.ID)
                 .orderBy(SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME)
                 .offset(offset)
                 .limit(limit)
@@ -84,5 +95,4 @@ public class SpeakerService {
     public void delete(@NotNull final SpeakerRecord speaker) {
         speaker.delete();
     }
-
 }
