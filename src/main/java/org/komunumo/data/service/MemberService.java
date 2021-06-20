@@ -21,6 +21,7 @@ package org.komunumo.data.service;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.MemberRecord;
 import org.springframework.stereotype.Service;
@@ -60,9 +61,10 @@ public class MemberService {
         return member;
     }
 
-    public Stream<MemberRecord> find(final int offset, final int limit, @Nullable final String filter) {
+    public Stream<Record> find(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
-        return dsl.selectFrom(MEMBER)
+        return dsl.select(MEMBER.asterisk())
+                .from(MEMBER)
                 .where(filterValue == null ? DSL.noCondition() :
                         concat(concat(MEMBER.FIRST_NAME, " "), MEMBER.LAST_NAME).like(filterValue)
                                 .or(MEMBER.EMAIL.like(filterValue)))

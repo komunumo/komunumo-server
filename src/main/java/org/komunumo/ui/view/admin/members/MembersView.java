@@ -24,6 +24,7 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -35,6 +36,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jooq.Record;
 import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.ui.component.EnhancedButton;
@@ -43,13 +45,15 @@ import org.komunumo.ui.view.admin.AdminView;
 
 import java.util.List;
 
+import static org.komunumo.data.db.tables.Member.MEMBER;
+
 @Route(value = "admin/members", layout = AdminView.class)
 @PageTitle("Member Administration")
 public class MembersView extends Div implements HasUrlParameter<String> {
 
     private final MemberService memberService;
     private final TextField filterField;
-    private final Grid<MemberRecord> grid;
+    private final Grid<Record> grid;
 
     public MembersView(@NotNull final MemberService memberService) {
         this.memberService = memberService;
@@ -61,7 +65,7 @@ public class MembersView extends Div implements HasUrlParameter<String> {
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter members by name or email");
 
-        final var newMemberButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> editMember(memberService.newMember()));
+        final var newMemberButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> newMember());
         newMemberButton.setTitle("Add a new member");
         final var refreshMembersButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
         refreshMembersButton.setTitle("Refresh the list of members");
@@ -87,31 +91,31 @@ public class MembersView extends Div implements HasUrlParameter<String> {
         return String.format("%s %s", member.getFirstName(), member.getLastName());
     }
 
-    private Grid<MemberRecord> createGrid() {
-        final var grid = new Grid<MemberRecord>();
+    private Grid<Record> createGrid() {
+        final var grid = new Grid<Record>();
         grid.setSelectionMode(Grid.SelectionMode.NONE);
 
-        grid.addColumn(TemplateRenderer.<MemberRecord>of("<span style=\"font-weight: bold;\">[[item.firstName]] [[item.lastName]]</span>")
-                .withProperty("firstName", MemberRecord::getFirstName)
-                .withProperty("lastName", MemberRecord::getLastName))
+        grid.addColumn(TemplateRenderer.<Record>of("<span style=\"font-weight: bold;\">[[item.firstName]] [[item.lastName]]</span>")
+                .withProperty("firstName", record -> record.get(MEMBER.FIRST_NAME))
+                .withProperty("lastName", record -> record.get(MEMBER.LAST_NAME)))
                 .setHeader("Name").setAutoWidth(true);
-        grid.addColumn(TemplateRenderer.<MemberRecord>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
-                .withProperty("email", MemberRecord::getEmail))
+        grid.addColumn(TemplateRenderer.<Record>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
+                .withProperty("email", record -> record.get(MEMBER.EMAIL)))
                 .setHeader("Email").setAutoWidth(true);
-        grid.addColumn(TemplateRenderer.<MemberRecord>of(
+        grid.addColumn(TemplateRenderer.<Record>of(
                 "<iron-icon hidden='[[!item.admin]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.admin]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
-                .withProperty("admin", MemberRecord::getAdmin))
+                .withProperty("admin", record -> record.get(MEMBER.ADMIN)))
                 .setHeader("Admin").setAutoWidth(true);
-        grid.addColumn(TemplateRenderer.<MemberRecord>of(
+        grid.addColumn(TemplateRenderer.<Record>of(
                 "<iron-icon hidden='[[!item.blocked]]' icon='vaadin:ban' title='[[item.blockedReason]]' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-error-text-color);'></iron-icon><iron-icon hidden='[[item.blocked]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
-                .withProperty("blocked", MemberRecord::getBlocked)
-                .withProperty("blockedReason", MemberRecord::getBlockedReason))
+                .withProperty("blocked", record -> record.get(MEMBER.BLOCKED))
+                .withProperty("blockedReason", record -> record.get(MEMBER.BLOCKED_REASON)))
                 .setHeader("Blocked").setAutoWidth(true);
 
         grid.addColumn(new ComponentRenderer<>(record -> {
-            final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editMember(record));
+            final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editMember(record.get(MEMBER.ID)));
             editButton.setTitle("Edit this member");
-            final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), event -> deleteMember(record));
+            final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), event -> deleteMember(record.get(MEMBER.ID)));
             deleteButton.setTitle("Delete this member");
             return new HorizontalLayout(editButton, deleteButton);
         }))
@@ -125,22 +129,46 @@ public class MembersView extends Div implements HasUrlParameter<String> {
         return grid;
     }
 
-    private void editMember(@NotNull final MemberRecord memberRecord) {
-        final var dialog = new MemberDialog(memberRecord, memberService);
-        dialog.addOpenedChangeListener(changeEvent -> { if (!changeEvent.isOpened()) { reloadGridItems(); } } );
+    private void newMember() {
+        showMemberDialog(memberService.newMember());
+    }
+
+    private void editMember(@NotNull final Long memberId) {
+        final var member = memberService.get(memberId);
+        if (member.isPresent()) {
+            showMemberDialog(member.get());
+        } else {
+            Notification.show("This member does not exist anymore. Reloading view…");
+            reloadGridItems();
+        }
+    }
+
+    private void showMemberDialog(@NotNull final MemberRecord member) {
+        final var dialog = new MemberDialog(member, memberService);
+        dialog.addOpenedChangeListener(changeEvent -> {
+            if (!changeEvent.isOpened()) {
+                reloadGridItems();
+            }
+        });
         dialog.open();
     }
 
-    private void deleteMember(@NotNull final MemberRecord member) {
-        new ConfirmDialog("Confirm deletion",
-                String.format("Are you sure you want to permanently delete the member \"%s\"?", getFullName(member)),
-                "Delete", (dialogEvent) -> {
-                    memberService.delete(member);
-                    reloadGridItems();
-                    dialogEvent.getSource().close();
-                },
-                "Cancel", (dialogEvent) -> dialogEvent.getSource().close()
-        ).open();
+    private void deleteMember(@NotNull final Long memberId) {
+        final var member = memberService.get(memberId);
+        if (member.isPresent()) {
+            new ConfirmDialog("Confirm deletion",
+                    String.format("Are you sure you want to permanently delete the member \"%s\"?", getFullName(member.get())),
+                    "Delete", (dialogEvent) -> {
+                memberService.delete(member.get());
+                reloadGridItems();
+                dialogEvent.getSource().close();
+            },
+                    "Cancel", (dialogEvent) -> dialogEvent.getSource().close()
+            ).open();
+        } else {
+            Notification.show("This member does not exist anymore. Reloading view…");
+            reloadGridItems();
+        }
     }
 
     private void reloadGridItems() {
