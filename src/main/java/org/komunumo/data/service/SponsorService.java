@@ -21,6 +21,7 @@ package org.komunumo.data.service;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.springframework.stereotype.Service;
@@ -47,9 +48,10 @@ public class SponsorService {
         return sponsor;
     }
 
-    public Stream<SponsorRecord> find(final int offset, final int limit, @Nullable final String filter) {
+    public Stream<Record> find(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
-        return dsl.selectFrom(SPONSOR)
+        return dsl.select(SPONSOR.asterisk())
+                .from(SPONSOR)
                 .where(filterValue == null ? DSL.noCondition() : SPONSOR.NAME.like(filterValue))
                 .offset(offset)
                 .limit(limit)
