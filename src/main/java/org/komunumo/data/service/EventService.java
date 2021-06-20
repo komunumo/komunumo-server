@@ -18,6 +18,8 @@
 
 package org.komunumo.data.service;
 
+import java.time.LocalDateTime;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
@@ -98,4 +100,12 @@ public class EventService {
         dsl.delete(EVENT).where(EVENT.ID.eq(event.getId())).execute();
     }
 
+    public Stream<EventRecord> upcomingEvents() {
+        return dsl.selectFrom(EVENT)
+                .where(EVENT.VISIBLE.eq(true)
+                        // minusHours(1) - show events as upcoming which had just started
+                        .and(EVENT.DATE.greaterOrEqual(LocalDateTime.now().minusHours(1))))
+                .orderBy(EVENT.DATE.asc())
+                .stream();
+    }
 }
