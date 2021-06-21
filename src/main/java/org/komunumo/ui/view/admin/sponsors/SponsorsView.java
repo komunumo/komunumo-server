@@ -92,7 +92,7 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
     private Grid<Record> createGrid() {
         final var grid = new Grid<Record>();
         grid.setSelectionMode(Grid.SelectionMode.NONE);
-        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
         grid.addColumn(TemplateRenderer.<Record>of(
                 "<a style=\"font-weight: bold;\" href=\"[[item.website]]\" target=\"_blank\">[[item.name]]</a>")
@@ -118,7 +118,6 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
                 .setFlexGrow(0)
                 .setFrozen(true);
 
-        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setHeightFull();
 
         final var page = UI.getCurrent().getPage();

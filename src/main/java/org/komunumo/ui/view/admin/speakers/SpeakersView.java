@@ -97,7 +97,7 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
     private Grid<Record> createGrid() {
         final var grid = new Grid<Record>();
         grid.setSelectionMode(Grid.SelectionMode.NONE);
-        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
         grid.addColumn(TemplateRenderer.<Record>of("<span style=\"font-weight: bold;\">[[item.firstName]] [[item.lastName]]</span>")
                 .withProperty("firstName", record -> record.get(SPEAKER.FIRST_NAME))
@@ -129,7 +129,6 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
                 .setFlexGrow(0)
                 .setFrozen(true);
 
-        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setHeightFull();
 
         final var page = UI.getCurrent().getPage();
