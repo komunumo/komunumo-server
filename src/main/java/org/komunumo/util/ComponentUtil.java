@@ -25,7 +25,7 @@ import java.time.LocalDate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class DatePickerUtil {
+public class ComponentUtil {
 
     public static EnhancedDatePicker createDatePicker(@NotNull final String label, @Nullable final LocalDate value) {
         final var picker = new EnhancedDatePicker(label);

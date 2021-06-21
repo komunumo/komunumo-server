@@ -49,7 +49,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
-import static org.komunumo.util.DatePickerUtil.createDatePicker;
+import static org.komunumo.util.ComponentUtil.createDatePicker;
 
 public class EventDialog extends Dialog {
 

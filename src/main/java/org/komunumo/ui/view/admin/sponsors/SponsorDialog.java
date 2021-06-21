@@ -37,7 +37,7 @@ import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.data.service.SponsorService;
 import org.komunumo.ui.component.ImageUploadField;
 
-import static org.komunumo.util.DatePickerUtil.createDatePicker;
+import static org.komunumo.util.ComponentUtil.createDatePicker;
 
 public class SponsorDialog extends Dialog {
 
