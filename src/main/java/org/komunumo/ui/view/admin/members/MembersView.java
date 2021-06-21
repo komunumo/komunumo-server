@@ -94,6 +94,7 @@ public class MembersView extends Div implements HasUrlParameter<String> {
     private Grid<Record> createGrid() {
         final var grid = new Grid<Record>();
         grid.setSelectionMode(Grid.SelectionMode.NONE);
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
 
         grid.addColumn(TemplateRenderer.<Record>of("<span style=\"font-weight: bold;\">[[item.firstName]] [[item.lastName]]</span>")
                 .withProperty("firstName", record -> record.get(MEMBER.FIRST_NAME))
