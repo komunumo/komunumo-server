@@ -27,9 +27,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(SpringRunner.class)
+// TODO unnötig
+//  @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
-@TestPropertySource("classpath:application.properties")
+// TODO unnötig
+//  @TestPropertySource("classpath:application.properties")
 public class ConfigurationTest {
 
     @Autowired

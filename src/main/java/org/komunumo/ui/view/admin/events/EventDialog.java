@@ -51,6 +51,7 @@ import java.util.stream.Collectors;
 
 import static org.komunumo.util.DatePickerUtil.createDatePicker;
 
+// TODO warum wurde kein Binder verwendet?
 public class EventDialog extends Dialog {
 
     private final Focusable<? extends Component> focusField;

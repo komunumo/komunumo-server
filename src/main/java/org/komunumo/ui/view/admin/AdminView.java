@@ -50,6 +50,7 @@ import java.util.Optional;
 /**
  * The main view is a top-level placeholder for other views.
  */
+// TODO Naming finde ich nicht gut. Besser wäre AdminLayout
 public class AdminView extends AppLayout {
 
     private final AuthService authService;

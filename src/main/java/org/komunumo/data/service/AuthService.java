@@ -46,6 +46,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+// TODO Warum ist das ein VaadinServiceInitListener? Würde ich nicht mischen
 @Service
 public class AuthService implements VaadinServiceInitListener {
 

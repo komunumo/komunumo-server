@@ -35,15 +35,20 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * and some desktop browsers.
  */
 @SpringBootApplication
-@EnableTransactionManagement
+// TODO unnötig
+//  @EnableTransactionManagement
+
+// TODO würde ich auf dem Layout setzten
 @Theme(value = "komunumo")
 @PWA(name = "Komunumo", shortName = "Komunumo", offlineResources = {"images/logo.png"})
 public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
 
+    // TODO geht nicht auf static Variablen!
     @Value("${application.version}")
     public static String APPLICATION_VERSION;
 
-    public static void main(@NotNull final String[] args) {
+    public static void main(// TODO wer sollte @NotNull prüfen
+                            @NotNull final String[] args) {
         SpringApplication.run(Application.class, args);
     }
 

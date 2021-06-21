@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+// TODO würde ich als Komponente implementieren
 public class DatePickerUtil {
 
     public static EnhancedDatePicker createDatePicker(@NotNull final String label, @Nullable final LocalDate value) {

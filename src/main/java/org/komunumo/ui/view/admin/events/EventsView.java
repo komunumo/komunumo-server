@@ -114,6 +114,7 @@ public class EventsView extends Div implements HasUrlParameter<String> {
                 .withProperty("speaker", this::renderSpeakerLinks))
                 .setHeader("Speaker").setAutoWidth(true);
 
+        // TODO warum ist das ein TemplateRenderer?
         final var dateRenderer = TemplateRenderer.<Record>of(
                 "[[item.date]]")
                 .withProperty("date", record -> {

@@ -40,6 +40,7 @@ import org.komunumo.util.GravatarUtil;
 
 import static org.komunumo.util.GravatarUtil.GRAVATAR_URL;
 
+// TODO warum wurde kein Binder verwendet?
 public class SpeakerDialog extends Dialog {
 
     private final Focusable<? extends Component> focusField;

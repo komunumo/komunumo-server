@@ -25,6 +25,7 @@ import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.PageTitle;
 
+// TODO Naming finde ich nicht gut. Besser wäre WebsiteLayout
 public class WebsiteView extends AppLayout {
 
     private final H1 viewTitle;

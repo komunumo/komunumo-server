@@ -36,6 +36,7 @@ import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.service.MemberService;
 
+// TODO warum wurde kein Binder verwendet?
 public class MemberDialog extends Dialog {
 
     private final Focusable<? extends Component> focusField;

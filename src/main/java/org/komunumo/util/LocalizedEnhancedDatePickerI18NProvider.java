@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
+// TODO würde ich in der Komponente implementieren
 public class LocalizedEnhancedDatePickerI18NProvider extends EnhancedDatePicker.DatePickerI18n {
 
     public LocalizedEnhancedDatePickerI18NProvider() {

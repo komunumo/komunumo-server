@@ -39,6 +39,7 @@ import org.komunumo.ui.component.ImageUploadField;
 
 import static org.komunumo.util.DatePickerUtil.createDatePicker;
 
+// TODO warum wurde kein Binder verwendet?
 public class SponsorDialog extends Dialog {
 
     private final Focusable<? extends Component> focusField;
