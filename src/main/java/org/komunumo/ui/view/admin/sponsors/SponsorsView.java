@@ -18,6 +18,7 @@
 
 package org.komunumo.ui.view.admin.sponsors;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -103,8 +104,8 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
                 .withProperty("logo", record -> record.get(SPONSOR.LOGO)))
                 .setHeader("Logo").setWidth("96px").setFlexGrow(0);
         grid.addColumn(record -> record.get(SPONSOR.LEVEL)).setHeader("Level").setAutoWidth(true);
-        grid.addColumn(record -> record.get(SPONSOR.VALID_FROM)).setHeader("Valid from").setAutoWidth(true);
-        grid.addColumn(record -> record.get(SPONSOR.VALID_TO)).setHeader("Valid to").setAutoWidth(true);
+        grid.addColumn(record -> record.get(SPONSOR.VALID_FROM)).setHeader("Valid from").setAutoWidth(true).setKey("validFrom");
+        grid.addColumn(record -> record.get(SPONSOR.VALID_TO)).setHeader("Valid to").setAutoWidth(true).setKey("validTo");
 
         grid.addColumn(new ComponentRenderer<>(record -> {
             final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editSponsor(record.get(SPONSOR.ID)));
@@ -120,7 +121,16 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setHeightFull();
 
+        final var page = UI.getCurrent().getPage();
+        page.retrieveExtendedClientDetails(extendedClientDetails -> showHideGridColumns(grid, extendedClientDetails.getBodyClientWidth()));
+        page.addBrowserWindowResizeListener(event -> showHideGridColumns(grid, event.getWidth()));
+
         return grid;
+    }
+
+    private void showHideGridColumns(@NotNull final Grid<Record> grid, final int clientWidth) {
+        grid.getColumnByKey("validFrom").setVisible(clientWidth >= 1200);
+        grid.getColumnByKey("validTo").setVisible(clientWidth >= 1000);
     }
 
     private void newSponsor() {

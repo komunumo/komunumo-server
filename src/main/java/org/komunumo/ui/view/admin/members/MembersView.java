@@ -18,6 +18,7 @@
 
 package org.komunumo.ui.view.admin.members;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -102,7 +103,7 @@ public class MembersView extends Div implements HasUrlParameter<String> {
                 .setHeader("Name").setAutoWidth(true);
         grid.addColumn(TemplateRenderer.<Record>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
                 .withProperty("email", record -> record.get(MEMBER.EMAIL)))
-                .setHeader("Email").setAutoWidth(true);
+                .setHeader("Email").setAutoWidth(true).setKey("email");
         grid.addColumn(TemplateRenderer.<Record>of(
                 "<iron-icon hidden='[[!item.admin]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.admin]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
                 .withProperty("admin", record -> record.get(MEMBER.ADMIN)))
@@ -127,7 +128,15 @@ public class MembersView extends Div implements HasUrlParameter<String> {
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setHeightFull();
 
+        final var page = UI.getCurrent().getPage();
+        page.retrieveExtendedClientDetails(extendedClientDetails -> showHideGridColumns(grid, extendedClientDetails.getBodyClientWidth()));
+        page.addBrowserWindowResizeListener(event -> showHideGridColumns(grid, event.getWidth()));
+
         return grid;
+    }
+
+    private void showHideGridColumns(@NotNull final Grid<Record> grid, final int clientWidth) {
+        grid.getColumnByKey("email").setVisible(clientWidth >= 1100);
     }
 
     private void newMember() {

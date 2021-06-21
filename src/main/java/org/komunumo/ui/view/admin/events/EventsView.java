@@ -18,6 +18,7 @@
 
 package org.komunumo.ui.view.admin.events;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -113,7 +114,7 @@ public class EventsView extends Div implements HasUrlParameter<String> {
 
         grid.addColumn(TemplateRenderer.<Record>of("<span inner-h-t-m-l=\"[[item.speaker]]\"></span>")
                 .withProperty("speaker", this::renderSpeakerLinks))
-                .setHeader("Speaker").setAutoWidth(true);
+                .setHeader("Speaker").setAutoWidth(true).setKey("speaker");
 
         final var dateRenderer = TemplateRenderer.<Record>of(
                 "[[item.date]]")
@@ -123,7 +124,7 @@ public class EventsView extends Div implements HasUrlParameter<String> {
                 });
         grid.addColumn(dateRenderer).setHeader("Date").setAutoWidth(true);
 
-        grid.addColumn(record -> record.get(EVENT.LOCATION)).setHeader("Location").setAutoWidth(true);
+        grid.addColumn(record -> record.get(EVENT.LOCATION)).setHeader("Location").setAutoWidth(true).setKey("location");
 
         final var visibleRenderer = TemplateRenderer.<Record>of(
                 "<iron-icon hidden='[[!item.visible]]' icon='vaadin:eye' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.visible]]' icon='vaadin:eye-slash' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
@@ -145,7 +146,16 @@ public class EventsView extends Div implements HasUrlParameter<String> {
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setHeightFull();
 
+        final var page = UI.getCurrent().getPage();
+        page.retrieveExtendedClientDetails(extendedClientDetails -> showHideGridColumns(grid, extendedClientDetails.getBodyClientWidth()));
+        page.addBrowserWindowResizeListener(event -> showHideGridColumns(grid, event.getWidth()));
+
         return grid;
+    }
+
+    private void showHideGridColumns(@NotNull final Grid<Record> grid, final int clientWidth) {
+        grid.getColumnByKey("location").setVisible(clientWidth >= 1300);
+        grid.getColumnByKey("speaker").setVisible(clientWidth >= 1100);
     }
 
     private String renderSpeakerLinks(@NotNull Record record) {

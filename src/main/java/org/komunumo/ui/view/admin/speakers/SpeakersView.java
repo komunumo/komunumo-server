@@ -18,6 +18,7 @@
 
 package org.komunumo.ui.view.admin.speakers;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -102,13 +103,13 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
                 .withProperty("firstName", record -> record.get(SPEAKER.FIRST_NAME))
                 .withProperty("lastName", record -> record.get(SPEAKER.LAST_NAME)))
                 .setHeader("Name").setAutoWidth(true);
-        grid.addColumn(record -> record.get(SPEAKER.COMPANY)).setHeader("Company").setAutoWidth(true);
+        grid.addColumn(record -> record.get(SPEAKER.COMPANY)).setHeader("Company").setAutoWidth(true).setKey("company");
         grid.addColumn(TemplateRenderer.<Record>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
                 .withProperty("email", record -> record.get(SPEAKER.EMAIL)))
-                .setHeader("Email").setAutoWidth(true);
+                .setHeader("Email").setAutoWidth(true).setKey("email");
         grid.addColumn(TemplateRenderer.<Record>of("<a href=\"https://twitter.com/[[item.twitter]]\" target=\"_blank\">[[item.twitter]]</a>")
                 .withProperty("twitter", record -> record.get(SPEAKER.TWITTER)))
-                .setHeader("Twitter").setAutoWidth(true);
+                .setHeader("Twitter").setAutoWidth(true).setKey("twitter");
 
         final var eventCountRenderer = TemplateRenderer.<Record>of(
                 "<a href=\"/admin/events?filter=[[item.filterValue]]\">[[item.eventCount]]</a>")
@@ -131,7 +132,17 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setHeightFull();
 
+        final var page = UI.getCurrent().getPage();
+        page.retrieveExtendedClientDetails(extendedClientDetails -> showHideGridColumns(grid, extendedClientDetails.getBodyClientWidth()));
+        page.addBrowserWindowResizeListener(event -> showHideGridColumns(grid, event.getWidth()));
+
         return grid;
+    }
+
+    private void showHideGridColumns(@NotNull final Grid<Record> grid, final int clientWidth) {
+        grid.getColumnByKey("twitter").setVisible(clientWidth >= 1300);
+        grid.getColumnByKey("email").setVisible(clientWidth >= 1200);
+        grid.getColumnByKey("company").setVisible(clientWidth >= 1100);
     }
 
     private long getEventCount(@NotNull final Record record) {
