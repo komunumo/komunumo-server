@@ -33,7 +33,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.timepicker.TimePicker;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
@@ -43,13 +42,11 @@ import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.SpeakerService;
+import org.komunumo.ui.component.EnhancedDateTimePicker;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
-
-import static org.komunumo.util.ComponentUtil.createDatePicker;
 
 public class EventDialog extends Dialog {
 
@@ -97,13 +94,9 @@ public class EventDialog extends Dialog {
         locationField.setLabel("Location");
         locationField.setValue(event.getLocation());
 
-        final var dateField = createDatePicker("Date", event.getDate() == null ? null : event.getDate().toLocalDate());
-
-        final var timeField = new TimePicker("Time");
-        timeField.setStep(Duration.ofHours(1));
-        if (event.getDate() != null) {
-            timeField.setValue(event.getDate().toLocalTime());
-        }
+        final var dateField = new EnhancedDateTimePicker("Date", "Time");
+        dateField.setMin(LocalDateTime.now());
+        dateField.setValue(event.getDate());
 
         final var visibleField = new Checkbox("Visible");
         visibleField.setValue(event.getVisible());
@@ -115,8 +108,7 @@ public class EventDialog extends Dialog {
                     || agendaField.isEmpty()
                     || languageField.isEmpty()
                     || locationField.isEmpty()
-                    || dateField.isEmpty()
-                    || timeField.isEmpty())) {
+                    || dateField.isEmpty())) {
                 Notification.show("To make an event visible on the website, you have to fill out all fields!");
                 visibleField.setValue(false);
             }
@@ -125,7 +117,7 @@ public class EventDialog extends Dialog {
         final var form = new FormLayout();
         form.add(titleField, subtitleField, speakerField, levelField,
                 abstractField, agendaField, languageField, locationField,
-                dateField, timeField, visibleField);
+                dateField, visibleField);
 
         final var saveButton = new Button("Save");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -133,11 +125,7 @@ public class EventDialog extends Dialog {
         saveButton.addClickListener(clickEvent -> {
             if (titleField.getValue().isBlank()) {
                 Notification.show("Please enter at least the title!");
-            } else if (dateField.getValue() == null && timeField.getValue() != null
-                    || dateField.getValue() != null && timeField.getValue() == null) {
-                Notification.show("Please enter a date and a time or none of them!");
-            } else if (dateField.getValue() != null && timeField.getValue() != null
-                    && LocalDateTime.of(dateField.getValue(), timeField.getValue()).isBefore(LocalDateTime.now())) {
+            } else if (dateField.getValue() != null && dateField.getValue().isBefore(LocalDateTime.now())) {
                 Notification.show("Please enter a date and time in the future!");
             } else {
                 saveButton.setEnabled(false);
@@ -148,8 +136,7 @@ public class EventDialog extends Dialog {
                 event.setLevel(levelField.getValue());
                 event.setLanguage(languageField.getValue());
                 event.setLocation(locationField.getValue());
-                event.setDate(dateField.getValue() == null || timeField.getValue() == null ? null
-                        : LocalDateTime.of(dateField.getValue(), timeField.getValue()));
+                event.setDate(dateField.getValue());
                 event.setVisible(visibleField.getValue());
                 eventService.store(event);
                 eventSpeakerService.setEventSpeakers(event, speakerField.getValue());
