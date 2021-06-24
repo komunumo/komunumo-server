@@ -18,6 +18,7 @@
 
 package org.komunumo.ui.view.admin.members;
 
+import com.opencsv.CSVWriter;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
@@ -35,6 +36,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.Record;
@@ -43,9 +45,13 @@ import org.komunumo.data.service.MemberService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.view.admin.AdminView;
+import org.vaadin.olli.FileDownloadWrapper;
 
+import java.io.ByteArrayInputStream;
+import java.io.StringWriter;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.komunumo.data.db.tables.Member.MEMBER;
 
 @Route(value = "admin/members", layout = AdminView.class)
@@ -68,9 +74,16 @@ public class MembersView extends Div implements HasUrlParameter<String> {
 
         final var newMemberButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> newMember());
         newMemberButton.setTitle("Add a new member");
+
         final var refreshMembersButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
         refreshMembersButton.setTitle("Refresh the list of members");
-        final var optionBar = new HorizontalLayout(filterField, newMemberButton, refreshMembersButton);
+
+        final var downloadMembersButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD));
+        downloadMembersButton.setTitle("Download the list of members");
+        final var downloadMembersButtonWrapper = new FileDownloadWrapper(downloadMembers());
+        downloadMembersButtonWrapper.wrapComponent(downloadMembersButton);
+
+        final var optionBar = new HorizontalLayout(filterField, newMemberButton, refreshMembersButton, downloadMembersButtonWrapper);
         optionBar.setPadding(true);
 
         add(optionBar, grid);
@@ -182,6 +195,36 @@ public class MembersView extends Div implements HasUrlParameter<String> {
 
     private void reloadGridItems() {
         grid.setItems(query -> memberService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
+    }
+
+    private StreamResource downloadMembers() {
+        return new StreamResource("members.csv", () -> {
+            final var stringWriter = new StringWriter();
+            final var csvWriter = new CSVWriter(stringWriter);
+            csvWriter.writeNext(new String[] {
+                    "ID", "First name", "Last name", "Email",
+                    "Address", "Zip code", "City", "State", "Country",
+                    "Member since", "Admin", "Active", "Blocked", "Blocked reason"
+            });
+            grid.getGenericDataView()
+                    .getItems().map(record -> new String[] {
+                    record.get(MEMBER.ID).toString(),
+                    record.get(MEMBER.FIRST_NAME),
+                    record.get(MEMBER.LAST_NAME),
+                    record.get(MEMBER.EMAIL),
+                    record.get(MEMBER.ADDRESS),
+                    record.get(MEMBER.ZIP_CODE),
+                    record.get(MEMBER.CITY),
+                    record.get(MEMBER.STATE),
+                    record.get(MEMBER.COUNTRY),
+                    record.get(MEMBER.MEMBER_SINCE).toString(),
+                    record.get(MEMBER.ADMIN).toString(),
+                    record.get(MEMBER.ACTIVE).toString(),
+                    record.get(MEMBER.BLOCKED).toString(),
+                    record.get(MEMBER.BLOCKED_REASON)
+            }).forEach(csvWriter::writeNext);
+            return new ByteArrayInputStream(stringWriter.toString().getBytes(UTF_8));
+        });
     }
 
 }
