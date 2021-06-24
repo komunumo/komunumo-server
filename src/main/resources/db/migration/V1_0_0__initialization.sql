@@ -15,6 +15,7 @@ CREATE TABLE event (
 );
 
 CREATE INDEX event_title ON event (title);
+CREATE INDEX event_date ON event (date);
 
 CREATE TABLE member (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
