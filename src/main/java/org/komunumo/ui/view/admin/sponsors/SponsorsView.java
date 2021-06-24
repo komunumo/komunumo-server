@@ -18,6 +18,7 @@
 
 package org.komunumo.ui.view.admin.sponsors;
 
+import com.opencsv.CSVWriter;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
@@ -35,6 +36,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.Record;
@@ -43,9 +45,13 @@ import org.komunumo.data.service.SponsorService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.view.admin.AdminView;
+import org.vaadin.olli.FileDownloadWrapper;
 
+import java.io.ByteArrayInputStream;
+import java.io.StringWriter;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
 
 @Route(value = "admin/sponsors", layout = AdminView.class)
@@ -68,9 +74,16 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
 
         final var newSponsorButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> newSponsor());
         newSponsorButton.setTitle("Add a new sponsor");
+
         final var refreshSpeakersButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
         refreshSpeakersButton.setTitle("Refresh the list of sponsors");
-        final var optionBar = new HorizontalLayout(filterField, newSponsorButton, refreshSpeakersButton);
+
+        final var downloadSponsorsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD));
+        downloadSponsorsButton.setTitle("Download the list of sponsors");
+        final var downloadSponsorsButtonWrapper = new FileDownloadWrapper(downloadSponsors());
+        downloadSponsorsButtonWrapper.wrapComponent(downloadSponsorsButton);
+
+        final var optionBar = new HorizontalLayout(filterField, newSponsorButton, refreshSpeakersButton, downloadSponsorsButtonWrapper);
         optionBar.setPadding(true);
 
         add(optionBar, grid);
@@ -176,5 +189,25 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
 
     private void reloadGridItems() {
         grid.setItems(query -> sponsorService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
+    }
+
+    private StreamResource downloadSponsors() {
+        return new StreamResource("sponsors.csv", () -> {
+            final var stringWriter = new StringWriter();
+            final var csvWriter = new CSVWriter(stringWriter);
+            csvWriter.writeNext(new String[] {
+                    "ID", "Name", "Website", "Level", "Valid from", "Valid to"
+            });
+            grid.getGenericDataView()
+                    .getItems().map(record -> new String[] {
+                    record.get(SPONSOR.ID).toString(),
+                    record.get(SPONSOR.NAME),
+                    record.get(SPONSOR.WEBSITE),
+                    record.get(SPONSOR.LEVEL) != null ? record.get(SPONSOR.LEVEL).toString() : "",
+                    record.get(SPONSOR.VALID_FROM) != null ? record.get(SPONSOR.VALID_FROM).toString() : "",
+                    record.get(SPONSOR.VALID_TO) != null ? record.get(SPONSOR.VALID_TO).toString() : ""
+            }).forEach(csvWriter::writeNext);
+            return new ByteArrayInputStream(stringWriter.toString().getBytes(UTF_8));
+        });
     }
 }
