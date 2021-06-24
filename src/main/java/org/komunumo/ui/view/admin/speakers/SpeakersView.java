@@ -18,6 +18,7 @@
 
 package org.komunumo.ui.view.admin.speakers;
 
+import com.opencsv.CSVWriter;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
@@ -35,6 +36,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.Record;
@@ -43,7 +45,10 @@ import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.view.admin.AdminView;
+import org.vaadin.olli.FileDownloadWrapper;
 
+import java.io.ByteArrayInputStream;
+import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.util.List;
 
@@ -70,9 +75,16 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
 
         final var newSpeakerButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> newSpeaker());
         newSpeakerButton.setTitle("Add a new speaker");
+
         final var refreshSpeakersButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
         refreshSpeakersButton.setTitle("Refresh the list of speakers");
-        final var optionBar = new HorizontalLayout(filterField, newSpeakerButton, refreshSpeakersButton);
+
+        final var downloadSpeakersButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD));
+        downloadSpeakersButton.setTitle("Download the list of speakers");
+        final var downloadSpeakersButtonWrapper = new FileDownloadWrapper(downloadSpeakers());
+        downloadSpeakersButtonWrapper.wrapComponent(downloadSpeakersButton);
+
+        final var optionBar = new HorizontalLayout(filterField, newSpeakerButton, refreshSpeakersButton, downloadSpeakersButtonWrapper);
         optionBar.setPadding(true);
 
         add(optionBar, grid);
@@ -193,5 +205,37 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
 
     private void reloadGridItems() {
         grid.setItems(query -> speakerService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
+    }
+
+    private StreamResource downloadSpeakers() {
+        return new StreamResource("speakers.csv", () -> {
+            final var stringWriter = new StringWriter();
+            final var csvWriter = new CSVWriter(stringWriter);
+            csvWriter.writeNext(new String[] {
+                    "ID", "First name", "Last name", "Company", "Bio",
+                    "Email", "Twitter", "LinkedIn", "Website",
+                    "Address", "Zip code", "City", "State", "Country",
+                    "Event count"
+            });
+            grid.getGenericDataView()
+                    .getItems().map(record -> new String[] {
+                    record.get(SPEAKER.ID).toString(),
+                    record.get(SPEAKER.FIRST_NAME),
+                    record.get(SPEAKER.LAST_NAME),
+                    record.get(SPEAKER.COMPANY),
+                    record.get(SPEAKER.BIO),
+                    record.get(SPEAKER.EMAIL),
+                    record.get(SPEAKER.TWITTER),
+                    record.get(SPEAKER.LINKEDIN),
+                    record.get(SPEAKER.WEBSITE),
+                    record.get(SPEAKER.ADDRESS),
+                    record.get(SPEAKER.ZIP_CODE),
+                    record.get(SPEAKER.CITY),
+                    record.get(SPEAKER.STATE),
+                    record.get(SPEAKER.COUNTRY),
+                    Long.toString(getEventCount(record))
+            }).forEach(csvWriter::writeNext);
+            return new ByteArrayInputStream(stringWriter.toString().getBytes(UTF_8));
+        });
     }
 }
