@@ -18,6 +18,7 @@
 
 package org.komunumo.ui.view.admin.events;
 
+import com.opencsv.CSVWriter;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
@@ -35,6 +36,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.Record;
@@ -46,11 +48,15 @@ import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.view.admin.AdminView;
 
+import java.io.ByteArrayInputStream;
+import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.vaadin.olli.FileDownloadWrapper;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.komunumo.data.db.tables.Event.EVENT;
@@ -82,9 +88,16 @@ public class EventsView extends Div implements HasUrlParameter<String> {
 
         final var newEventButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> newEvent());
         newEventButton.setTitle("Add a new event");
+
         final var refreshEventsButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
         refreshEventsButton.setTitle("Refresh the list of events");
-        final var optionBar = new HorizontalLayout(filterField, newEventButton, refreshEventsButton);
+
+        final var downloadEventsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD));
+        downloadEventsButton.setTitle("Download the list of events");
+        final var downloadEventsButtonWrapper = new FileDownloadWrapper(downloadEvents());
+        downloadEventsButtonWrapper.wrapComponent(downloadEventsButton);
+
+        final var optionBar = new HorizontalLayout(filterField, newEventButton, refreshEventsButton, downloadEventsButtonWrapper);
         optionBar.setPadding(true);
 
         add(optionBar, grid);
@@ -210,5 +223,30 @@ public class EventsView extends Div implements HasUrlParameter<String> {
 
     private void reloadGridItems() {
         grid.setItems(query -> eventService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
+    }
+
+    private StreamResource downloadEvents() {
+        return new StreamResource("events.csv", () -> {
+            final var stringWriter = new StringWriter();
+            final var csvWriter = new CSVWriter(stringWriter);
+            csvWriter.writeNext(new String[]{
+                    "ID", "Title", "Subtitle", "Speaker", "Abstract", "Agenda", "Level", "Language", "Location", "Date", "Visible"
+            });
+            grid.getGenericDataView()
+                    .getItems().map(record -> new String[]{
+                    record.get(EVENT.ID).toString(),
+                    record.get(EVENT.TITLE),
+                    record.get(EVENT.SUBTITLE),
+                    record.get("speaker", String.class),
+                    record.get(EVENT.ABSTRACT),
+                    record.get(EVENT.AGENDA),
+                    record.get(EVENT.LEVEL) != null ? record.get(EVENT.LEVEL).toString() : null,
+                    record.get(EVENT.LANGUAGE) != null ? record.get(EVENT.LANGUAGE).toString() : null,
+                    record.get(EVENT.LOCATION) != null ? record.get(EVENT.LOCATION).toString() : null,
+                    record.get(EVENT.DATE) != null ? record.get(EVENT.DATE).toString() : null,
+                    record.get(EVENT.VISIBLE).toString()
+            }).forEach(csvWriter::writeNext);
+            return new ByteArrayInputStream(stringWriter.toString().getBytes(UTF_8));
+        });
     }
 }
