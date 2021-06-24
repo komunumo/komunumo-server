@@ -49,6 +49,8 @@ DB_ADMIN_USER=janedoe
 DB_ADMIN_PASS=extremesecret
 ```
 
+The database schema will be migrated automatically by *Komunumo*.
+
 ### Admin
 
 Only members with administrative privileges are allowed to login to the backend. If you specify the email address of an admin in the environment variable `KOMUNUMO_ADMIN_EMAIL`, *Komunumo* will make sure that the member with this email address has administrative privileges. If there is no member with this email address, *Komunumo* will create a new one and send an email with a one time password. At the first login, the user is forced to specify a new password.
@@ -100,13 +102,15 @@ We are using [Maven](https://maven.apache.org/) to build the *Komunumo* project.
 While developing, sometimes it is very useful to reset the database manually. You can do this very easily using Maven and Flyway:
 
 ```
-mvn flyway:clean flyway:migrate flyway:info \
+mvn flyway:clean \
     -Dflyway.user='janedoe' \
     -Dflyway.password='extremesecret' \
     -Dflyway.url='jdbc:mariadb://localhost:3306/komunumo?serverTimezone\=Europe/Zurich'
 ```
 
-This command will first clean your database (erase everything). Then it will execute all needed migration steps to recreate all tables, indexes, etc. Last but not least it will inform you, if the migration was successful or not. You need to specify the credentials for a database user with administrative privileges to the database and the database URL.
+This command will clean your database (erase everything). You need to specify the credentials for a database user with administrative privileges to the database and the database URL.
+
+*Komunumo* will automatically migrate the database schema on the next start.
 
 ## Copyright and License
 
