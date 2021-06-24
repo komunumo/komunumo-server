@@ -20,6 +20,7 @@ package org.komunumo.ui.view.website;
 
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.cookieconsent.CookieConsent;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
@@ -31,6 +32,8 @@ public class WebsiteView extends AppLayout {
 
     public WebsiteView() {
         setPrimarySection(AppLayout.Section.DRAWER);
+
+        addToNavbar(new CookieConsent());
 
         viewTitle = new H1();
         addToNavbar(new DrawerToggle(), viewTitle);
