@@ -39,14 +39,12 @@ KOMUNUMO_EMAIL_ADDRESS=noreply@localhost
 
 *Komunumo* needs a database to permanently store the business data. All JDBC compatible databases are supported. We highly recommend [MariaDB](https://mariadb.org/), just because we are using it during development and it is highly tested with *Komunumo*.
 
-The `DB_USER` is used during runtime and only needs the privileges `SELECT`, `INSERT`, `UPDATE`, and `DELETE` on the *Komunumo* database. The `DB_ADMIN_USER` is used for database schema migrations only and needs `ALL PRIVILEGES` on the *Komunumo* database.
+The `DB_USER` is used to access the *Komunumo* database including automatic schema migrations and needs `ALL PRIVILEGES`.
 
 ```
 DB_URL=jdbc:mariadb://localhost:3306/komunumo?serverTimezone\=Europe/Zurich
 DB_USER=johndoe
 DB_PASS=verysecret
-DB_ADMIN_USER=janedoe
-DB_ADMIN_PASS=extremesecret
 ```
 
 The database schema will be migrated automatically by *Komunumo*.
@@ -103,8 +101,8 @@ While developing, sometimes it is very useful to reset the database manually. Yo
 
 ```
 mvn flyway:clean \
-    -Dflyway.user='janedoe' \
-    -Dflyway.password='extremesecret' \
+    -Dflyway.user='johndoe' \
+    -Dflyway.password='verysecret' \
     -Dflyway.url='jdbc:mariadb://localhost:3306/komunumo?serverTimezone\=Europe/Zurich'
 ```
 
