@@ -21,11 +21,9 @@ package org.komunumo;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * The entry point of the Spring Boot application.
@@ -34,7 +32,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * and some desktop browsers.
  */
 @SpringBootApplication
-@EnableTransactionManagement
 @Theme(value = "komunumo")
 @PWA(name = "Komunumo", shortName = "Komunumo", offlineResources = {"images/logo.png"})
 public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
