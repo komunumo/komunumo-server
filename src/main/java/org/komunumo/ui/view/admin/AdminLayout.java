@@ -34,7 +34,6 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
-import com.vaadin.flow.theme.Theme;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.ui.view.admin.dashboard.DashboardView;
@@ -49,7 +48,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-@Theme(value = "komunumo")
 public class AdminLayout extends AppLayout {
 
     private final AuthService authService;
