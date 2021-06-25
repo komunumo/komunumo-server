@@ -104,6 +104,11 @@
             <version>2.0.0</version>
         </dependency>
         <dependency>
+            <groupId>org.vaadin.addons.componentfactory</groupId>
+            <artifactId>enhanced-date-time-picker</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.vaadin.olli</groupId>
             <artifactId>file-download-wrapper</artifactId>
             <version>3.0.1</version>

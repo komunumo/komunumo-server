@@ -42,7 +42,7 @@ import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.SpeakerService;
-import org.komunumo.ui.component.EnhancedDateTimePicker;
+import org.komunumo.ui.component.KomunumoDateTimePicker;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.time.LocalDateTime;
@@ -94,7 +94,7 @@ public class EventDialog extends Dialog {
         locationField.setLabel("Location");
         locationField.setValue(event.getLocation());
 
-        final var dateField = new EnhancedDateTimePicker("Date", "Time");
+        final var dateField = new KomunumoDateTimePicker("Date & Time");
         dateField.setMin(LocalDateTime.now());
         dateField.setValue(event.getDate());
 

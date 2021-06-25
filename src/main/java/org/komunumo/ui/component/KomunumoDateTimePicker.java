@@ -16,26 +16,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.util;
+package org.komunumo.ui.component;
 
-import com.vaadin.componentfactory.EnhancedDatePicker;
-
-import java.time.LocalDate;
-
+import com.vaadin.componentfactory.EnhancedDateTimePicker;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class ComponentUtil {
+public class KomunumoDateTimePicker extends EnhancedDateTimePicker {
 
-    public static EnhancedDatePicker createDatePicker(@NotNull final String label, @Nullable final LocalDate value) {
-        final var picker = new EnhancedDatePicker(label);
-        picker.setPattern("yyyy-MM-dd");
-        picker.setI18n(new LocalizedEnhancedDatePickerI18NProvider());
-        picker.setWeekNumbersVisible(true);
-        if (value != null) {
-            picker.setValue(value);
-        }
-        return picker;
+    public KomunumoDateTimePicker(@NotNull final String label) {
+        super(label);
+        this.setDatePickerI18n(new KomunumoDatePickerI18NProvider());
+        this.setWeekNumbersVisible(true);
     }
 
 }

@@ -36,8 +36,7 @@ import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.data.service.SponsorService;
 import org.komunumo.ui.component.ImageUploadField;
-
-import static org.komunumo.util.ComponentUtil.createDatePicker;
+import org.komunumo.ui.component.KomunumoDatePicker;
 
 public class SponsorDialog extends Dialog {
 
@@ -65,8 +64,11 @@ public class SponsorDialog extends Dialog {
         final var logoField = new ImageUploadField("Logo");
         logoField.setValue(sponsor.getLogo());
 
-        final var validFromField = createDatePicker("Valid from", sponsor.getValidFrom());
-        final var validToField = createDatePicker("Valid to", sponsor.getValidTo());
+        final var validFromField = new KomunumoDatePicker("Valid from");
+        validFromField.setValue(sponsor.getValidFrom());
+
+        final var validToField = new KomunumoDatePicker("Valid to");
+        validToField.setValue(sponsor.getValidTo());
 
         final var form = new FormLayout();
         form.add(nameField, websiteField, levelField, logoField, validFromField, validToField);

@@ -16,9 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.util;
+package org.komunumo.ui.component;
 
 import com.vaadin.componentfactory.EnhancedDatePicker;
+
+import com.vaadin.flow.component.UI;
 
 import java.text.DateFormatSymbols;
 import java.util.Arrays;
@@ -28,16 +30,16 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
-public class LocalizedEnhancedDatePickerI18NProvider extends EnhancedDatePicker.DatePickerI18n {
+public class KomunumoDatePickerI18NProvider extends EnhancedDatePicker.DatePickerI18n {
 
-    public LocalizedEnhancedDatePickerI18NProvider() {
-        this(Locale.getDefault());
+    public KomunumoDatePickerI18NProvider() {
+        this(UI.getCurrent().getSession().getBrowser().getLocale());
     }
 
-    public LocalizedEnhancedDatePickerI18NProvider(@NotNull final Locale locale) {
+    public KomunumoDatePickerI18NProvider(@NotNull final Locale locale) {
         final var symbols = new DateFormatSymbols(locale);
         this.setMonthNames(Arrays.asList(symbols.getMonths()));
-        this.setFirstDayOfWeek(Calendar.getInstance(locale).getFirstDayOfWeek() == Calendar.MONDAY ? 1 : 0);
+        this.setFirstDayOfWeek(Calendar.getInstance(locale).getFirstDayOfWeek());
         this.setWeekdays(Arrays.stream(symbols.getWeekdays()).filter(s -> !s.isEmpty()).collect(Collectors.toList()));
         this.setWeekdaysShort(Arrays.stream(symbols.getShortWeekdays()).filter(s -> !s.isEmpty()).collect(Collectors.toList()));
     }
