@@ -30,13 +30,13 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
-public class KomunumoDatePickerI18NProvider extends EnhancedDatePicker.DatePickerI18n {
+public class KomunumoDatePickerI18N extends EnhancedDatePicker.DatePickerI18n {
 
-    public KomunumoDatePickerI18NProvider() {
+    public KomunumoDatePickerI18N() {
         this(UI.getCurrent().getSession().getBrowser().getLocale());
     }
 
-    public KomunumoDatePickerI18NProvider(@NotNull final Locale locale) {
+    public KomunumoDatePickerI18N(@NotNull final Locale locale) {
         final var symbols = new DateFormatSymbols(locale);
         this.setMonthNames(Arrays.asList(symbols.getMonths()));
         this.setFirstDayOfWeek(Calendar.getInstance(locale).getFirstDayOfWeek());
