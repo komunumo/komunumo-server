@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
-public class KomunumoDatePickerI18N extends EnhancedDatePicker.DatePickerI18n {
+class KomunumoDatePickerI18N extends EnhancedDatePicker.DatePickerI18n {
 
     public KomunumoDatePickerI18N() {
         this(UI.getCurrent().getSession().getBrowser().getLocale());
