@@ -44,7 +44,7 @@ import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
-import org.komunumo.ui.view.admin.AdminView;
+import org.komunumo.ui.view.admin.AdminLayout;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
@@ -55,7 +55,7 @@ import java.util.List;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
-@Route(value = "admin/speakers", layout = AdminView.class)
+@Route(value = "admin/speakers", layout = AdminLayout.class)
 @PageTitle("Speaker Administration")
 public class SpeakersView extends Div implements HasUrlParameter<String> {
 

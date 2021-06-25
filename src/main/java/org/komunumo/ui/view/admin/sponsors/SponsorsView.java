@@ -44,7 +44,7 @@ import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.data.service.SponsorService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
-import org.komunumo.ui.view.admin.AdminView;
+import org.komunumo.ui.view.admin.AdminLayout;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
@@ -54,7 +54,7 @@ import java.util.List;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
 
-@Route(value = "admin/sponsors", layout = AdminView.class)
+@Route(value = "admin/sponsors", layout = AdminLayout.class)
 @PageTitle("Sponsor Administration")
 public class SponsorsView extends Div implements HasUrlParameter<String> {
 

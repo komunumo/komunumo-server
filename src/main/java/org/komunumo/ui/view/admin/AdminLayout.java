@@ -50,13 +50,13 @@ import java.util.LinkedHashMap;
 import java.util.Optional;
 
 @Theme(value = "komunumo")
-public class AdminView extends AppLayout {
+public class AdminLayout extends AppLayout {
 
     private final AuthService authService;
     private final Tabs menu;
     private H1 viewTitle;
 
-    public AdminView(@NotNull final AuthService authService) {
+    public AdminLayout(@NotNull final AuthService authService) {
         this.authService = authService;
         addToNavbar(new CookieConsent());
         setPrimarySection(Section.DRAWER);

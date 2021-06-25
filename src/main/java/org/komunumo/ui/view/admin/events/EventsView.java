@@ -46,7 +46,7 @@ import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
-import org.komunumo.ui.view.admin.AdminView;
+import org.komunumo.ui.view.admin.AdminLayout;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
@@ -61,7 +61,7 @@ import org.vaadin.olli.FileDownloadWrapper;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.komunumo.data.db.tables.Event.EVENT;
 
-@Route(value = "admin/events", layout = AdminView.class)
+@Route(value = "admin/events", layout = AdminLayout.class)
 @PageTitle("Event Administration")
 public class EventsView extends Div implements HasUrlParameter<String> {
 

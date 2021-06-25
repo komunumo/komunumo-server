@@ -36,10 +36,10 @@ import java.time.Year;
 
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.EventService;
-import org.komunumo.ui.view.admin.AdminView;
+import org.komunumo.ui.view.admin.AdminLayout;
 
-@Route(value = "admin/dashboard", layout = AdminView.class)
-@RouteAlias(value = "admin", layout = AdminView.class)
+@Route(value = "admin/dashboard", layout = AdminLayout.class)
+@RouteAlias(value = "admin", layout = AdminLayout.class)
 @PageTitle("Dashboard")
 public class DashboardView extends Div {
 

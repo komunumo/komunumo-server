@@ -28,11 +28,11 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.Theme;
 
 @Theme(value = "komunumo")
-public class WebsiteView extends AppLayout {
+public class WebsiteLayout extends AppLayout {
 
     private final H1 viewTitle;
 
-    public WebsiteView() {
+    public WebsiteLayout() {
         setPrimarySection(AppLayout.Section.DRAWER);
 
         addToNavbar(new CookieConsent());

@@ -23,10 +23,10 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.komunumo.data.service.EventService;
-import org.komunumo.ui.view.website.WebsiteView;
+import org.komunumo.ui.view.website.WebsiteLayout;
 import org.komunumo.ui.view.website.home.component.EventPreview;
 
-@Route(value = "", layout = WebsiteView.class)
+@Route(value = "", layout = WebsiteLayout.class)
 @PageTitle("Home")
 public class HomeView extends Div {
 
