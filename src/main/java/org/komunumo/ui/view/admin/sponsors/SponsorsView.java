@@ -37,9 +37,11 @@ import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
+import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.Record;
+import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.data.service.SponsorService;
 import org.komunumo.ui.component.EnhancedButton;
@@ -116,7 +118,7 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
                 "<img style=\"max-width: 100%;\" src=\"[[item.logo]]\" /></span>")
                 .withProperty("logo", record -> record.get(SPONSOR.LOGO)))
                 .setHeader("Logo").setWidth("96px").setFlexGrow(0);
-        grid.addColumn(record -> record.get(SPONSOR.LEVEL)).setHeader("Level").setAutoWidth(true);
+        grid.addColumn(record -> levelToCamelCase(record.get(SPONSOR.LEVEL))).setHeader("Level").setAutoWidth(true);
         grid.addColumn(record -> record.get(SPONSOR.VALID_FROM)).setHeader("Valid from").setAutoWidth(true).setKey("validFrom");
         grid.addColumn(record -> record.get(SPONSOR.VALID_TO)).setHeader("Valid to").setAutoWidth(true).setKey("validTo");
 
@@ -138,6 +140,10 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
         page.addBrowserWindowResizeListener(event -> showHideGridColumns(grid, event.getWidth()));
 
         return grid;
+    }
+
+    private String levelToCamelCase(@Nullable final SponsorLevel level) {
+        return level != null ? WordUtils.capitalizeFully(level.toString(), '_') : "";
     }
 
     private void showHideGridColumns(@NotNull final Grid<Record> grid, final int clientWidth) {
