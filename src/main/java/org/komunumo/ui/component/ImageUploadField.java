@@ -43,7 +43,7 @@ public class ImageUploadField extends CustomField<String> {
 
     public ImageUploadField() {
         preview = new Image();
-        preview.setWidth("100%");
+        preview.setMaxWidth("100%");
 
         final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), clickEvent -> setValue(""));
         deleteButton.setTitle("Delete the image");
