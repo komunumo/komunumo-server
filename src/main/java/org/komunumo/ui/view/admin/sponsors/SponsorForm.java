@@ -105,6 +105,8 @@ public class SponsorForm extends FormLayout {
     }
 
     private HorizontalLayout createButtonsLayout() {
+        save.setEnabled(false);
+
         save.addThemeVariants(LUMO_PRIMARY);
         cancel.addThemeVariants(LUMO_TERTIARY);
 
