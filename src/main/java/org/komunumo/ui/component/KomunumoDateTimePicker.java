@@ -25,6 +25,7 @@ public class KomunumoDateTimePicker extends EnhancedDateTimePicker {
 
     public KomunumoDateTimePicker(@NotNull final String label) {
         super(label);
+        this.setDatePattern("yyyy-MM-dd");
         this.setDatePickerI18n(new KomunumoDatePickerI18N());
         this.setWeekNumbersVisible(true);
     }
