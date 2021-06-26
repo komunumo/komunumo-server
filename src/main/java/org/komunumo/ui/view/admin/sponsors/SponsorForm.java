@@ -58,10 +58,11 @@ public class SponsorForm extends FormLayout {
 
     private final Binder<SponsorRecord> binder = new Binder<>(SponsorRecord.class);
 
-    public SponsorForm(@NotNull final List<SponsorLevel> levels) {
+    public SponsorForm(@NotNull final SponsorRecord sponsor,
+                       @NotNull final List<SponsorLevel> levels) {
         addClassName("sponsor-form");
         configureFields(levels);
-        configureBinder();
+        configureBinder(sponsor);
         add(name, website, level, logo, validFrom, validTo, createButtonsLayout());
     }
 
@@ -73,7 +74,7 @@ public class SponsorForm extends FormLayout {
         level.setItemLabelGenerator(level -> WordUtils.capitalizeFully(level.toString(), '_'));
     }
 
-    private void configureBinder() {
+    private void configureBinder(@NotNull final SponsorRecord sponsor) {
         binder.forField(name)
                 .withValidator(new StringLengthValidator(
                         "Please enter the name of the sponsor", 1, null))
@@ -100,6 +101,7 @@ public class SponsorForm extends FormLayout {
                 .bind(SponsorRecord::getValidFrom, SponsorRecord::setValidFrom);
 
         binder.bindInstanceFields(this);
+        binder.setBean(sponsor);
     }
 
     private HorizontalLayout createButtonsLayout() {
@@ -121,10 +123,6 @@ public class SponsorForm extends FormLayout {
         if (binder.isValid()) {
             fireEvent(new SaveEvent(this, binder.getBean()));
         }
-    }
-
-    public void setSponsor(@NotNull final SponsorRecord sponsor) {
-        binder.setBean(sponsor);
     }
 
     public static abstract class SponsorFormEvent extends ComponentEvent<SponsorForm> {

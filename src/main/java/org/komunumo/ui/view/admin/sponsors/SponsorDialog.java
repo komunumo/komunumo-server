@@ -39,10 +39,9 @@ public class SponsorDialog extends Dialog {
 
         setCloseOnOutsideClick(false);
 
-        final var form = new SponsorForm(List.of(SponsorLevel.values()));
+        final var form = new SponsorForm(sponsor, List.of(SponsorLevel.values()));
         form.addListener(SponsorForm.SaveEvent.class, event -> saveSponsor(event.getSponsor()));
         form.addListener(SponsorForm.CancelEvent.class, event -> close());
-        form.setSponsor(sponsor);
 
         add(form);
     }
