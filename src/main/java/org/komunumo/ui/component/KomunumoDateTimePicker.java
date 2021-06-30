@@ -21,11 +21,15 @@ package org.komunumo.ui.component;
 import com.vaadin.componentfactory.EnhancedDateTimePicker;
 import org.jetbrains.annotations.NotNull;
 
+import static org.komunumo.util.FormatterUtil.DATE_PATTERN;
+import static org.komunumo.util.FormatterUtil.TIME_PATTERN;
+
 public class KomunumoDateTimePicker extends EnhancedDateTimePicker {
 
     public KomunumoDateTimePicker(@NotNull final String label) {
         super(label);
-        this.setDatePattern("yyyy-MM-dd");
+        this.setTimePattern(TIME_PATTERN);
+        this.setDatePattern(DATE_PATTERN);
         this.setDatePickerI18n(new KomunumoDatePickerI18N());
         this.setWeekNumbersVisible(true);
     }

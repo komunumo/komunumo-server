@@ -28,13 +28,13 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import com.vaadin.flow.shared.Registration;
-import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.ui.component.ImageUploadField;
 import org.komunumo.ui.component.KomunumoDatePicker;
+import org.komunumo.util.FormatterUtil;
 
 import java.util.List;
 
@@ -71,7 +71,7 @@ public class SponsorForm extends FormLayout {
         name.setValueChangeMode(EAGER);
         name.focus();
         level.setItems(levels);
-        level.setItemLabelGenerator(level -> WordUtils.capitalizeFully(level.toString(), '_'));
+        level.setItemLabelGenerator(FormatterUtil::formatCamelCase);
     }
 
     private void configureBinder(@NotNull final SponsorRecord sponsor) {

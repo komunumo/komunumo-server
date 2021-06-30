@@ -37,11 +37,9 @@ import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
-import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.Record;
-import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.data.service.SponsorService;
 import org.komunumo.ui.component.EnhancedButton;
@@ -55,6 +53,8 @@ import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
+import static org.komunumo.util.FormatterUtil.formatCamelCase;
+import static org.komunumo.util.FormatterUtil.formatDate;
 
 @Route(value = "admin/sponsors", layout = AdminLayout.class)
 @PageTitle("Sponsor Administration")
@@ -118,9 +118,9 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
                 "<img style=\"max-width: 100%;\" src=\"[[item.logo]]\" /></span>")
                 .withProperty("logo", record -> record.get(SPONSOR.LOGO)))
                 .setHeader("Logo").setWidth("96px").setFlexGrow(0);
-        grid.addColumn(record -> levelToCamelCase(record.get(SPONSOR.LEVEL))).setHeader("Level").setAutoWidth(true);
-        grid.addColumn(record -> record.get(SPONSOR.VALID_FROM)).setHeader("Valid from").setAutoWidth(true).setKey("validFrom");
-        grid.addColumn(record -> record.get(SPONSOR.VALID_TO)).setHeader("Valid to").setAutoWidth(true).setKey("validTo");
+        grid.addColumn(record -> formatCamelCase(record.get(SPONSOR.LEVEL))).setHeader("Level").setAutoWidth(true);
+        grid.addColumn(record -> formatDate(record.get(SPONSOR.VALID_FROM))).setHeader("Valid from").setAutoWidth(true).setKey("validFrom");
+        grid.addColumn(record -> formatDate(record.get(SPONSOR.VALID_TO))).setHeader("Valid to").setAutoWidth(true).setKey("validTo");
 
         grid.addColumn(new ComponentRenderer<>(record -> {
             final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editSponsor(record.get(SPONSOR.ID)));
@@ -140,10 +140,6 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
         page.addBrowserWindowResizeListener(event -> showHideGridColumns(grid, event.getWidth()));
 
         return grid;
-    }
-
-    private String levelToCamelCase(@Nullable final SponsorLevel level) {
-        return level != null ? WordUtils.capitalizeFully(level.toString(), '_') : "";
     }
 
     private void showHideGridColumns(@NotNull final Grid<Record> grid, final int clientWidth) {
@@ -209,9 +205,9 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
                     record.get(SPONSOR.ID).toString(),
                     record.get(SPONSOR.NAME),
                     record.get(SPONSOR.WEBSITE),
-                    record.get(SPONSOR.LEVEL) != null ? record.get(SPONSOR.LEVEL).toString() : "",
-                    record.get(SPONSOR.VALID_FROM) != null ? record.get(SPONSOR.VALID_FROM).toString() : "",
-                    record.get(SPONSOR.VALID_TO) != null ? record.get(SPONSOR.VALID_TO).toString() : ""
+                    formatCamelCase(record.get(SPONSOR.LEVEL)),
+                    formatDate(record.get(SPONSOR.VALID_FROM)),
+                    formatDate(record.get(SPONSOR.VALID_TO))
             }).forEach(csvWriter::writeNext);
             return new ByteArrayInputStream(stringWriter.toString().getBytes(UTF_8));
         });

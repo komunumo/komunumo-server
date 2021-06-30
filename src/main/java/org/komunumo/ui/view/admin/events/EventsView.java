@@ -47,19 +47,18 @@ import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.view.admin.AdminLayout;
+import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.net.URLEncoder;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.vaadin.olli.FileDownloadWrapper;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.komunumo.data.db.tables.Event.EVENT;
+import static org.komunumo.util.FormatterUtil.formatDateTime;
 
 @Route(value = "admin/events", layout = AdminLayout.class)
 @PageTitle("Event Administration")
@@ -131,10 +130,7 @@ public class EventsView extends Div implements HasUrlParameter<String> {
 
         final var dateRenderer = TemplateRenderer.<Record>of(
                 "[[item.date]]")
-                .withProperty("date", record -> {
-                    final var date = record.get(EVENT.DATE);
-                    return date == null ? "" : date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-                });
+                .withProperty("date", record -> formatDateTime(record.get(EVENT.DATE)));
         grid.addColumn(dateRenderer).setHeader("Date").setAutoWidth(true);
 
         grid.addColumn(record -> record.get(EVENT.LOCATION)).setHeader("Location").setAutoWidth(true).setKey("location");
