@@ -2,6 +2,10 @@
     max-width: 500px;
 }
 
+.sponsor-form h2 {
+    margin-top: 0;
+}
+
 .sponsor-form img {
     max-height: 100px;
 }

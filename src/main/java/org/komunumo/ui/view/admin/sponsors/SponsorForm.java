@@ -23,6 +23,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -43,6 +44,7 @@ import static com.vaadin.flow.component.Key.ESCAPE;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_PRIMARY;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
+import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
 
 public class SponsorForm extends FormLayout {
 
@@ -63,7 +65,10 @@ public class SponsorForm extends FormLayout {
         addClassName("sponsor-form");
         configureFields(levels);
         configureBinder(sponsor);
-        add(name, website, level, logo, validFrom, validTo, createButtonsLayout());
+        add(
+                new H2(sponsor.get(SPONSOR.ID) != null ? "Edit Sponsor" : "New Sponsor"),
+                name, website, level, logo, validFrom, validTo,
+                createButtonsLayout());
     }
 
     private void configureFields(@NotNull List<SponsorLevel> levels) {
