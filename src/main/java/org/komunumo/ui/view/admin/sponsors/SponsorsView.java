@@ -21,6 +21,7 @@ package org.komunumo.ui.view.admin.sponsors;
 import com.opencsv.CSVWriter;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
@@ -58,6 +59,7 @@ import static org.komunumo.util.FormatterUtil.formatDate;
 
 @Route(value = "admin/sponsors", layout = AdminLayout.class)
 @PageTitle("Sponsor Administration")
+@CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
 public class SponsorsView extends Div implements HasUrlParameter<String> {
 
     private final SponsorService sponsorService;
@@ -162,13 +164,8 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
     }
 
     private void showSponsorDialog(@NotNull final SponsorRecord sponsor) {
-        final var dialog = new SponsorDialog(sponsor, sponsorService);
-        dialog.addOpenedChangeListener(changeEvent -> {
-            if (!changeEvent.isOpened()) {
-                reloadGridItems();
-            }
-        });
-        dialog.open();
+        final var dialog = new SponsorDialog(sponsor.get(SPONSOR.ID) != null ? "Edit Sponsor" : "New Sponsor");
+        dialog.open(sponsor, this::reloadGridItems);
     }
 
     private void deleteSponsor(@NotNull final Long sponsorId) {

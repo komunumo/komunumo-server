@@ -1,0 +1,60 @@
+[theme~="komunumo-dialog"] flow-component-renderer > div {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* HEADER */
+[theme~="komunumo-dialog"] header {
+    align-items: center;
+    display: flex;
+    /*noinspection CssUnresolvedCustomProperty*/
+    padding: var(--lumo-space-xs) var(--lumo-space-m);
+}
+
+[theme~="komunumo-dialog"] header .dialog-title {
+    /*noinspection CssUnresolvedCustomProperty*/
+    font-size: var(--lumo-font-size-m);
+    margin: 0 auto 0 0;
+}
+
+[theme~="komunumo-dialog"] header vaadin-button:not(:last-child) {
+    /*noinspection CssUnresolvedCustomProperty*/
+    margin-right: var(--lumo-space-xs);
+}
+
+/* CONTENT */
+[theme~="komunumo-dialog"] .dialog-content {
+    flex-grow: 1;
+    overflow: auto;
+}
+
+/* FOOTER */
+[theme~="komunumo-dialog"] footer {
+    /*noinspection CssUnresolvedCustomProperty*/
+    box-shadow: 0 -1px var(--lumo-contrast-20pct);
+    display: flex;
+    /*noinspection CssUnresolvedCustomProperty*/
+    padding: var(--lumo-space-xs) var(--lumo-space-m);
+    z-index: 1;
+}
+
+[theme~="komunumo-dialog"] footer vaadin-button:not(:last-child) {
+    /*noinspection CssUnresolvedCustomProperty*/
+    margin-right: var(--lumo-space-xs);
+}
+
+[theme~="komunumo-dialog"] footer vaadin-button:last-child {
+    margin-left: auto;
+}
+
+/* DRAGGABLE and RESIZABLE */
+[theme~="komunumo-dialog"] header,
+[theme~="komunumo-dialog"] footer {
+    pointer-events: none;
+}
+
+[theme~="komunumo-dialog"] header *,
+[theme~="komunumo-dialog"] footer * {
+    pointer-events: auto;
+}

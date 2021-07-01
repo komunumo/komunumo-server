@@ -18,37 +18,68 @@
 
 package org.komunumo.ui.view.admin.sponsors;
 
-import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.db.tables.records.SponsorRecord;
-import org.komunumo.data.service.SponsorService;
+import org.komunumo.ui.component.ImageUploadField;
+import org.komunumo.ui.component.KomunumoDatePicker;
+import org.komunumo.ui.component.KomunumoEditDialog;
+import org.komunumo.util.FormatterUtil;
 
-import java.util.List;
+import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
+public class SponsorDialog extends KomunumoEditDialog<SponsorRecord> {
 
-public class SponsorDialog extends Dialog {
-
-    private final SponsorService sponsorService;
-
-    public SponsorDialog(@NotNull final SponsorRecord sponsor,
-                         @NotNull final SponsorService sponsorService) {
-        this.sponsorService = sponsorService;
-
-        setCloseOnOutsideClick(false);
-
-        final var form = new SponsorForm(sponsor, List.of(SponsorLevel.values()));
-        form.addListener(SponsorForm.SaveEvent.class, event -> saveSponsor(event.getSponsor()));
-        form.addListener(SponsorForm.CancelEvent.class, event -> close());
-
-        add(form);
+    public SponsorDialog(@NotNull final String title) {
+        super(title);
     }
 
-    private void saveSponsor(@NotNull final SponsorRecord sponsor) {
-        sponsorService.store(sponsor);
-        Notification.show(String.format("Sponsor \"%s\" saved.", sponsor.get(SPONSOR.NAME)));
-        close();
+    @Override
+    public void createForm() {
+        final var name = new TextField("Name");
+        final var website = new TextField("Website");
+        final var level = new ComboBox<SponsorLevel>("Level");
+        final var logo = new ImageUploadField("Logo");
+        final var validFrom = new KomunumoDatePicker("Valid from");
+        final var validTo = new KomunumoDatePicker("Valid to");
+
+        name.setRequiredIndicatorVisible(true);
+        name.setValueChangeMode(EAGER);
+        name.focus();
+        level.setItems(SponsorLevel.values());
+        level.setItemLabelGenerator(FormatterUtil::formatCamelCase);
+
+        formLayout.add(name, website, level, logo, validFrom, validTo);
+
+        binder.forField(name)
+                .withValidator(new StringLengthValidator(
+                        "Please enter the name of the sponsor", 1, null))
+                .bind(SponsorRecord::getName, SponsorRecord::setName);
+
+        binder.forField(website)
+                .withValidator(value -> value.isEmpty() || value.startsWith("https://"),
+                        "The website address must start with \"https://\"")
+                .bind(SponsorRecord::getWebsite, SponsorRecord::setWebsite);
+
+        binder.forField(level)
+                .bind(SponsorRecord::getLevel, SponsorRecord::setLevel);
+
+        binder.forField(logo)
+                .withValidator(value -> value.isEmpty() || value.startsWith("data:") || value.startsWith("https://"),
+                        "The logo must be uploaded or the logo address must be secure (HTTPS)")
+                .bind(SponsorRecord::getLogo, SponsorRecord::setLogo);
+
+        binder.forField(validFrom)
+                .withValidator(value -> value == null || validTo.isEmpty() || value.isBefore(validTo.getValue()),
+                        "The valid from date must be before the valid to date")
+                .bind(SponsorRecord::getValidFrom, SponsorRecord::setValidFrom);
+
+        binder.forField(validTo)
+                .withValidator(value -> value == null || validFrom.isEmpty() || value.isAfter(validFrom.getValue()),
+                        "The valid to date must be after the valid from date")
+                .bind(SponsorRecord::getValidTo, SponsorRecord::setValidTo);
     }
 }
