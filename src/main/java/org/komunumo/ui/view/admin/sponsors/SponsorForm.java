@@ -98,7 +98,7 @@ public class SponsorForm extends FormLayout {
         binder.forField(validTo)
                 .withValidator(validTo -> validTo == null || validFrom.isEmpty() || validTo.isAfter(validFrom.getValue()),
                         "The valid to date must be after the valid from date")
-                .bind(SponsorRecord::getValidFrom, SponsorRecord::setValidFrom);
+                .bind(SponsorRecord::getValidTo, SponsorRecord::setValidTo);
 
         binder.bindInstanceFields(this);
         binder.setBean(sponsor);
