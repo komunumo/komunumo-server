@@ -67,35 +67,47 @@ public class MemberDialog extends KomunumoEditDialog<MemberRecord> {
 
         binder.forField(firstName)
                 .withValidator(new StringLengthValidator(
-                        "Please enter the first name of the member", 1, null))
+                        "Please enter the first name of the member (max. 255 chars)", 1, 255))
                 .bind(MemberRecord::getFirstName, MemberRecord::setFirstName);
 
         binder.forField(lastName)
                 .withValidator(new StringLengthValidator(
-                        "Please enter the last name of the member", 1, null))
+                        "Please enter the last name of the member (max. 255 chars)", 1, 255))
                 .bind(MemberRecord::getLastName, MemberRecord::setLastName);
 
         binder.forField(email)
                 .withValidator(new EmailValidator(
                         "Please enter a correct email address or leave this field empty", true))
+                .withValidator(new StringLengthValidator(
+                        "The email address is too long (max. 255 chars)", 0, 255))
                 .bind(MemberRecord::getEmail, MemberRecord::setEmail);
 
         binder.forField(active)
                 .bind(MemberRecord::getActive, MemberRecord::setActive);
 
         binder.forField(address)
+                .withValidator(new StringLengthValidator(
+                        "The address is too long (max. 255 chars)", 0, 255))
                 .bind(MemberRecord::getAddress, MemberRecord::setAddress);
 
         binder.forField(zipCode)
+                .withValidator(new StringLengthValidator(
+                        "The zip code is too long (max. 255 chars)", 0, 255))
                 .bind(MemberRecord::getZipCode, MemberRecord::setZipCode);
 
         binder.forField(city)
+                .withValidator(new StringLengthValidator(
+                        "The city is too long (max. 255 chars)", 0, 255))
                 .bind(MemberRecord::getCity, MemberRecord::setCity);
 
         binder.forField(state)
+                .withValidator(new StringLengthValidator(
+                        "The state is too long (max. 255 chars)", 0, 255))
                 .bind(MemberRecord::getState, MemberRecord::setState);
 
         binder.forField(country)
+                .withValidator(new StringLengthValidator(
+                        "The country is too long (max. 255 chars)", 0, 255))
                 .bind(MemberRecord::getCountry, MemberRecord::setCountry);
 
         binder.forField(admin)
@@ -107,6 +119,8 @@ public class MemberDialog extends KomunumoEditDialog<MemberRecord> {
         binder.forField(blockedReason)
                 .withValidator(value -> !blocked.getValue() || blocked.getValue() && !value.isBlank(),
                         "If you want to block this member, you must enter a reason")
+                .withValidator(new StringLengthValidator(
+                        "The reason is too long (max. 255 chars)", 0, 255))
                 .bind(MemberRecord::getBlockedReason, MemberRecord::setBlockedReason);
     }
 

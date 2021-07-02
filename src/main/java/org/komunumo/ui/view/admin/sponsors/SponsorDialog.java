@@ -56,12 +56,14 @@ public class SponsorDialog extends KomunumoEditDialog<SponsorRecord> {
 
         binder.forField(name)
                 .withValidator(new StringLengthValidator(
-                        "Please enter the name of the sponsor", 1, null))
+                        "Please enter the name of the sponsor", 1, 255))
                 .bind(SponsorRecord::getName, SponsorRecord::setName);
 
         binder.forField(website)
                 .withValidator(value -> value.isEmpty() || value.startsWith("https://"),
                         "The website address must start with \"https://\"")
+                .withValidator(new StringLengthValidator(
+                        "The website address is too long", 0, 255))
                 .bind(SponsorRecord::getWebsite, SponsorRecord::setWebsite);
 
         binder.forField(level)
@@ -70,6 +72,8 @@ public class SponsorDialog extends KomunumoEditDialog<SponsorRecord> {
         binder.forField(logo)
                 .withValidator(value -> value.isEmpty() || value.startsWith("data:") || value.startsWith("https://"),
                         "The logo must be uploaded or the logo address must be secure (HTTPS)")
+                .withValidator(new StringLengthValidator(
+                        "The logo is too big (max. 100 KB)", 0, 100_000))
                 .bind(SponsorRecord::getLogo, SponsorRecord::setLogo);
 
         binder.forField(validFrom)
