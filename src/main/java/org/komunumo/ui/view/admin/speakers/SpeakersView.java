@@ -176,13 +176,8 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
     }
 
     private void showSpeakerDialog(@NotNull final SpeakerRecord speaker) {
-        final var dialog = new SpeakerDialog(speaker, speakerService);
-        dialog.addOpenedChangeListener(changeEvent -> {
-            if (!changeEvent.isOpened()) {
-                reloadGridItems();
-            }
-        });
-        dialog.open();
+        final var dialog = new SpeakerDialog(speaker.get(SPEAKER.ID) != null ? "Edit Speaker" : "New Speaker");
+        dialog.open(speaker, this::reloadGridItems);
     }
 
     private void deleteSpeaker(@NotNull final Long speakerId) {

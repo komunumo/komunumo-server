@@ -18,141 +18,116 @@
 
 package org.komunumo.ui.view.admin.speakers;
 
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Focusable;
-import com.vaadin.flow.component.Key;
-import com.vaadin.flow.component.KeyModifier;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.validator.EmailValidator;
+import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
-import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.ImageUploadField;
+import org.komunumo.ui.component.KomunumoEditDialog;
 import org.komunumo.util.GravatarUtil;
 
+import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 import static org.komunumo.util.GravatarUtil.GRAVATAR_URL;
 
-public class SpeakerDialog extends Dialog {
+public class SpeakerDialog extends KomunumoEditDialog<SpeakerRecord> {
 
-    private final Focusable<? extends Component> focusField;
-
-    public SpeakerDialog(@NotNull final SpeakerRecord speaker,
-                         @NotNull final SpeakerService speakerService) {
-        setCloseOnEsc(true);
-        setCloseOnOutsideClick(false);
-
-        final var title = new H2(speaker.getId() == null ? "New speaker" : "Edit speaker");
-        title.getStyle().set("margin-top", "0");
-
-        final var firstNameField = new TextField("First name");
-        firstNameField.setRequiredIndicatorVisible(true);
-        firstNameField.setValue(speaker.getFirstName());
-
-        final var lastNameField = new TextField("Last name");
-        lastNameField.setRequiredIndicatorVisible(true);
-        lastNameField.setValue(speaker.getLastName());
-
-        final var companyField = new TextField("Company");
-        companyField.setValue(speaker.getCompany());
-
-        final var bioField = new TextArea("Bio");
-        bioField.setValue(speaker.getBio());
-
-        final var photoField = new ImageUploadField("Photo");
-        photoField.setPreviewWidth("150px");
-        photoField.setValue(speaker.getPhoto());
-
-        final var emailField = new EmailField("Email");
-        emailField.setValue(speaker.getEmail());
-        emailField.addValueChangeListener(changeEvent -> {
-            final var email = changeEvent.getValue();
-            final var photo = photoField.getValue();
-            if (!email.isBlank() && (photo.isBlank() || photo.startsWith(GRAVATAR_URL))) {
-                photoField.setValue(GravatarUtil.getGravatarAddress(email, 150));
-            } else if (email.isBlank() && photo.startsWith(GRAVATAR_URL)) {
-                photoField.setValue("");
-            }
-        });
-
-        final var twitterField = new TextField("Twitter");
-        twitterField.setValue(speaker.getTwitter());
-
-        final var linkedinField = new TextField("LinkedIn");
-        linkedinField.setValue(speaker.getLinkedin());
-
-        final var websiteField = new TextField("Website");
-        websiteField.setValue(speaker.getWebsite());
-
-        final var addressField = new TextField("Address");
-        addressField.setValue(speaker.getAddress());
-
-        final var zipCodeField = new TextField("Zip code");
-        zipCodeField.setValue(speaker.getZipCode());
-
-        final var cityField = new TextField("City");
-        cityField.setValue(speaker.getCity());
-
-        final var stateField = new TextField("State");
-        stateField.setValue(speaker.getState());
-
-        final var countryField = new TextField("Country");
-        countryField.setValue(speaker.getCountry());
-
-        final var form = new FormLayout();
-        form.add(firstNameField, lastNameField, companyField, bioField,
-                emailField, twitterField, linkedinField, websiteField,
-                addressField, zipCodeField, cityField, stateField,
-                countryField, photoField);
-
-        final var saveButton = new Button("Save");
-        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        saveButton.addClickListener(clickEvent -> {
-            if (firstNameField.getValue().isBlank()) {
-                Notification.show("Please enter the first name of the speaker!");
-            } else if (lastNameField.getValue().isBlank()) {
-                Notification.show("Please enter the last name of the speaker!");
-            } else {
-                saveButton.setEnabled(false);
-                speaker.setFirstName(firstNameField.getValue());
-                speaker.setLastName(lastNameField.getValue());
-                speaker.setCompany(companyField.getValue());
-                speaker.setBio(bioField.getValue());
-                speaker.setPhoto(photoField.getValue());
-                speaker.setEmail(emailField.getValue());
-                speaker.setTwitter(twitterField.getValue());
-                speaker.setLinkedin(linkedinField.getValue());
-                speaker.setWebsite(websiteField.getValue());
-                speaker.setAddress(addressField.getValue());
-                speaker.setZipCode(zipCodeField.getValue());
-                speaker.setCity(cityField.getValue());
-                speaker.setState(stateField.getValue());
-                speaker.setCountry(countryField.getValue());
-                speakerService.store(speaker);
-
-                Notification.show("Speaker saved.");
-                close();
-            }
-        });
-        saveButton.addClickShortcut(Key.ENTER, KeyModifier.CONTROL);
-        final var cancelButton = new Button("Cancel", clickEvent -> close());
-        final var buttonBar = new HorizontalLayout(saveButton, cancelButton);
-
-        add(title, form, buttonBar);
-
-        focusField = firstNameField;
+    public SpeakerDialog(@NotNull final String title) {
+        super(title);
     }
 
     @Override
-    public void open() {
-        super.open();
-        focusField.focus();
+    public void createForm() {
+        final var firstName = new TextField("First name");
+        final var lastName = new TextField("Last name");
+        final var company = new TextField("Company");
+        final var bio = new TextArea("Bio");
+        final var photo = new ImageUploadField("Photo");
+        final var email = new EmailField("Email");
+        final var twitter = new TextField("Twitter");
+        final var linkedIn = new TextField("LinkedIn");
+        final var website = new TextField("Website");
+        final var address = new TextField("Address");
+        final var zipCode = new TextField("Zip code");
+        final var city = new TextField("City");
+        final var state = new TextField("State");
+        final var country = new TextField("Country");
+
+        firstName.setRequiredIndicatorVisible(true);
+        firstName.setValueChangeMode(EAGER);
+        firstName.focus();
+        lastName.setRequiredIndicatorVisible(true);
+        lastName.setValueChangeMode(EAGER);
+        photo.setMaxPreviewSize("150px", "150px");
+        email.addValueChangeListener(changeEvent -> {
+            final var newEmail = changeEvent.getValue();
+            final var photoValue = photo.getValue();
+            if (!newEmail.isBlank() && (photoValue.isBlank() || photoValue.startsWith(GRAVATAR_URL))) {
+                photo.setValue(GravatarUtil.getGravatarAddress(newEmail, 150));
+            } else if (newEmail.isBlank() && photoValue.startsWith(GRAVATAR_URL)) {
+                photo.setValue("");
+            }
+        });
+
+        formLayout.add(firstName, lastName, company, bio, photo, email, twitter,
+                linkedIn, website, address, zipCode, city, state, country);
+
+        binder.forField(firstName)
+                .withValidator(new StringLengthValidator(
+                        "Please enter the first name of the speaker", 1, null))
+                .bind(SpeakerRecord::getFirstName, SpeakerRecord::setFirstName);
+
+        binder.forField(lastName)
+                .withValidator(new StringLengthValidator(
+                        "Please enter the last name of the speaker", 1, null))
+                .bind(SpeakerRecord::getLastName, SpeakerRecord::setLastName);
+
+        binder.forField(company)
+                .bind(SpeakerRecord::getCompany, SpeakerRecord::setCompany);
+
+        binder.forField(bio)
+                .bind(SpeakerRecord::getBio, SpeakerRecord::setBio);
+
+        binder.forField(photo)
+                .withValidator(value -> value.isEmpty() || value.startsWith("data:") || value.startsWith("https://"),
+                        "The photo must be uploaded or the photo address must be secure (HTTPS)")
+                .bind(SpeakerRecord::getPhoto, SpeakerRecord::setPhoto);
+
+        binder.forField(email)
+                .withValidator(new EmailValidator(
+                        "Please enter a correct email address or leave this field empty"))
+                .bind(SpeakerRecord::getEmail, SpeakerRecord::setEmail);
+
+        binder.forField(twitter)
+                .withValidator(value -> value.isEmpty() || value.startsWith("https://"),
+                        "The twitter address must start with \"https://\"")
+                .bind(SpeakerRecord::getTwitter, SpeakerRecord::setTwitter);
+
+        binder.forField(linkedIn)
+                .withValidator(value -> value.isEmpty() || value.startsWith("https://"),
+                        "The LinkedIn address must start with \"https://\"")
+                .bind(SpeakerRecord::getLinkedin, SpeakerRecord::setLinkedin);
+
+        binder.forField(website)
+                .withValidator(value -> value.isEmpty() || value.startsWith("https://"),
+                        "The website address must start with \"https://\"")
+                .bind(SpeakerRecord::getWebsite, SpeakerRecord::setWebsite);
+
+        binder.forField(address)
+                .bind(SpeakerRecord::getAddress, SpeakerRecord::setAddress);
+
+        binder.forField(zipCode)
+                .bind(SpeakerRecord::getZipCode, SpeakerRecord::setZipCode);
+
+        binder.forField(city)
+                .bind(SpeakerRecord::getCity, SpeakerRecord::setCity);
+
+        binder.forField(state)
+                .bind(SpeakerRecord::getState, SpeakerRecord::setState);
+
+        binder.forField(country)
+                .bind(SpeakerRecord::getCountry, SpeakerRecord::setCountry);
     }
 }
