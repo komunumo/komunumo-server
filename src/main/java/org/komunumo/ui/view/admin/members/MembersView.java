@@ -166,13 +166,8 @@ public class MembersView extends Div implements HasUrlParameter<String> {
     }
 
     private void showMemberDialog(@NotNull final MemberRecord member) {
-        final var dialog = new MemberDialog(member, memberService);
-        dialog.addOpenedChangeListener(changeEvent -> {
-            if (!changeEvent.isOpened()) {
-                reloadGridItems();
-            }
-        });
-        dialog.open();
+        final var dialog = new MemberDialog(member.get(MEMBER.ID) != null ? "Edit Member" : "New Member");
+        dialog.open(member, this::reloadGridItems);
     }
 
     private void deleteMember(@NotNull final Long memberId) {

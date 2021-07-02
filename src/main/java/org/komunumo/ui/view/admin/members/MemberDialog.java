@@ -18,120 +18,96 @@
 
 package org.komunumo.ui.view.admin.members;
 
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Focusable;
-import com.vaadin.flow.component.Key;
-import com.vaadin.flow.component.KeyModifier;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.validator.EmailValidator;
+import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.MemberRecord;
-import org.komunumo.data.service.MemberService;
+import org.komunumo.ui.component.KomunumoEditDialog;
 
-public class MemberDialog extends Dialog {
+import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-    private final Focusable<? extends Component> focusField;
+public class MemberDialog extends KomunumoEditDialog<MemberRecord> {
 
-    public MemberDialog(@NotNull final MemberRecord member,
-                        @NotNull final MemberService memberService) {
-        setCloseOnEsc(true);
-        setCloseOnOutsideClick(false);
-
-        final var title = new H2(member.getId() == null ? "New member" : "Edit member");
-        title.getStyle().set("margin-top", "0");
-
-        final var firstNameField = new TextField("First name");
-        firstNameField.setRequiredIndicatorVisible(true);
-        firstNameField.setValue(member.getFirstName());
-
-        final var lastNameField = new TextField("Last name");
-        lastNameField.setRequiredIndicatorVisible(true);
-        lastNameField.setValue(member.getLastName());
-
-        final var emailField = new EmailField("Email");
-        emailField.setValue(member.getEmail());
-
-        final var activeField = new Checkbox("Active");
-        activeField.setValue(member.getActive());
-
-        final var addressField = new TextField("Address");
-        addressField.setValue(member.getAddress());
-
-        final var zipCodeField = new TextField("Zip code");
-        zipCodeField.setValue(member.getZipCode());
-
-        final var cityField = new TextField("City");
-        cityField.setValue(member.getCity());
-
-        final var stateField = new TextField("State");
-        stateField.setValue(member.getState());
-
-        final var countryField = new TextField("Country");
-        countryField.setValue(member.getCountry());
-
-        final var adminField = new Checkbox("Admin");
-        adminField.setValue(member.getAdmin());
-
-        final var blockedField = new Checkbox("Blocked");
-        blockedField.setValue(member.getBlocked());
-
-        final var blockedReasonField = new TextField("Reason");
-        blockedReasonField.setValue(member.getBlockedReason());
-
-        final var form = new FormLayout();
-        form.add(firstNameField, lastNameField, emailField, activeField,
-                addressField, zipCodeField, cityField, stateField, countryField,
-                adminField, blockedField, blockedReasonField);
-
-        final var saveButton = new Button("Save");
-        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        saveButton.addClickListener(clickEvent -> {
-            if (firstNameField.getValue().isBlank()) {
-                Notification.show("Please enter the first name of the member!");
-            } else if (lastNameField.getValue().isBlank()) {
-                Notification.show("Please enter the last name of the member!");
-            } else if (blockedField.getValue() && blockedReasonField.getValue().isBlank()) {
-                Notification.show("If you want to block this member, you must enter a reason!");
-            } else {
-                saveButton.setEnabled(false);
-                member.setFirstName(firstNameField.getValue());
-                member.setLastName(lastNameField.getValue());
-                member.setEmail(emailField.getValue());
-                member.setActive(activeField.getValue());
-                member.setAddress(addressField.getValue());
-                member.setZipCode(zipCodeField.getValue());
-                member.setCity(cityField.getValue());
-                member.setState(stateField.getValue());
-                member.setCountry(countryField.getValue());
-                member.setAdmin(adminField.getValue());
-                member.setBlocked(blockedField.getValue());
-                member.setBlockedReason(blockedReasonField.getValue());
-                memberService.store(member);
-
-                Notification.show("Member saved.");
-                close();
-            }
-        });
-        saveButton.addClickShortcut(Key.ENTER, KeyModifier.CONTROL);
-        final var cancelButton = new Button("Cancel", clickEvent -> close());
-        final var buttonBar = new HorizontalLayout(saveButton, cancelButton);
-
-        add(title, form, buttonBar);
-
-        focusField = firstNameField;
+    public MemberDialog(@NotNull final String title) {
+        super(title);
     }
 
     @Override
-    public void open() {
-        super.open();
-        focusField.focus();
+    public void createForm() {
+        final var firstName = new TextField("First name");
+        final var lastName = new TextField("Last name");
+        final var email = new EmailField("Email");
+        final var active = new Checkbox("Active");
+        final var address = new TextField("Address");
+        final var zipCode = new TextField("Zip code");
+        final var city = new TextField("City");
+        final var state = new TextField("State");
+        final var country = new TextField("Country");
+        final var admin = new Checkbox("Admin");
+        final var blocked = new Checkbox("Blocked");
+        final var blockedReason = new TextField("Reason");
+
+        firstName.setRequiredIndicatorVisible(true);
+        firstName.setValueChangeMode(EAGER);
+        lastName.setRequiredIndicatorVisible(true);
+        lastName.setValueChangeMode(EAGER);
+        blocked.addValueChangeListener(event -> {
+            blockedReason.setRequiredIndicatorVisible(event.getValue());
+            blockedReason.focus();
+            binder.validate();
+        });
+        blockedReason.setValueChangeMode(EAGER);
+
+        formLayout.add(firstName, lastName, email, active,
+                address, zipCode, city, state, country,
+                admin, blocked, blockedReason);
+
+        binder.forField(firstName)
+                .withValidator(new StringLengthValidator(
+                        "Please enter the first name of the sponsor", 1, null))
+                .bind(MemberRecord::getFirstName, MemberRecord::setFirstName);
+
+        binder.forField(lastName)
+                .withValidator(new StringLengthValidator(
+                        "Please enter the last name of the sponsor", 1, null))
+                .bind(MemberRecord::getLastName, MemberRecord::setLastName);
+
+        binder.forField(email)
+                .withValidator(new EmailValidator(
+                        "Please enter a correct email address or leave this field empty", true))
+                .bind(MemberRecord::getEmail, MemberRecord::setEmail);
+
+        binder.forField(active)
+                .bind(MemberRecord::getActive, MemberRecord::setActive);
+
+        binder.forField(address)
+                .bind(MemberRecord::getAddress, MemberRecord::setAddress);
+
+        binder.forField(zipCode)
+                .bind(MemberRecord::getZipCode, MemberRecord::setZipCode);
+
+        binder.forField(city)
+                .bind(MemberRecord::getCity, MemberRecord::setCity);
+
+        binder.forField(state)
+                .bind(MemberRecord::getState, MemberRecord::setState);
+
+        binder.forField(country)
+                .bind(MemberRecord::getCountry, MemberRecord::setCountry);
+
+        binder.forField(admin)
+                .bind(MemberRecord::getAdmin, MemberRecord::setAdmin);
+
+        binder.forField(blocked)
+                .bind(MemberRecord::getBlocked, MemberRecord::setBlocked);
+
+        binder.forField(blockedReason)
+                .withValidator(value -> !blocked.getValue() || blocked.getValue() && !value.isBlank(),
+                        "If you want to block this member, you must enter a reason")
+                .bind(MemberRecord::getBlockedReason, MemberRecord::setBlockedReason);
     }
+
 }
