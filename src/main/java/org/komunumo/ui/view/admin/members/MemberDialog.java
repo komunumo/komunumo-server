@@ -67,12 +67,12 @@ public class MemberDialog extends KomunumoEditDialog<MemberRecord> {
 
         binder.forField(firstName)
                 .withValidator(new StringLengthValidator(
-                        "Please enter the first name of the sponsor", 1, null))
+                        "Please enter the first name of the member", 1, null))
                 .bind(MemberRecord::getFirstName, MemberRecord::setFirstName);
 
         binder.forField(lastName)
                 .withValidator(new StringLengthValidator(
-                        "Please enter the last name of the sponsor", 1, null))
+                        "Please enter the last name of the member", 1, null))
                 .bind(MemberRecord::getLastName, MemberRecord::setLastName);
 
         binder.forField(email)
