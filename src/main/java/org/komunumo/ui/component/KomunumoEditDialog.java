@@ -53,6 +53,7 @@ public abstract class KomunumoEditDialog<R extends UpdatableRecord<?>> extends D
 
     private final VerticalLayout content;
     private final Footer footer;
+    private final Button save;
 
     protected final Binder<R> binder;
     protected final FormLayout formLayout;
@@ -106,8 +107,7 @@ public abstract class KomunumoEditDialog<R extends UpdatableRecord<?>> extends D
         add(content);
 
         // Footer
-        final var save = new Button("Save");
-        save.setEnabled(false);
+        save = new Button("Save");
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         save.addClickListener(event -> {
             if (binder.isValid()) {
@@ -126,7 +126,6 @@ public abstract class KomunumoEditDialog<R extends UpdatableRecord<?>> extends D
                 Notification.show("Pay attention to the instructions in the form!");
             }
         });
-        binder.addStatusChangeListener(event -> save.setEnabled(binder.isValid()));
 
         final var cancel = new Button("Cancel");
         cancel.addClickListener(click -> close());
@@ -194,10 +193,12 @@ public abstract class KomunumoEditDialog<R extends UpdatableRecord<?>> extends D
     @SuppressWarnings("unchecked")
     public void open(@NotNull final UpdatableRecord<?> record, @Nullable final Callback afterSave) {
         binder.setBean((R) record);
+        save.setEnabled(false);
         this.afterSave = afterSave;
 
         if (!initialized) {
             createForm();
+            binder.addStatusChangeListener(event -> save.setEnabled(binder.isValid()));
             initialized = true;
         }
 
