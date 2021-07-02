@@ -27,6 +27,7 @@ import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
@@ -108,17 +109,21 @@ public abstract class KomunumoEditDialog<R extends UpdatableRecord<?>> extends D
         final var save = new Button("Save");
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         save.addClickListener(event -> {
-            final var dsl = ApplicationContextHolder.getBean(DSLContext.class);
-            final var transactionTemplate = ApplicationContextHolder.getBean(TransactionTemplate.class);
-            transactionTemplate.executeWithoutResult((transactionStatus) -> {
-                dsl.attach(binder.getBean());
-                binder.getBean().store();
+            if (binder.isValid()) {
+                final var dsl = ApplicationContextHolder.getBean(DSLContext.class);
+                final var transactionTemplate = ApplicationContextHolder.getBean(TransactionTemplate.class);
+                transactionTemplate.executeWithoutResult((transactionStatus) -> {
+                    dsl.attach(binder.getBean());
+                    binder.getBean().store();
 
-                if (afterSave != null) {
-                    afterSave.execute();
-                }
-            });
-            close();
+                    if (afterSave != null) {
+                        afterSave.execute();
+                    }
+                });
+                close();
+            } else {
+                Notification.show("Pay attention to the instructions in the form!");
+            }
         });
 
         final var cancel = new Button("Cancel");
