@@ -97,7 +97,7 @@ public class SpeakerDialog extends KomunumoEditDialog<SpeakerRecord> {
 
         binder.forField(email)
                 .withValidator(new EmailValidator(
-                        "Please enter a correct email address or leave this field empty"))
+                        "Please enter a correct email address or leave this field empty", true))
                 .bind(SpeakerRecord::getEmail, SpeakerRecord::setEmail);
 
         binder.forField(twitter)
