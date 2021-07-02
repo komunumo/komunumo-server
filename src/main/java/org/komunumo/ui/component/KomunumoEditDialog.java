@@ -107,6 +107,7 @@ public abstract class KomunumoEditDialog<R extends UpdatableRecord<?>> extends D
 
         // Footer
         final var save = new Button("Save");
+        save.setEnabled(false);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         save.addClickListener(event -> {
             if (binder.isValid()) {
@@ -125,6 +126,7 @@ public abstract class KomunumoEditDialog<R extends UpdatableRecord<?>> extends D
                 Notification.show("Pay attention to the instructions in the form!");
             }
         });
+        binder.addStatusChangeListener(event -> save.setEnabled(binder.isValid()));
 
         final var cancel = new Button("Cancel");
         cancel.addClickListener(click -> close());
