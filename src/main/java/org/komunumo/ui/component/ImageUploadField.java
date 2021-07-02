@@ -47,8 +47,7 @@ public class ImageUploadField extends CustomField<String> {
 
     public ImageUploadField(@NotNull final String maxWidth, @NotNull final String maxHeight) {
         preview = new Image();
-        preview.setMaxWidth(maxWidth);
-        preview.setMaxHeight(maxHeight);
+        setMaxPreviewSize(maxWidth, maxHeight);
 
         final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), clickEvent -> setValue(""));
         deleteButton.setTitle("Delete the image");
@@ -107,6 +106,11 @@ public class ImageUploadField extends CustomField<String> {
         if (element.getParent() != null) {
             upload.getElement().removeChild(element);
         }
+    }
+
+    public void setMaxPreviewSize(@NotNull final String maxWidth, @NotNull final String maxHeight) {
+        preview.setMaxWidth(maxWidth);
+        preview.setMaxHeight(maxHeight);
     }
 
 }
