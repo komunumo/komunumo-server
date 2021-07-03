@@ -72,6 +72,10 @@ public class EventService {
         event.store();
     }
 
+    public int count() {
+        return dsl.fetchCount(EVENT);
+    }
+
     public int countByYear(@NotNull final Year year) {
         final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
         final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);

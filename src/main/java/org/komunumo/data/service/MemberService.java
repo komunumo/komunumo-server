@@ -61,6 +61,10 @@ public class MemberService {
         return member;
     }
 
+    public int count() {
+        return dsl.fetchCount(MEMBER);
+    }
+
     public Stream<Record> find(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl.select(MEMBER.asterisk())

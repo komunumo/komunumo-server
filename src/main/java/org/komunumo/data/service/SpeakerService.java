@@ -61,6 +61,10 @@ public class SpeakerService {
         return speaker;
     }
 
+    public int count() {
+        return dsl.fetchCount(SPEAKER);
+    }
+
     public Stream<SpeakerRecord> getAllSpeakers() {
         return dsl.selectFrom(SPEAKER)
                 .orderBy(SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME)
