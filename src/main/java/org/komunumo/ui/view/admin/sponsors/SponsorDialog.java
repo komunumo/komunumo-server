@@ -48,7 +48,6 @@ public class SponsorDialog extends KomunumoEditDialog<SponsorRecord> {
 
         name.setRequiredIndicatorVisible(true);
         name.setValueChangeMode(EAGER);
-        name.focus();
         level.setItems(SponsorLevel.values());
         level.setItemLabelGenerator(FormatterUtil::formatCamelCase);
 

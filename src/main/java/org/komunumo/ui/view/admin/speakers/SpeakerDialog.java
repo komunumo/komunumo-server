@@ -57,7 +57,6 @@ public class SpeakerDialog extends KomunumoEditDialog<SpeakerRecord> {
 
         firstName.setRequiredIndicatorVisible(true);
         firstName.setValueChangeMode(EAGER);
-        firstName.focus();
         lastName.setRequiredIndicatorVisible(true);
         lastName.setValueChangeMode(EAGER);
         photo.setMaxPreviewSize("150px", "150px");

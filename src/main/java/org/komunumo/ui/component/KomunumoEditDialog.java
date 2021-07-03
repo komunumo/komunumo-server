@@ -18,6 +18,10 @@
 
 package org.komunumo.ui.component;
 
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Focusable;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -202,7 +206,22 @@ public abstract class KomunumoEditDialog<R extends UpdatableRecord<?>> extends D
             initialized = true;
         }
 
+        focusFirstFormField();
+
         super.open();
+    }
+
+    private void focusFirstFormField() {
+        //noinspection rawtypes
+        formLayout.getChildren()
+                .filter(Component::isVisible)
+                .filter(c -> c instanceof HasValue)
+                .filter(c -> !((HasValue) c).isReadOnly())
+                .filter(c -> c instanceof HasEnabled)
+                .filter(c -> ((HasEnabled) c).isEnabled())
+                .filter(c -> c instanceof Focusable)
+                .findFirst()
+                .ifPresent(c -> ((Focusable) c).focus());
     }
 
     @FunctionalInterface
