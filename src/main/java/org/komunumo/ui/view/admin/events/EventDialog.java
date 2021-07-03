@@ -18,145 +18,143 @@
 
 package org.komunumo.ui.view.admin.events;
 
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Focusable;
-import com.vaadin.flow.component.Key;
-import com.vaadin.flow.component.KeyModifier;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
 import org.komunumo.data.db.enums.EventLocation;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
-import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.KomunumoDateTimePicker;
+import org.komunumo.ui.component.KomunumoEditDialog;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-public class EventDialog extends Dialog {
+public class EventDialog extends KomunumoEditDialog<EventRecord> {
 
-    private final Focusable<? extends Component> focusField;
+    private final SpeakerService speakerService;
+    private final EventSpeakerService eventSpeakerService;
 
-    public EventDialog(@NotNull final EventRecord event,
-                       @NotNull final EventService eventService,
+    private Set<SpeakerRecord> speakers;
+
+    public EventDialog(@NotNull final String title,
                        @NotNull final SpeakerService speakerService,
                        @NotNull final EventSpeakerService eventSpeakerService) {
-        setCloseOnEsc(true);
-        setCloseOnOutsideClick(false);
-
-        final var title = new H2(event.getId() == null ? "New event" : "Edit event");
-        title.getStyle().set("margin-top", "0");
-
-        final var titleField = new TextField("Title");
-        titleField.setRequiredIndicatorVisible(true);
-        titleField.setValue(event.getTitle());
-
-        final var subtitleField = new TextField("Subtitle");
-        subtitleField.setValue(event.getSubtitle());
-
-        final var speakerField = new MultiselectComboBox<SpeakerRecord>("Speaker");
-        speakerField.setOrdered(true);
-        speakerField.setItemLabelGenerator(speaker -> String.format("%s %s", speaker.getFirstName(), speaker.getLastName()));
-        speakerField.setItems(speakerService.getAllSpeakers());
-        speakerField.setValue(eventSpeakerService.getSpeakersForEvent(event)
-                .collect(Collectors.toSet()));
-
-        final var abstractField = new TextArea("Abstract");
-        abstractField.setValue(event.getAbstract());
-
-        final var agendaField = new TextArea("Agenda");
-        agendaField.setValue(event.getAgenda());
-
-        final var levelField = new Select<>(EventLevel.values());
-        levelField.setLabel("Level");
-        levelField.setValue(event.getLevel());
-
-        final var languageField = new Select<>(EventLanguage.values());
-        languageField.setLabel("Language");
-        languageField.setValue(event.getLanguage());
-
-        final var locationField = new Select<>(EventLocation.values());
-        locationField.setLabel("Location");
-        locationField.setValue(event.getLocation());
-
-        final var dateField = new KomunumoDateTimePicker("Date & Time");
-        dateField.setMin(LocalDateTime.now());
-        dateField.setValue(event.getDate());
-
-        final var visibleField = new Checkbox("Visible");
-        visibleField.setValue(event.getVisible());
-        visibleField.addValueChangeListener(changeEvent -> {
-            if (changeEvent.getValue() && (titleField.isEmpty()
-                    || speakerField.isEmpty()
-                    || levelField.isEmpty()
-                    || abstractField.isEmpty()
-                    || agendaField.isEmpty()
-                    || languageField.isEmpty()
-                    || locationField.isEmpty()
-                    || dateField.isEmpty())) {
-                Notification.show("To make an event visible on the website, you have to fill out all fields!");
-                visibleField.setValue(false);
-            }
-        });
-
-        final var form = new FormLayout();
-        form.add(titleField, subtitleField, speakerField, levelField,
-                abstractField, agendaField, languageField, locationField,
-                dateField, visibleField);
-
-        final var saveButton = new Button("Save");
-        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        saveButton.setEnabled(event.getDate() == null || event.getDate().isAfter(LocalDateTime.now()));
-        saveButton.addClickListener(clickEvent -> {
-            if (titleField.getValue().isBlank()) {
-                Notification.show("Please enter at least the title!");
-            } else if (dateField.getValue() != null && dateField.getValue().isBefore(LocalDateTime.now())) {
-                Notification.show("Please enter a date and time in the future!");
-            } else {
-                saveButton.setEnabled(false);
-                event.setTitle(titleField.getValue());
-                event.setSubtitle(subtitleField.getValue());
-                event.setAbstract(abstractField.getValue());
-                event.setAgenda(agendaField.getValue());
-                event.setLevel(levelField.getValue());
-                event.setLanguage(languageField.getValue());
-                event.setLocation(locationField.getValue());
-                event.setDate(dateField.getValue());
-                event.setVisible(visibleField.getValue());
-                eventService.store(event);
-                eventSpeakerService.setEventSpeakers(event, speakerField.getValue());
-
-                Notification.show("Event saved.");
-                close();
-            }
-        });
-        saveButton.addClickShortcut(Key.ENTER, KeyModifier.CONTROL);
-        final var cancelButton = new Button("Cancel", clickEvent -> close());
-        final var buttonBar = new HorizontalLayout(saveButton, cancelButton);
-
-        add(title, form, buttonBar);
-
-        focusField = titleField;
+        super(title);
+        this.speakerService = speakerService;
+        this.eventSpeakerService = eventSpeakerService;
     }
 
     @Override
-    public void open() {
-        super.open();
-        focusField.focus();
+    public void createForm() {
+        final var title = new TextField("Title");
+        final var subtitle = new TextField("Subtitle");
+        final var speaker = new MultiselectComboBox<SpeakerRecord>("Speaker");
+        final var abstrakt = new TextArea("Abstract");
+        final var agenda = new TextArea("Agenda");
+        final var level = new Select<>(EventLevel.values());
+        final var language = new Select<>(EventLanguage.values());
+        final var location = new Select<>(EventLocation.values());
+        final var date = new KomunumoDateTimePicker("Date & Time");
+        final var visible = new Checkbox("Visible");
+
+        title.setRequiredIndicatorVisible(true);
+        speaker.setOrdered(true);
+        speaker.setItemLabelGenerator(value -> String.format("%s %s", value.getFirstName(), value.getLastName()));
+        speaker.setItems(speakerService.getAllSpeakers());
+        level.setLabel("Level");
+        language.setLabel("Language");
+        location.setLabel("Location");
+        date.setMin(LocalDateTime.now());
+        visible.addValueChangeListener(changeEvent -> {
+            final var value = changeEvent.getValue();
+            speaker.setRequiredIndicatorVisible(value);
+            level.setRequiredIndicatorVisible(value);
+            abstrakt.setRequiredIndicatorVisible(value);
+            language.setRequiredIndicatorVisible(value);
+            location.setRequiredIndicatorVisible(value);
+            date.setRequiredIndicatorVisible(value);
+            binder.validate();
+        });
+
+        formLayout.add(title, subtitle, speaker, level, abstrakt, agenda,
+                language, location, date, visible);
+
+        binder.forField(title)
+                .withValidator(new StringLengthValidator(
+                        "Please enter the title of the event (max. 255 chars)", 1, 255))
+                .bind(EventRecord::getTitle, EventRecord::setTitle);
+
+        binder.forField(subtitle)
+                .withValidator(new StringLengthValidator(
+                        "The subtitle is too long (max. 255 chars)", 0, 255))
+                .bind(EventRecord::getSubtitle, EventRecord::setSubtitle);
+
+        binder.forField(speaker)
+                .withValidator(value -> !visible.getValue() || value.size() >= 1,
+                        "Please select at least one speaker")
+                .bind(this::getSpeaker, this::setSpeaker);
+
+        binder.forField(level)
+                .withValidator(value -> !visible.getValue() || value != null,
+                        "Please select a level")
+                .bind(EventRecord::getLevel, EventRecord::setLevel);
+
+        binder.forField(abstrakt)
+                .withValidator(value -> !visible.getValue() || value != null && !value.isBlank(),
+                        "Please enter the abstract")
+                .bind(EventRecord::getAbstract, EventRecord::setAbstract);
+
+        binder.forField(agenda)
+                .bind(EventRecord::getAgenda, EventRecord::setAgenda);
+
+        binder.forField(language)
+                .withValidator(value -> !visible.getValue() || value != null,
+                        "Please select a language")
+                .bind(EventRecord::getLanguage, EventRecord::setLanguage);
+
+        binder.forField(location)
+                .withValidator(value -> !visible.getValue() || value != null,
+                        "Please select a location")
+                .bind(EventRecord::getLocation, EventRecord::setLocation);
+
+        binder.forField(date)
+                .withValidator(value -> !visible.getValue() && (value == null || value.isAfter(LocalDateTime.now()))
+                                || value != null && value.isAfter(LocalDateTime.now()),
+                        "Please enter a date and time in the future")
+                .bind(EventRecord::getDate, EventRecord::setDate);
+
+        binder.forField(visible)
+                .bind(EventRecord::getVisible, EventRecord::setVisible);
+    }
+
+    private Set<SpeakerRecord> getSpeaker(@NotNull final EventRecord record) {
+        return speakers;
+    }
+
+    private void setSpeaker(@NotNull final EventRecord record, @Nullable final Set<SpeakerRecord> speakers) {
+        this.speakers = speakers != null ? speakers : Set.of();
+    }
+
+    @Override
+    public void open(@NotNull final EventRecord record, @Nullable final Callback afterSave) {
+        speakers = eventSpeakerService.getSpeakersForEvent(record)
+                .collect(Collectors.toSet());
+        super.open(record, () -> {
+            eventSpeakerService.setEventSpeakers(record, speakers);
+            if (afterSave != null) {
+                afterSave.execute();
+            }
+        });
     }
 }

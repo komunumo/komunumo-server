@@ -192,11 +192,9 @@ public class EventsView extends Div implements HasUrlParameter<String> {
     }
 
     private void showEventDialog(@NotNull final EventRecord event) {
-        final var dialog = new EventDialog(event, eventService, speakerService, eventSpeakerService);
-        dialog.addOpenedChangeListener(changeEvent -> {
-            if (!changeEvent.isOpened()) { reloadGridItems(); }
-        });
-        dialog.open();
+        new EventDialog(event.getId() != null ? "Edit Event" : "New Event",
+                speakerService, eventSpeakerService)
+                .open(event, this::reloadGridItems);
     }
 
     private void deleteEvent(@NotNull final Long eventId) {
