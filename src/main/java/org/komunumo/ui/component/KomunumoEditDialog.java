@@ -194,9 +194,8 @@ public abstract class KomunumoEditDialog<R extends UpdatableRecord<?>> extends D
         throw new UnsupportedOperationException("use \"open(UpdateableRecord, Callback)\" instead");
     }
 
-    @SuppressWarnings("unchecked")
-    public void open(@NotNull final UpdatableRecord<?> record, @Nullable final Callback afterSave) {
-        binder.setBean((R) record);
+    public void open(@NotNull final R record, @Nullable final Callback afterSave) {
+        binder.setBean(record);
         save.setEnabled(false);
         this.afterSave = afterSave;
 
