@@ -9,6 +9,7 @@ CREATE TABLE event (
     language ENUM('DE', 'EN') NULL,
     location ENUM('Online', 'Basel', 'Bern', 'Luzern', 'St. Gallen', 'Zürich') NULL,
     date DATETIME NULL,
+    duration TIME NULL,
     visible BOOLEAN NOT NULL DEFAULT 0,
 
     PRIMARY KEY (id)
