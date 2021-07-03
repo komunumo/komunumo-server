@@ -55,14 +55,14 @@ public class SponsorDialog extends KomunumoEditDialog<SponsorRecord> {
 
         binder.forField(name)
                 .withValidator(new StringLengthValidator(
-                        "Please enter the name of the sponsor", 1, 255))
+                        "Please enter the name of the sponsor (max. 255 chars)", 1, 255))
                 .bind(SponsorRecord::getName, SponsorRecord::setName);
 
         binder.forField(website)
                 .withValidator(value -> value.isEmpty() || value.startsWith("https://"),
                         "The website address must start with \"https://\"")
                 .withValidator(new StringLengthValidator(
-                        "The website address is too long", 0, 255))
+                        "The website address is too long (max. 255 chars)", 0, 255))
                 .bind(SponsorRecord::getWebsite, SponsorRecord::setWebsite);
 
         binder.forField(level)
