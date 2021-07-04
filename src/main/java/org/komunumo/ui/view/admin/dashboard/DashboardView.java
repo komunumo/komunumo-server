@@ -24,6 +24,7 @@ import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.Crosshair;
 import com.vaadin.flow.component.charts.model.ListSeries;
+import com.vaadin.flow.component.charts.model.Tooltip;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.html.Div;
@@ -114,5 +115,9 @@ public class DashboardView extends Div {
         y.setMin(0);
         y.setTitle("");
         configuration.addyAxis(y);
+
+        final var tooltip = new Tooltip();
+        tooltip.setShared(true);
+        configuration.setTooltip(tooltip);
     }
 }
