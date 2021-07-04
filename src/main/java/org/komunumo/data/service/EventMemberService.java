@@ -18,8 +18,12 @@
 
 package org.komunumo.data.service;
 
+import java.util.Collection;
+import java.util.HashMap;
+
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.EventMemberRecord;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.db.tables.records.MemberRecord;
@@ -32,6 +36,7 @@ import java.util.Optional;
 
 import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
+import static org.komunumo.data.db.tables.Event.EVENT;
 import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
 
 @Service
@@ -107,5 +112,158 @@ public class EventMemberService {
                         .and(EVENT_MEMBER.NO_SHOW.isTrue()));
 
         return noShows * 100 / registered;
+    }
+
+    public Collection<MonthlyVisitors> calculateMonthlyVisitorsByYear(@NotNull final Year year) {
+        final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
+        final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
+
+        final var records = dsl.select(EVENT.LOCATION, DSL.month(EVENT_MEMBER.DATE).as("month"), DSL.count().as("count"))
+                .from(EVENT_MEMBER)
+                .leftJoin(EVENT).on(EVENT_MEMBER.EVENT_ID.eq(EVENT.ID))
+                .where(EVENT_MEMBER.DATE.greaterOrEqual(firstDay).and(EVENT_MEMBER.DATE.lessOrEqual(lastDay)))
+                .groupBy(EVENT.LOCATION, DSL.month(EVENT_MEMBER.DATE))
+                .fetch();
+
+        final var data = new HashMap<String, MonthlyVisitors>();
+
+        for (final var record : records) {
+            final var location = record.get(0, String.class);
+            final var month = record.get(1, Integer.class);
+            final var count = record.get(2, Integer.class);
+
+            var locationData = data.get(location);
+            if (locationData == null) {
+                locationData = new MonthlyVisitors();
+                locationData.setLocation(location);
+                data.put(location, locationData);
+            }
+
+            switch (month) {
+                case 1: locationData.setJanuary(count); break;
+                case 2: locationData.setFebruary(count); break;
+                case 3: locationData.setMarch(count); break;
+                case 4: locationData.setApril(count); break;
+                case 5: locationData.setMay(count); break;
+                case 6: locationData.setJune(count); break;
+                case 7: locationData.setJuly(count); break;
+                case 8: locationData.setAugust(count); break;
+                case 9: locationData.setSeptember(count); break;
+                case 10: locationData.setOctober(count); break;
+                case 11: locationData.setNovember(count); break;
+                case 12: locationData.setDecember(count); break;
+            }
+        }
+
+        return data.values();
+    }
+
+    public static class MonthlyVisitors {
+        private String location;
+        private int january, february, march, april, may, june, july, august, september, october, november, december;
+
+        public String getLocation() {
+            return location;
+        }
+
+        public void setLocation(@NotNull final String location) {
+            this.location = location;
+        }
+
+        public int getJanuary() {
+            return january;
+        }
+
+        public void setJanuary(final int january) {
+            this.january = january;
+        }
+
+        public int getFebruary() {
+            return february;
+        }
+
+        public void setFebruary(final int february) {
+            this.february = february;
+        }
+
+        public int getMarch() {
+            return march;
+        }
+
+        public void setMarch(final int march) {
+            this.march = march;
+        }
+
+        public int getApril() {
+            return april;
+        }
+
+        public void setApril(final int april) {
+            this.april = april;
+        }
+
+        public int getMay() {
+            return may;
+        }
+
+        public void setMay(final int may) {
+            this.may = may;
+        }
+
+        public int getJune() {
+            return june;
+        }
+
+        public void setJune(final int june) {
+            this.june = june;
+        }
+
+        public int getJuly() {
+            return july;
+        }
+
+        public void setJuly(final int july) {
+            this.july = july;
+        }
+
+        public int getAugust() {
+            return august;
+        }
+
+        public void setAugust(final int august) {
+            this.august = august;
+        }
+
+        public int getSeptember() {
+            return september;
+        }
+
+        public void setSeptember(final int september) {
+            this.september = september;
+        }
+
+        public int getOctober() {
+            return october;
+        }
+
+        public void setOctober(final int october) {
+            this.october = october;
+        }
+
+        public int getNovember() {
+            return november;
+        }
+
+        public void setNovember(final int november) {
+            this.november = november;
+        }
+
+        public int getDecember() {
+            return december;
+        }
+
+        public void setDecember(final int december) {
+            this.december = december;
+        }
     }
 }
