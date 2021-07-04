@@ -96,4 +96,16 @@ public class EventMemberService {
         final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
         return dsl.fetchCount(EVENT_MEMBER, EVENT_MEMBER.DATE.between(firstDay, lastDay));
     }
+
+    public int calculateNoShowRateByYear(@NotNull final Year year) {
+        final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
+        final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
+
+        final var registered = countByYear(year);
+        final var noShows =  dsl.fetchCount(EVENT_MEMBER,
+                EVENT_MEMBER.DATE.between(firstDay, lastDay)
+                        .and(EVENT_MEMBER.NO_SHOW.isTrue()));
+
+        return noShows * 100 / registered;
+    }
 }

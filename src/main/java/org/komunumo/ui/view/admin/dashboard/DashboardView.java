@@ -48,7 +48,7 @@ public class DashboardView extends Div {
     private final Chart monthlyVisitors = new Chart();
     private final H2 usersH2 = new H2();
     private final H2 eventsH2 = new H2();
-    private final H2 conversionH2 = new H2();
+    private final H2 noShowsH2 = new H2();
 
     private final EventService eventService;
     private final EventMemberService eventMemberService;
@@ -64,7 +64,7 @@ public class DashboardView extends Div {
         board.addRow(
                 createBadge("Registrations", usersH2, "primary-text", "Registrations this year", "badge"),
                 createBadge("Events", eventsH2, "success-text", "Events this year", "badge success"),
-                createBadge("No-shows", conversionH2, "error-text", "No-show-rate this year", "badge error")
+                createBadge("No-shows", noShowsH2, "error-text", "No-show-rate this year", "badge error")
         );
 
         monthlyVisitors.getConfiguration().setTitle("Monthly visitors per location");
@@ -95,7 +95,7 @@ public class DashboardView extends Div {
         // Top row widgets
         usersH2.setText(FormatterUtil.formatNumber(eventMemberService.countByYear(Year.now())));
         eventsH2.setText(FormatterUtil.formatNumber(eventService.countByYear(Year.now())));
-        conversionH2.setText("24%");
+        noShowsH2.setText(FormatterUtil.formatNumber(eventMemberService.calculateNoShowRateByYear(Year.now())) + "%");
 
         // First chart
         var configuration = monthlyVisitors.getConfiguration();
