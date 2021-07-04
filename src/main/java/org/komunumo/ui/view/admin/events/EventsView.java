@@ -236,7 +236,7 @@ public class EventsView extends Div implements HasUrlParameter<String> {
                     record.get(EVENT.AGENDA),
                     record.get(EVENT.LEVEL) != null ? record.get(EVENT.LEVEL).toString() : null,
                     record.get(EVENT.LANGUAGE) != null ? record.get(EVENT.LANGUAGE).toString() : null,
-                    record.get(EVENT.LOCATION) != null ? record.get(EVENT.LOCATION).toString() : null,
+                    record.get(EVENT.LOCATION),
                     record.get(EVENT.DATE) != null ? record.get(EVENT.DATE).toString() : null,
                     record.get(EVENT.VISIBLE).toString()
             }).forEach(csvWriter::writeNext);
