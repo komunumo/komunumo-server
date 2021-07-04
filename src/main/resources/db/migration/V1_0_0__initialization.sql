@@ -85,7 +85,7 @@ CREATE TABLE sponsor (
     logo MEDIUMTEXT NOT NULL DEFAULT '',
     valid_from DATE NULL,
     valid_to DATE NULL,
-    level ENUM('SILVER', 'GOLD', 'PLATINUM') NULL,
+    level ENUM('Silver', 'Gold', 'Platinum') NULL,
 
     PRIMARY KEY (id)
 );
