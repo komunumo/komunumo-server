@@ -5,7 +5,7 @@ CREATE TABLE event (
     subtitle VARCHAR(255) NOT NULL DEFAULT '',
     abstract MEDIUMTEXT NOT NULL DEFAULT '',
     agenda MEDIUMTEXT NOT NULL DEFAULT '',
-    level ENUM('Beginner', 'Intermediate', 'Advanced') NULL,
+    level ENUM('All', 'Beginner', 'Intermediate', 'Advanced') NULL,
     language ENUM('DE', 'EN') NULL,
     location VARCHAR(255) NULL DEFAULT '',
     date DATETIME NULL,
