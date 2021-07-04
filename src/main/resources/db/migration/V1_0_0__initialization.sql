@@ -38,12 +38,24 @@ CREATE TABLE member (
     active BOOLEAN NOT NULL DEFAULT 0,
     blocked BOOLEAN NOT NULL DEFAULT 0,
     blocked_reason VARCHAR(255) NOT NULL DEFAULT '',
+    deleted BOOLEAN NOT NULL DEFAULT 0,
 
     PRIMARY KEY (id)
 );
 
 CREATE INDEX member_names ON member (last_name, first_name);
 CREATE INDEX member_email ON member (email);
+
+CREATE TABLE event_member (
+    event_id INTEGER UNSIGNED NOT NULL,
+    member_id INTEGER UNSIGNED NOT NULL,
+    date DATETIME NULL,
+    no_show BOOLEAN NOT NULL DEFAULT 0,
+
+    PRIMARY KEY (event_id, member_id),
+    CONSTRAINT FOREIGN KEY (event_id) REFERENCES event(id),
+    CONSTRAINT FOREIGN KEY (member_id) REFERENCES member(id)
+);
 
 CREATE TABLE speaker (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
