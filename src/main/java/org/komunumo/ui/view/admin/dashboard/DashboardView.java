@@ -90,15 +90,13 @@ public class DashboardView extends Div {
     }
 
     private void populateCharts() {
-        // Set some data when this view is displayed.
-
         // Top row widgets
         usersH2.setText(FormatterUtil.formatNumber(eventMemberService.countByYear(Year.now())));
         eventsH2.setText(FormatterUtil.formatNumber(eventService.countByYear(Year.now())));
         noShowsH2.setText(FormatterUtil.formatNumber(eventMemberService.calculateNoShowRateByYear(Year.now())) + "%");
 
         // First chart
-        var configuration = monthlyVisitors.getConfiguration();
+        final var configuration = monthlyVisitors.getConfiguration();
         eventMemberService.calculateMonthlyVisitorsByYear(Year.now()).stream()
                 .map(data -> new ListSeries(data.getLocation(),
                         data.getJanuary(), data.getFebruary(), data.getMarch(),
@@ -107,12 +105,12 @@ public class DashboardView extends Div {
                         data.getOctober(), data.getNovember(), data.getDecember()))
                 .forEach(configuration::addSeries);
 
-        var x = new XAxis();
+        final var x = new XAxis();
         x.setCrosshair(new Crosshair());
         x.setCategories("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
         configuration.addxAxis(x);
 
-        var y = new YAxis();
+        final var y = new YAxis();
         y.setMin(0);
         y.setTitle("");
         configuration.addyAxis(y);
