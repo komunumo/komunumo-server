@@ -73,8 +73,8 @@ CREATE TABLE event_speaker (
    speaker_id INTEGER UNSIGNED NOT NULL,
 
    PRIMARY KEY (event_id, speaker_id),
-   CONSTRAINT fk_event_id FOREIGN KEY (event_id) REFERENCES event(id),
-   CONSTRAINT fk_speaker_id FOREIGN KEY (speaker_id) REFERENCES speaker(id)
+   CONSTRAINT FOREIGN KEY (event_id) REFERENCES event(id),
+   CONSTRAINT FOREIGN KEY (speaker_id) REFERENCES speaker(id)
 );
 
 CREATE TABLE sponsor (
