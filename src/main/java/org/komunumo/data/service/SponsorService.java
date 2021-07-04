@@ -57,6 +57,7 @@ public class SponsorService {
         return dsl.select(SPONSOR.asterisk())
                 .from(SPONSOR)
                 .where(filterValue == null ? DSL.noCondition() : SPONSOR.NAME.like(filterValue))
+                .orderBy(SPONSOR.NAME)
                 .offset(offset)
                 .limit(limit)
                 .stream();
