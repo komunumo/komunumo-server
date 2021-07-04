@@ -35,8 +35,10 @@ import com.vaadin.flow.router.RouteAlias;
 import java.time.Year;
 
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.ui.view.admin.AdminLayout;
+import org.komunumo.util.FormatterUtil;
 
 @Route(value = "admin/dashboard", layout = AdminLayout.class)
 @RouteAlias(value = "admin", layout = AdminLayout.class)
@@ -49,9 +51,12 @@ public class DashboardView extends Div {
     private final H2 conversionH2 = new H2();
 
     private final EventService eventService;
+    private final EventMemberService eventMemberService;
 
-    public DashboardView(@NotNull final EventService eventService) {
+    public DashboardView(@NotNull final EventService eventService,
+                         @NotNull final EventMemberService eventMemberService) {
         this.eventService = eventService;
+        this.eventMemberService = eventMemberService;
 
         addClassName("dashboard-view");
 
@@ -88,8 +93,8 @@ public class DashboardView extends Div {
         // Set some data when this view is displayed.
 
         // Top row widgets
-        usersH2.setText("1'174");
-        eventsH2.setText(Integer.toString(eventService.countByYear(Year.now())));
+        usersH2.setText(FormatterUtil.formatNumber(eventMemberService.countByYear(Year.now())));
+        eventsH2.setText(FormatterUtil.formatNumber(eventService.countByYear(Year.now())));
         conversionH2.setText("24%");
 
         // First chart

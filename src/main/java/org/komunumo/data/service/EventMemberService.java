@@ -26,8 +26,12 @@ import org.komunumo.data.db.tables.records.MemberRecord;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Year;
 import java.util.Optional;
 
+import static java.time.Month.DECEMBER;
+import static java.time.Month.JANUARY;
 import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
 
 @Service
@@ -81,5 +85,15 @@ public class EventMemberService {
                 .where(EVENT_MEMBER.EVENT_ID.eq(event.getId()))
                 .and(EVENT_MEMBER.MEMBER_ID.eq(member.getId()))
                 .execute();
+    }
+
+    public int count() {
+        return dsl.fetchCount(EVENT_MEMBER);
+    }
+
+    public int countByYear(@NotNull final Year year) {
+        final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
+        final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
+        return dsl.fetchCount(EVENT_MEMBER, EVENT_MEMBER.DATE.between(firstDay, lastDay));
     }
 }

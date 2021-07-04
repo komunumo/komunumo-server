@@ -20,6 +20,8 @@ package org.komunumo.util;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -30,12 +32,28 @@ public class FormatterUtil {
     public static final String TIME_PATTERN = "HH:mm";
     public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm";
 
+    private static final DecimalFormat largeNumbers = createLargeNumberFormatter();
+
+    private static DecimalFormat createLargeNumberFormatter() {
+        final var formatter = (DecimalFormat) NumberFormat.getInstance();
+        final var symbols = formatter.getDecimalFormatSymbols();
+
+        symbols.setGroupingSeparator('\'');
+        formatter.setDecimalFormatSymbols(symbols);
+
+        return formatter;
+    }
+
     public static String formatDate(@Nullable final LocalDate date) {
         return date != null ? date.format(DateTimeFormatter.ofPattern(DATE_PATTERN)) : "";
     }
 
     public static String formatDateTime(@Nullable final LocalDateTime dateTime) {
         return dateTime != null ? dateTime.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN)) : "";
+    }
+
+    public static String formatNumber(final long number) {
+        return largeNumbers.format(number);
     }
 
 }
