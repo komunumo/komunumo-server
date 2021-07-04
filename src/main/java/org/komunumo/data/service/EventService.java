@@ -18,8 +18,6 @@
 
 package org.komunumo.data.service;
 
-import java.time.LocalDateTime;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
@@ -28,9 +26,11 @@ import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Year;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.time.Month.DECEMBER;
@@ -112,5 +112,12 @@ public class EventService {
                         .and(EVENT.DATE.greaterOrEqual(LocalDateTime.now().minusHours(1))))
                 .orderBy(EVENT.DATE.asc())
                 .stream();
+    }
+
+    public Set<String> getAllLocations() {
+        return dsl.selectDistinct(EVENT.LOCATION)
+                .from(EVENT)
+                .orderBy(EVENT.LOCATION)
+                .fetchSet(EVENT.LOCATION);
     }
 }

@@ -19,6 +19,7 @@
 package org.komunumo.ui.view.admin.events;
 
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
@@ -27,9 +28,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
-import org.komunumo.data.db.enums.EventLocation;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
+import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.KomunumoDateTimePicker;
@@ -42,15 +43,18 @@ import java.util.stream.Collectors;
 
 public class EventDialog extends KomunumoEditDialog<EventRecord> {
 
+    private final EventService eventService;
     private final SpeakerService speakerService;
     private final EventSpeakerService eventSpeakerService;
 
     private Set<SpeakerRecord> speakers;
 
     public EventDialog(@NotNull final String title,
+                       @NotNull final EventService eventService,
                        @NotNull final SpeakerService speakerService,
                        @NotNull final EventSpeakerService eventSpeakerService) {
         super(title);
+        this.eventService = eventService;
         this.speakerService = speakerService;
         this.eventSpeakerService = eventSpeakerService;
     }
@@ -64,7 +68,7 @@ public class EventDialog extends KomunumoEditDialog<EventRecord> {
         final var agenda = new TextArea("Agenda");
         final var level = new Select<>(EventLevel.values());
         final var language = new Select<>(EventLanguage.values());
-        final var location = new Select<>(EventLocation.values());
+        final var location = new ComboBox<String>("Location");
         final var date = new KomunumoDateTimePicker("Date & Time");
         final var visible = new Checkbox("Visible");
 
@@ -74,7 +78,8 @@ public class EventDialog extends KomunumoEditDialog<EventRecord> {
         speaker.setItems(speakerService.getAllSpeakers());
         level.setLabel("Level");
         language.setLabel("Language");
-        location.setLabel("Location");
+        location.setItems(eventService.getAllLocations());
+        location.setAllowCustomValue(true);
         date.setMin(LocalDateTime.now());
         visible.addValueChangeListener(changeEvent -> {
             final var value = changeEvent.getValue();

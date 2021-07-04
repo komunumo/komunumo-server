@@ -7,7 +7,7 @@ CREATE TABLE event (
     agenda MEDIUMTEXT NOT NULL DEFAULT '',
     level ENUM('Beginner', 'Intermediate', 'Advanced') NULL,
     language ENUM('DE', 'EN') NULL,
-    location ENUM('Online', 'Basel', 'Bern', 'Luzern', 'St. Gallen', 'Zürich') NULL,
+    location VARCHAR(255) NULL DEFAULT '',
     date DATETIME NULL,
     duration TIME NULL,
     visible BOOLEAN NOT NULL DEFAULT 0,
