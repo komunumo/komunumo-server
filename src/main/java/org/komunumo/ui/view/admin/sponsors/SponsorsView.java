@@ -54,7 +54,6 @@ import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
-import static org.komunumo.util.FormatterUtil.formatCamelCase;
 import static org.komunumo.util.FormatterUtil.formatDate;
 
 @Route(value = "admin/sponsors", layout = AdminLayout.class)
@@ -120,7 +119,7 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
                 "<img style=\"max-width: 100%;\" src=\"[[item.logo]]\" /></span>")
                 .withProperty("logo", record -> record.get(SPONSOR.LOGO)))
                 .setHeader("Logo").setWidth("96px").setFlexGrow(0);
-        grid.addColumn(record -> formatCamelCase(record.get(SPONSOR.LEVEL))).setHeader("Level").setAutoWidth(true);
+        grid.addColumn(record -> record.get(SPONSOR.LEVEL)).setHeader("Level").setAutoWidth(true);
         grid.addColumn(record -> formatDate(record.get(SPONSOR.VALID_FROM))).setHeader("Valid from").setAutoWidth(true).setKey("validFrom");
         grid.addColumn(record -> formatDate(record.get(SPONSOR.VALID_TO))).setHeader("Valid to").setAutoWidth(true).setKey("validTo");
 
@@ -202,7 +201,7 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
                     record.get(SPONSOR.ID).toString(),
                     record.get(SPONSOR.NAME),
                     record.get(SPONSOR.WEBSITE),
-                    formatCamelCase(record.get(SPONSOR.LEVEL)),
+                    record.get(SPONSOR.LEVEL) != null ? record.get(SPONSOR.LEVEL).getName() : "",
                     formatDate(record.get(SPONSOR.VALID_FROM)),
                     formatDate(record.get(SPONSOR.VALID_TO))
             }).forEach(csvWriter::writeNext);

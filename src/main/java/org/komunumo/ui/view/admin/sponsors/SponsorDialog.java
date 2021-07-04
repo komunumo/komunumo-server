@@ -27,7 +27,6 @@ import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.ui.component.ImageUploadField;
 import org.komunumo.ui.component.KomunumoDatePicker;
 import org.komunumo.ui.component.KomunumoEditDialog;
-import org.komunumo.util.FormatterUtil;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
@@ -49,7 +48,6 @@ public class SponsorDialog extends KomunumoEditDialog<SponsorRecord> {
         name.setRequiredIndicatorVisible(true);
         name.setValueChangeMode(EAGER);
         level.setItems(SponsorLevel.values());
-        level.setItemLabelGenerator(FormatterUtil::formatCamelCase);
 
         formLayout.add(name, website, level, logo, validFrom, validTo);
 
