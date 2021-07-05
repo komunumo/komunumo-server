@@ -129,11 +129,14 @@ public class EventsView extends Div implements HasUrlParameter<String> {
                 .setHeader("Speaker").setAutoWidth(true).setKey("speaker");
 
         final var dateRenderer = TemplateRenderer.<Record>of(
-                "[[item.date]]")
-                .withProperty("date", record -> formatDateTime(record.get(EVENT.DATE)));
-        grid.addColumn(dateRenderer).setHeader("Date").setAutoWidth(true);
+                "[[item.date]]<br/>[[item.location]]")
+                .withProperty("date", record -> formatDateTime(record.get(EVENT.DATE)))
+                .withProperty("location", record -> record.get(EVENT.LOCATION));
+        grid.addColumn(dateRenderer).setHeader("Date & Location").setAutoWidth(true);
 
         grid.addColumn(record -> record.get(EVENT.LOCATION)).setHeader("Location").setAutoWidth(true).setKey("location");
+
+        grid.addColumn(record -> record.get("attendees")).setHeader("Attendees").setAutoWidth(true).setKey("attendees");
 
         final var visibleRenderer = TemplateRenderer.<Record>of(
                 "<iron-icon hidden='[[!item.visible]]' icon='vaadin:eye' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.visible]]' icon='vaadin:eye-slash' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")

@@ -39,6 +39,7 @@ import static org.jooq.impl.DSL.concat;
 import static org.jooq.impl.DSL.groupConcat;
 import static org.jooq.impl.DSL.when;
 import static org.komunumo.data.db.tables.Event.EVENT;
+import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
 import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
@@ -85,7 +86,8 @@ public class EventService {
     public Stream<Record> find(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl.select(EVENT.asterisk(),
-                    groupConcat(concat(concat(SPEAKER.FIRST_NAME, " "), SPEAKER.LAST_NAME)).separator(", ").as("speaker"))
+                    groupConcat(concat(concat(SPEAKER.FIRST_NAME, " "), SPEAKER.LAST_NAME)).separator(", ").as("speaker"),
+                    DSL.selectCount().from(EVENT_MEMBER).where(EVENT.ID.eq(EVENT_MEMBER.EVENT_ID)).asField("attendees"))
                 .from(EVENT)
                 .leftJoin(EVENT_SPEAKER).on(EVENT.ID.eq(EVENT_SPEAKER.EVENT_ID))
                 .leftJoin(SPEAKER).on(EVENT_SPEAKER.SPEAKER_ID.eq(SPEAKER.ID))
