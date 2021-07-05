@@ -111,7 +111,7 @@ public class EventMemberService {
                 EVENT_MEMBER.DATE.between(firstDay, lastDay)
                         .and(EVENT_MEMBER.NO_SHOW.isTrue()));
 
-        return noShows * 100 / registered;
+        return registered > 0 ? noShows * 100 / registered : 0;
     }
 
     public Collection<MonthlyVisitors> calculateMonthlyVisitorsByYear(@NotNull final Year year) {
