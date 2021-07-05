@@ -83,7 +83,7 @@ public class EventsView extends Div implements HasUrlParameter<String> {
         grid = createGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
-        filterField.setTitle("Filter events by title, subtitle, or speaker");
+        filterField.setTitle("Filter events by title or speaker");
 
         final var newEventButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> newEvent());
         newEventButton.setTitle("Add a new event");
@@ -119,29 +119,23 @@ public class EventsView extends Div implements HasUrlParameter<String> {
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
-        grid.addColumn(TemplateRenderer.<Record>of("<span style=\"font-weight: bold;\">[[item.title]]</span><br/><span>[[item.subtitle]]</span>")
+        grid.addColumn(TemplateRenderer.<Record>of("<span style=\"font-weight: bold;\">[[item.title]]</span><br/><span inner-h-t-m-l=\"[[item.speaker]]\"></span>")
                 .withProperty("title", record -> record.get(EVENT.TITLE))
-                .withProperty("subtitle", record -> record.get(EVENT.SUBTITLE)))
-                .setHeader("Title").setAutoWidth(true);
-
-        grid.addColumn(TemplateRenderer.<Record>of("<span inner-h-t-m-l=\"[[item.speaker]]\"></span>")
                 .withProperty("speaker", this::renderSpeakerLinks))
-                .setHeader("Speaker").setAutoWidth(true).setKey("speaker");
+                .setHeader("Title & Speaker").setFlexGrow(1);
 
         final var dateRenderer = TemplateRenderer.<Record>of(
                 "[[item.date]]<br/>[[item.location]]")
                 .withProperty("date", record -> formatDateTime(record.get(EVENT.DATE)))
                 .withProperty("location", record -> record.get(EVENT.LOCATION));
-        grid.addColumn(dateRenderer).setHeader("Date & Location").setAutoWidth(true);
+        grid.addColumn(dateRenderer).setHeader("Date & Location").setAutoWidth(true).setFlexGrow(0).setKey("dateLocation");
 
-        grid.addColumn(record -> record.get(EVENT.LOCATION)).setHeader("Location").setAutoWidth(true).setKey("location");
-
-        grid.addColumn(record -> record.get("attendees")).setHeader("Attendees").setAutoWidth(true).setKey("attendees");
+        grid.addColumn(record -> record.get("attendees")).setHeader("Attendees").setAutoWidth(true).setFlexGrow(0).setKey("attendees");
 
         final var visibleRenderer = TemplateRenderer.<Record>of(
                 "<iron-icon hidden='[[!item.visible]]' icon='vaadin:eye' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.visible]]' icon='vaadin:eye-slash' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
                 .withProperty("visible", record -> record.get(EVENT.VISIBLE));
-        grid.addColumn(visibleRenderer).setHeader("Visible").setAutoWidth(true);
+        grid.addColumn(visibleRenderer).setHeader("Visible").setAutoWidth(true).setFlexGrow(0);
 
         grid.addColumn(new ComponentRenderer<>(record -> {
             final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editEvent(record.get(EVENT.ID)));
@@ -152,8 +146,8 @@ public class EventsView extends Div implements HasUrlParameter<String> {
 
         }))
             .setHeader("Actions")
-            .setFlexGrow(0)
-            .setFrozen(true);
+            .setWidth("10%")
+            .setFlexGrow(0);
 
         grid.setHeightFull();
 
@@ -165,8 +159,8 @@ public class EventsView extends Div implements HasUrlParameter<String> {
     }
 
     private void showHideGridColumns(@NotNull final Grid<Record> grid, final int clientWidth) {
-        grid.getColumnByKey("location").setVisible(clientWidth >= 1300);
-        grid.getColumnByKey("speaker").setVisible(clientWidth >= 1100);
+        grid.getColumnByKey("attendees").setVisible(clientWidth >= 1300);
+        grid.getColumnByKey("dateLocation").setVisible(clientWidth >= 1100);
     }
 
     private String renderSpeakerLinks(@NotNull Record record) {

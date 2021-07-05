@@ -93,7 +93,6 @@ public class EventService {
                 .leftJoin(SPEAKER).on(EVENT_SPEAKER.SPEAKER_ID.eq(SPEAKER.ID))
                 .where(filterValue == null ? DSL.noCondition()
                         : EVENT.TITLE.like(filterValue)
-                        .or(EVENT.SUBTITLE.like(filterValue))
                         .or(concat(concat(SPEAKER.FIRST_NAME, " "), SPEAKER.LAST_NAME).like(filterValue)))
                 .groupBy(EVENT.ID)
                 .orderBy(when(EVENT.DATE.isNull(), 0).otherwise(1), EVENT.DATE.desc())
