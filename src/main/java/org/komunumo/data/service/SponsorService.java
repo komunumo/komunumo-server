@@ -64,7 +64,7 @@ public class SponsorService {
     }
 
     public Optional<SponsorRecord> get(@NotNull final Long id) {
-        return Optional.ofNullable(dsl.selectFrom(SPONSOR).where(SPONSOR.ID.eq(id)).fetchOne());
+        return dsl.fetchOptional(SPONSOR, SPONSOR.ID.eq(id));
     }
 
     public void store(@NotNull final SponsorRecord sponsor) {

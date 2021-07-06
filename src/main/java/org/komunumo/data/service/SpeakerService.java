@@ -71,7 +71,7 @@ public class SpeakerService {
                 .stream();
     }
 
-    public @NotNull Stream<Record> find(final int offset, final int limit, @Nullable final String filter) {
+    public Stream<Record> find(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl.select(SPEAKER.asterisk(), DSL.count(EVENT_SPEAKER.EVENT_ID).as("event_count"))
                 .from(SPEAKER)
@@ -89,7 +89,7 @@ public class SpeakerService {
     }
 
     public Optional<SpeakerRecord> get(@NotNull final Long id) {
-        return Optional.ofNullable(dsl.selectFrom(SPEAKER).where(SPEAKER.ID.eq(id)).fetchOne());
+        return dsl.fetchOptional(SPEAKER, SPEAKER.ID.eq(id));
     }
 
     public void store(@NotNull final SpeakerRecord speaker) {

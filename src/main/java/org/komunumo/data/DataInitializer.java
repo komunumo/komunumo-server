@@ -26,8 +26,6 @@ import org.komunumo.data.service.MemberService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 
-import java.time.LocalDateTime;
-
 @SpringComponent
 public class DataInitializer {
 

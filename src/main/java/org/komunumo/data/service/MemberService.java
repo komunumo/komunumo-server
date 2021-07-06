@@ -82,16 +82,13 @@ public class MemberService {
     }
 
     public Optional<MemberRecord> get(@NotNull final Long id) {
-        return Optional.ofNullable(dsl.selectFrom(MEMBER)
-                .where(MEMBER.ID.eq(id))
-                .fetchOne());
+        return dsl.fetchOptional(MEMBER, MEMBER.ID.eq(id));
     }
 
     public Optional<MemberRecord> getByEmail(@NotNull final String email) {
-        return Optional.ofNullable(dsl.selectFrom(MEMBER)
-                .where(MEMBER.EMAIL.eq(email)
-                        .and(MEMBER.DELETED.isFalse()))
-                .fetchOne());
+        return dsl.fetchOptional(MEMBER,
+                MEMBER.EMAIL.eq(email)
+                        .and(MEMBER.DELETED.isFalse()));
     }
 
     public void store(@NotNull final MemberRecord member) {

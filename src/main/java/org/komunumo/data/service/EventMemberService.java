@@ -36,6 +36,7 @@ import java.util.Optional;
 
 import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
+import static org.jooq.impl.DSL.condition;
 import static org.komunumo.data.db.tables.Event.EVENT;
 import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
 
@@ -50,9 +51,9 @@ public class EventMemberService {
 
     public Optional<EventMemberRecord> get(@NotNull final Long eventId,
                                            @NotNull final Long memberId) {
-        return Optional.ofNullable(dsl.selectFrom(EVENT_MEMBER)
-                .where(EVENT_MEMBER.EVENT_ID.eq(eventId).and(EVENT_MEMBER.MEMBER_ID.eq(memberId)))
-                .fetchOne());
+        return dsl.fetchOptional(EVENT_MEMBER,
+                EVENT_MEMBER.EVENT_ID.eq(eventId)
+                        .and(EVENT_MEMBER.MEMBER_ID.eq(memberId)));
     }
 
     public void registerForEvent(@NotNull final EventRecord event,
@@ -109,7 +110,7 @@ public class EventMemberService {
         final var registered = countByYear(year);
         final var noShows =  dsl.fetchCount(EVENT_MEMBER,
                 EVENT_MEMBER.DATE.between(firstDay, lastDay)
-                        .and(EVENT_MEMBER.NO_SHOW.isTrue()));
+                        .and(condition(EVENT_MEMBER.NO_SHOW)));
 
         return registered > 0 ? noShows * 100 / registered : 0;
     }

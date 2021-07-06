@@ -44,9 +44,9 @@ public class EventSpeakerService {
 
     public Optional<EventSpeakerRecord> get(@NotNull final Long eventId,
                                             @NotNull final Long speakerId) {
-        return Optional.ofNullable(dsl.selectFrom(EVENT_SPEAKER)
-                .where(EVENT_SPEAKER.EVENT_ID.eq(eventId).and(EVENT_SPEAKER.SPEAKER_ID.eq(speakerId)))
-                .fetchOne());
+        return dsl.fetchOptional(EVENT_SPEAKER,
+                EVENT_SPEAKER.EVENT_ID.eq(eventId)
+                        .and(EVENT_SPEAKER.SPEAKER_ID.eq(speakerId)));
     }
 
     public Stream<SpeakerRecord> getSpeakersForEvent(@NotNull final EventRecord event) {

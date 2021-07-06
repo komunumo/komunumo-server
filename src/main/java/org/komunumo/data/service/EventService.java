@@ -36,8 +36,8 @@ import java.util.stream.Stream;
 import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
 import static org.jooq.impl.DSL.concat;
+import static org.jooq.impl.DSL.condition;
 import static org.jooq.impl.DSL.groupConcat;
-import static org.jooq.impl.DSL.when;
 import static org.komunumo.data.db.tables.Event.EVENT;
 import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
 import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
@@ -66,7 +66,7 @@ public class EventService {
     }
 
     public Optional<EventRecord> get(@NotNull final Long id) {
-        return Optional.ofNullable(dsl.selectFrom(EVENT).where(EVENT.ID.eq(id)).fetchOne());
+        return dsl.fetchOptional(EVENT, EVENT.ID.eq(id));
     }
 
     public void store(@NotNull final EventRecord event) {
@@ -85,17 +85,18 @@ public class EventService {
 
     public Stream<Record> find(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
+        final var speakerFullName = concat(SPEAKER.FIRST_NAME, DSL.value(" "), SPEAKER.LAST_NAME);
         return dsl.select(EVENT.asterisk(),
-                    groupConcat(concat(concat(SPEAKER.FIRST_NAME, " "), SPEAKER.LAST_NAME)).separator(", ").as("speaker"),
+                    groupConcat(speakerFullName).separator(", ").as("speaker"),
                     DSL.selectCount().from(EVENT_MEMBER).where(EVENT.ID.eq(EVENT_MEMBER.EVENT_ID)).asField("attendees"))
                 .from(EVENT)
                 .leftJoin(EVENT_SPEAKER).on(EVENT.ID.eq(EVENT_SPEAKER.EVENT_ID))
                 .leftJoin(SPEAKER).on(EVENT_SPEAKER.SPEAKER_ID.eq(SPEAKER.ID))
                 .where(filterValue == null ? DSL.noCondition()
                         : EVENT.TITLE.like(filterValue)
-                        .or(concat(concat(SPEAKER.FIRST_NAME, " "), SPEAKER.LAST_NAME).like(filterValue)))
+                        .or(speakerFullName.like(filterValue)))
                 .groupBy(EVENT.ID)
-                .orderBy(when(EVENT.DATE.isNull(), 0).otherwise(1), EVENT.DATE.desc())
+                .orderBy(EVENT.DATE.desc().nullsFirst())
                 .offset(offset)
                 .limit(limit)
                 .stream();
@@ -108,7 +109,7 @@ public class EventService {
 
     public Stream<EventRecord> upcomingEvents() {
         return dsl.selectFrom(EVENT)
-                .where(EVENT.VISIBLE.eq(true)
+                .where(condition(EVENT.VISIBLE)
                         // minusHours(1) - show events as upcoming which had just started
                         .and(EVENT.DATE.greaterOrEqual(LocalDateTime.now().minusHours(1))))
                 .orderBy(EVENT.DATE.asc())

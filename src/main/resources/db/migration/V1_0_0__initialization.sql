@@ -15,7 +15,6 @@ CREATE TABLE event (
     PRIMARY KEY (id)
 );
 
-CREATE INDEX event_title ON event (title);
 CREATE INDEX event_date ON event (date);
 
 CREATE TABLE member (
