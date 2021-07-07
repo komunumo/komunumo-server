@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Year;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +35,7 @@ import org.springframework.stereotype.Service;
 import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
 import static org.jooq.impl.DSL.condition;
+import static org.jooq.impl.DSL.month;
 import static org.komunumo.data.db.tables.Event.EVENT;
 import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
 
@@ -118,46 +118,29 @@ public class EventMemberService {
         final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
         final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
 
-        final var records = dsl.select(EVENT.LOCATION, DSL.month(EVENT_MEMBER.DATE).as("month"), DSL.count().as("count"))
+        return dsl.select(
+                        EVENT.LOCATION.as("Location"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(1)).as("January"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(2)).as("February"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(3)).as("March"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(4)).as("April"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(5)).as("May"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(6)).as("June"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(7)).as("July"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(8)).as("August"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(9)).as("September"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(10)).as("October"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(11)).as("November"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(12)).as("December"))
                 .from(EVENT_MEMBER)
                 .leftJoin(EVENT).on(EVENT_MEMBER.EVENT_ID.eq(EVENT.ID))
                 .where(EVENT.DATE.greaterOrEqual(firstDay).and(EVENT.DATE.lessOrEqual(lastDay)))
-                .groupBy(EVENT.LOCATION, DSL.month(EVENT_MEMBER.DATE))
-                .fetch();
-
-        final var data = new HashMap<String, MonthlyVisitors>();
-
-        for (final var record : records) {
-            final var location = record.get(0, String.class);
-            final var month = record.get(1, Integer.class);
-            final var count = record.get(2, Integer.class);
-
-            var locationData = data.get(location);
-            if (locationData == null) {
-                locationData = new MonthlyVisitors();
-                locationData.setLocation(location);
-                data.put(location, locationData);
-            }
-
-            switch (month) {
-                case 1: locationData.setJanuary(count); break;
-                case 2: locationData.setFebruary(count); break;
-                case 3: locationData.setMarch(count); break;
-                case 4: locationData.setApril(count); break;
-                case 5: locationData.setMay(count); break;
-                case 6: locationData.setJune(count); break;
-                case 7: locationData.setJuly(count); break;
-                case 8: locationData.setAugust(count); break;
-                case 9: locationData.setSeptember(count); break;
-                case 10: locationData.setOctober(count); break;
-                case 11: locationData.setNovember(count); break;
-                case 12: locationData.setDecember(count); break;
-            }
-        }
-
-        return data.values();
+                .groupBy(EVENT.LOCATION)
+                .orderBy(EVENT.LOCATION)
+                .fetchInto(MonthlyVisitors.class);
     }
 
+    @SuppressWarnings("unused") // setters used via reflection by jOOQ
     public static class MonthlyVisitors {
         private String location;
         private int january, february, march, april, may, june, july, august, september, october, november, december;
