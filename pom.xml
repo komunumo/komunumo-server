@@ -10,9 +10,9 @@
 
     <properties>
         <java.version>11</java.version>
-        <jooq.version>3.14.12</jooq.version>
+        <jooq.version>3.15.0</jooq.version>
         <maven.version>3.8.1</maven.version>
-        <vaadin.version>20.0.3</vaadin.version>
+        <vaadin.version>20.0.4</vaadin.version>
     </properties>
 
     <parent>
@@ -116,7 +116,7 @@
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
-            <version>5.4</version>
+            <version>5.5</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
