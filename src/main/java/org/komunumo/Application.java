@@ -20,12 +20,13 @@ package org.komunumo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 /**
  * The entry point of the Spring Boot application.
  */
-@SpringBootApplication
+@SpringBootApplication(exclude = R2dbcAutoConfiguration.class)
 public class Application extends SpringBootServletInitializer {
 
     public static void main(final String[] args) {
