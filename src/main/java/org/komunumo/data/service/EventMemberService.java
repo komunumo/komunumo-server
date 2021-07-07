@@ -18,8 +18,12 @@
 
 package org.komunumo.data.service;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Year;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
@@ -28,11 +32,6 @@ import org.komunumo.data.db.tables.records.EventMemberRecord;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.db.tables.records.MemberRecord;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Year;
-import java.util.Optional;
 
 import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
@@ -122,7 +121,7 @@ public class EventMemberService {
         final var records = dsl.select(EVENT.LOCATION, DSL.month(EVENT_MEMBER.DATE).as("month"), DSL.count().as("count"))
                 .from(EVENT_MEMBER)
                 .leftJoin(EVENT).on(EVENT_MEMBER.EVENT_ID.eq(EVENT.ID))
-                .where(EVENT_MEMBER.DATE.greaterOrEqual(firstDay).and(EVENT_MEMBER.DATE.lessOrEqual(lastDay)))
+                .where(EVENT.DATE.greaterOrEqual(firstDay).and(EVENT.DATE.lessOrEqual(lastDay)))
                 .groupBy(EVENT.LOCATION, DSL.month(EVENT_MEMBER.DATE))
                 .fetch();
 
