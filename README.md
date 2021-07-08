@@ -49,6 +49,14 @@ DB_PASS=verysecret
 
 The database schema will be migrated automatically by *Komunumo*.
 
+#### Important MySQL and MariaDB configuration
+
+MySQL and MariaDB have a possible silent truncation problem with the `GROUP_CONCAT` command. To avoid this it is necessary, to configure these two databases to allow multi queries. Just add `allowMultiQueries=true` to the JDBC database URL like in this example (you may need to scroll the example code to the right):
+
+```
+DB_URL=jdbc:mariadb://localhost:3306/komunumo?serverTimezone\=Europe/Zurich&allowMultiQueries=true
+```
+
 ### Admin
 
 Only members with administrative privileges are allowed to login to the backend. If you specify the email address of an admin in the environment variable `KOMUNUMO_ADMIN_EMAIL`, *Komunumo* will make sure that the member with this email address has administrative privileges. If there is no member with this email address, *Komunumo* will create a new one and send an email with a one time password. At the first login, the user is forced to specify a new password.
