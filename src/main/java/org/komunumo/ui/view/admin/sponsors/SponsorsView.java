@@ -131,6 +131,7 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
             return new HorizontalLayout(editButton, deleteButton);
         }))
                 .setHeader("Actions")
+                .setAutoWidth(true)
                 .setFlexGrow(0)
                 .setFrozen(true);
 

@@ -146,7 +146,7 @@ public class EventsView extends Div implements HasUrlParameter<String> {
 
         }))
             .setHeader("Actions")
-            .setWidth("10%")
+            .setAutoWidth(true)
             .setFlexGrow(0);
 
         grid.setHeightFull();
