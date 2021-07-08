@@ -26,7 +26,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 /**
  * The entry point of the Spring Boot application.
  */
-@SpringBootApplication(exclude = R2dbcAutoConfiguration.class)
+@SpringBootApplication(exclude = R2dbcAutoConfiguration.class) // TODO temporary fix, remove with Spring Boot 2.6 - https://github.com/spring-projects/spring-boot/issues/26439
 public class Application extends SpringBootServletInitializer {
 
     public static void main(final String[] args) {
