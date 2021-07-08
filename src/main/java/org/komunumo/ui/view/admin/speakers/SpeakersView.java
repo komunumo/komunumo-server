@@ -19,11 +19,9 @@
 package org.komunumo.ui.view.admin.speakers;
 
 import com.opencsv.CSVWriter;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -44,6 +42,7 @@ import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
+import org.komunumo.ui.component.KomunumoResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
 import org.vaadin.olli.FileDownloadWrapper;
 
@@ -57,7 +56,7 @@ import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
 @Route(value = "admin/speakers", layout = AdminLayout.class)
 @PageTitle("Speaker Administration")
-public class SpeakersView extends Div implements HasUrlParameter<String> {
+public class SpeakersView extends KomunumoResizableView implements HasUrlParameter<String> {
 
     private final SpeakerService speakerService;
     private final TextField filterField;
@@ -144,17 +143,14 @@ public class SpeakersView extends Div implements HasUrlParameter<String> {
 
         grid.setHeightFull();
 
-        final var page = UI.getCurrent().getPage();
-        page.retrieveExtendedClientDetails(extendedClientDetails -> showHideGridColumns(grid, extendedClientDetails.getBodyClientWidth()));
-        page.addBrowserWindowResizeListener(event -> showHideGridColumns(grid, event.getWidth()));
-
         return grid;
     }
 
-    private void showHideGridColumns(@NotNull final Grid<Record> grid, final int clientWidth) {
-        grid.getColumnByKey("twitter").setVisible(clientWidth >= 1300);
-        grid.getColumnByKey("email").setVisible(clientWidth >= 1200);
-        grid.getColumnByKey("company").setVisible(clientWidth >= 1100);
+    @Override
+    protected void onResize(final int width) {
+        grid.getColumnByKey("twitter").setVisible(width >= 1300);
+        grid.getColumnByKey("email").setVisible(width >= 1200);
+        grid.getColumnByKey("company").setVisible(width >= 1100);
     }
 
     private long getEventCount(@NotNull final Record record) {

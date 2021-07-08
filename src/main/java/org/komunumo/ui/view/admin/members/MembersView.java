@@ -19,11 +19,9 @@
 package org.komunumo.ui.view.admin.members;
 
 import com.opencsv.CSVWriter;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -44,6 +42,7 @@ import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
+import org.komunumo.ui.component.KomunumoResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
 import org.vaadin.olli.FileDownloadWrapper;
 
@@ -56,7 +55,7 @@ import static org.komunumo.data.db.tables.Member.MEMBER;
 
 @Route(value = "admin/members", layout = AdminLayout.class)
 @PageTitle("Member Administration")
-public class MembersView extends Div implements HasUrlParameter<String> {
+public class MembersView extends KomunumoResizableView implements HasUrlParameter<String> {
 
     private final MemberService memberService;
     private final TextField filterField;
@@ -141,15 +140,12 @@ public class MembersView extends Div implements HasUrlParameter<String> {
 
         grid.setHeightFull();
 
-        final var page = UI.getCurrent().getPage();
-        page.retrieveExtendedClientDetails(extendedClientDetails -> showHideGridColumns(grid, extendedClientDetails.getBodyClientWidth()));
-        page.addBrowserWindowResizeListener(event -> showHideGridColumns(grid, event.getWidth()));
-
         return grid;
     }
 
-    private void showHideGridColumns(@NotNull final Grid<Record> grid, final int clientWidth) {
-        grid.getColumnByKey("email").setVisible(clientWidth >= 1100);
+    @Override
+    protected void onResize(final int width) {
+        grid.getColumnByKey("email").setVisible(width >= 1100);
     }
 
     private void newMember() {

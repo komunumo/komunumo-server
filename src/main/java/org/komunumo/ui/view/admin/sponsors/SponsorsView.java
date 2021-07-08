@@ -19,12 +19,10 @@
 package org.komunumo.ui.view.admin.sponsors;
 
 import com.opencsv.CSVWriter;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -45,6 +43,7 @@ import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.data.service.SponsorService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
+import org.komunumo.ui.component.KomunumoResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
 import org.vaadin.olli.FileDownloadWrapper;
 
@@ -59,7 +58,7 @@ import static org.komunumo.util.FormatterUtil.formatDate;
 @Route(value = "admin/sponsors", layout = AdminLayout.class)
 @PageTitle("Sponsor Administration")
 @CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
-public class SponsorsView extends Div implements HasUrlParameter<String> {
+public class SponsorsView extends KomunumoResizableView implements HasUrlParameter<String> {
 
     private final SponsorService sponsorService;
     private final TextField filterField;
@@ -137,16 +136,13 @@ public class SponsorsView extends Div implements HasUrlParameter<String> {
 
         grid.setHeightFull();
 
-        final var page = UI.getCurrent().getPage();
-        page.retrieveExtendedClientDetails(extendedClientDetails -> showHideGridColumns(grid, extendedClientDetails.getBodyClientWidth()));
-        page.addBrowserWindowResizeListener(event -> showHideGridColumns(grid, event.getWidth()));
-
         return grid;
     }
 
-    private void showHideGridColumns(@NotNull final Grid<Record> grid, final int clientWidth) {
-        grid.getColumnByKey("validFrom").setVisible(clientWidth >= 1200);
-        grid.getColumnByKey("validTo").setVisible(clientWidth >= 1000);
+    @Override
+    protected void onResize(final int width) {
+        grid.getColumnByKey("validFrom").setVisible(width >= 1200);
+        grid.getColumnByKey("validTo").setVisible(width >= 1000);
     }
 
     private void newSponsor() {
