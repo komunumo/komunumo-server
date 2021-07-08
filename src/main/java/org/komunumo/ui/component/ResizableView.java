@@ -24,7 +24,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.shared.Registration;
 import org.jetbrains.annotations.Nullable;
 
-public class KomunumoResizableView extends Div {
+public class ResizableView extends Div {
 
     private Registration listener;
 

@@ -25,11 +25,11 @@ import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.MemberRecord;
-import org.komunumo.ui.component.KomunumoEditDialog;
+import org.komunumo.ui.component.EditDialog;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-public class MemberDialog extends KomunumoEditDialog<MemberRecord> {
+public class MemberDialog extends EditDialog<MemberRecord> {
 
     public MemberDialog(@NotNull final String title) {
         super(title);

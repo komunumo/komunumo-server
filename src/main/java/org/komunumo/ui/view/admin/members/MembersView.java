@@ -42,7 +42,7 @@ import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
-import org.komunumo.ui.component.KomunumoResizableView;
+import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
 import org.vaadin.olli.FileDownloadWrapper;
 
@@ -55,7 +55,7 @@ import static org.komunumo.data.db.tables.Member.MEMBER;
 
 @Route(value = "admin/members", layout = AdminLayout.class)
 @PageTitle("Member Administration")
-public class MembersView extends KomunumoResizableView implements HasUrlParameter<String> {
+public class MembersView extends ResizableView implements HasUrlParameter<String> {
 
     private final MemberService memberService;
     private final TextField filterField;

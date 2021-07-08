@@ -24,13 +24,13 @@ import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.db.tables.records.SponsorRecord;
+import org.komunumo.ui.component.DatePicker;
+import org.komunumo.ui.component.EditDialog;
 import org.komunumo.ui.component.ImageUploadField;
-import org.komunumo.ui.component.KomunumoDatePicker;
-import org.komunumo.ui.component.KomunumoEditDialog;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-public class SponsorDialog extends KomunumoEditDialog<SponsorRecord> {
+public class SponsorDialog extends EditDialog<SponsorRecord> {
 
     public SponsorDialog(@NotNull final String title) {
         super(title);
@@ -42,8 +42,8 @@ public class SponsorDialog extends KomunumoEditDialog<SponsorRecord> {
         final var website = new TextField("Website");
         final var level = new ComboBox<SponsorLevel>("Level");
         final var logo = new ImageUploadField("Logo");
-        final var validFrom = new KomunumoDatePicker("Valid from");
-        final var validTo = new KomunumoDatePicker("Valid to");
+        final var validFrom = new DatePicker("Valid from");
+        final var validTo = new DatePicker("Valid to");
 
         name.setRequiredIndicatorVisible(true);
         name.setValueChangeMode(EAGER);

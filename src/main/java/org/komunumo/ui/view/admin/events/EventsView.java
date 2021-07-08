@@ -44,7 +44,7 @@ import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
-import org.komunumo.ui.component.KomunumoResizableView;
+import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
 import org.vaadin.olli.FileDownloadWrapper;
 
@@ -61,7 +61,7 @@ import static org.komunumo.util.FormatterUtil.formatDateTime;
 
 @Route(value = "admin/events", layout = AdminLayout.class)
 @PageTitle("Event Administration")
-public class EventsView extends KomunumoResizableView implements HasUrlParameter<String> {
+public class EventsView extends ResizableView implements HasUrlParameter<String> {
 
     private final EventService eventService;
     private final SpeakerService speakerService;

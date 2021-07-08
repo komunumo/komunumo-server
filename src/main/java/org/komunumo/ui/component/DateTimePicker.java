@@ -18,17 +18,19 @@
 
 package org.komunumo.ui.component;
 
-import com.vaadin.componentfactory.EnhancedDatePicker;
+import com.vaadin.componentfactory.EnhancedDateTimePicker;
 import org.jetbrains.annotations.NotNull;
 
 import static org.komunumo.util.FormatterUtil.DATE_PATTERN;
+import static org.komunumo.util.FormatterUtil.TIME_PATTERN;
 
-public class KomunumoDatePicker extends EnhancedDatePicker {
+public class DateTimePicker extends EnhancedDateTimePicker {
 
-    public KomunumoDatePicker(@NotNull final String label) {
+    public DateTimePicker(@NotNull final String label) {
         super(label);
-        this.setPattern(DATE_PATTERN);
-        this.setI18n(new KomunumoDatePickerI18N());
+        this.setTimePattern(TIME_PATTERN);
+        this.setDatePattern(DATE_PATTERN);
+        this.setDatePickerI18n(new DatePickerI18N());
         this.setWeekNumbersVisible(true);
     }
 

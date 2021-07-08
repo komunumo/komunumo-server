@@ -33,15 +33,15 @@ import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.SpeakerService;
-import org.komunumo.ui.component.KomunumoDateTimePicker;
-import org.komunumo.ui.component.KomunumoEditDialog;
+import org.komunumo.ui.component.DateTimePicker;
+import org.komunumo.ui.component.EditDialog;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class EventDialog extends KomunumoEditDialog<EventRecord> {
+public class EventDialog extends EditDialog<EventRecord> {
 
     private final EventService eventService;
     private final SpeakerService speakerService;
@@ -69,7 +69,7 @@ public class EventDialog extends KomunumoEditDialog<EventRecord> {
         final var level = new Select<>(EventLevel.values());
         final var language = new Select<>(EventLanguage.values());
         final var location = new ComboBox<String>("Location");
-        final var date = new KomunumoDateTimePicker("Date & Time");
+        final var date = new DateTimePicker("Date & Time");
         final var visible = new Checkbox("Visible");
 
         title.setRequiredIndicatorVisible(true);

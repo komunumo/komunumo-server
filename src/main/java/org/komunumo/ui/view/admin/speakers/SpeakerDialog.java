@@ -25,14 +25,14 @@ import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
+import org.komunumo.ui.component.EditDialog;
 import org.komunumo.ui.component.ImageUploadField;
-import org.komunumo.ui.component.KomunumoEditDialog;
 import org.komunumo.util.GravatarUtil;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 import static org.komunumo.util.GravatarUtil.GRAVATAR_URL;
 
-public class SpeakerDialog extends KomunumoEditDialog<SpeakerRecord> {
+public class SpeakerDialog extends EditDialog<SpeakerRecord> {
 
     public SpeakerDialog(@NotNull final String title) {
         super(title);

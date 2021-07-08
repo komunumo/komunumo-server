@@ -19,8 +19,8 @@
 package org.komunumo.ui.component;
 
 import com.vaadin.componentfactory.EnhancedDatePicker;
-
 import com.vaadin.flow.component.UI;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.DateFormatSymbols;
 import java.util.Arrays;
@@ -28,15 +28,13 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.NotNull;
+class DatePickerI18N extends EnhancedDatePicker.DatePickerI18n {
 
-class KomunumoDatePickerI18N extends EnhancedDatePicker.DatePickerI18n {
-
-    public KomunumoDatePickerI18N() {
+    public DatePickerI18N() {
         this(UI.getCurrent().getSession().getBrowser().getLocale());
     }
 
-    public KomunumoDatePickerI18N(@NotNull final Locale locale) {
+    public DatePickerI18N(@NotNull final Locale locale) {
         final var symbols = new DateFormatSymbols(locale);
         this.setMonthNames(Arrays.asList(symbols.getMonths()));
         this.setFirstDayOfWeek(Calendar.getInstance(locale).getFirstDayOfWeek());

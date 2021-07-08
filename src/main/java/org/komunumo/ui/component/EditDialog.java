@@ -44,7 +44,7 @@ import org.komunumo.ApplicationContextHolder;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @CssImport("./themes/komunumo/views/admin/komunumo-dialog.css")
-public abstract class KomunumoEditDialog<R extends UpdatableRecord<?>> extends Dialog {
+public abstract class EditDialog<R extends UpdatableRecord<?>> extends Dialog {
 
     private static final String DOCK = "dock";
     private static final String FULLSCREEN = "fullscreen";
@@ -65,7 +65,7 @@ public abstract class KomunumoEditDialog<R extends UpdatableRecord<?>> extends D
     private Callback afterSave;
     private boolean initialized;
 
-    public KomunumoEditDialog(@NotNull final String title) {
+    public EditDialog(@NotNull final String title) {
         setCloseOnOutsideClick(false);
         setDraggable(false);
         setModal(true);
