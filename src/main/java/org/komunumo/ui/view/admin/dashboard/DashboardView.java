@@ -33,13 +33,14 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import java.time.Year;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.EventMemberService;
+import org.komunumo.data.service.EventMemberService.NoShows;
 import org.komunumo.data.service.EventService;
 import org.komunumo.ui.view.admin.AdminLayout;
 import org.komunumo.util.FormatterUtil;
+
+import java.time.Year;
 
 @Route(value = "admin/dashboard", layout = AdminLayout.class)
 @RouteAlias(value = "admin", layout = AdminLayout.class)
@@ -47,9 +48,9 @@ import org.komunumo.util.FormatterUtil;
 public class DashboardView extends Div {
 
     private final Chart monthlyVisitors = new Chart();
-    private final H2 usersH2 = new H2();
-    private final H2 eventsH2 = new H2();
-    private final H2 noShowsH2 = new H2();
+    private final H2 numberOfRegistrations = new H2();
+    private final H2 numberOfEvents = new H2();
+    private final H2 noShowRate = new H2();
 
     private final EventService eventService;
     private final EventMemberService eventMemberService;
@@ -63,9 +64,9 @@ public class DashboardView extends Div {
 
         final var board = new Board();
         board.addRow(
-                createBadge("Registrations", usersH2, "primary-text", "Registrations this year", "badge"),
-                createBadge("Events", eventsH2, "success-text", "Events this year", "badge success"),
-                createBadge("No-shows", noShowsH2, "error-text", "No-show-rate this year", "badge error")
+                createBadge("Registrations", numberOfRegistrations, "primary-text", "Registrations this year", "badge"),
+                createBadge("Events", numberOfEvents, "success-text", "Events this year", "badge success"),
+                createBadge("No-shows", noShowRate, "error-text", "No-show-rate this year", "badge error")
         );
 
         monthlyVisitors.getConfiguration().setTitle("Monthly visitors per location");
@@ -92,9 +93,12 @@ public class DashboardView extends Div {
 
     private void populateCharts() {
         // Top row widgets
-        usersH2.setText(FormatterUtil.formatNumber(eventMemberService.countByYear(Year.now())));
-        eventsH2.setText(FormatterUtil.formatNumber(eventService.countByYear(Year.now())));
-        noShowsH2.setText(FormatterUtil.formatNumber(eventMemberService.calculateNoShowRateByYear(Year.now())) + "%");
+        final var registrations = eventMemberService.countByYear(Year.now(), NoShows.INCLUDE);
+        final var events = eventService.countByYear(Year.now());
+        final var noShows = eventMemberService.countByYear(Year.now(), NoShows.ONLY);
+        numberOfRegistrations.setText(FormatterUtil.formatNumber(registrations));
+        numberOfEvents.setText(FormatterUtil.formatNumber(events));
+        noShowRate.setText(FormatterUtil.formatNumber(registrations == 0 ? 0 : noShows * 100L / registrations) + "%");
 
         // First chart
         final var configuration = monthlyVisitors.getConfiguration();

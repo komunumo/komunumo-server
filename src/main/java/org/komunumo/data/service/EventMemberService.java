@@ -18,12 +18,6 @@
 
 package org.komunumo.data.service;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Year;
-import java.util.Collection;
-import java.util.Optional;
-
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -32,9 +26,14 @@ import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.db.tables.records.MemberRecord;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Year;
+import java.util.Collection;
+import java.util.Optional;
+
 import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
-import static org.jooq.impl.DSL.condition;
 import static org.jooq.impl.DSL.month;
 import static org.komunumo.data.db.tables.Event.EVENT;
 import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
@@ -96,22 +95,14 @@ public class EventMemberService {
         return dsl.fetchCount(EVENT_MEMBER);
     }
 
-    public int countByYear(@NotNull final Year year) {
+    public int countByYear(@NotNull final Year year, @NotNull final NoShows noShows) {
         final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
         final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
-        return dsl.fetchCount(EVENT_MEMBER, EVENT_MEMBER.DATE.between(firstDay, lastDay));
-    }
-
-    public int calculateNoShowRateByYear(@NotNull final Year year) {
-        final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
-        final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
-
-        final var registered = countByYear(year);
-        final var noShows =  dsl.fetchCount(EVENT_MEMBER,
+        return dsl.fetchCount(EVENT_MEMBER,
                 EVENT_MEMBER.DATE.between(firstDay, lastDay)
-                        .and(condition(EVENT_MEMBER.NO_SHOW)));
-
-        return registered > 0 ? noShows * 100 / registered : 0;
+                        .and(noShows == NoShows.INCLUDE
+                                ? DSL.noCondition()
+                                : EVENT_MEMBER.NO_SHOW.eq(noShows == NoShows.ONLY)));
     }
 
     public Collection<MonthlyVisitors> calculateMonthlyVisitorsByYear(@NotNull final Year year) {
@@ -248,5 +239,9 @@ public class EventMemberService {
         public void setDecember(final int december) {
             this.december = december;
         }
+    }
+
+    public enum NoShows {
+        INCLUDE, EXCLUDE, ONLY
     }
 }
