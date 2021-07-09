@@ -118,6 +118,24 @@ This command will clean your database (erase everything). You need to specify th
 
 *Komunumo* will automatically migrate the database schema on the next start.
 
+## Importing Data
+
+There is no generic import mechanism. If you want to import data from existing databases or other sources, you have to implement an own importer.
+
+### Java User Group Switzerland
+
+This importer reads the database of the old website and is importing sponsors, members, events, speakers, and attendees into *Komunumo*. To use this importer, you have to configure the source database:
+
+```
+JUGS_DB_URL=jdbc:mariadb://localhost:3306/sourcedb?serverTimezone\=Europe/Zurich
+JUGS_DB_USER=janedoe
+JUGS_DB_PASS=lovelysecret
+```
+
+The database user needs only read access. No data will be modified in the source database. The import will start automatically 30 seconds after *Komunumo* has started, if the above configuration values are found and the target database tables are empty.
+
+The import will run in the background, while *Komunumo* is fully available.
+
 ## Copyright and License
 
 [AGPL License](https://www.gnu.org/licenses/agpl-3.0.de.html)
