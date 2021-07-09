@@ -56,4 +56,10 @@ public class FormatterUtil {
         return largeNumbers.format(number);
     }
 
+    public static String formatString(@Nullable final String string, final int maxLength) {
+        return string != null && string.length() > maxLength
+                ? string.substring(0, maxLength).concat("…")
+                : string;
+    }
+
 }

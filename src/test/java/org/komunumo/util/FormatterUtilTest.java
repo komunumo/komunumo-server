@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class FormatterUtilTest {
 
@@ -50,6 +51,17 @@ public class FormatterUtilTest {
         assertEquals("1'234'567", FormatterUtil.formatNumber(1234567L));
         assertEquals("12'345'678", FormatterUtil.formatNumber(12345678L));
         assertEquals("123'456'789", FormatterUtil.formatNumber(123456789L));
+    }
+
+    @Test
+    public void testFormatString() {
+        assertNull(FormatterUtil.formatString(null, 3));
+        assertEquals("", FormatterUtil.formatString("", 3));
+        assertEquals("A", FormatterUtil.formatString("A", 3));
+        assertEquals("AB", FormatterUtil.formatString("AB", 3));
+        assertEquals("ABC", FormatterUtil.formatString("ABC", 3));
+        assertEquals("ABC…", FormatterUtil.formatString("ABCD", 3));
+        assertEquals("ABC…", FormatterUtil.formatString("ABCDE", 3));
     }
 }
 

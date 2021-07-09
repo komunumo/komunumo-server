@@ -113,14 +113,14 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
                 "<a style=\"font-weight: bold;\" href=\"[[item.website]]\" target=\"_blank\">[[item.name]]</a>")
                 .withProperty("name", record -> record.get(SPONSOR.NAME))
                 .withProperty("website", record -> record.get(SPONSOR.WEBSITE)))
-                .setHeader("Name").setAutoWidth(true);
+                .setHeader("Name").setAutoWidth(true).setFlexGrow(1);
         grid.addColumn(TemplateRenderer.<Record>of(
                 "<img style=\"max-width: 100%;\" src=\"[[item.logo]]\" /></span>")
                 .withProperty("logo", record -> record.get(SPONSOR.LOGO)))
                 .setHeader("Logo").setWidth("96px").setFlexGrow(0);
         grid.addColumn(record -> record.get(SPONSOR.LEVEL)).setHeader("Level").setAutoWidth(true);
-        grid.addColumn(record -> formatDate(record.get(SPONSOR.VALID_FROM))).setHeader("Valid from").setAutoWidth(true).setKey("validFrom");
-        grid.addColumn(record -> formatDate(record.get(SPONSOR.VALID_TO))).setHeader("Valid to").setAutoWidth(true).setKey("validTo");
+        grid.addColumn(record -> formatDate(record.get(SPONSOR.VALID_FROM))).setHeader("Valid from").setAutoWidth(true).setFlexGrow(0).setKey("validFrom");
+        grid.addColumn(record -> formatDate(record.get(SPONSOR.VALID_TO))).setHeader("Valid to").setAutoWidth(true).setFlexGrow(0).setKey("validTo");
 
         grid.addColumn(new ComponentRenderer<>(record -> {
             final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editSponsor(record.get(SPONSOR.ID)));
@@ -131,8 +131,7 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
         }))
                 .setHeader("Actions")
                 .setAutoWidth(true)
-                .setFlexGrow(0)
-                .setFrozen(true);
+                .setFlexGrow(0);
 
         grid.setHeightFull();
 

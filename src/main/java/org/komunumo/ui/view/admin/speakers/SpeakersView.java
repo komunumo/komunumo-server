@@ -44,6 +44,7 @@ import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
+import org.komunumo.util.FormatterUtil;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
@@ -110,23 +111,25 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
-        grid.addColumn(TemplateRenderer.<Record>of("<span style=\"font-weight: bold;\">[[item.firstName]] [[item.lastName]]</span>")
+        grid.addColumn(TemplateRenderer.<Record>of("<span style=\"font-weight: bold;\">[[item.firstName]] [[item.lastName]]</span><br/><a href=\"[[item.website]]\" target=\"_blank\" title=\"[[item.title]]\">[[item.company]]</a>")
                 .withProperty("firstName", record -> record.get(SPEAKER.FIRST_NAME))
-                .withProperty("lastName", record -> record.get(SPEAKER.LAST_NAME)))
-                .setHeader("Name").setAutoWidth(true);
-        grid.addColumn(record -> record.get(SPEAKER.COMPANY)).setHeader("Company").setAutoWidth(true).setKey("company");
+                .withProperty("lastName", record -> record.get(SPEAKER.LAST_NAME))
+                .withProperty("company", record -> FormatterUtil.formatString(record.get(SPEAKER.COMPANY), 50))
+                .withProperty("title", record -> record.get(SPEAKER.COMPANY))
+                .withProperty("website", record -> record.get(SPEAKER.WEBSITE)))
+                .setHeader("Name & Company").setAutoWidth(true).setFlexGrow(1);
         grid.addColumn(TemplateRenderer.<Record>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
                 .withProperty("email", record -> record.get(SPEAKER.EMAIL)))
-                .setHeader("Email").setAutoWidth(true).setKey("email");
+                .setHeader("Email").setAutoWidth(true).setFlexGrow(0).setKey("email");
         grid.addColumn(TemplateRenderer.<Record>of("<a href=\"https://twitter.com/[[item.twitter]]\" target=\"_blank\">[[item.twitter]]</a>")
                 .withProperty("twitter", record -> record.get(SPEAKER.TWITTER)))
-                .setHeader("Twitter").setAutoWidth(true).setKey("twitter");
+                .setHeader("Twitter").setAutoWidth(true).setFlexGrow(0).setKey("twitter");
 
         final var eventCountRenderer = TemplateRenderer.<Record>of(
                 "<a href=\"/admin/events?filter=[[item.filterValue]]\">[[item.eventCount]]</a>")
                 .withProperty("eventCount", this::getEventCount)
                 .withProperty("filterValue", record -> URLEncoder.encode(getFullName(record), UTF_8));
-        grid.addColumn(eventCountRenderer).setHeader("Events").setAutoWidth(true);
+        grid.addColumn(eventCountRenderer).setHeader("Events").setAutoWidth(true).setFlexGrow(0);
 
         grid.addColumn(new ComponentRenderer<>(record -> {
             final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editSpeaker(record.get(SPEAKER.ID)));
@@ -138,8 +141,7 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
         }))
                 .setHeader("Actions")
                 .setAutoWidth(true)
-                .setFlexGrow(0)
-                .setFrozen(true);
+                .setFlexGrow(0);
 
         grid.setHeightFull();
 
@@ -150,7 +152,6 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
     protected void onResize(final int width) {
         grid.getColumnByKey("twitter").setVisible(width >= 1300);
         grid.getColumnByKey("email").setVisible(width >= 1200);
-        grid.getColumnByKey("company").setVisible(width >= 1100);
     }
 
     private long getEventCount(@NotNull final Record record) {

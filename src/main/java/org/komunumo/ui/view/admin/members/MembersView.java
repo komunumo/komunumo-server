@@ -112,19 +112,19 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         grid.addColumn(TemplateRenderer.<Record>of("<span style=\"font-weight: bold;\">[[item.firstName]] [[item.lastName]]</span>")
                 .withProperty("firstName", record -> record.get(MEMBER.FIRST_NAME))
                 .withProperty("lastName", record -> record.get(MEMBER.LAST_NAME)))
-                .setHeader("Name").setAutoWidth(true);
+                .setHeader("Name").setAutoWidth(true).setFlexGrow(1);
         grid.addColumn(TemplateRenderer.<Record>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
                 .withProperty("email", record -> record.get(MEMBER.EMAIL)))
-                .setHeader("Email").setAutoWidth(true).setKey("email");
+                .setHeader("Email").setAutoWidth(true).setKey("email").setFlexGrow(0);
         grid.addColumn(TemplateRenderer.<Record>of(
                 "<iron-icon hidden='[[!item.admin]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.admin]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
                 .withProperty("admin", record -> record.get(MEMBER.ADMIN)))
-                .setHeader("Admin").setAutoWidth(true);
+                .setHeader("Admin").setAutoWidth(true).setFlexGrow(0);
         grid.addColumn(TemplateRenderer.<Record>of(
                 "<iron-icon hidden='[[!item.blocked]]' icon='vaadin:ban' title='[[item.blockedReason]]' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-error-text-color);'></iron-icon><iron-icon hidden='[[item.blocked]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
                 .withProperty("blocked", record -> record.get(MEMBER.BLOCKED))
                 .withProperty("blockedReason", record -> record.get(MEMBER.BLOCKED_REASON)))
-                .setHeader("Blocked").setAutoWidth(true);
+                .setHeader("Blocked").setAutoWidth(true).setFlexGrow(0);
 
         grid.addColumn(new ComponentRenderer<>(record -> {
             final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editMember(record.get(MEMBER.ID)));
@@ -135,8 +135,7 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         }))
                 .setHeader("Actions")
                 .setAutoWidth(true)
-                .setFlexGrow(0)
-                .setFrozen(true);
+                .setFlexGrow(0);
 
         grid.setHeightFull();
 
