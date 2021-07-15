@@ -66,6 +66,7 @@ public class EventDialog extends KomunumoEditDialog<EventRecord> {
         final var language = new Select<>(EventLanguage.values());
         final var location = new Select<>(EventLocation.values());
         final var date = new KomunumoDateTimePicker("Date & Time");
+        final var duration = new KonunmoTimePicker("Time");
         final var visible = new Checkbox("Visible");
 
         title.setRequiredIndicatorVisible(true);
@@ -84,11 +85,12 @@ public class EventDialog extends KomunumoEditDialog<EventRecord> {
             language.setRequiredIndicatorVisible(value);
             location.setRequiredIndicatorVisible(value);
             date.setRequiredIndicatorVisible(value);
+            duration.setRequiredIndicatorVisible(value);
             binder.validate();
         });
 
         formLayout.add(title, subtitle, speaker, level, abstrakt, agenda,
-                language, location, date, visible);
+                language, location, date, duration, visible);
 
         binder.forField(title)
                 .withValidator(new StringLengthValidator(
@@ -133,6 +135,12 @@ public class EventDialog extends KomunumoEditDialog<EventRecord> {
                                 || value != null && value.isAfter(LocalDateTime.now()),
                         "Please enter a date and time in the future")
                 .bind(EventRecord::getDate, EventRecord::setDate);
+        
+        binder.forField(duration)
+               .withValidator(value -> !visible.getValue() && (value == null) || value.isAfter(LocalTime.now()))
+                               || value ! = null && value.isAfter(LocalTime.now()),
+                         "Please Enter Duration ")
+               .bind(EventRecord::getDuration, EventRecord::setDuration);
 
         binder.forField(visible)
                 .bind(EventRecord::getVisible, EventRecord::setVisible);
