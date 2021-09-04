@@ -6,5 +6,11 @@
     "Dockerfile",
     "package.json",
     "pnpm-lock.yaml"
+  ],
+  "assignees": [
+    "McPringle"
+  ],
+  "reviewers": [
+    "McPringle"
   ]
 }
