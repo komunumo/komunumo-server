@@ -1,10 +1,17 @@
 {
   "extends": [
-    "config:base"
+    "config:base",
+    ":disableDependencyDashboard"
   ],
   "ignorePaths": [
     "Dockerfile",
     "package.json",
     "pnpm-lock.yaml"
+  ],
+  "assignees": [
+    "McPringle"
+  ],
+  "reviewers": [
+    "McPringle"
   ]
 }
