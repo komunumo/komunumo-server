@@ -10,7 +10,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <jooq.version>3.15.2</jooq.version>
+        <jooq.version>3.15.3</jooq.version>
         <maven.version>3.8.1</maven.version>
         <vaadin.version>21.0.1</vaadin.version>
     </properties>
