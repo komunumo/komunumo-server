@@ -108,7 +108,7 @@ public class EventDialog extends EditDialog<EventRecord> {
                 .bind(EventRecord::getSubtitle, EventRecord::setSubtitle);
 
         binder.forField(speaker)
-                .withValidator(value -> !visible.getValue() || value.isEmpty(),
+                .withValidator(value -> !visible.getValue() || !value.isEmpty(),
                         "Please select at least one speaker")
                 .bind(this::getSpeaker, this::setSpeaker);
 
