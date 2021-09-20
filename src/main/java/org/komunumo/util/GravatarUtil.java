@@ -36,4 +36,8 @@ public class GravatarUtil {
         return GRAVATAR_URL + DigestUtils.md5Hex(email) + "?d=mp&s=" + size;
     }
 
+    private GravatarUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
 }

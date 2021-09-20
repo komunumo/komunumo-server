@@ -183,12 +183,12 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
         if (speaker.isPresent()) {
             new ConfirmDialog("Confirm deletion",
                     String.format("Are you sure you want to permanently delete the speaker \"%s\"?", getFullName(speaker.get())),
-                    "Delete", (dialogEvent) -> {
+                    "Delete", dialogEvent -> {
                 speakerService.delete(speaker.get());
                 reloadGridItems();
                 dialogEvent.getSource().close();
             },
-                    "Cancel", (dialogEvent) -> dialogEvent.getSource().close()
+                    "Cancel", dialogEvent -> dialogEvent.getSource().close()
             ).open();
         } else {
             Notification.show("This speaker does not exist anymore. Reloading view…");

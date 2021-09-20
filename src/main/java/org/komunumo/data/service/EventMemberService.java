@@ -67,7 +67,10 @@ public class EventMemberService {
         }
     }
 
-    @Deprecated(forRemoval = true) // TODO remove after migration of JUG.CH to Komunumo has finished
+    /**
+     * @deprecated remove after migration of JUG.CH to Komunumo has finished
+     */
+    @Deprecated(forRemoval = true)
     public void registerForEvent(final long eventId,
                                   final long memberId,
                                   @NotNull final LocalDateTime registerDate,
@@ -134,7 +137,19 @@ public class EventMemberService {
     @SuppressWarnings("unused") // setters used via reflection by jOOQ
     public static class MonthlyVisitors {
         private String location;
-        private int january, february, march, april, may, june, july, august, september, october, november, december;
+
+        private int january;
+        private int february;
+        private int march;
+        private int april;
+        private int may;
+        private int june;
+        private int july;
+        private int august;
+        private int september;
+        private int october;
+        private int november;
+        private int december;
 
         public String getLocation() {
             return location;

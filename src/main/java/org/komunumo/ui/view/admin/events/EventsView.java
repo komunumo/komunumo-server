@@ -195,12 +195,12 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
         if (event.isPresent()) {
             new ConfirmDialog("Confirm deletion",
                     String.format("Are you sure you want to permanently delete the event \"%s\"?", event.get().getTitle()),
-                    "Delete", (dialogEvent) -> {
+                    "Delete", dialogEvent -> {
                 eventService.deleteEvent(event.get());
                 reloadGridItems();
                 dialogEvent.getSource().close();
             },
-                    "Cancel", (dialogEvent) -> dialogEvent.getSource().close()
+                    "Cancel", dialogEvent -> dialogEvent.getSource().close()
             ).open();
         } else {
             Notification.show("This event does not exist anymore. Reloading view…");

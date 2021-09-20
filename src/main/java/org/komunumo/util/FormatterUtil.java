@@ -62,4 +62,8 @@ public class FormatterUtil {
                 : string;
     }
 
+    private FormatterUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
 }

@@ -168,12 +168,12 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
         if (sponsor.isPresent()) {
             new ConfirmDialog("Confirm deletion",
                     String.format("Are you sure you want to permanently delete the sponsor \"%s\"?", sponsor.get().getName()),
-                    "Delete", (dialogEvent) -> {
+                    "Delete", dialogEvent -> {
                 sponsorService.delete(sponsor.get());
                 reloadGridItems();
                 dialogEvent.getSource().close();
             },
-                    "Cancel", (dialogEvent) -> dialogEvent.getSource().close()
+                    "Cancel", dialogEvent -> dialogEvent.getSource().close()
             ).open();
         } else {
             Notification.show("This sponsor does not exist anymore. Reloading view…");

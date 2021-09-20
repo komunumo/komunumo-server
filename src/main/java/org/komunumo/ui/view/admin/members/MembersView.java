@@ -171,12 +171,12 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         if (member.isPresent()) {
             new ConfirmDialog("Confirm deletion",
                     String.format("Are you sure you want to permanently delete the member \"%s\"?", getFullName(member.get())),
-                    "Delete", (dialogEvent) -> {
+                    "Delete", dialogEvent -> {
                 memberService.delete(member.get());
                 reloadGridItems();
                 dialogEvent.getSource().close();
             },
-                    "Cancel", (dialogEvent) -> dialogEvent.getSource().close()
+                    "Cancel", dialogEvent -> dialogEvent.getSource().close()
             ).open();
         } else {
             Notification.show("This member does not exist anymore. Reloading view…");

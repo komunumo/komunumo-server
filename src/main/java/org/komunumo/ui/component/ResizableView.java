@@ -55,6 +55,7 @@ public class ResizableView extends Div {
      *
      * @param width the width of the view
      */
+    @SuppressWarnings("java:S1186") // methods should not be empty
     protected void onResize(@SuppressWarnings("unused") final int width) {}
 
 }

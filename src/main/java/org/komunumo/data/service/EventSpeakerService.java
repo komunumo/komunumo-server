@@ -25,6 +25,7 @@ import org.komunumo.data.db.tables.records.EventSpeakerRecord;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -63,16 +64,16 @@ public class EventSpeakerService {
 
     public void setEventSpeakers(@NotNull final EventRecord event,
                                  @NotNull final Set<SpeakerRecord> speakers) {
-        synchronized (speakers) {
-            getSpeakersForEvent(event).forEach(speaker -> {
-                if (speakers.contains(speaker)) {
-                    speakers.remove(speaker);
-                } else {
-                    removeSpeakerFromEvent(event, speaker);
-                }
-            });
-            speakers.forEach(speaker -> addSpeakerToEvent(event, speaker));
-        }
+        final var eventSpeakers = new HashSet<SpeakerRecord>(speakers.size());
+        eventSpeakers.addAll(speakers);
+        getSpeakersForEvent(event).forEach(speaker -> {
+            if (eventSpeakers.contains(speaker)) {
+                eventSpeakers.remove(speaker);
+            } else {
+                removeSpeakerFromEvent(event, speaker);
+            }
+        });
+        eventSpeakers.forEach(speaker -> addSpeakerToEvent(event, speaker));
     }
 
     private void addSpeakerToEvent(@NotNull final EventRecord event,

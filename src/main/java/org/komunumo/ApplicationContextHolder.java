@@ -33,6 +33,7 @@ public class ApplicationContextHolder implements ApplicationContextAware {
     }
 
     @Override
+    @SuppressWarnings("java:S2696") // modify static properties from non-static methods
     public void setApplicationContext(@SuppressWarnings("NullableProblems") ApplicationContext applicationContext) throws BeansException {
         ApplicationContextHolder.applicationContext = applicationContext;
     }

@@ -5,11 +5,10 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Span;
-
-import java.time.format.DateTimeFormatter;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.EventRecord;
+
+import java.time.format.DateTimeFormatter;
 
 import static org.komunumo.data.db.tables.Event.EVENT;
 
@@ -23,7 +22,7 @@ public class EventPreview extends Div {
                 new H2(event.get(EVENT.TITLE)),
                 new H3(event.get(EVENT.SUBTITLE)),
                 new Div(
-                        new Span(new Text(event.get(EVENT.LOCATION).toString())),
+                        new Span(new Text(event.get(EVENT.LOCATION))),
                         new Span(new Text(event.get(EVENT.DATE).format(DATE_TIME_FORMATTER)))
                 ),
                 new Text(event.get(EVENT.ABSTRACT))

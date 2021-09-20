@@ -55,7 +55,7 @@ import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
 
 @SpringComponent
-@SuppressWarnings({"SqlResolve", "removal", "SpellCheckingInspection"})
+@SuppressWarnings({"SqlResolve", "removal", "java:S112", "java:S1192", "java:S3776"})
 public class JUGSImporter {
 
     @Value("${JUGS_DB_URL}")
@@ -97,39 +97,40 @@ public class JUGSImporter {
         if (eventMemberService.count() > 0) {
             return;
         }
-        final var statement = connection.createStatement();
-        final var result = statement.executeQuery(
-                "SELECT events_id, personen_id, aenderung, anmdatum, noshow FROM eventteiln");
-        while (result.next()) {
-            final var eventId = result.getLong("events_id");
-            if (eventId == 0) {
-                continue;
-            }
-            final var memberId = result.getLong("personen_id");
-            final var registerDate = getRegisterDate(result.getString("aenderung"), result.getString("anmdatum"));
-            final var noShow = result.getString("noshow") != null && result.getString("noshow").equals("1");
-            try {
-                eventMemberService.registerForEvent(eventId, memberId, registerDate, noShow);
-            } catch (final Exception e1) {
-                if (memberService.get(memberId).isEmpty()) {
-                    final var member = memberService.newMember();
-                    member.setId(memberId);
-                    member.setFirstName(RandomStringUtils.randomAlphabetic(32));
-                    member.setLastName(RandomStringUtils.randomAlphabetic(32));
-                    member.setEmail(RandomStringUtils.randomAlphabetic(32));
-                    member.setMemberSince(registerDate);
-                    member.setDeleted(true);
-                    memberService.store(member);
-                    try {
-                        eventMemberService.registerForEvent(eventId, memberId, registerDate, noShow);
-                    } catch (final Exception e2) {
-                        if (eventService.get(eventId).isPresent()) {
-                            throw e2;
+        try (var statement = connection.createStatement()) {
+            final var result = statement.executeQuery(
+                    "SELECT events_id, personen_id, aenderung, anmdatum, noshow FROM eventteiln");
+            while (result.next()) {
+                final var eventId = result.getLong("events_id");
+                if (eventId == 0) {
+                    continue;
+                }
+                final var memberId = result.getLong("personen_id");
+                final var registerDate = getRegisterDate(result.getString("aenderung"), result.getString("anmdatum"));
+                final var noShow = result.getString("noshow") != null && result.getString("noshow").equals("1");
+                try {
+                    eventMemberService.registerForEvent(eventId, memberId, registerDate, noShow);
+                } catch (final Exception e1) {
+                    if (memberService.get(memberId).isEmpty()) {
+                        final var member = memberService.newMember();
+                        member.setId(memberId);
+                        member.setFirstName(RandomStringUtils.randomAlphabetic(32));
+                        member.setLastName(RandomStringUtils.randomAlphabetic(32));
+                        member.setEmail(RandomStringUtils.randomAlphabetic(32));
+                        member.setMemberSince(registerDate);
+                        member.setDeleted(true);
+                        memberService.store(member);
+                        try {
+                            eventMemberService.registerForEvent(eventId, memberId, registerDate, noShow);
+                        } catch (final Exception e2) {
+                            if (eventService.get(eventId).isPresent()) {
+                                throw e2;
+                            }
                         }
-                    }
-                } else {
-                    if (eventService.get(eventId).isPresent()) {
-                        throw e1;
+                    } else {
+                        if (eventService.get(eventId).isPresent()) {
+                            throw e1;
+                        }
                     }
                 }
             }
@@ -171,69 +172,77 @@ public class JUGSImporter {
         if (speakerService.count() > 0) {
             return;
         }
-        final var statement = connection.createStatement();
-        final var result = statement.executeQuery(
-                "SELECT id, vname, nname, firma, bio, image, e_mail, twitter, firmenurl, events_id, lang_talk, abstract, level FROM eventspeaker ORDER BY id");
-        while (result.next()) {
-            final var speaker = speakerService.get(result.getLong("id"))
-                    .orElse(speakerService.newSpeaker());
-            if (speaker.get(SPEAKER.ID) == null) {
-                speaker.set(SPEAKER.ID, result.getLong("id"));
-                speaker.set(SPEAKER.FIRST_NAME, getEmptyForNull(result.getString("vname")));
-                speaker.set(SPEAKER.LAST_NAME, getEmptyForNull(result.getString("nname")));
-                speaker.set(SPEAKER.COMPANY, getEmptyForNull(result.getString("firma")));
-                speaker.set(SPEAKER.BIO, getEmptyForNull(result.getString("bio")));
-                speaker.set(SPEAKER.PHOTO, getPhoto(result.getString("image")));
-                speaker.set(SPEAKER.EMAIL, getEmptyForNull(result.getString("e_mail")));
-                speaker.set(SPEAKER.TWITTER, getTwitter(result.getString("twitter")));
-                speaker.set(SPEAKER.WEBSITE, getEmptyForNull(result.getString("firmenurl")));
-                speakerService.store(speaker);
-                final var eventId = result.getLong("events_id");
-                if (eventId > 0) {
-                    final var event = eventService.get(eventId).orElse(null);
-                    if (event != null) {
-                        final var speakers = eventSpeakerService.getSpeakersForEvent(event).collect(Collectors.toSet());
-                        if (!speakers.contains(speaker)) {
-                            speakers.add(speaker);
-                            eventSpeakerService.setEventSpeakers(event, speakers);
-                        }
-
-                        var eventModified = false;
-
-                        if (event.getLanguage() == null) {
-                            final var langTalk = result.getString("lang_talk");
-                            if (langTalk != null && !langTalk.isBlank()) {
-                                final var language = EventLanguage.valueOf(langTalk.toUpperCase());
-                                event.setLanguage(language);
-                                eventModified = true;
+        try (var statement = connection.createStatement()) {
+            final var result = statement.executeQuery(
+                    "SELECT id, vname, nname, firma, bio, image, e_mail, twitter, firmenurl, events_id, lang_talk, abstract, level FROM eventspeaker ORDER BY id");
+            while (result.next()) {
+                final var speaker = speakerService.get(result.getLong("id"))
+                        .orElse(speakerService.newSpeaker());
+                if (speaker.get(SPEAKER.ID) == null) {
+                    speaker.set(SPEAKER.ID, result.getLong("id"));
+                    speaker.set(SPEAKER.FIRST_NAME, getEmptyForNull(result.getString("vname")));
+                    speaker.set(SPEAKER.LAST_NAME, getEmptyForNull(result.getString("nname")));
+                    speaker.set(SPEAKER.COMPANY, getEmptyForNull(result.getString("firma")));
+                    speaker.set(SPEAKER.BIO, getEmptyForNull(result.getString("bio")));
+                    speaker.set(SPEAKER.PHOTO, getPhoto(result.getString("image")));
+                    speaker.set(SPEAKER.EMAIL, getEmptyForNull(result.getString("e_mail")));
+                    speaker.set(SPEAKER.TWITTER, getTwitter(result.getString("twitter")));
+                    speaker.set(SPEAKER.WEBSITE, getEmptyForNull(result.getString("firmenurl")));
+                    speakerService.store(speaker);
+                    final var eventId = result.getLong("events_id");
+                    if (eventId > 0) {
+                        final var event = eventService.get(eventId).orElse(null);
+                        if (event != null) {
+                            final var speakers = eventSpeakerService.getSpeakersForEvent(event).collect(Collectors.toSet());
+                            if (!speakers.contains(speaker)) {
+                                speakers.add(speaker);
+                                eventSpeakerService.setEventSpeakers(event, speakers);
                             }
-                        }
 
-                        if (event.getLevel() == null) {
-                            final var levelTalk = result.getInt("level");
-                            if (levelTalk >= 1 && levelTalk <= 3 || event.get(EVENT.VISIBLE)) {
-                                EventLevel level;
-                                switch (levelTalk) {
-                                    case 1: level = EventLevel.Beginner; break;
-                                    case 2: level = EventLevel.Intermediate; break;
-                                    case 3: level = EventLevel.Advanced; break;
-                                    default: level = EventLevel.All;
+                            var eventModified = false;
+
+                            if (event.getLanguage() == null) {
+                                final var langTalk = result.getString("lang_talk");
+                                if (langTalk != null && !langTalk.isBlank()) {
+                                    final var language = EventLanguage.valueOf(langTalk.toUpperCase());
+                                    event.setLanguage(language);
+                                    eventModified = true;
                                 }
-                                event.setLevel(level);
-                                eventModified = true;
                             }
-                        }
 
-                        if (event.getAbstract() == null || event.getAbstract().isBlank()) {
-                            final var abstrakt = result.getString("abstract");
-                            if (abstrakt != null && !abstrakt.isBlank()) {
-                                event.setAbstract(abstrakt);
-                                eventModified = true;
+                            if (event.getLevel() == null) {
+                                final var levelTalk = result.getInt("level");
+                                if (levelTalk >= 1 && levelTalk <= 3 || event.get(EVENT.VISIBLE)) {
+                                    EventLevel level;
+                                    switch (levelTalk) {
+                                        case 1:
+                                            level = EventLevel.Beginner;
+                                            break;
+                                        case 2:
+                                            level = EventLevel.Intermediate;
+                                            break;
+                                        case 3:
+                                            level = EventLevel.Advanced;
+                                            break;
+                                        default:
+                                            level = EventLevel.All;
+                                    }
+                                    event.setLevel(level);
+                                    eventModified = true;
+                                }
                             }
-                        }
 
-                        if (eventModified) {
-                            eventService.store(event);
+                            if (event.getAbstract() == null || event.getAbstract().isBlank()) {
+                                final var abstrakt = result.getString("abstract");
+                                if (abstrakt != null && !abstrakt.isBlank()) {
+                                    event.setAbstract(abstrakt);
+                                    eventModified = true;
+                                }
+                            }
+
+                            if (eventModified) {
+                                eventService.store(event);
+                            }
                         }
                     }
                 }
@@ -267,23 +276,24 @@ public class JUGSImporter {
         if (eventService.count() > 0) {
             return;
         }
-        final var statement = connection.createStatement();
-        final var result = statement.executeQuery(
-                "SELECT id, ort, datum, startzeit, zeitende, titel, untertitel, agenda, abstract, sichtbar FROM events_neu WHERE sichtbar='ja' OR datum >= '2021-01-01' ORDER BY id");
-        while (result.next()) {
-            final var event = eventService.get(result.getLong("id"))
-                    .orElse(eventService.newEvent());
-            if (event.get(EVENT.ID) == null) {
-                event.set(EVENT.ID, result.getLong("id"));
-                event.set(EVENT.LOCATION, getEmptyForNull(result.getString("ort")));
-                event.set(EVENT.DATE, getDateTime(result.getString("datum"), result.getString("startzeit")));
-                event.set(EVENT.DURATION, getDuration(result.getString("startzeit"), result.getString("zeitende")));
-                event.set(EVENT.TITLE, getEmptyForNull(result.getString("titel")));
-                event.set(EVENT.SUBTITLE, getEmptyForNull(result.getString("untertitel")));
-                event.set(EVENT.AGENDA, getEmptyForNull(result.getString("agenda")));
-                event.set(EVENT.ABSTRACT, getEmptyForNull(result.getString("abstract")));
-                event.set(EVENT.VISIBLE, result.getString("sichtbar").equalsIgnoreCase("ja"));
-                eventService.store(event);
+        try (var statement = connection.createStatement()) {
+            final var result = statement.executeQuery(
+                    "SELECT id, ort, datum, startzeit, zeitende, titel, untertitel, agenda, abstract, sichtbar FROM events_neu WHERE sichtbar='ja' OR datum >= '2021-01-01' ORDER BY id");
+            while (result.next()) {
+                final var event = eventService.get(result.getLong("id"))
+                        .orElse(eventService.newEvent());
+                if (event.get(EVENT.ID) == null) {
+                    event.set(EVENT.ID, result.getLong("id"));
+                    event.set(EVENT.LOCATION, getEmptyForNull(result.getString("ort")));
+                    event.set(EVENT.DATE, getDateTime(result.getString("datum"), result.getString("startzeit")));
+                    event.set(EVENT.DURATION, getDuration(result.getString("startzeit"), result.getString("zeitende")));
+                    event.set(EVENT.TITLE, getEmptyForNull(result.getString("titel")));
+                    event.set(EVENT.SUBTITLE, getEmptyForNull(result.getString("untertitel")));
+                    event.set(EVENT.AGENDA, getEmptyForNull(result.getString("agenda")));
+                    event.set(EVENT.ABSTRACT, getEmptyForNull(result.getString("abstract")));
+                    event.set(EVENT.VISIBLE, result.getString("sichtbar").equalsIgnoreCase("ja"));
+                    eventService.store(event);
+                }
             }
         }
     }
@@ -298,28 +308,29 @@ public class JUGSImporter {
         if (memberService.count() > 1) {
             return;
         }
-        final var statement = connection.createStatement();
-        final var result = statement.executeQuery(
-                "SELECT id, vname, nname, e_mail, strasse, plz, wohnort, land, datum FROM teilnehmer ORDER BY id");
-        while (result.next()) {
-            final var member = memberService.get(result.getLong("id"))
-                    .orElse(memberService.newMember());
-            if (member.get(MEMBER.ID) == null) {
-                final var email = result.getString("e_mail");
-                if (email == null || email.isBlank()) {
-                    continue;
+        try (var statement = connection.createStatement()) {
+            final var result = statement.executeQuery(
+                    "SELECT id, vname, nname, e_mail, strasse, plz, wohnort, land, datum FROM teilnehmer ORDER BY id");
+            while (result.next()) {
+                final var member = memberService.get(result.getLong("id"))
+                        .orElse(memberService.newMember());
+                if (member.get(MEMBER.ID) == null) {
+                    final var email = result.getString("e_mail");
+                    if (email == null || email.isBlank()) {
+                        continue;
+                    }
+                    member.set(MEMBER.ID, result.getLong("id"));
+                    member.set(MEMBER.FIRST_NAME, result.getString("vname"));
+                    member.set(MEMBER.LAST_NAME, result.getString("nname"));
+                    member.set(MEMBER.EMAIL, email);
+                    member.set(MEMBER.ADDRESS, result.getString("strasse"));
+                    member.set(MEMBER.ZIP_CODE, result.getString("plz"));
+                    member.set(MEMBER.CITY, result.getString("wohnort"));
+                    member.set(MEMBER.COUNTRY, result.getString("land"));
+                    member.set(MEMBER.MEMBER_SINCE, getDateTime(result.getString("datum")));
+                    member.set(MEMBER.ACTIVE, true);
+                    memberService.store(member);
                 }
-                member.set(MEMBER.ID, result.getLong("id"));
-                member.set(MEMBER.FIRST_NAME, result.getString("vname"));
-                member.set(MEMBER.LAST_NAME, result.getString("nname"));
-                member.set(MEMBER.EMAIL, email);
-                member.set(MEMBER.ADDRESS, result.getString("strasse"));
-                member.set(MEMBER.ZIP_CODE, result.getString("plz"));
-                member.set(MEMBER.CITY, result.getString("wohnort"));
-                member.set(MEMBER.COUNTRY, result.getString("land"));
-                member.set(MEMBER.MEMBER_SINCE, getDateTime(result.getString("datum")));
-                member.set(MEMBER.ACTIVE, true);
-                memberService.store(member);
             }
         }
     }
@@ -383,19 +394,20 @@ public class JUGSImporter {
         if (sponsorService.count() > 0) {
             return;
         }
-        final var statement = connection.createStatement();
-        final var result = statement.executeQuery(
-                "SELECT id, firma, sponsortyp, url, logo FROM sponsoren WHERE aktiv='ja' ORDER BY id");
-        while (result.next()) {
-            final var sponsor = sponsorService.get(result.getLong("id"))
-                    .orElse(sponsorService.newSponsor());
-            if (sponsor.get(SPONSOR.ID) == null) {
-                sponsor.set(SPONSOR.ID, result.getLong("id"));
-                sponsor.set(SPONSOR.NAME, result.getString("firma"));
-                sponsor.set(SPONSOR.LEVEL, getSponsorLevel(result.getString("sponsortyp")));
-                sponsor.set(SPONSOR.WEBSITE, result.getString("url"));
-                sponsor.set(SPONSOR.LOGO, "https://jug.ch/images/sponsors/" + result.getString("logo"));
-                sponsorService.store(sponsor);
+        try (var statement = connection.createStatement()) {
+            final var result = statement.executeQuery(
+                    "SELECT id, firma, sponsortyp, url, logo FROM sponsoren WHERE aktiv='ja' ORDER BY id");
+            while (result.next()) {
+                final var sponsor = sponsorService.get(result.getLong("id"))
+                        .orElse(sponsorService.newSponsor());
+                if (sponsor.get(SPONSOR.ID) == null) {
+                    sponsor.set(SPONSOR.ID, result.getLong("id"));
+                    sponsor.set(SPONSOR.NAME, result.getString("firma"));
+                    sponsor.set(SPONSOR.LEVEL, getSponsorLevel(result.getString("sponsortyp")));
+                    sponsor.set(SPONSOR.WEBSITE, result.getString("url"));
+                    sponsor.set(SPONSOR.LOGO, "https://jug.ch/images/sponsors/" + result.getString("logo"));
+                    sponsorService.store(sponsor);
+                }
             }
         }
     }

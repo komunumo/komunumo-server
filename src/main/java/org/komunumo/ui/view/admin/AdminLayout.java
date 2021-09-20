@@ -116,14 +116,13 @@ public class AdminLayout extends AppLayout {
     private Component[] createMenuItems() {
         final var tabs = new ArrayList<Tab>();
 
-        final var views  = new LinkedHashMap<String, Class<? extends Component>>() {{
-            put("Dashboard", DashboardView.class);
-            put("Events", EventsView.class);
-            put("Members", MembersView.class);
-            put("Speakers", SpeakersView.class);
-            put("Sponsors", SponsorsView.class);
-            put("Logout", LogoutView.class);
-        }};
+        final var views  = new LinkedHashMap<String, Class<? extends Component>>();
+        views.put("Dashboard", DashboardView.class);
+        views.put("Events", EventsView.class);
+        views.put("Members", MembersView.class);
+        views.put("Speakers", SpeakersView.class);
+        views.put("Sponsors", SponsorsView.class);
+        views.put("Logout", LogoutView.class);
 
         views.forEach((title, klass) -> {
             if (authService.isAccessGranted(klass)) {

@@ -65,7 +65,7 @@ public abstract class EditDialog<R extends UpdatableRecord<?>> extends Dialog {
     private Callback afterSave;
     private boolean initialized;
 
-    public EditDialog(@NotNull final String title) {
+    protected EditDialog(@NotNull final String title) {
         setCloseOnOutsideClick(false);
         setDraggable(false);
         setModal(true);
@@ -117,7 +117,7 @@ public abstract class EditDialog<R extends UpdatableRecord<?>> extends Dialog {
             if (binder.isValid()) {
                 final var dsl = ApplicationContextHolder.getBean(DSLContext.class);
                 final var transactionTemplate = ApplicationContextHolder.getBean(TransactionTemplate.class);
-                transactionTemplate.executeWithoutResult((transactionStatus) -> {
+                transactionTemplate.executeWithoutResult(transactionStatus -> {
                     dsl.attach(binder.getBean());
                     binder.getBean().store();
 
@@ -188,8 +188,11 @@ public abstract class EditDialog<R extends UpdatableRecord<?>> extends Dialog {
 
     public abstract void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<R> binder);
 
+    /**
+     * @deprecated Use {@link #open(UpdatableRecord, Callback)} instead!
+     */
     @Override
-    @Deprecated()
+    @Deprecated(since = "1.0")
     public void open() {
         throw new UnsupportedOperationException("use \"open(UpdateableRecord, Callback)\" instead");
     }
@@ -215,11 +218,11 @@ public abstract class EditDialog<R extends UpdatableRecord<?>> extends Dialog {
         //noinspection rawtypes
         formLayout.getChildren()
                 .filter(Component::isVisible)
-                .filter(c -> c instanceof HasValue)
+                .filter(HasValue.class::isInstance)
                 .filter(c -> !((HasValue) c).isReadOnly())
-                .filter(c -> c instanceof HasEnabled)
+                .filter(HasEnabled.class::isInstance)
                 .filter(c -> ((HasEnabled) c).isEnabled())
-                .filter(c -> c instanceof Focusable)
+                .filter(Focusable.class::isInstance)
                 .findFirst()
                 .ifPresent(c -> ((Focusable) c).focus());
     }

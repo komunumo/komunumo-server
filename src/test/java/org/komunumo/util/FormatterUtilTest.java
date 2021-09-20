@@ -26,22 +26,22 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class FormatterUtilTest {
+class FormatterUtilTest {
 
     @Test
-    public void testFormatDate() {
+    void testFormatDate() {
         assertEquals("1970-01-02", FormatterUtil.formatDate(LocalDate.ofEpochDay(1L)));
         assertEquals("", FormatterUtil.formatDate(null));
     }
 
     @Test
-    public void testFormatDateTime() {
+    void testFormatDateTime() {
         assertEquals("0001-01-01 01:01", FormatterUtil.formatDateTime(LocalDateTime.of(1, 1, 1, 1, 1)));
         assertEquals("", FormatterUtil.formatDateTime(null));
     }
 
     @Test
-    public void testFormatNumber() {
+    void testFormatNumber() {
         assertEquals("1", FormatterUtil.formatNumber(1L));
         assertEquals("12", FormatterUtil.formatNumber(12L));
         assertEquals("123", FormatterUtil.formatNumber(123L));
@@ -54,7 +54,7 @@ public class FormatterUtilTest {
     }
 
     @Test
-    public void testFormatString() {
+    void testFormatString() {
         assertNull(FormatterUtil.formatString(null, 3));
         assertEquals("", FormatterUtil.formatString("", 3));
         assertEquals("A", FormatterUtil.formatString("A", 3));

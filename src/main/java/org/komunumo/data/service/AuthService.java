@@ -182,6 +182,7 @@ public class AuthService implements VaadinServiceInitListener {
         return VaadinSession.getCurrent().getAttribute(MemberRecord.class);
     }
 
+    @SuppressWarnings({"java:S3776"}) // cognitive complexity
     public boolean isAccessGranted(final Class<?> navigationTarget) {
         final var member = VaadinSession.getCurrent().getAttribute(MemberRecord.class);
 
@@ -194,13 +195,11 @@ public class AuthService implements VaadinServiceInitListener {
             }
 
             // restrict to admins
-            if (member.getAdmin()) {
-                if (navigationTarget == EventsView.class
-                        || navigationTarget == MembersView.class
-                        || navigationTarget == SpeakersView.class
-                        || navigationTarget == SponsorsView.class) {
-                    return true;
-                }
+            if (member.getAdmin() && (navigationTarget == EventsView.class
+                    || navigationTarget == MembersView.class
+                    || navigationTarget == SpeakersView.class
+                    || navigationTarget == SponsorsView.class)) {
+                return true;
             }
         } else if (member != null && member.getBlocked()) {
             if (navigationTarget == BlockedView.class) {
