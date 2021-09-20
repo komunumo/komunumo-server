@@ -202,6 +202,7 @@ public abstract class EditDialog<R extends UpdatableRecord<?>> extends Dialog {
         if (!initialized) {
             createForm();
             binder.addStatusChangeListener(event -> save.setEnabled(binder.isValid()));
+            binder.validate();
             initialized = true;
         }
 
