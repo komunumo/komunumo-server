@@ -19,8 +19,10 @@
 package org.komunumo.ui.view.admin.members;
 
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +38,7 @@ public class MemberDialog extends EditDialog<MemberRecord> {
     }
 
     @Override
-    public void createForm() {
+    public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<MemberRecord> binder) {
         final var firstName = new TextField("First name");
         final var lastName = new TextField("Last name");
         final var email = new EmailField("Email");

@@ -59,8 +59,8 @@ public abstract class EditDialog<R extends UpdatableRecord<?>> extends Dialog {
     private final Footer footer;
     private final Button save;
 
-    protected final Binder<R> binder;
-    protected final FormLayout formLayout;
+    private final Binder<R> binder;
+    private final FormLayout formLayout;
 
     private Callback afterSave;
     private boolean initialized;
@@ -186,7 +186,7 @@ public abstract class EditDialog<R extends UpdatableRecord<?>> extends Dialog {
         isDocked = false;
     }
 
-    public abstract void createForm();
+    public abstract void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<R> binder);
 
     @Override
     @Deprecated()
@@ -200,7 +200,7 @@ public abstract class EditDialog<R extends UpdatableRecord<?>> extends Dialog {
         this.afterSave = afterSave;
 
         if (!initialized) {
-            createForm();
+            createForm(formLayout, binder);
             binder.addStatusChangeListener(event -> save.setEnabled(binder.isValid()));
             binder.validate();
             initialized = true;

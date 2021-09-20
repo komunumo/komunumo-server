@@ -19,7 +19,9 @@
 package org.komunumo.ui.view.admin.sponsors;
 
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.enums.SponsorLevel;
@@ -37,7 +39,7 @@ public class SponsorDialog extends EditDialog<SponsorRecord> {
     }
 
     @Override
-    public void createForm() {
+    public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<SponsorRecord> binder) {
         final var name = new TextField("Name");
         final var website = new TextField("Website");
         final var level = new ComboBox<SponsorLevel>("Level");

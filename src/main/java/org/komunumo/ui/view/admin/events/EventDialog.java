@@ -20,9 +20,11 @@ package org.komunumo.ui.view.admin.events;
 
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -60,7 +62,7 @@ public class EventDialog extends EditDialog<EventRecord> {
     }
 
     @Override
-    public void createForm() {
+    public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<EventRecord> binder) {
         final var title = new TextField("Title");
         final var subtitle = new TextField("Subtitle");
         final var speaker = new MultiselectComboBox<SpeakerRecord>("Speaker");
