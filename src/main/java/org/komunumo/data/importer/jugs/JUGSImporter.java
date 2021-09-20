@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
 import org.komunumo.data.db.enums.SponsorLevel;
+import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
@@ -38,6 +39,7 @@ import org.springframework.context.annotation.Bean;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -174,11 +176,12 @@ public class JUGSImporter {
         }
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
-                    "SELECT id, vname, nname, firma, bio, image, e_mail, twitter, firmenurl, events_id, lang_talk, abstract, level FROM eventspeaker ORDER BY id");
+                    "SELECT id, vname, nname, firma, bio, image, e_mail, twitter, firmenurl, events_id, lang_talk, abstract, level FROM eventspeaker ORDER BY id DESC");
             while (result.next()) {
-                final var speaker = speakerService.get(result.getLong("id"))
-                        .orElse(speakerService.newSpeaker());
-                if (speaker.get(SPEAKER.ID) == null) {
+                final var speaker = getSpeaker(speakerService, result);
+                if (speaker.get(SPEAKER.ID) == null
+                        && (!getEmptyForNull(result.getString("vname")).isBlank()
+                        || !getEmptyForNull(result.getString("nname")).isBlank())) {
                     speaker.set(SPEAKER.ID, result.getLong("id"));
                     speaker.set(SPEAKER.FIRST_NAME, getEmptyForNull(result.getString("vname")));
                     speaker.set(SPEAKER.LAST_NAME, getEmptyForNull(result.getString("nname")));
@@ -189,65 +192,97 @@ public class JUGSImporter {
                     speaker.set(SPEAKER.TWITTER, getTwitter(result.getString("twitter")));
                     speaker.set(SPEAKER.WEBSITE, getEmptyForNull(result.getString("firmenurl")));
                     speakerService.store(speaker);
-                    final var eventId = result.getLong("events_id");
-                    if (eventId > 0) {
-                        final var event = eventService.get(eventId).orElse(null);
-                        if (event != null) {
+                }
+                final var eventId = result.getLong("events_id");
+                if (eventId > 0) {
+                    final var event = eventService.get(eventId).orElse(null);
+                    if (event != null) {
+                        if (speaker.get(SPEAKER.ID) != null) {
                             final var speakers = eventSpeakerService.getSpeakersForEvent(event).collect(Collectors.toSet());
                             if (!speakers.contains(speaker)) {
                                 speakers.add(speaker);
                                 eventSpeakerService.setEventSpeakers(event, speakers);
                             }
+                        }
 
-                            var eventModified = false;
+                        var eventModified = false;
 
-                            if (event.getLanguage() == null) {
-                                final var langTalk = result.getString("lang_talk");
-                                if (langTalk != null && !langTalk.isBlank()) {
-                                    final var language = EventLanguage.valueOf(langTalk.toUpperCase());
-                                    event.setLanguage(language);
-                                    eventModified = true;
+                        if (event.getLanguage() == null) {
+                            final var langTalk = result.getString("lang_talk");
+                            if (langTalk != null && !langTalk.isBlank()) {
+                                final var language = EventLanguage.valueOf(langTalk.toUpperCase());
+                                event.setLanguage(language);
+                                eventModified = true;
+                            }
+                        }
+
+                        if (event.getLevel() == null) {
+                            final var levelTalk = result.getInt("level");
+                            if (levelTalk >= 1 && levelTalk <= 3 || event.get(EVENT.VISIBLE)) {
+                                EventLevel level;
+                                switch (levelTalk) {
+                                    case 1:
+                                        level = EventLevel.Beginner;
+                                        break;
+                                    case 2:
+                                        level = EventLevel.Intermediate;
+                                        break;
+                                    case 3:
+                                        level = EventLevel.Advanced;
+                                        break;
+                                    default:
+                                        level = EventLevel.All;
                                 }
+                                event.setLevel(level);
+                                eventModified = true;
                             }
+                        }
 
-                            if (event.getLevel() == null) {
-                                final var levelTalk = result.getInt("level");
-                                if (levelTalk >= 1 && levelTalk <= 3 || event.get(EVENT.VISIBLE)) {
-                                    EventLevel level;
-                                    switch (levelTalk) {
-                                        case 1:
-                                            level = EventLevel.Beginner;
-                                            break;
-                                        case 2:
-                                            level = EventLevel.Intermediate;
-                                            break;
-                                        case 3:
-                                            level = EventLevel.Advanced;
-                                            break;
-                                        default:
-                                            level = EventLevel.All;
-                                    }
-                                    event.setLevel(level);
-                                    eventModified = true;
-                                }
+                        if (event.getAbstract() == null || event.getAbstract().isBlank()) {
+                            final var abstrakt = result.getString("abstract");
+                            if (abstrakt != null && !abstrakt.isBlank()) {
+                                event.setAbstract(abstrakt);
+                                eventModified = true;
                             }
+                        }
 
-                            if (event.getAbstract() == null || event.getAbstract().isBlank()) {
-                                final var abstrakt = result.getString("abstract");
-                                if (abstrakt != null && !abstrakt.isBlank()) {
-                                    event.setAbstract(abstrakt);
-                                    eventModified = true;
-                                }
-                            }
-
-                            if (eventModified) {
-                                eventService.store(event);
-                            }
+                        if (eventModified) {
+                            eventService.store(event);
                         }
                     }
                 }
             }
         }
+    }
+
+    private SpeakerRecord getSpeaker(final @NotNull SpeakerService speakerService,
+                                     final @NotNull ResultSet result) throws SQLException {
+        final var speakerId = result.getLong("id");
+
+        final var speakerById = speakerService.get(speakerId);
+        if (speakerById.isPresent()) {
+            return speakerById.get();
+        }
+
+        final var firstName = result.getString("vname");
+        final var lastName = result.getString("nname");
+        final var company = result.getString("firma");
+        if (!firstName.isBlank() && !lastName.isBlank() && !company.isBlank()) {
+            final var speakerByName = speakerService.getSpeaker(firstName, lastName, company);
+            if (speakerByName.isPresent()) {
+                return speakerByName.get();
+            }
+        }
+
+        final var email = result.getString("e_mail");
+        if (!email.isBlank()) {
+            final var speakerByEmail = speakerService.getSpeaker(email);
+            if (speakerByEmail.isPresent()) {
+                return speakerByEmail.get();
+            }
+        }
+
+        return speakerService.newSpeaker();
     }
 
     private String getTwitter(@Nullable final String twitter) {

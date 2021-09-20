@@ -92,6 +92,18 @@ public class SpeakerService {
         return dsl.fetchOptional(SPEAKER, SPEAKER.ID.eq(id));
     }
 
+    public Optional<SpeakerRecord> getSpeaker(@NotNull final String email) {
+        return dsl.fetchOptional(SPEAKER, SPEAKER.EMAIL.eq(email));
+    }
+
+    public Optional<SpeakerRecord> getSpeaker(@NotNull final String firstName,
+                                    @NotNull final String lastName,
+                                    @NotNull final String company) {
+        return dsl.fetchOptional(SPEAKER, SPEAKER.FIRST_NAME.eq(firstName)
+                .and(SPEAKER.LAST_NAME.eq(lastName))
+                .and(SPEAKER.COMPANY.eq(company)));
+    }
+
     public void store(@NotNull final SpeakerRecord speaker) {
         speaker.store();
     }
