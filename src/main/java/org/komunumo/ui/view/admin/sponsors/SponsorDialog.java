@@ -49,6 +49,7 @@ public class SponsorDialog extends EditDialog<SponsorRecord> {
 
         name.setRequiredIndicatorVisible(true);
         name.setValueChangeMode(EAGER);
+        website.setValueChangeMode(EAGER);
         level.setItems(SponsorLevel.values());
 
         formLayout.add(name, website, level, logo, validFrom, validTo);
