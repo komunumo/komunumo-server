@@ -24,8 +24,12 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
+
+import java.time.LocalTime;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.EventLanguage;
@@ -39,6 +43,7 @@ import org.komunumo.ui.component.DateTimePicker;
 import org.komunumo.ui.component.EditDialog;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -72,6 +77,7 @@ public class EventDialog extends EditDialog<EventRecord> {
         final var language = new Select<>(EventLanguage.values());
         final var location = new ComboBox<String>("Location");
         final var date = new DateTimePicker("Date & Time");
+        final var duration = new TimePicker("Duration");
         final var visible = new Checkbox("Visible");
 
         title.setRequiredIndicatorVisible(true);
@@ -83,6 +89,9 @@ public class EventDialog extends EditDialog<EventRecord> {
         location.setItems(eventService.getAllLocations());
         location.setAllowCustomValue(true);
         date.setMin(LocalDateTime.now());
+        duration.setStep(Duration.ofMinutes(15));
+        duration.setMinTime(LocalTime.of(1, 0));
+        duration.setMaxTime(LocalTime.of(3, 0));
         visible.addValueChangeListener(changeEvent -> {
             final var value = changeEvent.getValue();
             speaker.setRequiredIndicatorVisible(value);
@@ -91,11 +100,12 @@ public class EventDialog extends EditDialog<EventRecord> {
             language.setRequiredIndicatorVisible(value);
             location.setRequiredIndicatorVisible(value);
             date.setRequiredIndicatorVisible(value);
+            duration.setRequiredIndicatorVisible(value);
             binder.validate();
         });
 
         formLayout.add(title, subtitle, speaker, level, abstrakt, agenda,
-                language, location, date, visible);
+                language, location, date, duration, visible);
 
         binder.forField(title)
                 .withValidator(new StringLengthValidator(
@@ -140,6 +150,11 @@ public class EventDialog extends EditDialog<EventRecord> {
                                 || value != null && value.isAfter(LocalDateTime.now()),
                         "Please enter a date and time in the future")
                 .bind(EventRecord::getDate, EventRecord::setDate);
+
+        binder.forField(duration)
+                .withValidator(value -> !visible.getValue() || (value != null && value.isAfter(LocalTime.MIN) && value.isBefore(LocalTime.MAX)),
+                        "Please enter a duration")
+                .bind(EventRecord::getDuration, EventRecord::setDuration);
 
         binder.forField(visible)
                 .bind(EventRecord::getVisible, EventRecord::setVisible);
