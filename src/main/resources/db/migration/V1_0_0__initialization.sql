@@ -13,7 +13,7 @@ CREATE TABLE event (
     visible BOOLEAN NOT NULL DEFAULT 0,
 
     PRIMARY KEY (id)
-);
+) DEFAULT CHARSET=utf8;
 
 CREATE INDEX event_date ON event (date);
 
@@ -40,7 +40,7 @@ CREATE TABLE member (
     deleted BOOLEAN NOT NULL DEFAULT 0,
 
     PRIMARY KEY (id)
-);
+) DEFAULT CHARSET=utf8;
 
 CREATE INDEX member_names ON member (last_name, first_name);
 CREATE INDEX member_email ON member (email);
@@ -54,7 +54,7 @@ CREATE TABLE event_member (
     PRIMARY KEY (event_id, member_id),
     CONSTRAINT FOREIGN KEY (event_id) REFERENCES event(id),
     CONSTRAINT FOREIGN KEY (member_id) REFERENCES member(id)
-);
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE speaker (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -75,7 +75,7 @@ CREATE TABLE speaker (
     country VARCHAR(255) NOT NULL DEFAULT '',
 
     PRIMARY KEY (id)
-);
+) DEFAULT CHARSET=utf8;
 
 CREATE INDEX speaker_names ON speaker (last_name, first_name);
 
@@ -86,7 +86,7 @@ CREATE TABLE event_speaker (
    PRIMARY KEY (event_id, speaker_id),
    CONSTRAINT FOREIGN KEY (event_id) REFERENCES event(id),
    CONSTRAINT FOREIGN KEY (speaker_id) REFERENCES speaker(id)
-);
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE sponsor (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -99,4 +99,4 @@ CREATE TABLE sponsor (
     level ENUM('Silver', 'Gold', 'Platinum') NULL,
 
     PRIMARY KEY (id)
-);
+) DEFAULT CHARSET=utf8;
