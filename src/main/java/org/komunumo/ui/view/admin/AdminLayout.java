@@ -20,12 +20,15 @@ package org.komunumo.ui.view.admin;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.cookieconsent.CookieConsent;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -73,8 +76,19 @@ public class AdminLayout extends AppLayout {
         layout.add(new DrawerToggle());
         viewTitle = new H1();
         layout.add(viewTitle);
-        layout.add(createAvatar());
+        layout.add(createAvatarMenu());
         return layout;
+    }
+
+    private MenuBar createAvatarMenu() {
+        final var menuBar = new MenuBar();
+        menuBar.addThemeVariants(MenuBarVariant.LUMO_TERTIARY_INLINE);
+
+        final var menuItem = menuBar.addItem(createAvatar());
+        final var subMenu = menuItem.getSubMenu();
+        subMenu.addItem("Logout", e -> UI.getCurrent().navigate(LogoutView.class));
+
+        return menuBar;
     }
 
     private Avatar createAvatar() {
@@ -122,7 +136,6 @@ public class AdminLayout extends AppLayout {
         views.put("Members", MembersView.class);
         views.put("Speakers", SpeakersView.class);
         views.put("Sponsors", SponsorsView.class);
-        views.put("Logout", LogoutView.class);
 
         views.forEach((title, klass) -> {
             if (authService.isAccessGranted(klass)) {

@@ -20,7 +20,7 @@
   height: var(--lumo-size-xl);
   box-shadow: var(--lumo-box-shadow-s);
 }
-#header vaadin-avatar {
+#header vaadin-menu-bar {
   margin-left: auto;
   margin-right: var(--lumo-space-m);
 }
