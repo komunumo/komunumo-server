@@ -150,7 +150,7 @@ public class EventDialog extends EditDialog<EventRecord> {
                 .bind(EventRecord::getLocation, EventRecord::setLocation);
 
         binder.forField(date)
-                .withValidator(value -> !visible.getValue() && (value == null || value.isAfter(LocalDateTime.now()))
+                .withValidator(value -> isPastEvent(date) || !visible.getValue() && (value == null || value.isAfter(LocalDateTime.now()))
                                 || value != null && value.isAfter(LocalDateTime.now()),
                         "Please enter a date and time in the future")
                 .bind(EventRecord::getDate, EventRecord::setDate);
@@ -164,11 +164,15 @@ public class EventDialog extends EditDialog<EventRecord> {
                 .bind(EventRecord::getVisible, EventRecord::setVisible);
 
         afterOpen = () -> {
-            if (date.getValue() != null && date.getValue().isBefore(LocalDateTime.now())) {
+            if (isPastEvent(date)) {
                 binder.setReadOnly(true);
                 binder.setValidatorsDisabled(true);
             }
         };
+    }
+
+    private boolean isPastEvent(@NotNull final DateTimePicker date) {
+        return date.getValue() != null && date.getValue().isBefore(LocalDateTime.now());
     }
 
     private Set<SpeakerRecord> getSpeaker(@NotNull final EventRecord record) {
