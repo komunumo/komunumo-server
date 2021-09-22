@@ -27,9 +27,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
-
-import java.time.LocalTime;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.EventLanguage;
@@ -45,6 +42,8 @@ import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,6 +56,7 @@ public class EventDialog extends EditDialog<EventRecord> {
     private final EventSpeakerService eventSpeakerService;
 
     private Set<SpeakerRecord> speakers;
+    private Callback afterOpen;
 
     public EventDialog(@NotNull final String title,
                        @NotNull final EventService eventService,
@@ -162,6 +162,13 @@ public class EventDialog extends EditDialog<EventRecord> {
 
         binder.forField(visible)
                 .bind(EventRecord::getVisible, EventRecord::setVisible);
+
+        afterOpen = () -> {
+            if (date.getValue() != null && date.getValue().isBefore(LocalDateTime.now())) {
+                binder.setReadOnly(true);
+                binder.setValidatorsDisabled(true);
+            }
+        };
     }
 
     private Set<SpeakerRecord> getSpeaker(@NotNull final EventRecord record) {
@@ -176,11 +183,18 @@ public class EventDialog extends EditDialog<EventRecord> {
     public void open(@NotNull final EventRecord record, @Nullable final Callback afterSave) {
         speakers = eventSpeakerService.getSpeakersForEvent(record)
                 .collect(Collectors.toSet());
-        super.open(record, () -> {
-            eventSpeakerService.setEventSpeakers(record, speakers);
-            if (afterSave != null) {
-                afterSave.execute();
-            }
-        });
+        super.open(record,
+                () -> {
+                    if (afterOpen != null) {
+                        afterOpen.execute();
+                    }
+                },
+                () -> {
+                    eventSpeakerService.setEventSpeakers(record, speakers);
+                    if (afterSave != null) {
+                        afterSave.execute();
+                    }
+                }
+        );
     }
 }

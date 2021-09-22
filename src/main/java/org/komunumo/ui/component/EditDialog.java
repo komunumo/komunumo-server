@@ -189,15 +189,24 @@ public abstract class EditDialog<R extends UpdatableRecord<?>> extends Dialog {
     public abstract void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<R> binder);
 
     /**
-     * @deprecated Use {@link #open(UpdatableRecord, Callback)} instead!
+     * @deprecated Use {@link #open(UpdatableRecord)} instead!
      */
     @Override
     @Deprecated(since = "1.0")
     public void open() {
-        throw new UnsupportedOperationException("use \"open(UpdateableRecord, Callback)\" instead");
+        throw new UnsupportedOperationException("use \"open(UpdateableRecord)\" instead");
     }
 
+    public void open(@NotNull final R record) {
+        open(record, null, null);
+    }
+
+
     public void open(@NotNull final R record, @Nullable final Callback afterSave) {
+        open(record, null, afterSave);
+    }
+
+    public void open(@NotNull final R record, @Nullable final Callback afterOpen, @Nullable final Callback afterSave) {
         binder.setBean(record);
         this.afterSave = afterSave;
 
@@ -212,6 +221,10 @@ public abstract class EditDialog<R extends UpdatableRecord<?>> extends Dialog {
         focusFirstFormField();
 
         super.open();
+
+        if (afterOpen != null) {
+            afterOpen.execute();
+        }
     }
 
     private void focusFirstFormField() {
