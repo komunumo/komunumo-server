@@ -48,6 +48,8 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
+
 public class EventDialog extends EditDialog<EventRecord> {
 
     private final EventService eventService;
@@ -81,6 +83,8 @@ public class EventDialog extends EditDialog<EventRecord> {
         final var visible = new Checkbox("Visible");
 
         title.setRequiredIndicatorVisible(true);
+        title.setValueChangeMode(EAGER);
+        subtitle.setValueChangeMode(EAGER);
         speaker.setOrdered(true);
         speaker.setItemLabelGenerator(value -> String.format("%s %s", value.getFirstName(), value.getLastName()));
         speaker.setItems(speakerService.getAllSpeakers());

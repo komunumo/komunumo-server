@@ -199,7 +199,6 @@ public abstract class EditDialog<R extends UpdatableRecord<?>> extends Dialog {
 
     public void open(@NotNull final R record, @Nullable final Callback afterSave) {
         binder.setBean(record);
-        save.setEnabled(false);
         this.afterSave = afterSave;
 
         if (!initialized) {
@@ -209,6 +208,7 @@ public abstract class EditDialog<R extends UpdatableRecord<?>> extends Dialog {
             initialized = true;
         }
 
+        save.setEnabled(false);
         focusFirstFormField();
 
         super.open();
