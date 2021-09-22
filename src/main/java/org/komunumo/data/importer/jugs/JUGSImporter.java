@@ -238,10 +238,10 @@ public class JUGSImporter {
                             }
                         }
 
-                        if (event.getAbstract() == null || event.getAbstract().isBlank()) {
-                            final var abstrakt = result.getString("abstract");
-                            if (abstrakt != null && !abstrakt.isBlank()) {
-                                event.setAbstract(abstrakt);
+                        if (event.getDescription() == null || event.getDescription().isBlank()) {
+                            final var description = result.getString("abstract");
+                            if (description != null && !description.isBlank()) {
+                                event.setDescription(description);
                                 eventModified = true;
                             }
                         }
@@ -325,7 +325,7 @@ public class JUGSImporter {
                     event.set(EVENT.TITLE, getEmptyForNull(result.getString("titel")));
                     event.set(EVENT.SUBTITLE, getEmptyForNull(result.getString("untertitel")));
                     event.set(EVENT.AGENDA, getEmptyForNull(result.getString("agenda")));
-                    event.set(EVENT.ABSTRACT, getEmptyForNull(result.getString("abstract")));
+                    event.set(EVENT.DESCRIPTION, getEmptyForNull(result.getString("abstract")));
                     event.set(EVENT.VISIBLE, result.getString("sichtbar").equalsIgnoreCase("ja"));
                     eventService.store(event);
                 }

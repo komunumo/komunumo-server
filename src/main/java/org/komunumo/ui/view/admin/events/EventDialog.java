@@ -43,7 +43,6 @@ import org.vaadin.gatanaso.MultiselectComboBox;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -73,7 +72,7 @@ public class EventDialog extends EditDialog<EventRecord> {
         final var title = new TextField("Title");
         final var subtitle = new TextField("Subtitle");
         final var speaker = new MultiselectComboBox<SpeakerRecord>("Speaker");
-        final var abstrakt = new TextArea("Abstract");
+        final var description = new TextArea("Description");
         final var agenda = new TextArea("Agenda");
         final var level = new Select<>(EventLevel.values());
         final var language = new Select<>(EventLanguage.values());
@@ -100,7 +99,7 @@ public class EventDialog extends EditDialog<EventRecord> {
             final var value = changeEvent.getValue();
             speaker.setRequiredIndicatorVisible(value);
             level.setRequiredIndicatorVisible(value);
-            abstrakt.setRequiredIndicatorVisible(value);
+            description.setRequiredIndicatorVisible(value);
             language.setRequiredIndicatorVisible(value);
             location.setRequiredIndicatorVisible(value);
             date.setRequiredIndicatorVisible(value);
@@ -108,12 +107,12 @@ public class EventDialog extends EditDialog<EventRecord> {
             binder.validate();
         });
 
-        formLayout.add(title, subtitle, speaker, level, abstrakt, agenda,
+        formLayout.add(title, subtitle, speaker, level, description, agenda,
                 language, location, date, duration, visible);
 
         binder.forField(title)
                 .withValidator(new StringLengthValidator(
-                        "Please enter the title of the event (max. 255 chars)", 1, 255))
+                        "Please enter a title (max. 255 chars)", 1, 255))
                 .bind(EventRecord::getTitle, EventRecord::setTitle);
 
         binder.forField(subtitle)
@@ -131,10 +130,10 @@ public class EventDialog extends EditDialog<EventRecord> {
                         "Please select a level")
                 .bind(EventRecord::getLevel, EventRecord::setLevel);
 
-        binder.forField(abstrakt)
+        binder.forField(description)
                 .withValidator(value -> !visible.getValue() || value != null && !value.isBlank(),
-                        "Please enter the abstract")
-                .bind(EventRecord::getAbstract, EventRecord::setAbstract);
+                        "Please enter a description")
+                .bind(EventRecord::getDescription, EventRecord::setDescription);
 
         binder.forField(agenda)
                 .bind(EventRecord::getAgenda, EventRecord::setAgenda);

@@ -3,7 +3,7 @@ CREATE TABLE event (
 
     title VARCHAR(255) NOT NULL,
     subtitle VARCHAR(255) NOT NULL DEFAULT '',
-    abstract MEDIUMTEXT NOT NULL DEFAULT '',
+    description MEDIUMTEXT NOT NULL DEFAULT '',
     agenda MEDIUMTEXT NOT NULL DEFAULT '',
     level ENUM('All', 'Beginner', 'Intermediate', 'Advanced') NULL,
     language ENUM('DE', 'EN') NULL,

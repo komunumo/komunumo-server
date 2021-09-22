@@ -59,7 +59,7 @@ public class EventService {
         final var event = dsl.newRecord(EVENT);
         event.setTitle("");
         event.setSubtitle("");
-        event.setAbstract("");
+        event.setDescription("");
         event.setAgenda("");
         event.setVisible(false);
         return event;

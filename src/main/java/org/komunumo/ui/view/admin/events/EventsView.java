@@ -225,7 +225,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
                     record.get(EVENT.TITLE),
                     record.get(EVENT.SUBTITLE),
                     record.get("speaker", String.class),
-                    record.get(EVENT.ABSTRACT),
+                    record.get(EVENT.DESCRIPTION),
                     record.get(EVENT.AGENDA),
                     record.get(EVENT.LEVEL) != null ? record.get(EVENT.LEVEL).toString() : null,
                     record.get(EVENT.LANGUAGE) != null ? record.get(EVENT.LANGUAGE).toString() : null,

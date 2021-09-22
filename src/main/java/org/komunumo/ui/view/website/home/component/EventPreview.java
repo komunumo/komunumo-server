@@ -25,7 +25,7 @@ public class EventPreview extends Div {
                         new Span(new Text(event.get(EVENT.LOCATION))),
                         new Span(new Text(event.get(EVENT.DATE).format(DATE_TIME_FORMATTER)))
                 ),
-                new Text(event.get(EVENT.ABSTRACT))
+                new Text(event.get(EVENT.DESCRIPTION))
         );
     }
 }
