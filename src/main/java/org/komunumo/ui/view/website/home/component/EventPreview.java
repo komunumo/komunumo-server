@@ -18,7 +18,10 @@
 
 package org.komunumo.ui.view.website.home.component;
 
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Article;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
@@ -30,20 +33,27 @@ import java.time.format.DateTimeFormatter;
 
 import static org.komunumo.data.db.tables.Event.EVENT;
 
-public class EventPreview extends Div {
+@CssImport("./themes/komunumo/views/website/event-preview.css")
+public class EventPreview extends Article {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public EventPreview(@NotNull final EventRecord event) {
-        add(
-                new H2(event.get(EVENT.TITLE)),
-                new H3(event.get(EVENT.SUBTITLE)),
-                new Div(
-                        new Span(new Text(event.get(EVENT.LOCATION))),
-                        new Span(new Text(event.get(EVENT.DATE).format(DATE_TIME_FORMATTER)))
-                ),
-                new Text(event.get(EVENT.DESCRIPTION))
-        );
+        final var upcoming = new Span(new Text("upcoming"));
+        upcoming.addClassName("upcoming");
+
+        final var location = new Span(new Text(event.get(EVENT.LOCATION)));
+        location.addClassName("location");
+
+        final var dateTime = new Span(new Text(event.get(EVENT.DATE).format(DATE_TIME_FORMATTER).concat("h")));
+        dateTime.addClassName("date-time");
+
+        add(new Div(upcoming, location, dateTime));
+        add(new H2(event.get(EVENT.TITLE)));
+        if (!event.get(EVENT.SUBTITLE).isBlank()) {
+            add(new H3(event.get(EVENT.SUBTITLE)));
+        }
+        add(new Html("<div>" + event.get(EVENT.DESCRIPTION) + "</div>"));
     }
 }

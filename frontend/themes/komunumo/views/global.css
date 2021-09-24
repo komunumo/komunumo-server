@@ -16,12 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import url('./views/font-import.css');
-@import url('./views/global.css');
+h1, h2 {
+    font-family: 'Trade Gothic LT W04 Bd CnNo-20', "Arial Narrow", Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
+}
 
-@import url('./views/main-view.css');
-@import url('./views/dashboard-view.css');
-@import url('./views/register-view.css');
-
-/*noinspection CssUnknownTarget*/
-@import url('lumo-css-framework/all-classes.css');
+h3, h4, h5, h6 {
+    font-family: 'Trade Gothic LT W04 Cn No-_18', "Arial Narrow", Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
+    font-weight: normal;
+}

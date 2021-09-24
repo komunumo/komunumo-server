@@ -1,0 +1,38 @@
+/*
+ * Komunumo - Open Source Community Manager
+ * Copyright (C) Marcus Fihlon and the individual contributors to Komunumo.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+This CSS resource incorporates links to font software which is the valuable copyrighted property of Monotype and/or its suppliers. You may not attempt to copy, install, redistribute, convert, modify or reverse engineer this font software. Please contact Monotype with any questions regarding Web Fonts:  https://www.linotype.com
+*/
+@import url("https://fast.fonts.net/lt/1.css?apiType=css&c=e2ab905b-7129-423b-a342-ddee41899369&fontids=1490620,1490630");
+@font-face {
+    font-family:"Trade Gothic LT W04 Bd CnNo-20";
+    src:url("/styles/fonts/1490620/9b0370f9-3aa4-4de8-a42b-2c69977515d1.eot?#iefix");
+    src:url("/styles/fonts/1490620/9b0370f9-3aa4-4de8-a42b-2c69977515d1.eot?#iefix") format("eot"),
+    url("/styles/fonts/1490620/3fc85932-dba3-4b8b-8fe5-531eb76b4021.woff2") format("woff2"),
+    url("/styles/fonts/1490620/d8099612-fa02-4a04-bf37-7aa9f14633d9.woff") format("woff"),
+    url("/styles/fonts/1490620/152ba618-a3f8-436f-8340-25d051690018.ttf") format("truetype");
+}
+@font-face {
+    font-family:"Trade Gothic LT W04 Cn No-_18";
+    src:url("/styles/fonts/1490630/183320d3-c8ba-4c60-865c-d7de83958a92.eot?#iefix");
+    src:url("/styles/fonts/1490630/183320d3-c8ba-4c60-865c-d7de83958a92.eot?#iefix") format("eot"),
+    url("/styles/fonts/1490630/959cde35-4967-4005-a8e7-3b3f931fe2f3.woff2") format("woff2"),
+    url("/styles/fonts/1490630/3c1b2a61-9d00-4ce4-b30e-f06edbd01ba4.woff") format("woff"),
+    url("/styles/fonts/1490630/65e045b6-b1cf-4d41-8a23-7cbccae1b76b.ttf") format("truetype");
+}

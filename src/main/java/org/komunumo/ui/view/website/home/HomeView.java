@@ -18,10 +18,10 @@
 
 package org.komunumo.ui.view.website.home;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.EventService;
 import org.komunumo.ui.view.website.WebsiteLayout;
 import org.komunumo.ui.view.website.home.component.EventPreview;
@@ -30,22 +30,9 @@ import org.komunumo.ui.view.website.home.component.EventPreview;
 @PageTitle("Home")
 public class HomeView extends Div {
 
-    private final EventService eventService;
-
-
-    public HomeView(EventService eventService) {
-        this.eventService = eventService;
-
-        add(
-                createEventPreviews()
-        );
-    }
-
-    private Component createEventPreviews() {
-        final var div = new Div();
+    public HomeView(@NotNull final EventService eventService) {
         eventService.upcomingEvents()
                 .map(EventPreview::new)
-                .forEach(div::add);
-        return div;
+                .forEach(this::add);
     }
 }

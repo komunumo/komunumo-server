@@ -16,12 +16,34 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import url('./views/font-import.css');
-@import url('./views/global.css');
+article {
+    border-top: 2px solid #bfbfbf;
+    clear: none;
+    float: left;
+    font-size: 0.8rem;
+    max-width: 372px;
+    padding: 6px 20px 4px 4px;
+}
 
-@import url('./views/main-view.css');
-@import url('./views/dashboard-view.css');
-@import url('./views/register-view.css');
+.upcoming {
+    background-color: #930722;
+    color: #ffffff;
+    font-weight: bold;
+    padding: 3px 3px 1px 3px;
+    text-transform: uppercase;
+}
 
-/*noinspection CssUnknownTarget*/
-@import url('lumo-css-framework/all-classes.css');
+.location {
+    font-weight: bold;
+    margin-left: 1em;
+    text-transform: uppercase;
+}
+
+.date-time {
+    margin-left: 1em;
+}
+
+h2, h3 {
+    margin-top: 5px;
+    text-transform: uppercase;
+}

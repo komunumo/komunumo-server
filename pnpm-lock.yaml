@@ -4600,6 +4600,7 @@ packages:
     optional: true
     os:
       - darwin
+    requiresBuild: true
     resolution:
       integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
   /function-bind/1.1.1:
@@ -7926,6 +7927,7 @@ packages:
       chokidar: 3.5.1
     dev: true
     optional: true
+    requiresBuild: true
     resolution:
       integrity: sha512-nCFfBIPKr5Sh61s4LPpy1Wtfi0HE8isJ3d2Yb5/Ppw2P2B/3eVSEBjKfN0fmHJSK14+31KwMKmcrzs2GM4P0Ww==
   /watchpack/1.7.5:
