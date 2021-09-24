@@ -21,11 +21,13 @@ package org.komunumo.ui.view.website;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.cookieconsent.CookieConsent;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.PageTitle;
 
+@CssImport(value = "./themes/komunumo/views/website/website-layout.css", themeFor = "vaadin-app-layout")
 public class WebsiteLayout extends AppLayout {
 
     private final H1 viewTitle;
@@ -40,11 +42,7 @@ public class WebsiteLayout extends AppLayout {
 
         final var tabs = new Tabs(
                 new Tab("Home"),
-                new Tab("Events"),
-                new Tab("Members"),
-                new Tab("Sponsors"),
-                new Tab("Speakers"),
-                new Tab("About"));
+                new Tab("Events"));
         tabs.setOrientation(Tabs.Orientation.VERTICAL);
         addToDrawer(tabs);
     }

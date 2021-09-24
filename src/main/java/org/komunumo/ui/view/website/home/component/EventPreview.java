@@ -27,6 +27,7 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Span;
 import org.jetbrains.annotations.NotNull;
+import org.jooq.Record;
 import org.komunumo.data.db.tables.records.EventRecord;
 
 import java.time.format.DateTimeFormatter;
@@ -39,7 +40,7 @@ public class EventPreview extends Article {
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    public EventPreview(@NotNull final EventRecord event) {
+    public EventPreview(@NotNull final Record event) {
         final var upcoming = new Span(new Text("upcoming"));
         upcoming.addClassName("upcoming");
 
@@ -49,11 +50,21 @@ public class EventPreview extends Article {
         final var dateTime = new Span(new Text(event.get(EVENT.DATE).format(DATE_TIME_FORMATTER).concat("h")));
         dateTime.addClassName("date-time");
 
+        final var speakerLabel = new Span(new Text("Speaker:"));
+        speakerLabel.addClassName("speaker-label");
+        final var speakerList = new Span(new Text(event.get("speaker", String.class)));
+        final var companyLabel = new Span(new Text("Company:"));
+        companyLabel.addClassName("company-label");
+        final var companyList = new Span(new Text(event.get("company", String.class)));
+        final var speaker = new Div(speakerLabel, speakerList, companyLabel, companyList);
+        speaker.addClassName("speaker");
+
         add(new Div(upcoming, location, dateTime));
         add(new H2(event.get(EVENT.TITLE)));
         if (!event.get(EVENT.SUBTITLE).isBlank()) {
             add(new H3(event.get(EVENT.SUBTITLE)));
         }
+        add(speaker);
         add(new Html("<div>" + event.get(EVENT.DESCRIPTION) + "</div>"));
     }
 }

@@ -16,13 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-h1, h2 {
-    font-family: 'Trade Gothic LT W04 Bd CnNo-20', "Arial Narrow", Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
-    text-transform: uppercase;
-}
-
-h3, h4, h5, h6 {
-    font-family: 'Trade Gothic LT W04 Cn No-_18', "Arial Narrow", Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
-    font-weight: normal;
-    text-transform: uppercase;
+[part='navbar'] {
+    background-color: #ffffff;
+    padding: 10px;
 }

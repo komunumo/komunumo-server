@@ -107,11 +107,18 @@ public class EventService {
         dsl.delete(EVENT).where(EVENT.ID.eq(event.getId())).execute();
     }
 
-    public Stream<EventRecord> upcomingEvents() {
-        return dsl.selectFrom(EVENT)
+    public Stream<Record> upcomingEvents() {
+        final var speakerFullName = concat(SPEAKER.FIRST_NAME, DSL.value(" "), SPEAKER.LAST_NAME);
+        return dsl.select(EVENT.asterisk(),
+                        groupConcat(speakerFullName).separator(", ").as("speaker"),
+                        groupConcat(SPEAKER.COMPANY).separator(", ").as("company"))
+                .from(EVENT)
+                .leftJoin(EVENT_SPEAKER).on(EVENT.ID.eq(EVENT_SPEAKER.EVENT_ID))
+                .leftJoin(SPEAKER).on(EVENT_SPEAKER.SPEAKER_ID.eq(SPEAKER.ID))
                 .where(condition(EVENT.VISIBLE)
                         // minusHours(1) - show events as upcoming which had just started
                         .and(EVENT.DATE.greaterOrEqual(LocalDateTime.now().minusHours(1))))
+                .groupBy(EVENT.ID)
                 .orderBy(EVENT.DATE.asc())
                 .stream();
     }
