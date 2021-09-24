@@ -32,9 +32,12 @@ import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
 import org.komunumo.data.db.tables.records.EventRecord;
+import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
+import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
+import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.DateTimePicker;
 import org.komunumo.ui.component.EditDialog;
@@ -53,18 +56,25 @@ public class EventDialog extends EditDialog<EventRecord> {
     private final EventService eventService;
     private final SpeakerService speakerService;
     private final EventSpeakerService eventSpeakerService;
+    private final MemberService memberService;
+    private final EventMemberService eventMemberService;
 
     private Set<SpeakerRecord> speakers;
+    private Set<MemberRecord> organizers;
     private Callback afterOpen;
 
     public EventDialog(@NotNull final String title,
                        @NotNull final EventService eventService,
                        @NotNull final SpeakerService speakerService,
-                       @NotNull final EventSpeakerService eventSpeakerService) {
+                       @NotNull final EventSpeakerService eventSpeakerService,
+                       @NotNull final MemberService memberService,
+                       @NotNull final EventMemberService eventMemberService) {
         super(title);
         this.eventService = eventService;
         this.speakerService = speakerService;
         this.eventSpeakerService = eventSpeakerService;
+        this.memberService = memberService;
+        this.eventMemberService = eventMemberService;
     }
 
     @Override
@@ -72,6 +82,7 @@ public class EventDialog extends EditDialog<EventRecord> {
         final var title = new TextField("Title");
         final var subtitle = new TextField("Subtitle");
         final var speaker = new MultiselectComboBox<SpeakerRecord>("Speaker");
+        final var organizer = new MultiselectComboBox<MemberRecord>("Organizer");
         final var description = new TextArea("Description");
         final var agenda = new TextArea("Agenda");
         final var level = new Select<>(EventLevel.values());
@@ -87,6 +98,10 @@ public class EventDialog extends EditDialog<EventRecord> {
         speaker.setOrdered(true);
         speaker.setItemLabelGenerator(value -> String.format("%s %s", value.getFirstName(), value.getLastName()));
         speaker.setItems(speakerService.getAllSpeakers());
+        organizer.setOrdered(true);
+        organizer.setItemLabelGenerator(value -> String.format("%s %s", value.getFirstName(), value.getLastName()));
+        organizer.setItems(memberService.getAllAdmins());
+        organizer.setRequiredIndicatorVisible(true);
         level.setLabel("Level");
         language.setLabel("Language");
         location.setItems(eventService.getAllLocations());
@@ -107,7 +122,7 @@ public class EventDialog extends EditDialog<EventRecord> {
             binder.validate();
         });
 
-        formLayout.add(title, subtitle, speaker, level, description, agenda,
+        formLayout.add(title, subtitle, speaker, organizer, level, description, agenda,
                 language, location, date, duration, visible);
 
         binder.forField(title)
@@ -124,6 +139,11 @@ public class EventDialog extends EditDialog<EventRecord> {
                 .withValidator(value -> !visible.getValue() || !value.isEmpty(),
                         "Please select at least one speaker")
                 .bind(this::getSpeaker, this::setSpeaker);
+
+        binder.forField(organizer)
+                .withValidator(value -> !value.isEmpty(),
+                        "Please select at least one organizer")
+                .bind(this::getOrganizer, this::setOrganizer);
 
         binder.forField(level)
                 .withValidator(value -> !visible.getValue() || value != null,
@@ -182,9 +202,19 @@ public class EventDialog extends EditDialog<EventRecord> {
         this.speakers = speakers != null ? speakers : Set.of();
     }
 
+    private Set<MemberRecord> getOrganizer(@NotNull final EventRecord record) {
+        return organizers;
+    }
+
+    private void setOrganizer(@NotNull final EventRecord record, @Nullable final Set<MemberRecord> organizers) {
+        this.organizers = organizers != null ? organizers : Set.of();
+    }
+
     @Override
     public void open(@NotNull final EventRecord record, @Nullable final Callback afterSave) {
         speakers = eventSpeakerService.getSpeakersForEvent(record)
+                .collect(Collectors.toSet());
+        organizers = eventMemberService.getOrganizersForEvent(record)
                 .collect(Collectors.toSet());
         super.open(record,
                 () -> {
@@ -194,6 +224,7 @@ public class EventDialog extends EditDialog<EventRecord> {
                 },
                 () -> {
                     eventSpeakerService.setEventSpeakers(record, speakers);
+                    eventMemberService.setEventOrganizers(record, organizers);
                     if (afterSave != null) {
                         afterSave.execute();
                     }

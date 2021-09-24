@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
 import org.komunumo.data.db.enums.SponsorLevel;
+import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
@@ -47,6 +48,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -83,7 +86,7 @@ public class JUGSImporter {
                 final var connection = DriverManager.getConnection(dbURL, dbUser, dbPass);
                 importSponsors(sponsorService, connection);
                 importMembers(memberService, connection);
-                importEvents(eventService, connection);
+                importEvents(eventService, eventMemberService, memberService, connection);
                 importSpeakers(speakerService, eventSpeakerService, eventService, connection);
                 importAttendees(eventMemberService, eventService, memberService, connection);
                 updateEventLevel(eventService);
@@ -306,6 +309,8 @@ public class JUGSImporter {
     }
 
     private void importEvents(@NotNull final EventService eventService,
+                              @NotNull final EventMemberService eventMemberService,
+                              @NotNull final MemberService memberService,
                               @NotNull final Connection connection)
             throws SQLException {
         if (eventService.count() > 0) {
@@ -313,7 +318,7 @@ public class JUGSImporter {
         }
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
-                    "SELECT id, ort, datum, startzeit, zeitende, titel, untertitel, agenda, abstract, sichtbar FROM events_neu WHERE sichtbar='ja' OR datum >= '2021-01-01' ORDER BY id");
+                    "SELECT id, ort, datum, startzeit, zeitende, titel, untertitel, agenda, abstract, sichtbar, verantwortung FROM events_neu WHERE sichtbar='ja' OR datum >= '2021-01-01' ORDER BY id");
             while (result.next()) {
                 final var event = eventService.get(result.getLong("id"))
                         .orElse(eventService.newEvent());
@@ -328,7 +333,85 @@ public class JUGSImporter {
                     event.set(EVENT.DESCRIPTION, getEmptyForNull(result.getString("abstract")));
                     event.set(EVENT.VISIBLE, result.getString("sichtbar").equalsIgnoreCase("ja"));
                     eventService.store(event);
+                    addOrganizers(memberService, eventMemberService, event, result.getString("verantwortung"));
                 }
+            }
+        }
+    }
+
+    private void addOrganizers(@NotNull final MemberService memberService,
+                               @NotNull final EventMemberService eventMemberService,
+                               @NotNull final EventRecord event,
+                               @Nullable final String verantwortung) {
+        if (verantwortung != null && !verantwortung.isBlank()) {
+            final List<Integer> organizerIds = new ArrayList<>();
+            switch (verantwortung) {
+                case "Alain": organizerIds.add(4790); break;
+                case "Alex": organizerIds.add(6845); break;
+                case "Andreas": organizerIds.add(1227); break;
+                case "Arif": organizerIds.add(21); break;
+                case "Arif, Arthy": organizerIds.add(21); organizerIds.add(100); break;
+                case "Arthy": organizerIds.add(100); break;
+                case "Bruno Schaeffer": organizerIds.add(1864); break;
+                case "Christian": organizerIds.add(2922); break;
+                case "Christoph": organizerIds.add(1108); break;
+                case "Corsin": organizerIds.add(828); break;
+                case "Dani":
+                case "Daniel": organizerIds.add(1486); break;
+                case "Dom":
+                case "Dominik":
+                case "Dominik Berger": organizerIds.add(15809); break;
+                case "Edwin": organizerIds.add(1116); break;
+                //case "Edwin / Martin": organizerIds.add(1116); organizerIds.add(Welcher?); break;
+                case "Erich": organizerIds.add(882); break;
+                //case "Florin / Jochen": organizerIds.add(Welcher?); organizerIds.add(5600); break;
+                //case "Hans Märki, /ch/open": organizerIds.add(); break;
+                case "Jochen": organizerIds.add(5600); break;
+                case "Lukas": organizerIds.add(5187); break;
+                //case "Marc": organizerIds.add(Welcher?); break;
+                case "Marcus": organizerIds.add(5889); break;
+                case "Marcus/Peti": organizerIds.add(5889); organizerIds.add(5244); break;
+                case "Markus":
+                case "Markus Pilz": organizerIds.add(1518); break;
+                //case "Martin": Welcher?
+                case "Martin Jäger": organizerIds.add(67); break;
+                case "Martin Jäger, Edwin": organizerIds.add(67); organizerIds.add(1116); break;
+                case "Martin Kernland": organizerIds.add(1820); break;
+                case "Matthias": organizerIds.add(12206); break;
+                case "Matthias Zimmermann": organizerIds.add(12206); break;
+                case "Micha": organizerIds.add(11465); break;
+                case "Micha / Bruno Schaeffer": organizerIds.add(11465); organizerIds.add(1864); break;
+                case "Milan": organizerIds.add(11457); break;
+                case "Oliver": organizerIds.add(14587); break;
+                case "Patrick": organizerIds.add(7135); break;
+                case "Patrick/Corsin": organizerIds.add(7135); organizerIds.add(828); break;
+                case "Peter": organizerIds.add(11480); break;
+                case "Peti": organizerIds.add(5244); break;
+                case "Philipp":
+                case "Philipp Oser": organizerIds.add(192); break;
+                case "Philipp (Qbi)": organizerIds.add(192); organizerIds.add(1099); break;
+                case "Qbi": organizerIds.add(1099); break;
+                //case "Roger": organizerIds.add(); break;
+                //case "Roger / Arthy": organizerIds.add(); organizerIds.add(100); break;
+                case "Ruedi": organizerIds.add(4396); break;
+                //case "Sandro Ruch": organizerIds.add(); break;
+                case "Serano": organizerIds.add(4628); break;
+                //case "SIG Eclipse RCP": organizerIds.add(); break;
+                //case "SIG Spring": organizerIds.add(); break;
+                case "Silvano": organizerIds.add(575); break;
+                case "Silvano, Peter": organizerIds.add(575); organizerIds.add(11480); break;
+                case "Simon": organizerIds.add(15228); break;
+                case "Thomas":
+                case "Thomas Wenger": organizerIds.add(4423); break;
+            }
+            final var organizers = organizerIds.stream()
+                    .map(Integer::longValue)
+                    .map(memberService::get)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toSet());
+            if (!organizers.isEmpty()) {
+                eventMemberService.setEventOrganizers(event, organizers);
             }
         }
     }
@@ -343,6 +426,7 @@ public class JUGSImporter {
         if (memberService.count() > 1) {
             return;
         }
+        final var adminIds = List.of(192, 882, 2922, 4423, 5091, 5244, 5889, 7135, 15809);
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
                     "SELECT id, vname, nname, e_mail, strasse, plz, wohnort, land, datum FROM teilnehmer ORDER BY id");
@@ -364,6 +448,7 @@ public class JUGSImporter {
                     member.set(MEMBER.COUNTRY, result.getString("land"));
                     member.set(MEMBER.MEMBER_SINCE, getDateTime(result.getString("datum")));
                     member.set(MEMBER.ACTIVE, true);
+                    member.set(MEMBER.ADMIN, adminIds.contains(result.getInt("id")));
                     memberService.store(member);
                 }
             }

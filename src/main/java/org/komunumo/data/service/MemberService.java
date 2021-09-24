@@ -122,4 +122,10 @@ public class MemberService {
         }
     }
 
+    public Stream<MemberRecord> getAllAdmins() {
+        return dsl.selectFrom(MEMBER)
+                .where(MEMBER.ADMIN.isTrue())
+                .orderBy(MEMBER.FIRST_NAME, MEMBER.LAST_NAME)
+                .stream();
+    }
 }

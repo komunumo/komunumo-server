@@ -56,6 +56,15 @@ CREATE TABLE event_member (
     CONSTRAINT FOREIGN KEY (member_id) REFERENCES member(id)
 ) DEFAULT CHARSET=utf8;
 
+CREATE TABLE event_organizer (
+    event_id INTEGER UNSIGNED NOT NULL,
+    member_id INTEGER UNSIGNED NOT NULL,
+
+    PRIMARY KEY (event_id, member_id),
+    CONSTRAINT FOREIGN KEY (event_id) REFERENCES event(id),
+    CONSTRAINT FOREIGN KEY (member_id) REFERENCES member(id)
+) DEFAULT CHARSET=utf8;
+
 CREATE TABLE speaker (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 

@@ -39,8 +39,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.Record;
 import org.komunumo.data.db.tables.records.EventRecord;
+import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
+import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
@@ -66,16 +68,22 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
     private final EventService eventService;
     private final SpeakerService speakerService;
     private final EventSpeakerService eventSpeakerService;
+    private final MemberService memberService;
+    private final EventMemberService eventMemberService;
 
     private final TextField filterField;
     private final Grid<Record> grid;
 
     public EventsView(@NotNull final EventService eventService,
                       @NotNull final SpeakerService speakerService,
-                      @NotNull final EventSpeakerService eventSpeakerService) {
+                      @NotNull final EventSpeakerService eventSpeakerService,
+                      @NotNull final MemberService memberService,
+                      @NotNull final EventMemberService eventMemberService) {
         this.eventService = eventService;
         this.speakerService = speakerService;
         this.eventSpeakerService = eventSpeakerService;
+        this.memberService = memberService;
+        this.eventMemberService = eventMemberService;
 
         addClassNames("events-view", "flex", "flex-col", "h-full");
 
@@ -186,7 +194,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
 
     private void showEventDialog(@NotNull final EventRecord event) {
         new EventDialog(event.getId() != null ? "Edit Event" : "New Event",
-                eventService, speakerService, eventSpeakerService)
+                eventService, speakerService, eventSpeakerService, memberService, eventMemberService)
                 .open(event, this::reloadGridItems);
     }
 
