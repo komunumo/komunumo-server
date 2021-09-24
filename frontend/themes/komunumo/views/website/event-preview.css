@@ -61,3 +61,14 @@ h2, h3 {
 .company-label {
     margin-left: 1em;
 }
+
+.more > a, .more > a:visited, .more > a:active, .more > a:hover {
+    color: #930722;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.more > img {
+    margin-right: 3px;
+    padding-bottom: 1px;
+}

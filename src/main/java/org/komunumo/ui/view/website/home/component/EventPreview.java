@@ -21,14 +21,16 @@ package org.komunumo.ui.view.website.home.component;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Article;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.Record;
-import org.komunumo.data.db.tables.records.EventRecord;
 
 import java.time.format.DateTimeFormatter;
 
@@ -65,6 +67,18 @@ public class EventPreview extends Article {
             add(new H3(event.get(EVENT.SUBTITLE)));
         }
         add(speaker);
-        add(new Html("<div>" + event.get(EVENT.DESCRIPTION) + "</div>"));
+        add(getDescription(event));
+    }
+
+    private Div getDescription(@NotNull final Record event) {
+        final var description = event.get(EVENT.DESCRIPTION);
+        final var paragraphEnd = description.contains("</p>") ? description.indexOf("</p>") : description.indexOf("</P>");
+        final var html = paragraphEnd > 0 ? description.substring(0, paragraphEnd + 4) : description;
+        final var more = new Paragraph(
+                new Image("/images/more.gif", "more"),
+                new Anchor("javascript:alert('TODO: Implement this link!');", "more")
+        );
+        more.addClassName("more");
+        return new Div(new Html(html), more);
     }
 }
