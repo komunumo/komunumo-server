@@ -72,6 +72,10 @@ public class JUGSImporter {
     @Value("${JUGS_DB_PASS}")
     private String dbPass;
 
+    private int hansMaerkiId;
+    private int rogerSuessId;
+    private int sandroRuchId;
+
     @Bean
     public CommandLineRunner importFromJavaUserGroupSwitzerland(
             @NotNull final SponsorService sponsorService,
@@ -86,12 +90,33 @@ public class JUGSImporter {
                 final var connection = DriverManager.getConnection(dbURL, dbUser, dbPass);
                 importSponsors(sponsorService, connection);
                 importMembers(memberService, connection);
+                addMissingMembers(memberService);
                 importEvents(eventService, eventMemberService, memberService, connection);
                 importSpeakers(speakerService, eventSpeakerService, eventService, connection);
                 importAttendees(eventMemberService, eventService, memberService, connection);
                 updateEventLevel(eventService);
             }
         };
+    }
+
+    private void addMissingMembers(@NotNull final MemberService memberService) {
+        final var hansMaerki = memberService.newMember();
+        hansMaerki.setFirstName("Hans");
+        hansMaerki.setLastName("Märki");
+        memberService.store(hansMaerki);
+        hansMaerkiId = hansMaerki.getId().intValue();
+
+        final var rogerSuess = memberService.newMember();
+        rogerSuess.setFirstName("Roger");
+        rogerSuess.setLastName("Süess");
+        memberService.store(rogerSuess);
+        rogerSuessId = rogerSuess.getId().intValue();
+
+        final var sandroRuch = memberService.newMember();
+        sandroRuch.setFirstName("Sandro");
+        sandroRuch.setLastName("Ruch");
+        memberService.store(sandroRuch);
+        sandroRuchId = sandroRuch.getId().intValue();
     }
 
     private void importAttendees(@NotNull final EventMemberService eventMemberService,
@@ -362,20 +387,20 @@ public class JUGSImporter {
                 case "Dominik":
                 case "Dominik Berger": organizerIds.add(15809); break;
                 case "Edwin": organizerIds.add(1116); break;
-                //case "Edwin / Martin": organizerIds.add(1116); organizerIds.add(Welcher?); break;
+                case "Edwin / Martin": organizerIds.add(1116); organizerIds.add(1820); break;
                 case "Erich": organizerIds.add(882); break;
-                //case "Florin / Jochen": organizerIds.add(Welcher?); organizerIds.add(5600); break;
-                //case "Hans Märki, /ch/open": organizerIds.add(); break;
+                case "Florin / Jochen": organizerIds.add(3241); organizerIds.add(5600); break;
+                case "Hans Märki, /ch/open": organizerIds.add(hansMaerkiId); break;
                 case "Jochen": organizerIds.add(5600); break;
                 case "Lukas": organizerIds.add(5187); break;
-                //case "Marc": organizerIds.add(Welcher?); break;
+                case "Marc": organizerIds.add(3790); break;
                 case "Marcus": organizerIds.add(5889); break;
                 case "Marcus/Peti": organizerIds.add(5889); organizerIds.add(5244); break;
                 case "Markus":
                 case "Markus Pilz": organizerIds.add(1518); break;
-                //case "Martin": Welcher?
                 case "Martin Jäger": organizerIds.add(67); break;
                 case "Martin Jäger, Edwin": organizerIds.add(67); organizerIds.add(1116); break;
+                case "Martin":
                 case "Martin Kernland": organizerIds.add(1820); break;
                 case "Matthias": organizerIds.add(12206); break;
                 case "Matthias Zimmermann": organizerIds.add(12206); break;
@@ -391,13 +416,11 @@ public class JUGSImporter {
                 case "Philipp Oser": organizerIds.add(192); break;
                 case "Philipp (Qbi)": organizerIds.add(192); organizerIds.add(1099); break;
                 case "Qbi": organizerIds.add(1099); break;
-                //case "Roger": organizerIds.add(); break;
-                //case "Roger / Arthy": organizerIds.add(); organizerIds.add(100); break;
+                case "Roger": organizerIds.add(rogerSuessId); break;
+                case "Roger / Arthy": organizerIds.add(rogerSuessId); organizerIds.add(100); break;
                 case "Ruedi": organizerIds.add(4396); break;
-                //case "Sandro Ruch": organizerIds.add(); break;
+                case "Sandro Ruch": organizerIds.add(sandroRuchId); break;
                 case "Serano": organizerIds.add(4628); break;
-                //case "SIG Eclipse RCP": organizerIds.add(); break;
-                //case "SIG Spring": organizerIds.add(); break;
                 case "Silvano": organizerIds.add(575); break;
                 case "Silvano, Peter": organizerIds.add(575); organizerIds.add(11480); break;
                 case "Simon": organizerIds.add(15228); break;
