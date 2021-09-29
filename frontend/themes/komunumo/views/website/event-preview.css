@@ -47,12 +47,15 @@ h2, h3 {
     margin-top: 5px;
 }
 
-.speaker {
+.speakers {
     border-top: 1px solid #bfbfbf;
+}
+
+.speakers, .keywords {
     padding-top: 5px;
 }
 
-.speaker-label, .company-label {
+.speaker-label, .company-label, .keyword-label {
     font-weight: bold;
     margin-right: 0.5em;
     text-transform: uppercase;

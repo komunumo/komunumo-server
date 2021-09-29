@@ -24,6 +24,9 @@ import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.EventRecord;
+import org.komunumo.data.entity.Event;
+import org.komunumo.data.entity.Keyword;
+import org.komunumo.data.entity.Speaker;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -39,8 +42,10 @@ import static org.jooq.impl.DSL.concat;
 import static org.jooq.impl.DSL.condition;
 import static org.jooq.impl.DSL.groupConcat;
 import static org.komunumo.data.db.tables.Event.EVENT;
+import static org.komunumo.data.db.tables.EventKeyword.EVENT_KEYWORD;
 import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
 import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
+import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
 @Service
@@ -107,20 +112,38 @@ public class EventService {
         dsl.delete(EVENT).where(EVENT.ID.eq(event.getId())).execute();
     }
 
-    public Stream<Record> upcomingEvents() {
-        final var speakerFullName = concat(SPEAKER.FIRST_NAME, DSL.value(" "), SPEAKER.LAST_NAME);
-        return dsl.select(EVENT.asterisk(),
-                        groupConcat(speakerFullName).separator(", ").as("speaker"),
-                        groupConcat(SPEAKER.COMPANY).separator(", ").as("company"))
-                .from(EVENT)
-                .leftJoin(EVENT_SPEAKER).on(EVENT.ID.eq(EVENT_SPEAKER.EVENT_ID))
-                .leftJoin(SPEAKER).on(EVENT_SPEAKER.SPEAKER_ID.eq(SPEAKER.ID))
+    public Stream<Event> upcomingEvents() {
+        return dsl.selectFrom(EVENT)
                 .where(condition(EVENT.VISIBLE)
                         // minusHours(1) - show events as upcoming which had just started
                         .and(EVENT.DATE.greaterOrEqual(LocalDateTime.now().minusHours(1))))
-                .groupBy(EVENT.ID)
                 .orderBy(EVENT.DATE.asc())
-                .stream();
+                .fetchInto(Event.class)
+                .stream()
+                .map(this::addSpeakers)
+                .map(this::addKeywords);
+    }
+
+    private Event addSpeakers(@NotNull final Event event) {
+        final var speakers = dsl.select(SPEAKER.asterisk())
+                .from(SPEAKER)
+                .join(EVENT_SPEAKER).on(SPEAKER.ID.eq(EVENT_SPEAKER.SPEAKER_ID))
+                .where(EVENT_SPEAKER.EVENT_ID.eq(event.getId()))
+                .orderBy(SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME)
+                .fetchInto(Speaker.class);
+        event.setSpeakers(speakers);
+        return event;
+    }
+
+    private Event addKeywords(@NotNull final Event event) {
+        final var keywords = dsl.select(KEYWORD.asterisk())
+                .from(KEYWORD)
+                .join(EVENT_KEYWORD).on(KEYWORD.ID.eq(EVENT_KEYWORD.KEYWORD_ID))
+                .where(EVENT_KEYWORD.EVENT_ID.eq(event.getId()))
+                .orderBy(KEYWORD.KEYWORD_)
+                .fetchInto(Keyword.class);
+        event.setKeywords(keywords);
+        return event;
     }
 
     public Set<String> getAllLocations() {

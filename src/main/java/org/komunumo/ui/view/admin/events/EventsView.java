@@ -39,9 +39,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.Record;
 import org.komunumo.data.db.tables.records.EventRecord;
+import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
+import org.komunumo.data.service.KeywordService;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.EnhancedButton;
@@ -70,6 +72,8 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
     private final EventSpeakerService eventSpeakerService;
     private final MemberService memberService;
     private final EventMemberService eventMemberService;
+    private final KeywordService keywordService;
+    private final EventKeywordService eventKeywordService;
 
     private final TextField filterField;
     private final Grid<Record> grid;
@@ -78,12 +82,16 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
                       @NotNull final SpeakerService speakerService,
                       @NotNull final EventSpeakerService eventSpeakerService,
                       @NotNull final MemberService memberService,
-                      @NotNull final EventMemberService eventMemberService) {
+                      @NotNull final EventMemberService eventMemberService,
+                      @NotNull final KeywordService keywordService,
+                      @NotNull final EventKeywordService eventKeywordService) {
         this.eventService = eventService;
         this.speakerService = speakerService;
         this.eventSpeakerService = eventSpeakerService;
         this.memberService = memberService;
         this.eventMemberService = eventMemberService;
+        this.keywordService = keywordService;
+        this.eventKeywordService = eventKeywordService;
 
         addClassNames("events-view", "flex", "flex-col", "h-full");
 
@@ -194,7 +202,10 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
 
     private void showEventDialog(@NotNull final EventRecord event) {
         new EventDialog(event.getId() != null ? "Edit Event" : "New Event",
-                eventService, speakerService, eventSpeakerService, memberService, eventMemberService)
+                eventService,
+                speakerService, eventSpeakerService,
+                memberService, eventMemberService,
+                keywordService, eventKeywordService)
                 .open(event, this::reloadGridItems);
     }
 

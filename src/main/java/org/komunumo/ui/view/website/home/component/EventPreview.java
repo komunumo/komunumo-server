@@ -30,11 +30,12 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import org.jetbrains.annotations.NotNull;
-import org.jooq.Record;
+import org.komunumo.data.entity.Event;
+import org.komunumo.data.entity.Keyword;
 
 import java.time.format.DateTimeFormatter;
-
-import static org.komunumo.data.db.tables.Event.EVENT;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @CssImport("./themes/komunumo/views/website/event-preview.css")
 public class EventPreview extends Article {
@@ -42,36 +43,60 @@ public class EventPreview extends Article {
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    public EventPreview(@NotNull final Record event) {
+    public EventPreview(@NotNull final Event event) {
         final var upcoming = new Span(new Text("upcoming"));
         upcoming.addClassName("upcoming");
 
-        final var location = new Span(new Text(event.get(EVENT.LOCATION)));
+        final var location = new Span(new Text(event.getLocation()));
         location.addClassName("location");
 
-        final var dateTime = new Span(new Text(event.get(EVENT.DATE).format(DATE_TIME_FORMATTER).concat("h")));
+        final var dateTime = new Span(new Text(event.getDate().format(DATE_TIME_FORMATTER).concat("h")));
         dateTime.addClassName("date-time");
 
-        final var speakerLabel = new Span(new Text("Speaker:"));
-        speakerLabel.addClassName("speaker-label");
-        final var speakerList = new Span(new Text(event.get("speaker", String.class)));
-        final var companyLabel = new Span(new Text("Company:"));
-        companyLabel.addClassName("company-label");
-        final var companyList = new Span(new Text(event.get("company", String.class)));
-        final var speaker = new Div(speakerLabel, speakerList, companyLabel, companyList);
-        speaker.addClassName("speaker");
+        final var speakers = new Div();
+        speakers.addClassName("speakers");
+        final var speakerCount = event.getSpeakers().size();
+        final var speakerCounter = new AtomicInteger(0);
+        event.getSpeakers().forEach(speaker -> {
+            final var counter = speakerCount == 1 ? "" : String.format(" %d", speakerCounter.incrementAndGet());
+            final var speakerLabel = new Span(new Text(String.format("Speaker%s:", counter)));
+            speakerLabel.addClassName("speaker-label");
+            final var speakerName = new Span(new Text(speaker.getFullName()));
+            final var companyLabel = new Span(new Text("Company:"));
+            companyLabel.addClassName("company-label");
+            final var companyName = new Span(new Text(speaker.getCompany()));
+            speakers.add(new Div(
+                    speakerLabel, speakerName,
+                    companyLabel, companyName
+            ));
+        });
+
+        final var keywordLabel = new Span(new Text("Keywords:"));
+        keywordLabel.addClassName("keyword-label");
+        final var keywordList = new Span(new Text(
+                event.getKeywords().stream()
+                        .map(Keyword::getKeyword)
+                        .collect(Collectors.joining(", "))));
+        final var keywords = new Div(
+                keywordLabel,
+                keywordList
+        );
+        keywords.addClassName("keywords");
 
         add(new Div(upcoming, location, dateTime));
-        add(new H2(event.get(EVENT.TITLE)));
-        if (!event.get(EVENT.SUBTITLE).isBlank()) {
-            add(new H3(event.get(EVENT.SUBTITLE)));
+        add(new H2(event.getTitle()));
+        if (!event.getSubtitle().isBlank()) {
+            add(new H3(event.getSubtitle()));
         }
-        add(speaker);
+        add(speakers);
+        if (!event.getKeywords().isEmpty()) {
+            add(keywords);
+        }
         add(getDescription(event));
     }
 
-    private Div getDescription(@NotNull final Record event) {
-        final var description = event.get(EVENT.DESCRIPTION);
+    private Div getDescription(@NotNull final Event event) {
+        final var description = event.getDescription();
         final var paragraphEnd = description.contains("</p>") ? description.indexOf("</p>") : description.indexOf("</P>");
         final var html = paragraphEnd > 0 ? description.substring(0, paragraphEnd + 4) : description;
         final var more = new Paragraph(

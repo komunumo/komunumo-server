@@ -34,9 +34,12 @@ import org.komunumo.data.db.enums.EventLevel;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
+import org.komunumo.data.entity.Keyword;
+import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
+import org.komunumo.data.service.KeywordService;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.DateTimePicker;
@@ -58,9 +61,12 @@ public class EventDialog extends EditDialog<EventRecord> {
     private final EventSpeakerService eventSpeakerService;
     private final MemberService memberService;
     private final EventMemberService eventMemberService;
+    private final KeywordService keywordService;
+    private final EventKeywordService eventKeywordService;
 
     private Set<SpeakerRecord> speakers;
     private Set<MemberRecord> organizers;
+    private Set<Keyword> keywords;
     private Callback afterOpen;
 
     public EventDialog(@NotNull final String title,
@@ -68,13 +74,17 @@ public class EventDialog extends EditDialog<EventRecord> {
                        @NotNull final SpeakerService speakerService,
                        @NotNull final EventSpeakerService eventSpeakerService,
                        @NotNull final MemberService memberService,
-                       @NotNull final EventMemberService eventMemberService) {
+                       @NotNull final EventMemberService eventMemberService,
+                       @NotNull final KeywordService keywordService,
+                       @NotNull final EventKeywordService eventKeywordService) {
         super(title);
         this.eventService = eventService;
         this.speakerService = speakerService;
         this.eventSpeakerService = eventSpeakerService;
         this.memberService = memberService;
         this.eventMemberService = eventMemberService;
+        this.keywordService = keywordService;
+        this.eventKeywordService = eventKeywordService;
     }
 
     @Override
@@ -84,6 +94,7 @@ public class EventDialog extends EditDialog<EventRecord> {
         final var speaker = new MultiselectComboBox<SpeakerRecord>("Speaker");
         final var organizer = new MultiselectComboBox<MemberRecord>("Organizer");
         final var description = new TextArea("Description");
+        final var keyword = new MultiselectComboBox<Keyword>("Keyword");
         final var agenda = new TextArea("Agenda");
         final var level = new Select<>(EventLevel.values());
         final var language = new Select<>(EventLanguage.values());
@@ -102,6 +113,9 @@ public class EventDialog extends EditDialog<EventRecord> {
         organizer.setItemLabelGenerator(value -> String.format("%s %s", value.getFirstName(), value.getLastName()));
         organizer.setItems(memberService.getAllAdmins());
         organizer.setRequiredIndicatorVisible(true);
+        keyword.setOrdered(true);
+        keyword.setItemLabelGenerator(Keyword::getKeyword);
+        keyword.setItems(keywordService.getAllKeywords());
         level.setLabel("Level");
         language.setLabel("Language");
         location.setItems(eventService.getAllLocations());
@@ -122,7 +136,7 @@ public class EventDialog extends EditDialog<EventRecord> {
             binder.validate();
         });
 
-        formLayout.add(title, subtitle, speaker, organizer, level, description, agenda,
+        formLayout.add(title, subtitle, speaker, organizer, level, description, keyword, agenda,
                 language, location, date, duration, visible);
 
         binder.forField(title)
@@ -154,6 +168,9 @@ public class EventDialog extends EditDialog<EventRecord> {
                 .withValidator(value -> !visible.getValue() || value != null && !value.isBlank(),
                         "Please enter a description")
                 .bind(EventRecord::getDescription, EventRecord::setDescription);
+
+        binder.forField(keyword)
+                .bind(this::getKeyword, this::setKeyword);
 
         binder.forField(agenda)
                 .bind(EventRecord::getAgenda, EventRecord::setAgenda);
@@ -210,11 +227,21 @@ public class EventDialog extends EditDialog<EventRecord> {
         this.organizers = organizers != null ? organizers : Set.of();
     }
 
+    private Set<Keyword> getKeyword(@NotNull final EventRecord record) {
+        return keywords;
+    }
+
+    private void setKeyword(@NotNull final EventRecord record, @Nullable final Set<Keyword> keywords) {
+        this.keywords = keywords != null ? keywords : Set.of();
+    }
+
     @Override
     public void open(@NotNull final EventRecord record, @Nullable final Callback afterSave) {
         speakers = eventSpeakerService.getSpeakersForEvent(record)
                 .collect(Collectors.toSet());
         organizers = eventMemberService.getOrganizersForEvent(record)
+                .collect(Collectors.toSet());
+        keywords = eventKeywordService.getKeywordsForEvent(record)
                 .collect(Collectors.toSet());
         super.open(record,
                 () -> {
@@ -225,6 +252,7 @@ public class EventDialog extends EditDialog<EventRecord> {
                 () -> {
                     eventSpeakerService.setEventSpeakers(record, speakers);
                     eventMemberService.setEventOrganizers(record, organizers);
+                    eventKeywordService.setEventKeywords(record, keywords);
                     if (afterSave != null) {
                         afterSave.execute();
                     }

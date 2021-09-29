@@ -28,9 +28,11 @@ import org.komunumo.data.db.enums.EventLevel;
 import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
+import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
+import org.komunumo.data.service.KeywordService;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.data.service.SponsorService;
@@ -55,6 +57,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.komunumo.data.db.tables.Event.EVENT;
+import static org.komunumo.data.db.tables.EventKeyword.EVENT_KEYWORD;
+import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 import static org.komunumo.data.db.tables.Member.MEMBER;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
@@ -83,7 +87,9 @@ public class JUGSImporter {
             @NotNull final EventService eventService,
             @NotNull final EventMemberService eventMemberService,
             @NotNull final SpeakerService speakerService,
-            @NotNull final EventSpeakerService eventSpeakerService) {
+            @NotNull final EventSpeakerService eventSpeakerService,
+            @NotNull final KeywordService keywordService,
+            @NotNull final EventKeywordService eventKeywordService) {
         return args -> {
             Thread.sleep(30_000); // wait 30 seconds to be sure this import does not slow down the startup
             if (dbURL != null && dbUser != null && dbPass != null) {
@@ -92,11 +98,48 @@ public class JUGSImporter {
                 importMembers(memberService, connection);
                 addMissingMembers(memberService);
                 importEvents(eventService, eventMemberService, memberService, connection);
+                importKeywords(eventService, keywordService, eventKeywordService, connection);
                 importSpeakers(speakerService, eventSpeakerService, eventService, connection);
                 importAttendees(eventMemberService, eventService, memberService, connection);
                 updateEventLevel(eventService);
             }
         };
+    }
+
+    private void importKeywords(@NotNull final EventService eventService,
+                                @NotNull final KeywordService keywordService,
+                                @NotNull final EventKeywordService eventKeywordService,
+                                @NotNull final Connection connection)
+            throws SQLException {
+        if (keywordService.count() > 0) {
+            return;
+        }
+        try (var statement = connection.createStatement()) {
+            final var result = statement.executeQuery(
+                    "SELECT id, bezeichnung FROM eventlabels");
+            while (result.next()) {
+                final var keyword = keywordService.newKeyword();
+                keyword.set(KEYWORD.ID, result.getLong("id"));
+                keyword.set(KEYWORD.KEYWORD_, result.getString("bezeichnung"));
+                keywordService.store(keyword);
+            }
+        }
+        try (var statement = connection.createStatement()) {
+            final var result = statement.executeQuery(
+                    "SELECT DISTINCT events_id, eventlabels_id FROM eventsxeventlabels");
+            while (result.next()) {
+                final var eventId = result.getLong("events_id");
+                final var keywordId = result.getLong("eventlabels_id");
+                final var event = eventService.get(eventId);
+                final var keyword = keywordService.get(keywordId);
+                if (event.isPresent() && keyword.isPresent()) {
+                    final var eventKeyword = eventKeywordService.newEventKeyword();
+                    eventKeyword.set(EVENT_KEYWORD.EVENT_ID, eventId);
+                    eventKeyword.set(EVENT_KEYWORD.KEYWORD_ID, keywordId);
+                    eventKeywordService.store(eventKeyword);
+                }
+            }
+        }
     }
 
     private void addMissingMembers(@NotNull final MemberService memberService) {
@@ -165,7 +208,6 @@ public class JUGSImporter {
                 }
             }
         }
-
     }
 
     private LocalDateTime getRegisterDate(@Nullable final String aenderung, @Nullable final String anmdatum) {
