@@ -22,6 +22,10 @@
     --blue: #29abe2;
 }
 
+a, vaadin-button {
+    color: var(--blue);
+}
+
 h1, h2 {
     font-family: 'Trade Gothic LT W04 Bd CnNo-20', "Arial Narrow", Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
     text-transform: uppercase;
