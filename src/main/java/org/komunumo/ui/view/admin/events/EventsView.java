@@ -20,6 +20,7 @@ package org.komunumo.ui.view.admin.events;
 
 import com.opencsv.CSVWriter;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
@@ -65,6 +66,7 @@ import static org.komunumo.util.FormatterUtil.formatDateTime;
 
 @Route(value = "admin/events", layout = AdminLayout.class)
 @PageTitle("Event Administration")
+@CssImport(value = "./themes/komunumo/views/admin/events-view.css")
 public class EventsView extends ResizableView implements HasUrlParameter<String> {
 
     private final EventService eventService;

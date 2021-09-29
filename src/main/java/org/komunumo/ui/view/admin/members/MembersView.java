@@ -20,6 +20,7 @@ package org.komunumo.ui.view.admin.members;
 
 import com.opencsv.CSVWriter;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
@@ -55,6 +56,7 @@ import static org.komunumo.data.db.tables.Member.MEMBER;
 
 @Route(value = "admin/members", layout = AdminLayout.class)
 @PageTitle("Member Administration")
+@CssImport(value = "./themes/komunumo/views/admin/members-view.css")
 public class MembersView extends ResizableView implements HasUrlParameter<String> {
 
     private final MemberService memberService;
