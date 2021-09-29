@@ -17,9 +17,9 @@
  */
 
 vaadin-icon[icon="vaadin:eye"] {
-    color: #00ff99;
+    color: var(--green);
 }
 
 vaadin-icon[icon="vaadin:eye-slash"] {
-    color: #bf6626;
+    color: var(--red);
 }
