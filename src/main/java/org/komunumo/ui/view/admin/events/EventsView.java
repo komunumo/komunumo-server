@@ -67,6 +67,7 @@ import static org.komunumo.util.FormatterUtil.formatDateTime;
 @Route(value = "admin/events", layout = AdminLayout.class)
 @PageTitle("Event Administration")
 @CssImport(value = "./themes/komunumo/views/admin/events-view.css")
+@CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
 public class EventsView extends ResizableView implements HasUrlParameter<String> {
 
     private final EventService eventService;

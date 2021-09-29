@@ -57,6 +57,7 @@ import static org.komunumo.data.db.tables.Member.MEMBER;
 @Route(value = "admin/members", layout = AdminLayout.class)
 @PageTitle("Member Administration")
 @CssImport(value = "./themes/komunumo/views/admin/members-view.css")
+@CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
 public class MembersView extends ResizableView implements HasUrlParameter<String> {
 
     private final MemberService memberService;

@@ -20,6 +20,7 @@ package org.komunumo.ui.view.admin.speakers;
 
 import com.opencsv.CSVWriter;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
@@ -57,6 +58,7 @@ import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
 @Route(value = "admin/speakers", layout = AdminLayout.class)
 @PageTitle("Speaker Administration")
+@CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
 public class SpeakersView extends ResizableView implements HasUrlParameter<String> {
 
     private final SpeakerService speakerService;

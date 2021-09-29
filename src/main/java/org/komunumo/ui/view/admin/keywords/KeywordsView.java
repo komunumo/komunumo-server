@@ -20,6 +20,7 @@ package org.komunumo.ui.view.admin.keywords;
 
 import com.opencsv.CSVWriter;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
@@ -49,6 +50,7 @@ import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 
 @Route(value = "admin/keywords", layout = AdminLayout.class)
 @PageTitle("Keyword Administration")
+@CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
 public class KeywordsView extends ResizableView {
 
     private final KeywordService keywordService;
