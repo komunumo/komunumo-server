@@ -116,16 +116,14 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         grid.addColumn(TemplateRenderer.<Record>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
                 .withProperty("email", record -> record.get(MEMBER.EMAIL)))
                 .setHeader("Email").setAutoWidth(true).setKey("email").setFlexGrow(0);
-        grid.addColumn(TemplateRenderer.<Record>of(
-                "<iron-icon hidden='[[!item.admin]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.admin]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
-                .withProperty("admin", record -> record.get(MEMBER.ADMIN)))
+        grid.addColumn(new ComponentRenderer<>(record -> new Icon(record.get(MEMBER.ADMIN) ? VaadinIcon.CHECK : VaadinIcon.MINUS)))
                 .setHeader("Admin").setAutoWidth(true).setFlexGrow(0);
-        grid.addColumn(TemplateRenderer.<Record>of(
-                "<iron-icon hidden='[[!item.blocked]]' icon='vaadin:ban' title='[[item.blockedReason]]' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-error-text-color);'></iron-icon><iron-icon hidden='[[item.blocked]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
-                .withProperty("blocked", record -> record.get(MEMBER.BLOCKED))
-                .withProperty("blockedReason", record -> record.get(MEMBER.BLOCKED_REASON)))
+        grid.addColumn(new ComponentRenderer<>(record -> {
+                    final var icon = new Icon(record.get(MEMBER.BLOCKED) ? VaadinIcon.BAN : VaadinIcon.MINUS);
+                    icon.getElement().setAttribute("title", record.get(MEMBER.BLOCKED_REASON));
+                    return icon;
+                }))
                 .setHeader("Blocked").setAutoWidth(true).setFlexGrow(0);
-
         grid.addColumn(new ComponentRenderer<>(record -> {
             final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editMember(record.get(MEMBER.ID)));
             editButton.setTitle("Edit this member");

@@ -147,10 +147,10 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
 
         grid.addColumn(record -> record.get("attendees")).setHeader("Attendees").setAutoWidth(true).setFlexGrow(0).setKey("attendees");
 
-        final var visibleRenderer = TemplateRenderer.<Record>of(
-                "<iron-icon hidden='[[!item.visible]]' icon='vaadin:eye' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></iron-icon><iron-icon hidden='[[item.visible]]' icon='vaadin:eye-slash' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></iron-icon>")
-                .withProperty("visible", record -> record.get(EVENT.VISIBLE));
-        grid.addColumn(visibleRenderer).setHeader("Visible").setAutoWidth(true).setFlexGrow(0);
+        grid.addColumn(new ComponentRenderer<>(record -> new Icon(record.get(EVENT.VISIBLE) ? VaadinIcon.EYE : VaadinIcon.EYE_SLASH)))
+                .setHeader("Visible")
+                .setAutoWidth(true)
+                .setFlexGrow(0);
 
         grid.addColumn(new ComponentRenderer<>(record -> {
             final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editEvent(record.get(EVENT.ID)));
