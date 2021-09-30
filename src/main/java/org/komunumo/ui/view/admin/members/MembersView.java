@@ -26,7 +26,6 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -41,8 +40,7 @@ import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jooq.Record;
-import org.komunumo.data.db.tables.records.MemberRecord;
+import org.komunumo.data.entity.Member;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
@@ -54,7 +52,6 @@ import java.io.StringWriter;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.komunumo.data.db.tables.Member.MEMBER;
 
 @Route(value = "admin/members", layout = AdminLayout.class)
 @PageTitle("Member Administration")
@@ -64,7 +61,7 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
 
     private final MemberService memberService;
     private final TextField filterField;
-    private final Grid<Record> grid;
+    private final Grid<Member> grid;
 
     public MembersView(@NotNull final MemberService memberService) {
         this.memberService = memberService;
@@ -76,13 +73,13 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter members by name or email");
 
-        final var newMemberButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> newMember());
+        final var newMemberButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), clickEvent -> newMember());
         newMemberButton.setTitle("Add a new member");
 
-        final var refreshMembersButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
+        final var refreshMembersButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), clickEvent -> reloadGridItems());
         refreshMembersButton.setTitle("Refresh the list of members");
 
-        final var downloadMembersButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD), event -> downloadMembers());
+        final var downloadMembersButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD), clickEvent -> downloadMembers());
         downloadMembersButton.setTitle("Download the list of members");
 
         final var optionBar = new HorizontalLayout(filterField, newMemberButton, refreshMembersButton, downloadMembersButton);
@@ -94,43 +91,38 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
     }
 
     @Override
-    public void setParameter(@NotNull final BeforeEvent event,
+    public void setParameter(@NotNull final BeforeEvent beforeEvent,
                              @Nullable @OptionalParameter String parameter) {
-        final var location = event.getLocation();
+        final var location = beforeEvent.getLocation();
         final var queryParameters = location.getQueryParameters();
         final var parameters = queryParameters.getParameters();
         final var filterValue = parameters.getOrDefault("filter", List.of("")).get(0);
         filterField.setValue(filterValue);
     }
 
-    private String getFullName(@NotNull final MemberRecord member) {
-        return String.format("%s %s", member.getFirstName(), member.getLastName());
-    }
-
-    private Grid<Record> createGrid() {
-        final var grid = new Grid<Record>();
+    private Grid<Member> createGrid() {
+        final var grid = new Grid<Member>();
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
-        grid.addColumn(TemplateRenderer.<Record>of("<span style=\"font-weight: bold;\">[[item.firstName]] [[item.lastName]]</span>")
-                .withProperty("firstName", record -> record.get(MEMBER.FIRST_NAME))
-                .withProperty("lastName", record -> record.get(MEMBER.LAST_NAME)))
+        grid.addColumn(TemplateRenderer.<Member>of("<span style=\"font-weight: bold;\">[[item.fullName]]</span>")
+                .withProperty("fullName", Member::getFullName))
                 .setHeader("Name").setAutoWidth(true).setFlexGrow(1);
-        grid.addColumn(TemplateRenderer.<Record>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
-                .withProperty("email", record -> record.get(MEMBER.EMAIL)))
+        grid.addColumn(TemplateRenderer.<Member>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
+                .withProperty("email", Member::getEmail))
                 .setHeader("Email").setAutoWidth(true).setKey("email").setFlexGrow(0);
-        grid.addColumn(new ComponentRenderer<>(record -> new Icon(record.get(MEMBER.ADMIN) ? VaadinIcon.CHECK : VaadinIcon.MINUS)))
+        grid.addColumn(new ComponentRenderer<>(member -> new Icon(member.getAdmin() ? VaadinIcon.CHECK : VaadinIcon.MINUS)))
                 .setHeader("Admin").setAutoWidth(true).setFlexGrow(0);
-        grid.addColumn(new ComponentRenderer<>(record -> {
-                    final var icon = new Icon(record.get(MEMBER.BLOCKED) ? VaadinIcon.BAN : VaadinIcon.MINUS);
-                    icon.getElement().setAttribute("title", record.get(MEMBER.BLOCKED_REASON));
+        grid.addColumn(new ComponentRenderer<>(member -> {
+                    final var icon = new Icon(member.getBlocked() ? VaadinIcon.BAN : VaadinIcon.MINUS);
+                    icon.getElement().setAttribute("title", member.getBlockedReason());
                     return icon;
                 }))
                 .setHeader("Blocked").setAutoWidth(true).setFlexGrow(0);
-        grid.addColumn(new ComponentRenderer<>(record -> {
-            final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editMember(record.get(MEMBER.ID)));
+        grid.addColumn(new ComponentRenderer<>(member -> {
+            final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), clickEvent -> showMemberDialog(member));
             editButton.setTitle("Edit this member");
-            final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), event -> deleteMember(record.get(MEMBER.ID)));
+            final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), clickEvent -> deleteMember(member));
             deleteButton.setTitle("Delete this member");
             return new HorizontalLayout(editButton, deleteButton);
         }))
@@ -152,37 +144,21 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         showMemberDialog(memberService.newMember());
     }
 
-    private void editMember(@NotNull final Long memberId) {
-        final var member = memberService.get(memberId);
-        if (member.isPresent()) {
-            showMemberDialog(member.get());
-        } else {
-            Notification.show("This member does not exist anymore. Reloading view…");
-            reloadGridItems();
-        }
-    }
-
-    private void showMemberDialog(@NotNull final MemberRecord member) {
-        final var dialog = new MemberDialog(member.get(MEMBER.ID) != null ? "Edit Member" : "New Member");
+    private void showMemberDialog(@NotNull final Member member) {
+        final var dialog = new MemberDialog(member.getId() != null ? "Edit Member" : "New Member");
         dialog.open(member, this::reloadGridItems);
     }
 
-    private void deleteMember(@NotNull final Long memberId) {
-        final var member = memberService.get(memberId);
-        if (member.isPresent()) {
-            new ConfirmDialog("Confirm deletion",
-                    String.format("Are you sure you want to permanently delete the member \"%s\"?", getFullName(member.get())),
-                    "Delete", dialogEvent -> {
-                memberService.delete(member.get());
-                reloadGridItems();
-                dialogEvent.getSource().close();
-            },
-                    "Cancel", dialogEvent -> dialogEvent.getSource().close()
-            ).open();
-        } else {
-            Notification.show("This member does not exist anymore. Reloading view…");
+    private void deleteMember(final Member member) {
+        new ConfirmDialog("Confirm deletion",
+                String.format("Are you sure you want to permanently delete the member \"%s\"?", member.getFullName()),
+                "Delete", dialogEvent -> {
+            memberService.delete(member);
             reloadGridItems();
-        }
+            dialogEvent.getSource().close();
+        },
+                "Cancel", dialogEvent -> dialogEvent.getSource().close()
+        ).open();
     }
 
     private void reloadGridItems() {
@@ -199,21 +175,21 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
                     "Member since", "Admin", "Active", "Blocked", "Blocked reason"
             });
             grid.getGenericDataView()
-                    .getItems().map(record -> new String[] {
-                    record.get(MEMBER.ID).toString(),
-                    record.get(MEMBER.FIRST_NAME),
-                    record.get(MEMBER.LAST_NAME),
-                    record.get(MEMBER.EMAIL),
-                    record.get(MEMBER.ADDRESS),
-                    record.get(MEMBER.ZIP_CODE),
-                    record.get(MEMBER.CITY),
-                    record.get(MEMBER.STATE),
-                    record.get(MEMBER.COUNTRY),
-                    record.get(MEMBER.MEMBER_SINCE).toString(),
-                    record.get(MEMBER.ADMIN).toString(),
-                    record.get(MEMBER.ACTIVE).toString(),
-                    record.get(MEMBER.BLOCKED).toString(),
-                    record.get(MEMBER.BLOCKED_REASON)
+                    .getItems().map(member -> new String[] {
+                    member.getId().toString(),
+                    member.getFirstName(),
+                    member.getLastName(),
+                    member.getEmail(),
+                    member.getAddress(),
+                    member.getZipCode(),
+                    member.getCity(),
+                    member.getState(),
+                    member.getCountry(),
+                    member.getMemberSince().toString(),
+                    member.getAdmin().toString(),
+                    member.getActive().toString(),
+                    member.getBlocked().toString(),
+                    member.getBlockedReason()
             }).forEach(csvWriter::writeNext);
             return new ByteArrayInputStream(stringWriter.toString().getBytes(UTF_8));
         });

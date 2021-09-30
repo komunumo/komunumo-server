@@ -22,9 +22,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
-import org.jooq.Record;
 import org.jooq.impl.DSL;
-import org.komunumo.data.db.tables.records.MemberRecord;
+import org.komunumo.data.entity.Member;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -43,8 +42,9 @@ public class MemberService {
         this.dsl = dsl;
     }
 
-    public MemberRecord newMember() {
-        final var member = dsl.newRecord(MEMBER);
+    public Member newMember() {
+        final var member = dsl.newRecord(MEMBER)
+                .into(Member.class);
         member.setFirstName("");
         member.setLastName("");
         member.setEmail("");
@@ -67,7 +67,7 @@ public class MemberService {
         return dsl.fetchCount(MEMBER, MEMBER.DELETED.isFalse());
     }
 
-    public Stream<Record> find(final int offset, final int limit, @Nullable final String filter) {
+    public Stream<Member> find(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl.select(MEMBER.asterisk())
                 .from(MEMBER)
@@ -78,24 +78,29 @@ public class MemberService {
                 .orderBy(MEMBER.FIRST_NAME, MEMBER.LAST_NAME)
                 .offset(offset)
                 .limit(limit)
+                .fetchInto(Member.class)
                 .stream();
     }
 
-    public Optional<MemberRecord> get(@NotNull final Long id) {
-        return dsl.fetchOptional(MEMBER, MEMBER.ID.eq(id));
+    public Optional<Member> get(@NotNull final Long id) {
+        return dsl.selectFrom(MEMBER)
+                .where(MEMBER.ID.eq(id)
+                        .and(MEMBER.DELETED.isFalse()))
+                .fetchOptionalInto(Member.class);
     }
 
-    public Optional<MemberRecord> getByEmail(@NotNull final String email) {
-        return dsl.fetchOptional(MEMBER,
-                MEMBER.EMAIL.eq(email)
-                        .and(MEMBER.DELETED.isFalse()));
+    public Optional<Member> getByEmail(@NotNull final String email) {
+        return dsl.selectFrom(MEMBER)
+                .where(MEMBER.EMAIL.eq(email)
+                        .and(MEMBER.DELETED.isFalse()))
+                .fetchOptionalInto(Member.class);
     }
 
-    public void store(@NotNull final MemberRecord member) {
+    public void store(@NotNull final Member member) {
         member.store();
     }
 
-    public void delete(@NotNull final MemberRecord member) {
+    public void delete(@NotNull final Member member) {
         try {
             member.delete();
         } catch (final Exception e) {
@@ -122,10 +127,12 @@ public class MemberService {
         }
     }
 
-    public Stream<MemberRecord> getAllAdmins() {
+    public Stream<Member> getAllAdmins() {
         return dsl.selectFrom(MEMBER)
-                .where(MEMBER.ADMIN.isTrue())
+                .where(MEMBER.ADMIN.isTrue()
+                        .and(MEMBER.DELETED.isFalse()))
                 .orderBy(MEMBER.FIRST_NAME, MEMBER.LAST_NAME)
+                .fetchInto(Member.class)
                 .stream();
     }
 }

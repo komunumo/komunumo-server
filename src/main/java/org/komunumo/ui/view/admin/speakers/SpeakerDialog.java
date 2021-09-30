@@ -26,7 +26,7 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.db.tables.records.SpeakerRecord;
+import org.komunumo.data.entity.Speaker;
 import org.komunumo.ui.component.EditDialog;
 import org.komunumo.ui.component.ImageUploadField;
 import org.komunumo.util.GravatarUtil;
@@ -34,14 +34,14 @@ import org.komunumo.util.GravatarUtil;
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 import static org.komunumo.util.GravatarUtil.GRAVATAR_URL;
 
-public class SpeakerDialog extends EditDialog<SpeakerRecord> {
+public class SpeakerDialog extends EditDialog<Speaker> {
 
     public SpeakerDialog(@NotNull final String title) {
         super(title);
     }
 
     @Override
-    public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<SpeakerRecord> binder) {
+    public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<Speaker> binder) {
         final var firstName = new TextField("First name");
         final var lastName = new TextField("Last name");
         final var company = new TextField("Company");
@@ -78,81 +78,81 @@ public class SpeakerDialog extends EditDialog<SpeakerRecord> {
         binder.forField(firstName)
                 .withValidator(new StringLengthValidator(
                         "Please enter the first name of the speaker (max. 255 chars)", 1, 255))
-                .bind(SpeakerRecord::getFirstName, SpeakerRecord::setFirstName);
+                .bind(Speaker::getFirstName, Speaker::setFirstName);
 
         binder.forField(lastName)
                 .withValidator(new StringLengthValidator(
                         "Please enter the last name of the speaker (max. 255 chars)", 1, 255))
-                .bind(SpeakerRecord::getLastName, SpeakerRecord::setLastName);
+                .bind(Speaker::getLastName, Speaker::setLastName);
 
         binder.forField(company)
                 .withValidator(new StringLengthValidator(
                         "The company name is too long (max. 255 chars)", 0, 255))
-                .bind(SpeakerRecord::getCompany, SpeakerRecord::setCompany);
+                .bind(Speaker::getCompany, Speaker::setCompany);
 
         binder.forField(bio)
                 .withValidator(new StringLengthValidator(
                         "The bio is too long (max. 100'000 chars)", 0, 100_000))
-                .bind(SpeakerRecord::getBio, SpeakerRecord::setBio);
+                .bind(Speaker::getBio, Speaker::setBio);
 
         binder.forField(photo)
                 .withValidator(value -> value.isEmpty() || value.startsWith("data:") || value.startsWith("https://"),
                         "The photo must be uploaded or the photo address must be secure (HTTPS)")
                 .withValidator(new StringLengthValidator(
                         "The photo is too big (max. 250 KB)", 0, 250_000))
-                .bind(SpeakerRecord::getPhoto, SpeakerRecord::setPhoto);
+                .bind(Speaker::getPhoto, Speaker::setPhoto);
 
         binder.forField(email)
                 .withValidator(new EmailValidator(
                         "Please enter a correct email address or leave this field empty", true))
                 .withValidator(new StringLengthValidator(
                         "The email address is too long (max. 255 chars)", 0, 255))
-                .bind(SpeakerRecord::getEmail, SpeakerRecord::setEmail);
+                .bind(Speaker::getEmail, Speaker::setEmail);
 
         binder.forField(twitter)
                 .withValidator(value -> value.isEmpty() || value.startsWith("https://"),
                         "The twitter address must start with \"https://\"")
                 .withValidator(new StringLengthValidator(
                         "The twitter address is too long (max. 255 chars)", 0, 255))
-                .bind(SpeakerRecord::getTwitter, SpeakerRecord::setTwitter);
+                .bind(Speaker::getTwitter, Speaker::setTwitter);
 
         binder.forField(linkedIn)
                 .withValidator(value -> value.isEmpty() || value.startsWith("https://"),
                         "The LinkedIn address must start with \"https://\"")
                 .withValidator(new StringLengthValidator(
                         "The LinkedIn address is too long (max. 255 chars)", 0, 255))
-                .bind(SpeakerRecord::getLinkedin, SpeakerRecord::setLinkedin);
+                .bind(Speaker::getLinkedin, Speaker::setLinkedin);
 
         binder.forField(website)
                 .withValidator(value -> value.isEmpty() || value.startsWith("https://"),
                         "The website address must start with \"https://\"")
                 .withValidator(new StringLengthValidator(
                         "The website address is too long (max. 255 chars)", 0, 255))
-                .bind(SpeakerRecord::getWebsite, SpeakerRecord::setWebsite);
+                .bind(Speaker::getWebsite, Speaker::setWebsite);
 
         binder.forField(address)
                 .withValidator(new StringLengthValidator(
                         "The address is too long (max. 255 chars)", 0, 255))
-                .bind(SpeakerRecord::getAddress, SpeakerRecord::setAddress);
+                .bind(Speaker::getAddress, Speaker::setAddress);
 
         binder.forField(zipCode)
                 .withValidator(new StringLengthValidator(
                         "The zip code is too long (max. 255 chars)", 0, 255))
-                .bind(SpeakerRecord::getZipCode, SpeakerRecord::setZipCode);
+                .bind(Speaker::getZipCode, Speaker::setZipCode);
 
         binder.forField(city)
                 .withValidator(new StringLengthValidator(
                         "The city is too long (max. 255 chars)", 0, 255))
-                .bind(SpeakerRecord::getCity, SpeakerRecord::setCity);
+                .bind(Speaker::getCity, Speaker::setCity);
 
         binder.forField(state)
                 .withValidator(new StringLengthValidator(
                         "The state is too long (max. 255 chars)", 0, 255))
-                .bind(SpeakerRecord::getState, SpeakerRecord::setState);
+                .bind(Speaker::getState, Speaker::setState);
 
         binder.forField(country)
                 .withValidator(new StringLengthValidator(
                         "The country is too long (max. 255 chars)", 0, 255))
-                .bind(SpeakerRecord::getCountry, SpeakerRecord::setCountry);
+                .bind(Speaker::getCountry, Speaker::setCountry);
     }
 }

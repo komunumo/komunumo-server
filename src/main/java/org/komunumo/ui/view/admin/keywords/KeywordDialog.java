@@ -23,19 +23,19 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.db.tables.records.KeywordRecord;
+import org.komunumo.data.entity.Keyword;
 import org.komunumo.ui.component.EditDialog;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-public class KeywordDialog extends EditDialog<KeywordRecord> {
+public class KeywordDialog extends EditDialog<Keyword> {
 
     public KeywordDialog(@NotNull final String title) {
         super(title);
     }
 
     @Override
-    public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<KeywordRecord> binder) {
+    public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<Keyword> binder) {
         final var keyword = new TextField("Keyword");
         keyword.setRequiredIndicatorVisible(true);
         keyword.setValueChangeMode(EAGER);
@@ -44,6 +44,6 @@ public class KeywordDialog extends EditDialog<KeywordRecord> {
         binder.forField(keyword)
                 .withValidator(new StringLengthValidator(
                         "Please enter the keyword (max. 255 chars)", 1, 255))
-                .bind(KeywordRecord::getKeyword, KeywordRecord::setKeyword);
+                .bind(Keyword::getKeyword, Keyword::setKeyword);
     }
 }

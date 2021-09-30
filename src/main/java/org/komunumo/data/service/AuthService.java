@@ -28,7 +28,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.Configuration;
-import org.komunumo.data.db.tables.records.MemberRecord;
+import org.komunumo.data.entity.Member;
 import org.komunumo.ui.view.admin.dashboard.DashboardView;
 import org.komunumo.ui.view.admin.events.EventsView;
 import org.komunumo.ui.view.admin.keywords.KeywordsView;
@@ -78,7 +78,7 @@ public class AuthService implements VaadinServiceInitListener {
             throws AccessDeniedException {
         final var member = memberService.getByEmail(email).orElse(null);
         if (member != null && member.getActive() && checkPassword(member, password)) {
-            VaadinSession.getCurrent().setAttribute(MemberRecord.class, member);
+            VaadinSession.getCurrent().setAttribute(Member.class, member);
             if (member.getBlocked()) {
                 UI.getCurrent().navigate(BlockedView.class);
             } else if (member.getPasswordChange()) {
@@ -91,7 +91,7 @@ public class AuthService implements VaadinServiceInitListener {
         }
     }
 
-    private boolean checkPassword(@NotNull final MemberRecord member,
+    private boolean checkPassword(@NotNull final Member member,
                                   @NotNull final String password) {
         return getPasswordHash(password, member.getPasswordSalt()).equals(member.getPasswordHash());
     }
@@ -99,7 +99,7 @@ public class AuthService implements VaadinServiceInitListener {
     public void register(@NotNull final String firstName, @NotNull final String lastName, @NotNull final String email,
                          @Nullable final String address, @Nullable final String zipCode, @Nullable final String city,
                          @Nullable final String state, @Nullable final String country) {
-        final var member = new MemberRecord();
+        final var member = new Member();
         member.setFirstName(firstName);
         member.setLastName(lastName);
         member.setEmail(email);
@@ -176,16 +176,16 @@ public class AuthService implements VaadinServiceInitListener {
     }
 
     public boolean isUserLoggedIn() {
-        return VaadinSession.getCurrent().getAttribute(MemberRecord.class) != null;
+        return getCurrentUser() != null;
     }
 
-    public MemberRecord getCurrentUser() {
-        return VaadinSession.getCurrent().getAttribute(MemberRecord.class);
+    public Member getCurrentUser() {
+        return VaadinSession.getCurrent().getAttribute(Member.class);
     }
 
     @SuppressWarnings({"java:S3776"}) // cognitive complexity
     public boolean isAccessGranted(final Class<?> navigationTarget) {
-        final var member = VaadinSession.getCurrent().getAttribute(MemberRecord.class);
+        final var member = getCurrentUser();
 
         // restrict to members
         if (member != null && member.getActive() && !member.getBlocked()) {

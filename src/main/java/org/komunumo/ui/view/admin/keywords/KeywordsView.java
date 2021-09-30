@@ -26,7 +26,6 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -36,7 +35,6 @@ import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.db.tables.records.KeywordRecord;
 import org.komunumo.data.entity.Keyword;
 import org.komunumo.data.service.KeywordService;
 import org.komunumo.ui.component.EnhancedButton;
@@ -48,7 +46,6 @@ import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 
 @Route(value = "admin/keywords", layout = AdminLayout.class)
 @PageTitle("Keyword Administration")
@@ -69,13 +66,13 @@ public class KeywordsView extends ResizableView {
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter keywords");
 
-        final var newKeywordButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> newKeyword());
+        final var newKeywordButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), clickEvent -> newKeyword());
         newKeywordButton.setTitle("Add a new keyword");
 
-        final var refreshKeywordsButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
+        final var refreshKeywordsButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), clickEvent -> reloadGridItems());
         refreshKeywordsButton.setTitle("Refresh the list of keywords");
 
-        final var downloadKeywordsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD), event -> downloadKeywords());
+        final var downloadKeywordsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD), clickEvent -> downloadKeywords());
         downloadKeywordsButton.setTitle("Download the list of keywords");
 
         final var optionBar = new HorizontalLayout(filterField, newKeywordButton, refreshKeywordsButton, downloadKeywordsButton);
@@ -98,9 +95,9 @@ public class KeywordsView extends ResizableView {
                 .setHeader("Events").setAutoWidth(true).setFlexGrow(0);
 
         grid.addColumn(new ComponentRenderer<>(keyword -> {
-            final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editKeyword(keyword.getId()));
+            final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), clickEvent -> showKeywordDialog(keyword));
             editButton.setTitle("Edit this keyword");
-            final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), event -> deleteKeyword(keyword.getId()));
+            final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), clickEvent -> deleteKeyword(keyword));
             deleteButton.setTitle("Delete this keyword");
             deleteButton.setEnabled(keyword.getEventCount() == 0);
             return new HorizontalLayout(editButton, deleteButton);
@@ -118,37 +115,21 @@ public class KeywordsView extends ResizableView {
         showKeywordDialog(keywordService.newKeyword());
     }
 
-    private void editKeyword(@NotNull final Long keywordId) {
-        final var keyword = keywordService.get(keywordId);
-        if (keyword.isPresent()) {
-            showKeywordDialog(keyword.get());
-        } else {
-            Notification.show("This keyword does not exist anymore. Reloading view…");
-            reloadGridItems();
-        }
-    }
-
-    private void showKeywordDialog(@NotNull final KeywordRecord keyword) {
-        final var dialog = new KeywordDialog(keyword.get(KEYWORD.ID) != null ? "Edit Keyword" : "New Keyword");
+    private void showKeywordDialog(@NotNull final Keyword keyword) {
+        final var dialog = new KeywordDialog(keyword.getId() != null ? "Edit Keyword" : "New Keyword");
         dialog.open(keyword, this::reloadGridItems);
     }
 
-    private void deleteKeyword(@NotNull final Long keywordId) {
-        final var keyword = keywordService.get(keywordId);
-        if (keyword.isPresent()) {
-            new ConfirmDialog("Confirm deletion",
-                    String.format("Are you sure you want to permanently delete the keyword \"%s\"?", keyword.get()),
-                    "Delete", dialogEvent -> {
-                keywordService.delete(keyword.get());
-                reloadGridItems();
-                dialogEvent.getSource().close();
-            },
-                    "Cancel", dialogEvent -> dialogEvent.getSource().close()
-            ).open();
-        } else {
-            Notification.show("This keyword does not exist anymore. Reloading view…");
+    private void deleteKeyword(final Keyword keyword) {
+        new ConfirmDialog("Confirm deletion",
+                String.format("Are you sure you want to permanently delete the keyword \"%s\"?", keyword.getKeyword()),
+                "Delete", dialogEvent -> {
+            keywordService.delete(keyword);
             reloadGridItems();
-        }
+            dialogEvent.getSource().close();
+        },
+                "Cancel", dialogEvent -> dialogEvent.getSource().close()
+        ).open();
     }
 
     private void reloadGridItems() {

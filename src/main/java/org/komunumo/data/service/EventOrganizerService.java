@@ -16,23 +16,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.data.entity;
+package org.komunumo.data.service;
 
-import org.komunumo.data.db.tables.records.SpeakerRecord;
+import org.jetbrains.annotations.NotNull;
+import org.jooq.DSLContext;
+import org.komunumo.data.entity.Event;
+import org.springframework.stereotype.Service;
 
-public class Speaker extends SpeakerRecord {
+import static org.komunumo.data.db.tables.EventOrganizer.EVENT_ORGANIZER;
 
-    private int eventCount;
+@Service
+public class EventOrganizerService {
 
-    public String getFullName() {
-        return String.format("%s %s", getFirstName(), getLastName()).trim();
+    private final DSLContext dsl;
+
+    public EventOrganizerService(@NotNull final DSLContext dsl) {
+        this.dsl = dsl;
     }
 
-    public int getEventCount() {
-        return eventCount;
-    }
-
-    public void setEventCount(final int eventCount) {
-        this.eventCount = eventCount;
+    public void removeAllOrganizersFromEvent(@NotNull final Event event) {
+        dsl.delete(EVENT_ORGANIZER)
+                .where(EVENT_ORGANIZER.EVENT_ID.eq(event.getId()))
+                .execute();
     }
 }

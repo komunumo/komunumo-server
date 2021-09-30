@@ -24,6 +24,7 @@ import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.EventMemberRecord;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.db.tables.records.MemberRecord;
+import org.komunumo.data.entity.Member;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -73,7 +74,7 @@ public class EventMemberService {
         }
     }
 
-    public Stream<MemberRecord> getOrganizersForEvent(@NotNull final EventRecord event) {
+    public Stream<Member> getOrganizersForEvent(@NotNull final EventRecord event) {
         return dsl
                 .selectFrom(MEMBER)
                 .where(MEMBER.ID.in(
@@ -81,13 +82,13 @@ public class EventMemberService {
                                 .from(EVENT_ORGANIZER)
                                 .where(EVENT_ORGANIZER.EVENT_ID.eq(event.getId()))
                 ))
-                .fetch()
+                .fetchInto(Member.class)
                 .stream();
     }
 
     public void setEventOrganizers(@NotNull final EventRecord event,
-                                   @NotNull final Set<MemberRecord> organizers) {
-        final var eventOrganizers = new HashSet<MemberRecord>(organizers.size());
+                                   @NotNull final Set<Member> organizers) {
+        final var eventOrganizers = new HashSet<Member>(organizers.size());
         eventOrganizers.addAll(organizers);
         getOrganizersForEvent(event).forEach(organizer -> {
             if (eventOrganizers.contains(organizer)) {

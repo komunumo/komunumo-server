@@ -18,21 +18,7 @@
 
 package org.komunumo.data.entity;
 
-import org.komunumo.data.db.tables.records.SpeakerRecord;
+import org.komunumo.data.db.tables.records.SponsorRecord;
 
-public class Speaker extends SpeakerRecord {
-
-    private int eventCount;
-
-    public String getFullName() {
-        return String.format("%s %s", getFirstName(), getLastName()).trim();
-    }
-
-    public int getEventCount() {
-        return eventCount;
-    }
-
-    public void setEventCount(final int eventCount) {
-        this.eventCount = eventCount;
-    }
+public class Sponsor extends SponsorRecord {
 }

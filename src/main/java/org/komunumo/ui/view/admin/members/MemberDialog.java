@@ -26,19 +26,19 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.db.tables.records.MemberRecord;
+import org.komunumo.data.entity.Member;
 import org.komunumo.ui.component.EditDialog;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-public class MemberDialog extends EditDialog<MemberRecord> {
+public class MemberDialog extends EditDialog<Member> {
 
     public MemberDialog(@NotNull final String title) {
         super(title);
     }
 
     @Override
-    public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<MemberRecord> binder) {
+    public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<Member> binder) {
         final var firstName = new TextField("First name");
         final var lastName = new TextField("Last name");
         final var email = new EmailField("Email");
@@ -70,60 +70,60 @@ public class MemberDialog extends EditDialog<MemberRecord> {
         binder.forField(firstName)
                 .withValidator(new StringLengthValidator(
                         "Please enter the first name of the member (max. 255 chars)", 1, 255))
-                .bind(MemberRecord::getFirstName, MemberRecord::setFirstName);
+                .bind(Member::getFirstName, Member::setFirstName);
 
         binder.forField(lastName)
                 .withValidator(new StringLengthValidator(
                         "Please enter the last name of the member (max. 255 chars)", 1, 255))
-                .bind(MemberRecord::getLastName, MemberRecord::setLastName);
+                .bind(Member::getLastName, Member::setLastName);
 
         binder.forField(email)
                 .withValidator(new EmailValidator(
                         "Please enter a correct email address or leave this field empty", true))
                 .withValidator(new StringLengthValidator(
                         "The email address is too long (max. 255 chars)", 0, 255))
-                .bind(MemberRecord::getEmail, MemberRecord::setEmail);
+                .bind(Member::getEmail, Member::setEmail);
 
         binder.forField(active)
-                .bind(MemberRecord::getActive, MemberRecord::setActive);
+                .bind(Member::getActive, Member::setActive);
 
         binder.forField(address)
                 .withValidator(new StringLengthValidator(
                         "The address is too long (max. 255 chars)", 0, 255))
-                .bind(MemberRecord::getAddress, MemberRecord::setAddress);
+                .bind(Member::getAddress, Member::setAddress);
 
         binder.forField(zipCode)
                 .withValidator(new StringLengthValidator(
                         "The zip code is too long (max. 255 chars)", 0, 255))
-                .bind(MemberRecord::getZipCode, MemberRecord::setZipCode);
+                .bind(Member::getZipCode, Member::setZipCode);
 
         binder.forField(city)
                 .withValidator(new StringLengthValidator(
                         "The city is too long (max. 255 chars)", 0, 255))
-                .bind(MemberRecord::getCity, MemberRecord::setCity);
+                .bind(Member::getCity, Member::setCity);
 
         binder.forField(state)
                 .withValidator(new StringLengthValidator(
                         "The state is too long (max. 255 chars)", 0, 255))
-                .bind(MemberRecord::getState, MemberRecord::setState);
+                .bind(Member::getState, Member::setState);
 
         binder.forField(country)
                 .withValidator(new StringLengthValidator(
                         "The country is too long (max. 255 chars)", 0, 255))
-                .bind(MemberRecord::getCountry, MemberRecord::setCountry);
+                .bind(Member::getCountry, Member::setCountry);
 
         binder.forField(admin)
-                .bind(MemberRecord::getAdmin, MemberRecord::setAdmin);
+                .bind(Member::getAdmin, Member::setAdmin);
 
         binder.forField(blocked)
-                .bind(MemberRecord::getBlocked, MemberRecord::setBlocked);
+                .bind(Member::getBlocked, Member::setBlocked);
 
         binder.forField(blockedReason)
                 .withValidator(value -> !blocked.getValue() || blocked.getValue() && !value.isBlank(),
                         "If you want to block this member, you must enter a reason")
                 .withValidator(new StringLengthValidator(
                         "The reason is too long (max. 255 chars)", 0, 255))
-                .bind(MemberRecord::getBlockedReason, MemberRecord::setBlockedReason);
+                .bind(Member::getBlockedReason, Member::setBlockedReason);
     }
 
 }

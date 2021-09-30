@@ -26,8 +26,8 @@ import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
 import org.komunumo.data.db.enums.SponsorLevel;
-import org.komunumo.data.db.tables.records.EventRecord;
-import org.komunumo.data.db.tables.records.SpeakerRecord;
+import org.komunumo.data.entity.Event;
+import org.komunumo.data.entity.Speaker;
 import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
@@ -225,9 +225,9 @@ public class JUGSImporter {
 
     private void updateEventLevel(@NotNull final EventService eventService) {
         eventService.find(0, Integer.MAX_VALUE, null)
-                .filter(record -> record.get(EVENT.VISIBLE))
-                .filter(record -> record.get(EVENT.LEVEL) == null)
-                .map(record -> eventService.get(record.get(EVENT.ID)))
+                .filter(Event::getVisible)
+                .filter(event -> event.getLevel() == null)
+                .map(event -> eventService.get(event.getId()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .forEach(event -> {
@@ -325,8 +325,8 @@ public class JUGSImporter {
         }
     }
 
-    private SpeakerRecord getSpeaker(final @NotNull SpeakerService speakerService,
-                                     final @NotNull ResultSet result) throws SQLException {
+    private Speaker getSpeaker(final @NotNull SpeakerService speakerService,
+                               final @NotNull ResultSet result) throws SQLException {
         final var speakerId = result.getLong("id");
 
         final var speakerById = speakerService.get(speakerId);
@@ -408,7 +408,7 @@ public class JUGSImporter {
 
     private void addOrganizers(@NotNull final MemberService memberService,
                                @NotNull final EventMemberService eventMemberService,
-                               @NotNull final EventRecord event,
+                               @NotNull final Event event,
                                @Nullable final String verantwortung) {
         if (verantwortung != null && !verantwortung.isBlank()) {
             final List<Integer> organizerIds = new ArrayList<>();

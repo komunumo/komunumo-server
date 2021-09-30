@@ -21,16 +21,15 @@ package org.komunumo.data.service;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
-import org.jooq.Record;
 import org.jooq.impl.DSL;
-import org.komunumo.data.db.tables.records.SpeakerRecord;
+import org.komunumo.data.entity.Speaker;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.jooq.impl.DSL.concat;
-import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
+import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
 @Service
@@ -42,8 +41,9 @@ public class SpeakerService {
         this.dsl = dsl;
     }
 
-    public SpeakerRecord newSpeaker() {
-        final var speaker = dsl.newRecord(SPEAKER);
+    public Speaker newSpeaker() {
+        final var speaker = dsl.newRecord(SPEAKER)
+                .into(Speaker.class);
         speaker.setFirstName("");
         speaker.setLastName("");
         speaker.setCompany("");
@@ -58,6 +58,7 @@ public class SpeakerService {
         speaker.setCity("");
         speaker.setState("");
         speaker.setCountry("");
+        speaker.setEventCount(0);
         return speaker;
     }
 
@@ -65,50 +66,62 @@ public class SpeakerService {
         return dsl.fetchCount(SPEAKER);
     }
 
-    public Stream<SpeakerRecord> getAllSpeakers() {
+    public Stream<Speaker> getAllSpeakers() {
         return dsl.selectFrom(SPEAKER)
                 .orderBy(SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME)
+                .fetchInto(Speaker.class)
                 .stream();
     }
 
-    public Stream<Record> find(final int offset, final int limit, @Nullable final String filter) {
+    public Stream<Speaker> find(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
-        return dsl.select(SPEAKER.asterisk(), DSL.count(EVENT_SPEAKER.EVENT_ID).as("event_count"))
-                .from(SPEAKER)
-                .leftJoin(EVENT_SPEAKER).on(SPEAKER.ID.eq(EVENT_SPEAKER.SPEAKER_ID))
+        return dsl.selectFrom(SPEAKER)
                 .where(filterValue == null ? DSL.noCondition() :
                         concat(concat(SPEAKER.FIRST_NAME, " "), SPEAKER.LAST_NAME).like(filterValue)
                                 .or(SPEAKER.COMPANY.like(filterValue))
                                 .or(SPEAKER.EMAIL.like(filterValue))
                                 .or(SPEAKER.TWITTER.like(filterValue)))
-                .groupBy(SPEAKER.ID)
                 .orderBy(SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME)
                 .offset(offset)
                 .limit(limit)
-                .stream();
+                .fetchInto(Speaker.class)
+                .stream()
+                .map(this::addEventCount);
     }
 
-    public Optional<SpeakerRecord> get(@NotNull final Long id) {
-        return dsl.fetchOptional(SPEAKER, SPEAKER.ID.eq(id));
+    private Speaker addEventCount(@NotNull final Speaker speaker) {
+        final var eventCount = dsl.fetchCount(EVENT_MEMBER, EVENT_MEMBER.MEMBER_ID.eq(speaker.getId()));
+        speaker.setEventCount(eventCount);
+        return speaker;
     }
 
-    public Optional<SpeakerRecord> getSpeaker(@NotNull final String email) {
-        return dsl.fetchOptional(SPEAKER, SPEAKER.EMAIL.eq(email));
+    public Optional<Speaker> get(@NotNull final Long id) {
+        return dsl.selectFrom(SPEAKER)
+                .where(SPEAKER.ID.eq(id))
+                .fetchOptionalInto(Speaker.class);
     }
 
-    public Optional<SpeakerRecord> getSpeaker(@NotNull final String firstName,
-                                    @NotNull final String lastName,
-                                    @NotNull final String company) {
-        return dsl.fetchOptional(SPEAKER, SPEAKER.FIRST_NAME.eq(firstName)
-                .and(SPEAKER.LAST_NAME.eq(lastName))
-                .and(SPEAKER.COMPANY.eq(company)));
+    public Optional<Speaker> getSpeaker(@NotNull final String email) {
+        return dsl.selectFrom(SPEAKER)
+                .where(SPEAKER.EMAIL.eq(email))
+                .fetchOptionalInto(Speaker.class);
     }
 
-    public void store(@NotNull final SpeakerRecord speaker) {
+    public Optional<Speaker> getSpeaker(@NotNull final String firstName,
+                                        @NotNull final String lastName,
+                                        @NotNull final String company) {
+        return dsl.selectFrom(SPEAKER)
+                .where(SPEAKER.FIRST_NAME.eq(firstName)
+                        .and(SPEAKER.LAST_NAME.eq(lastName))
+                        .and(SPEAKER.COMPANY.eq(company)))
+                .fetchOptionalInto(Speaker.class);
+    }
+
+    public void store(@NotNull final Speaker speaker) {
         speaker.store();
     }
 
-    public void delete(@NotNull final SpeakerRecord speaker) {
+    public void delete(@NotNull final Speaker speaker) {
         speaker.delete();
     }
 }

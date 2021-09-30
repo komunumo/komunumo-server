@@ -31,10 +31,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
-import org.komunumo.data.db.tables.records.EventRecord;
-import org.komunumo.data.db.tables.records.MemberRecord;
-import org.komunumo.data.db.tables.records.SpeakerRecord;
+import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Keyword;
+import org.komunumo.data.entity.Member;
+import org.komunumo.data.entity.Speaker;
 import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-public class EventDialog extends EditDialog<EventRecord> {
+public class EventDialog extends EditDialog<Event> {
 
     private final EventService eventService;
     private final SpeakerService speakerService;
@@ -64,8 +64,8 @@ public class EventDialog extends EditDialog<EventRecord> {
     private final KeywordService keywordService;
     private final EventKeywordService eventKeywordService;
 
-    private Set<SpeakerRecord> speakers;
-    private Set<MemberRecord> organizers;
+    private Set<Speaker> speakers;
+    private Set<Member> organizers;
     private Set<Keyword> keywords;
     private Callback afterOpen;
 
@@ -88,11 +88,11 @@ public class EventDialog extends EditDialog<EventRecord> {
     }
 
     @Override
-    public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<EventRecord> binder) {
+    public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<Event> binder) {
         final var title = new TextField("Title");
         final var subtitle = new TextField("Subtitle");
-        final var speaker = new MultiselectComboBox<SpeakerRecord>("Speaker");
-        final var organizer = new MultiselectComboBox<MemberRecord>("Organizer");
+        final var speaker = new MultiselectComboBox<Speaker>("Speaker");
+        final var organizer = new MultiselectComboBox<Member>("Organizer");
         final var description = new TextArea("Description");
         final var keyword = new MultiselectComboBox<Keyword>("Keyword");
         final var agenda = new TextArea("Agenda");
@@ -142,17 +142,17 @@ public class EventDialog extends EditDialog<EventRecord> {
         binder.forField(title)
                 .withValidator(new StringLengthValidator(
                         "Please enter a title (max. 255 chars)", 1, 255))
-                .bind(EventRecord::getTitle, EventRecord::setTitle);
+                .bind(Event::getTitle, Event::setTitle);
 
         binder.forField(subtitle)
                 .withValidator(new StringLengthValidator(
                         "The subtitle is too long (max. 255 chars)", 0, 255))
-                .bind(EventRecord::getSubtitle, EventRecord::setSubtitle);
+                .bind(Event::getSubtitle, Event::setSubtitle);
 
         binder.forField(speaker)
                 .withValidator(value -> !visible.getValue() || !value.isEmpty(),
                         "Please select at least one speaker")
-                .bind(this::getSpeaker, this::setSpeaker);
+                .bind(this::getSpeakers, this::setSpeakers);
 
         binder.forField(organizer)
                 .withValidator(value -> !value.isEmpty(),
@@ -162,42 +162,42 @@ public class EventDialog extends EditDialog<EventRecord> {
         binder.forField(level)
                 .withValidator(value -> !visible.getValue() || value != null,
                         "Please select a level")
-                .bind(EventRecord::getLevel, EventRecord::setLevel);
+                .bind(Event::getLevel, Event::setLevel);
 
         binder.forField(description)
                 .withValidator(value -> !visible.getValue() || value != null && !value.isBlank(),
                         "Please enter a description")
-                .bind(EventRecord::getDescription, EventRecord::setDescription);
+                .bind(Event::getDescription, Event::setDescription);
 
         binder.forField(keyword)
                 .bind(this::getKeyword, this::setKeyword);
 
         binder.forField(agenda)
-                .bind(EventRecord::getAgenda, EventRecord::setAgenda);
+                .bind(Event::getAgenda, Event::setAgenda);
 
         binder.forField(language)
                 .withValidator(value -> !visible.getValue() || value != null,
                         "Please select a language")
-                .bind(EventRecord::getLanguage, EventRecord::setLanguage);
+                .bind(Event::getLanguage, Event::setLanguage);
 
         binder.forField(location)
                 .withValidator(value -> !visible.getValue() || value != null,
                         "Please select a location")
-                .bind(EventRecord::getLocation, EventRecord::setLocation);
+                .bind(Event::getLocation, Event::setLocation);
 
         binder.forField(date)
                 .withValidator(value -> isPastEvent(date) || !visible.getValue() && (value == null || value.isAfter(LocalDateTime.now()))
                                 || value != null && value.isAfter(LocalDateTime.now()),
                         "Please enter a date and time in the future")
-                .bind(EventRecord::getDate, EventRecord::setDate);
+                .bind(Event::getDate, Event::setDate);
 
         binder.forField(duration)
                 .withValidator(value -> !visible.getValue() || (value != null && value.isAfter(LocalTime.MIN) && value.isBefore(LocalTime.MAX)),
                         "Please enter a duration")
-                .bind(EventRecord::getDuration, EventRecord::setDuration);
+                .bind(Event::getDuration, Event::setDuration);
 
         binder.forField(visible)
-                .bind(EventRecord::getVisible, EventRecord::setVisible);
+                .bind(Event::getVisible, Event::setVisible);
 
         afterOpen = () -> {
             if (isPastEvent(date)) {
@@ -211,48 +211,48 @@ public class EventDialog extends EditDialog<EventRecord> {
         return date.getValue() != null && date.getValue().isBefore(LocalDateTime.now());
     }
 
-    private Set<SpeakerRecord> getSpeaker(@NotNull final EventRecord record) {
+    private Set<Speaker> getSpeakers(@NotNull final Event event) {
         return speakers;
     }
 
-    private void setSpeaker(@NotNull final EventRecord record, @Nullable final Set<SpeakerRecord> speakers) {
+    private void setSpeakers(@NotNull final Event event, @Nullable final Set<Speaker> speakers) {
         this.speakers = speakers != null ? speakers : Set.of();
     }
 
-    private Set<MemberRecord> getOrganizer(@NotNull final EventRecord record) {
+    private Set<Member> getOrganizer(@NotNull final Event event) {
         return organizers;
     }
 
-    private void setOrganizer(@NotNull final EventRecord record, @Nullable final Set<MemberRecord> organizers) {
+    private void setOrganizer(@NotNull final Event event, @Nullable final Set<Member> organizers) {
         this.organizers = organizers != null ? organizers : Set.of();
     }
 
-    private Set<Keyword> getKeyword(@NotNull final EventRecord record) {
+    private Set<Keyword> getKeyword(@NotNull final Event event) {
         return keywords;
     }
 
-    private void setKeyword(@NotNull final EventRecord record, @Nullable final Set<Keyword> keywords) {
+    private void setKeyword(@NotNull final Event event, @Nullable final Set<Keyword> keywords) {
         this.keywords = keywords != null ? keywords : Set.of();
     }
 
     @Override
-    public void open(@NotNull final EventRecord record, @Nullable final Callback afterSave) {
-        speakers = eventSpeakerService.getSpeakersForEvent(record)
+    public void open(@NotNull final Event event, @Nullable final Callback afterSave) {
+        speakers = eventSpeakerService.getSpeakersForEvent(event)
                 .collect(Collectors.toSet());
-        organizers = eventMemberService.getOrganizersForEvent(record)
+        organizers = eventMemberService.getOrganizersForEvent(event)
                 .collect(Collectors.toSet());
-        keywords = eventKeywordService.getKeywordsForEvent(record)
+        keywords = eventKeywordService.getKeywordsForEvent(event)
                 .collect(Collectors.toSet());
-        super.open(record,
+        super.open(event,
                 () -> {
                     if (afterOpen != null) {
                         afterOpen.execute();
                     }
                 },
                 () -> {
-                    eventSpeakerService.setEventSpeakers(record, speakers);
-                    eventMemberService.setEventOrganizers(record, organizers);
-                    eventKeywordService.setEventKeywords(record, keywords);
+                    eventSpeakerService.setEventSpeakers(event, speakers);
+                    eventMemberService.setEventOrganizers(event, organizers);
+                    eventKeywordService.setEventKeywords(event, keywords);
                     if (afterSave != null) {
                         afterSave.execute();
                     }

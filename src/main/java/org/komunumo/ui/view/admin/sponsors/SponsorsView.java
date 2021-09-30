@@ -26,7 +26,6 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -41,8 +40,7 @@ import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jooq.Record;
-import org.komunumo.data.db.tables.records.SponsorRecord;
+import org.komunumo.data.entity.Sponsor;
 import org.komunumo.data.service.SponsorService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
@@ -54,7 +52,6 @@ import java.io.StringWriter;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
 import static org.komunumo.util.FormatterUtil.formatDate;
 
 @Route(value = "admin/sponsors", layout = AdminLayout.class)
@@ -64,7 +61,7 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
 
     private final SponsorService sponsorService;
     private final TextField filterField;
-    private final Grid<Record> grid;
+    private final Grid<Sponsor> grid;
 
     public SponsorsView(@NotNull final SponsorService sponsorService) {
         this.sponsorService = sponsorService;
@@ -76,13 +73,13 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter sponsors by name");
 
-        final var newSponsorButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> newSponsor());
+        final var newSponsorButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), clickEvent -> newSponsor());
         newSponsorButton.setTitle("Add a new sponsor");
 
-        final var refreshSpeakersButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
+        final var refreshSpeakersButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), clickEvent -> reloadGridItems());
         refreshSpeakersButton.setTitle("Refresh the list of sponsors");
 
-        final var downloadSponsorsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD), event -> downloadSponsors());
+        final var downloadSponsorsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD), clickEvent -> downloadSponsors());
         downloadSponsorsButton.setTitle("Download the list of sponsors");
 
         final var optionBar = new HorizontalLayout(filterField, newSponsorButton, refreshSpeakersButton, downloadSponsorsButton);
@@ -95,37 +92,47 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
 
 
     @Override
-    public void setParameter(@NotNull final BeforeEvent event,
+    public void setParameter(@NotNull final BeforeEvent beforeEvent,
                              @Nullable @OptionalParameter String parameter) {
-        final var location = event.getLocation();
+        final var location = beforeEvent.getLocation();
         final var queryParameters = location.getQueryParameters();
         final var parameters = queryParameters.getParameters();
         final var filterValue = parameters.getOrDefault("filter", List.of("")).get(0);
         filterField.setValue(filterValue);
     }
 
-    private Grid<Record> createGrid() {
-        final var grid = new Grid<Record>();
+    private Grid<Sponsor> createGrid() {
+        final var grid = new Grid<Sponsor>();
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
-        grid.addColumn(TemplateRenderer.<Record>of(
+        grid.addColumn(TemplateRenderer.<Sponsor>of(
                 "<a style=\"font-weight: bold;\" href=\"[[item.website]]\" target=\"_blank\">[[item.name]]</a>")
-                .withProperty("name", record -> record.get(SPONSOR.NAME))
-                .withProperty("website", record -> record.get(SPONSOR.WEBSITE)))
+                .withProperty("name", Sponsor::getName)
+                .withProperty("website", Sponsor::getWebsite))
                 .setHeader("Name").setAutoWidth(true).setFlexGrow(1);
-        grid.addColumn(TemplateRenderer.<Record>of(
+        grid.addColumn(TemplateRenderer.<Sponsor>of(
                 "<img style=\"max-width: 100%;\" src=\"[[item.logo]]\" /></span>")
-                .withProperty("logo", record -> record.get(SPONSOR.LOGO)))
+                .withProperty("logo", Sponsor::getLogo))
                 .setHeader("Logo").setWidth("96px").setFlexGrow(0);
-        grid.addColumn(record -> record.get(SPONSOR.LEVEL)).setHeader("Level").setAutoWidth(true);
-        grid.addColumn(record -> formatDate(record.get(SPONSOR.VALID_FROM))).setHeader("Valid from").setAutoWidth(true).setFlexGrow(0).setKey("validFrom");
-        grid.addColumn(record -> formatDate(record.get(SPONSOR.VALID_TO))).setHeader("Valid to").setAutoWidth(true).setFlexGrow(0).setKey("validTo");
+        grid.addColumn(Sponsor::getLevel)
+                .setHeader("Level")
+                .setAutoWidth(true);
+        grid.addColumn(sponsor -> formatDate(sponsor.getValidFrom()))
+                .setHeader("Valid from")
+                .setAutoWidth(true)
+                .setFlexGrow(0)
+                .setKey("validFrom");
+        grid.addColumn(sponsor -> formatDate(sponsor.getValidTo()))
+                .setHeader("Valid to")
+                .setAutoWidth(true)
+                .setFlexGrow(0)
+                .setKey("validTo");
 
-        grid.addColumn(new ComponentRenderer<>(record -> {
-            final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), event -> editSponsor(record.get(SPONSOR.ID)));
+        grid.addColumn(new ComponentRenderer<>(sponsor -> {
+            final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), clickEvent -> showSponsorDialog(sponsor));
             editButton.setTitle("Edit this sponsor");
-            final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), event -> deleteSponsor(record.get(SPONSOR.ID)));
+            final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), clickEvent -> deleteSponsor(sponsor));
             deleteButton.setTitle("Delete this sponsor");
             return new HorizontalLayout(editButton, deleteButton);
         }))
@@ -148,37 +155,21 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
         showSponsorDialog(sponsorService.newSponsor());
     }
 
-    private void editSponsor(@NotNull final Long sponsorId) {
-        final var sponsor = sponsorService.get(sponsorId);
-        if (sponsor.isPresent()) {
-            showSponsorDialog(sponsor.get());
-        } else {
-            Notification.show("This sponsor does not exist anymore. Reloading view…");
-            reloadGridItems();
-        }
-    }
-
-    private void showSponsorDialog(@NotNull final SponsorRecord sponsor) {
-        final var dialog = new SponsorDialog(sponsor.get(SPONSOR.ID) != null ? "Edit Sponsor" : "New Sponsor");
+    private void showSponsorDialog(@NotNull final Sponsor sponsor) {
+        final var dialog = new SponsorDialog(sponsor.getId() != null ? "Edit Sponsor" : "New Sponsor");
         dialog.open(sponsor, this::reloadGridItems);
     }
 
-    private void deleteSponsor(@NotNull final Long sponsorId) {
-        final var sponsor = sponsorService.get(sponsorId);
-        if (sponsor.isPresent()) {
-            new ConfirmDialog("Confirm deletion",
-                    String.format("Are you sure you want to permanently delete the sponsor \"%s\"?", sponsor.get().getName()),
-                    "Delete", dialogEvent -> {
-                sponsorService.delete(sponsor.get());
-                reloadGridItems();
-                dialogEvent.getSource().close();
-            },
-                    "Cancel", dialogEvent -> dialogEvent.getSource().close()
-            ).open();
-        } else {
-            Notification.show("This sponsor does not exist anymore. Reloading view…");
+    private void deleteSponsor(final Sponsor sponsor) {
+        new ConfirmDialog("Confirm deletion",
+                String.format("Are you sure you want to permanently delete the sponsor \"%s\"?", sponsor.getName()),
+                "Delete", dialogEvent -> {
+            sponsorService.delete(sponsor);
             reloadGridItems();
-        }
+            dialogEvent.getSource().close();
+        },
+                "Cancel", dialogEvent -> dialogEvent.getSource().close()
+        ).open();
     }
 
     private void reloadGridItems() {
@@ -193,13 +184,13 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
                     "ID", "Name", "Website", "Level", "Valid from", "Valid to"
             });
             grid.getGenericDataView()
-                    .getItems().map(record -> new String[] {
-                    record.get(SPONSOR.ID).toString(),
-                    record.get(SPONSOR.NAME),
-                    record.get(SPONSOR.WEBSITE),
-                    record.get(SPONSOR.LEVEL) != null ? record.get(SPONSOR.LEVEL).getName() : "",
-                    formatDate(record.get(SPONSOR.VALID_FROM)),
-                    formatDate(record.get(SPONSOR.VALID_TO))
+                    .getItems().map(sponsor -> new String[] {
+                    sponsor.getId().toString(),
+                    sponsor.getName(),
+                    sponsor.getWebsite(),
+                    sponsor.getLevel() != null ? sponsor.getLevel().getName() : "",
+                    formatDate(sponsor.getValidFrom()),
+                    formatDate(sponsor.getValidTo())
             }).forEach(csvWriter::writeNext);
             return new ByteArrayInputStream(stringWriter.toString().getBytes(UTF_8));
         });

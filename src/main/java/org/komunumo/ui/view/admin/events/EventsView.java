@@ -40,8 +40,8 @@ import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.entity.Event;
+import org.komunumo.data.entity.Keyword;
 import org.komunumo.data.entity.Speaker;
 import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventMemberService;
@@ -62,7 +62,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.komunumo.data.db.tables.Event.EVENT;
 import static org.komunumo.util.FormatterUtil.formatDateTime;
 
 @Route(value = "admin/events", layout = AdminLayout.class)
@@ -137,14 +136,14 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
         grid.addColumn(TemplateRenderer.<Event>of("<span style=\"font-weight: bold;\">[[item.title]]</span><br/><span inner-h-t-m-l=\"[[item.speaker]]\"></span>")
-                .withProperty("title", EventRecord::getTitle)
+                .withProperty("title", Event::getTitle)
                 .withProperty("speaker", this::renderSpeakerLinks))
                 .setHeader("Title & Speaker").setFlexGrow(1);
 
         final var dateRenderer = TemplateRenderer.<Event>of(
                 "[[item.date]]<br/>[[item.location]]")
                 .withProperty("date", event -> formatDateTime(event.getDate()))
-                .withProperty("location", EventRecord::getLocation);
+                .withProperty("location", Event::getLocation);
         grid.addColumn(dateRenderer).setHeader("Date & Location").setAutoWidth(true).setFlexGrow(0).setKey("dateLocation");
 
         grid.addColumn(Event::getAttendeeCount).setHeader("Attendees").setAutoWidth(true).setFlexGrow(0).setKey("attendees");
@@ -193,7 +192,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
         showEventDialog(eventService.newEvent());
     }
 
-    private void showEventDialog(@NotNull final EventRecord event) {
+    private void showEventDialog(@NotNull final Event event) {
         new EventDialog(event.getId() != null ? "Edit Event" : "New Event",
                 eventService,
                 speakerService, eventSpeakerService,
@@ -223,21 +222,22 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
             final var stringWriter = new StringWriter();
             final var csvWriter = new CSVWriter(stringWriter);
             csvWriter.writeNext(new String[]{
-                    "ID", "Title", "Subtitle", "Speaker", "Abstract", "Agenda", "Level", "Language", "Location", "Date", "Visible"
+                    "ID", "Title", "Subtitle", "Speaker", "Description", "Keywords", "Agenda", "Level", "Language", "Location", "Date", "Visible"
             });
             grid.getGenericDataView()
-                    .getItems().map(record -> new String[]{
-                    record.get(EVENT.ID).toString(),
-                    record.get(EVENT.TITLE),
-                    record.get(EVENT.SUBTITLE),
-                    record.get("speaker", String.class),
-                    record.get(EVENT.DESCRIPTION),
-                    record.get(EVENT.AGENDA),
-                    record.get(EVENT.LEVEL) != null ? record.get(EVENT.LEVEL).toString() : null,
-                    record.get(EVENT.LANGUAGE) != null ? record.get(EVENT.LANGUAGE).toString() : null,
-                    record.get(EVENT.LOCATION),
-                    record.get(EVENT.DATE) != null ? record.get(EVENT.DATE).toString() : null,
-                    record.get(EVENT.VISIBLE).toString()
+                    .getItems().map(event -> new String[]{
+                    event.getId().toString(),
+                    event.getTitle(),
+                    event.getSubtitle(),
+                    event.getSpeakers().stream().map(Speaker::getFullName).collect(Collectors.joining(", ")),
+                    event.getDescription(),
+                    event.getKeywords().stream().map(Keyword::getKeyword).collect(Collectors.joining(", ")),
+                    event.getAgenda(),
+                    event.getLevel() != null ? event.getLevel().toString() : null,
+                    event.getLanguage() != null ? event.getLanguage().toString() : null,
+                    event.getLocation(),
+                    event.getDate() != null ? event.getDate().toString() : null,
+                    event.getVisible().toString()
             }).forEach(csvWriter::writeNext);
             return new ByteArrayInputStream(stringWriter.toString().getBytes(UTF_8));
         });
