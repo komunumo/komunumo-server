@@ -18,12 +18,12 @@
 
 package org.komunumo.data.service;
 
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
-import org.jooq.Record;
 import org.jooq.impl.DSL;
-import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Keyword;
 import org.komunumo.data.entity.Speaker;
@@ -40,7 +40,6 @@ import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
 import static org.jooq.impl.DSL.concat;
 import static org.jooq.impl.DSL.condition;
-import static org.jooq.impl.DSL.groupConcat;
 import static org.komunumo.data.db.tables.Event.EVENT;
 import static org.komunumo.data.db.tables.EventKeyword.EVENT_KEYWORD;
 import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
@@ -60,21 +59,27 @@ public class EventService {
         this.eventSpeakerService = eventSpeakerService;
     }
 
-    public EventRecord newEvent() {
-        final var event = dsl.newRecord(EVENT);
+    public Event newEvent() {
+        final var event = dsl.newRecord(EVENT)
+                .into(Event.class);
         event.setTitle("");
         event.setSubtitle("");
         event.setDescription("");
         event.setAgenda("");
         event.setVisible(false);
+        event.setSpeakers(List.of());
+        event.setKeywords(List.of());
+        event.setAttendeeCount(0);
         return event;
     }
 
-    public Optional<EventRecord> get(@NotNull final Long id) {
-        return dsl.fetchOptional(EVENT, EVENT.ID.eq(id));
+    public Optional<Event> get(@NotNull final Long id) {
+        return dsl.selectFrom(EVENT)
+                .where(EVENT.ID.eq(id))
+                .fetchOptionalInto(Event.class);
     }
 
-    public void store(@NotNull final EventRecord event) {
+    public void store(@NotNull final Event event) {
         event.store();
     }
 
@@ -88,12 +93,10 @@ public class EventService {
         return dsl.fetchCount(EVENT, EVENT.DATE.between(firstDay, lastDay));
     }
 
-    public Stream<Record> find(final int offset, final int limit, @Nullable final String filter) {
+    public Stream<Event> find(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         final var speakerFullName = concat(SPEAKER.FIRST_NAME, DSL.value(" "), SPEAKER.LAST_NAME);
-        return dsl.select(EVENT.asterisk(),
-                    groupConcat(speakerFullName).separator(", ").as("speaker"),
-                    DSL.selectCount().from(EVENT_MEMBER).where(EVENT.ID.eq(EVENT_MEMBER.EVENT_ID)).asField("attendees"))
+        return dsl.select(EVENT.asterisk())
                 .from(EVENT)
                 .leftJoin(EVENT_SPEAKER).on(EVENT.ID.eq(EVENT_SPEAKER.EVENT_ID))
                 .leftJoin(SPEAKER).on(EVENT_SPEAKER.SPEAKER_ID.eq(SPEAKER.ID))
@@ -104,10 +107,12 @@ public class EventService {
                 .orderBy(EVENT.DATE.desc().nullsFirst())
                 .offset(offset)
                 .limit(limit)
-                .stream();
+                .fetchInto(Event.class)
+                .stream()
+                .map(this::addAdditionalData);
     }
 
-    public void deleteEvent(@NotNull final EventRecord event) {
+    public void deleteEvent(@NotNull final Event event) {
         eventSpeakerService.removeAllSpeakersFromEvent(event);
         dsl.delete(EVENT).where(EVENT.ID.eq(event.getId())).execute();
     }
@@ -120,11 +125,17 @@ public class EventService {
                 .orderBy(EVENT.DATE.asc())
                 .fetchInto(Event.class)
                 .stream()
-                .map(this::addSpeakers)
-                .map(this::addKeywords);
+                .map(this::addAdditionalData);
     }
 
-    private Event addSpeakers(@NotNull final Event event) {
+    private Event addAdditionalData(@NotNull final Event event) {
+        addSpeakers(event);
+        addKeywords(event);
+        addAttendeeCount(event);
+        return event;
+    }
+
+    private void addSpeakers(@NotNull final Event event) {
         final var speakers = dsl.select(SPEAKER.asterisk())
                 .from(SPEAKER)
                 .join(EVENT_SPEAKER).on(SPEAKER.ID.eq(EVENT_SPEAKER.SPEAKER_ID))
@@ -132,10 +143,9 @@ public class EventService {
                 .orderBy(SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME)
                 .fetchInto(Speaker.class);
         event.setSpeakers(speakers);
-        return event;
     }
 
-    private Event addKeywords(@NotNull final Event event) {
+    private void addKeywords(@NotNull final Event event) {
         final var keywords = dsl.select(KEYWORD.asterisk())
                 .from(KEYWORD)
                 .join(EVENT_KEYWORD).on(KEYWORD.ID.eq(EVENT_KEYWORD.KEYWORD_ID))
@@ -143,7 +153,11 @@ public class EventService {
                 .orderBy(KEYWORD.KEYWORD_)
                 .fetchInto(Keyword.class);
         event.setKeywords(keywords);
-        return event;
+    }
+
+    private void addAttendeeCount(@NotNull final Event event) {
+        final var attendeeCount = dsl.fetchCount(EVENT_MEMBER, EVENT_MEMBER.EVENT_ID.eq(event.getId()));
+        event.setAttendeeCount(attendeeCount);
     }
 
     public Set<String> getAllLocations() {

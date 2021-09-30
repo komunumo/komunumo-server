@@ -18,16 +18,17 @@
 
 package org.komunumo.data.entity;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.EventRecord;
+
+import java.util.Collections;
+import java.util.List;
 
 public class Event extends EventRecord {
 
     private List<Speaker> speakers;
     private List<Keyword> keywords;
+    private int attendeeCount;
 
     public void setSpeakers(@NotNull final List<Speaker> speakers) {
         this.speakers = Collections.unmodifiableList(speakers);
@@ -43,5 +44,13 @@ public class Event extends EventRecord {
 
     public List<Keyword> getKeywords() {
         return keywords;
+    }
+
+    public void setAttendeeCount(final int attendeeCount) {
+        this.attendeeCount = attendeeCount;
+    }
+
+    public int getAttendeeCount() {
+        return attendeeCount;
     }
 }
