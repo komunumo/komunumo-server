@@ -52,11 +52,14 @@ public class EventService {
 
     private final DSLContext dsl;
     private final EventSpeakerService eventSpeakerService;
+    private final EventOrganizerService eventOrganizerService;
 
     public EventService(@NotNull final DSLContext dsl,
-                        @NotNull final EventSpeakerService eventSpeakerService) {
+                        @NotNull final EventSpeakerService eventSpeakerService,
+                        @NotNull final EventOrganizerService eventOrganizerService) {
         this.dsl = dsl;
         this.eventSpeakerService = eventSpeakerService;
+        this.eventOrganizerService = eventOrganizerService;
     }
 
     public Event newEvent() {
@@ -114,6 +117,7 @@ public class EventService {
 
     public void deleteEvent(@NotNull final Event event) {
         eventSpeakerService.removeAllSpeakersFromEvent(event);
+        eventOrganizerService.removeAllOrganizersFromEvent(event);
         dsl.delete(EVENT).where(EVENT.ID.eq(event.getId())).execute();
     }
 
