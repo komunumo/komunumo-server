@@ -66,20 +66,20 @@
 }
 
 /* Text colors */
-.dashboard-view .error-text {
-  color: var(--lumo-error-text-color);
+.dashboard-view .error-text, [theme~="badge"][theme~="error"] {
+  color: var(--red);
 }
 
-.dashboard-view .primary-text {
-  color: var(--lumo-primary-text-color);
+.dashboard-view .primary-text, [theme~="badge"] {
+  color: var(--blue);
 }
 
 .dashboard-view .secondary-text {
   color: var(--lumo-secondary-text-color);
 }
 
-.dashboard-view .success-text {
-  color: var(--lumo-success-text-color);
+.dashboard-view .success-text, [theme~="badge"][theme~="success"] {
+  color: var(--green);
 }
 
 /* Charts */
