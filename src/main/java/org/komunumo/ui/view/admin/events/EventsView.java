@@ -19,13 +19,13 @@
 package org.komunumo.ui.view.admin.events;
 
 import com.opencsv.CSVWriter;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -35,10 +35,11 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
+import com.vaadin.flow.server.VaadinSession;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jooq.Record;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventMemberService;
@@ -51,7 +52,6 @@ import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
-import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
@@ -111,10 +111,8 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
 
         final var downloadEventsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD));
         downloadEventsButton.setTitle("Download the list of events");
-        final var downloadEventsButtonWrapper = new FileDownloadWrapper(downloadEvents());
-        downloadEventsButtonWrapper.wrapComponent(downloadEventsButton);
 
-        final var optionBar = new HorizontalLayout(filterField, newEventButton, refreshEventsButton, downloadEventsButtonWrapper);
+        final var optionBar = new HorizontalLayout(filterField, newEventButton, refreshEventsButton, downloadEventsButton);
         optionBar.setPadding(true);
 
         add(optionBar, grid);
@@ -234,8 +232,8 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
         grid.setItems(query -> eventService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
-    private StreamResource downloadEvents() {
-        return new StreamResource("events.csv", () -> {
+    private void downloadEvents() {
+        final var resource = new StreamResource("events.csv", () -> {
             final var stringWriter = new StringWriter();
             final var csvWriter = new CSVWriter(stringWriter);
             csvWriter.writeNext(new String[]{
@@ -257,5 +255,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
             }).forEach(csvWriter::writeNext);
             return new ByteArrayInputStream(stringWriter.toString().getBytes(UTF_8));
         });
+        final StreamRegistration registration = VaadinSession.getCurrent().getResourceRegistry().registerResource(resource);
+        UI.getCurrent().getPage().setLocation(registration.getResourceUri());
     }
 }

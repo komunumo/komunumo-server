@@ -19,6 +19,7 @@
 package org.komunumo.ui.view.admin.keywords;
 
 import com.opencsv.CSVWriter;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
@@ -31,7 +32,9 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
+import com.vaadin.flow.server.VaadinSession;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.KeywordRecord;
 import org.komunumo.data.entity.Keyword;
@@ -40,7 +43,6 @@ import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
-import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
@@ -73,12 +75,10 @@ public class KeywordsView extends ResizableView {
         final var refreshKeywordsButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
         refreshKeywordsButton.setTitle("Refresh the list of keywords");
 
-        final var downloadKeywordsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD));
+        final var downloadKeywordsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD), event -> downloadKeywords());
         downloadKeywordsButton.setTitle("Download the list of keywords");
-        final var downloadKeywordsButtonWrapper = new FileDownloadWrapper(downloadKeywords());
-        downloadKeywordsButtonWrapper.wrapComponent(downloadKeywordsButton);
 
-        final var optionBar = new HorizontalLayout(filterField, newKeywordButton, refreshKeywordsButton, downloadKeywordsButtonWrapper);
+        final var optionBar = new HorizontalLayout(filterField, newKeywordButton, refreshKeywordsButton, downloadKeywordsButton);
         optionBar.setPadding(true);
 
         add(optionBar, grid);
@@ -155,8 +155,8 @@ public class KeywordsView extends ResizableView {
         grid.setItems(query -> keywordService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
-    private StreamResource downloadKeywords() {
-        return new StreamResource("keywords.csv", () -> {
+    private void downloadKeywords() {
+        final var resource = new StreamResource("keywords.csv", () -> {
             final var stringWriter = new StringWriter();
             final var csvWriter = new CSVWriter(stringWriter);
             csvWriter.writeNext(new String[] { "ID", "Keyword", "Event count" });
@@ -168,5 +168,7 @@ public class KeywordsView extends ResizableView {
             }).forEach(csvWriter::writeNext);
             return new ByteArrayInputStream(stringWriter.toString().getBytes(UTF_8));
         });
+        final StreamRegistration registration = VaadinSession.getCurrent().getResourceRegistry().registerResource(resource);
+        UI.getCurrent().getPage().setLocation(registration.getResourceUri());
     }
 }

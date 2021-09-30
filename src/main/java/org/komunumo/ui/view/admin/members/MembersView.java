@@ -19,6 +19,7 @@
 package org.komunumo.ui.view.admin.members;
 
 import com.opencsv.CSVWriter;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
@@ -35,7 +36,9 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
+import com.vaadin.flow.server.VaadinSession;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.Record;
@@ -45,7 +48,6 @@ import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
-import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
@@ -80,12 +82,10 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         final var refreshMembersButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
         refreshMembersButton.setTitle("Refresh the list of members");
 
-        final var downloadMembersButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD));
+        final var downloadMembersButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD), event -> downloadMembers());
         downloadMembersButton.setTitle("Download the list of members");
-        final var downloadMembersButtonWrapper = new FileDownloadWrapper(downloadMembers());
-        downloadMembersButtonWrapper.wrapComponent(downloadMembersButton);
 
-        final var optionBar = new HorizontalLayout(filterField, newMemberButton, refreshMembersButton, downloadMembersButtonWrapper);
+        final var optionBar = new HorizontalLayout(filterField, newMemberButton, refreshMembersButton, downloadMembersButton);
         optionBar.setPadding(true);
 
         add(optionBar, grid);
@@ -189,8 +189,8 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         grid.setItems(query -> memberService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
-    private StreamResource downloadMembers() {
-        return new StreamResource("members.csv", () -> {
+    private void downloadMembers() {
+        final var resource = new StreamResource("members.csv", () -> {
             final var stringWriter = new StringWriter();
             final var csvWriter = new CSVWriter(stringWriter);
             csvWriter.writeNext(new String[] {
@@ -217,6 +217,8 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
             }).forEach(csvWriter::writeNext);
             return new ByteArrayInputStream(stringWriter.toString().getBytes(UTF_8));
         });
+        final StreamRegistration registration = VaadinSession.getCurrent().getResourceRegistry().registerResource(resource);
+        UI.getCurrent().getPage().setLocation(registration.getResourceUri());
     }
 
 }

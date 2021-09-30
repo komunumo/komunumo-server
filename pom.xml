@@ -109,11 +109,6 @@
             <version>2.0.1</version>
         </dependency>
         <dependency>
-            <groupId>org.vaadin.olli</groupId>
-            <artifactId>file-download-wrapper</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-        <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
             <version>5.5.2</version>

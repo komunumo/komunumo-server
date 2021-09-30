@@ -19,6 +19,7 @@
 package org.komunumo.ui.view.admin.sponsors;
 
 import com.opencsv.CSVWriter;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
@@ -35,7 +36,9 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
+import com.vaadin.flow.server.VaadinSession;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.Record;
@@ -45,7 +48,6 @@ import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
-import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
@@ -80,12 +82,10 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
         final var refreshSpeakersButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
         refreshSpeakersButton.setTitle("Refresh the list of sponsors");
 
-        final var downloadSponsorsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD));
+        final var downloadSponsorsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD), event -> downloadSponsors());
         downloadSponsorsButton.setTitle("Download the list of sponsors");
-        final var downloadSponsorsButtonWrapper = new FileDownloadWrapper(downloadSponsors());
-        downloadSponsorsButtonWrapper.wrapComponent(downloadSponsorsButton);
 
-        final var optionBar = new HorizontalLayout(filterField, newSponsorButton, refreshSpeakersButton, downloadSponsorsButtonWrapper);
+        final var optionBar = new HorizontalLayout(filterField, newSponsorButton, refreshSpeakersButton, downloadSponsorsButton);
         optionBar.setPadding(true);
 
         add(optionBar, grid);
@@ -185,8 +185,8 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
         grid.setItems(query -> sponsorService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
-    private StreamResource downloadSponsors() {
-        return new StreamResource("sponsors.csv", () -> {
+    private void downloadSponsors() {
+        final var resource = new StreamResource("sponsors.csv", () -> {
             final var stringWriter = new StringWriter();
             final var csvWriter = new CSVWriter(stringWriter);
             csvWriter.writeNext(new String[] {
@@ -203,5 +203,7 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
             }).forEach(csvWriter::writeNext);
             return new ByteArrayInputStream(stringWriter.toString().getBytes(UTF_8));
         });
+        final StreamRegistration registration = VaadinSession.getCurrent().getResourceRegistry().registerResource(resource);
+        UI.getCurrent().getPage().setLocation(registration.getResourceUri());
     }
 }
