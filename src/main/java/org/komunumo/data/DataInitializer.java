@@ -20,7 +20,7 @@ package org.komunumo.data;
 
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.Configuration;
+import org.komunumo.configuration.Configuration;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.data.service.MemberService;
 import org.springframework.boot.CommandLineRunner;

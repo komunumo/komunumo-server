@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo;
+package org.komunumo.configuration;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -24,38 +24,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @org.springframework.context.annotation.Configuration
 @ConfigurationProperties(prefix = "komunumo")
 public class Configuration {
-
-    public static class Admin {
-
-        /**
-         * The email address of the administrator.
-         */
-        private String email;
-
-        public String getEmail() {
-            return email;
-        }
-
-        public void setEmail(@NotNull final String email) {
-            this.email = email;
-        }
-    }
-
-    public static class Email {
-
-        /**
-         * The email address used as the default from address.
-         */
-        private String address = "noreply@localhost";
-
-        public String getAddress() {
-            return address;
-        }
-
-        public void setAddress(@NotNull final String address) {
-            this.address = address;
-        }
-    }
 
     /**
      * Version information of Komunumo.
