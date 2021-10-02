@@ -18,43 +18,37 @@
 
 package org.komunumo.ui.view.website;
 
-import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.cookieconsent.CookieConsent;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.tabs.Tab;
-import com.vaadin.flow.component.tabs.Tabs;
-import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.component.html.Main;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.RouterLayout;
+import org.jetbrains.annotations.NotNull;
+import org.komunumo.configuration.Configuration;
 
-@CssImport(value = "./themes/komunumo/views/website/website-layout.css", themeFor = "vaadin-app-layout")
-public class WebsiteLayout extends AppLayout {
+@CssImport(value = "./themes/komunumo/views/website/website-layout.css")
+public class WebsiteLayout extends VerticalLayout implements RouterLayout {
 
-    private final H1 viewTitle;
+    private final Main main;
 
-    public WebsiteLayout() {
-        setPrimarySection(AppLayout.Section.DRAWER);
+    public WebsiteLayout(@NotNull final Configuration configuration) {
+        add(new CookieConsent());
+        add(new WebsiteHeader(configuration));
 
-        addToNavbar(new CookieConsent());
-
-        viewTitle = new H1();
-        addToNavbar(new DrawerToggle(), viewTitle);
-
-        final var tabs = new Tabs(
-                new Tab("Home"),
-                new Tab("Events"));
-        tabs.setOrientation(Tabs.Orientation.VERTICAL);
-        addToDrawer(tabs);
+        main = new Main();
+        add(main);
     }
 
-    @Override
-    protected void afterNavigation() {
-        super.afterNavigation();
-        viewTitle.setText(getCurrentPageTitle());
+    public void showRouterLayoutContent(@NotNull HasElement content) {
+        main.removeAll();
+        main.add(content.getElement().getComponent()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "WebsiteLayout content must be a Component")));
     }
 
-    private String getCurrentPageTitle() {
-        final var title = getContent().getClass().getAnnotation(PageTitle.class);
-        return title == null ? "" : title.value();
+    public void removeRouterLayoutContent(@NotNull HasElement oldContent) {
+        main.removeAll();
     }
+
 }

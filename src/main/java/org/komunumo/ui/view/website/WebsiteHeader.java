@@ -16,11 +16,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#website-header {
-    width: 100%;
-}
+package org.komunumo.ui.view.website;
 
-#website-header .website-logo {
-    float: right;
-    margin: 10px;
+import com.vaadin.flow.component.html.Header;
+import org.jetbrains.annotations.NotNull;
+import org.komunumo.configuration.Configuration;
+
+public class WebsiteHeader extends Header {
+
+    public WebsiteHeader(@NotNull final Configuration configuration) {
+        setId("website-header");
+
+        add(
+                new WebsiteLogo(configuration)
+        );
+    }
+
 }
