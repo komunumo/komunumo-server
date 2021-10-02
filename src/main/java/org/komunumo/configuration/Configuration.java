@@ -40,6 +40,11 @@ public class Configuration {
      */
     private Email email;
 
+    /**
+     * Configure website settings.
+     */
+    private Website website;
+
     public String getVersion() {
         return version;
     }
@@ -62,6 +67,14 @@ public class Configuration {
 
     public void setEmail(@NotNull final Email email) {
         this.email = email;
+    }
+
+    public Website getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(@NotNull final Website website) {
+        this.website = website;
     }
 
 }
