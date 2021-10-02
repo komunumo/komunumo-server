@@ -21,14 +21,11 @@ package org.komunumo.ui.view.website;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
-
-import java.util.concurrent.ThreadLocalRandom;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.StatisticService;
 
 import java.time.Year;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.komunumo.util.FormatterUtil.formatNumber;
 
