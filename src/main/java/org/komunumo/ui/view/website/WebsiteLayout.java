@@ -26,15 +26,17 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.RouterLayout;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.configuration.Configuration;
+import org.komunumo.data.service.StatisticService;
 
 @CssImport(value = "./themes/komunumo/views/website/website-layout.css")
 public class WebsiteLayout extends VerticalLayout implements RouterLayout {
 
     private final Main main;
 
-    public WebsiteLayout(@NotNull final Configuration configuration) {
+    public WebsiteLayout(@NotNull final Configuration configuration,
+                         @NotNull final StatisticService statisticService) {
         add(new CookieConsent());
-        add(new WebsiteHeader(configuration));
+        add(new WebsiteHeader(configuration, statisticService));
 
         main = new Main();
         add(main);

@@ -22,20 +22,26 @@ import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.service.StatisticService;
+
+import java.time.Year;
+import java.util.Random;
 
 import static org.komunumo.util.FormatterUtil.formatNumber;
 
 public class WebsiteStats extends Div {
 
-    public WebsiteStats() {
-        final var stats = getRandomStats();
+    private final StatisticService statisticService;
 
+    public WebsiteStats(@NotNull final StatisticService statisticService) {
+        this.statisticService = statisticService;
+
+        final var stats = getRandomStats();
         final var number = new Span(new Text(formatNumber(stats.getNumber())));
         number.addClassName("number");
-
         final var text = new Span(new Text(stats.getText()));
         text.addClassName("text");
 
@@ -44,17 +50,69 @@ public class WebsiteStats extends Div {
     }
 
     private Stats getRandomStats() {
-        final var randomNumber = new Random().nextInt(7);
+//        final var randomNumber = new Random().nextInt(7);
+        final var randomNumber = ThreadLocalRandom.current().nextInt(0, 7);
         switch (randomNumber) {
-            case 0: return new Stats(3488, "participiants have registered for our events so far in 2021.");
-            case 1: return new Stats(1362, "unique visitors have registered for our events so far in 2021.");
-            case 2: return new Stats(4486, "participiants registered for our events during 2020.");
-            case 3: return new Stats(1408, "unique visitors have registered for our events in 2020.");
-            case 4: return new Stats(1029, "members had joined JUG Switzerland at the end of 2020.");
-            case 5: return new Stats(54, "new members joined JUG Switzerland in 2020.");
-            case 6: return new Stats(41, "events were organized by JUG Switzerland during 2020.");
+            case 0: return getAttendeesActualYear();
+            case 1: return getUniqueAttendeesActualYear();
+            case 2: return getAttendeesLastYear();
+            case 3: return getUniqueAttendeesLastYear();
+            case 4: return getMemberCountLastYear();
+            case 5: return getMembersJoinedLastYear();
+            case 6: return getEventCountLastYear();
         }
         throw new RuntimeException("random website stats out of bounds");
+    }
+
+    private Stats getAttendeesActualYear() {
+        final var year = Year.now();
+        final var number = statisticService.countAttendeesByYear(year, StatisticService.NoShows.INCLUDE);
+        final var text = String.format("attendees have registered for our events so far in %s.", year);
+        return new Stats(number, text);
+    }
+
+    private Stats getUniqueAttendeesActualYear() {
+        final var year = Year.now();
+        final var number = statisticService.countUniqueAttendeesByYear(year, StatisticService.NoShows.INCLUDE);
+        final var text = String.format("unique attendees have registered for our events so far in %s.", year);
+        return new Stats(number, text);
+    }
+
+    private Stats getAttendeesLastYear() {
+        final var year = Year.now().minusYears(1);
+        final var number = statisticService.countAttendeesByYear(year, StatisticService.NoShows.INCLUDE);
+        final var text = String.format("attendees registered for our events during %s.", year);
+        return new Stats(number, text);
+    }
+
+    private Stats getUniqueAttendeesLastYear() {
+        final var year = Year.now().minusYears(1);
+        final var number = statisticService.countUniqueAttendeesByYear(year, StatisticService.NoShows.INCLUDE);
+        final var text = String.format("unique attendees have registered for our events in %s.", year);
+        return new Stats(number, text);
+    }
+
+    private Stats getMemberCountLastYear() {
+        final var year = Year.now().minusYears(1);
+        final var number = statisticService.countMembersByYear(year);
+        final var text = String.format("members had joined JUG Switzerland at the end of %s.", year);
+        return new Stats(number, text);
+    }
+
+    private Stats getMembersJoinedLastYear() {
+        final var year = Year.now().minusYears(1);
+        final var membersNow = statisticService.countMembersByYear(year);
+        final var membersBefore = statisticService.countMembersByYear(year.minusYears(1));
+        final var number = membersNow - membersBefore;
+        final var text = String.format("new members joined JUG Switzerland in %s.", year);
+        return new Stats(number, text);
+    }
+
+    private Stats getEventCountLastYear() {
+        final var year = Year.now().minusYears(1);
+        final var number = statisticService.countEventsByYear(year);
+        final var text = String.format("events were organized by JUG Switzerland during %s.", year);
+        return new Stats(number, text);
     }
 
     private static class Stats {

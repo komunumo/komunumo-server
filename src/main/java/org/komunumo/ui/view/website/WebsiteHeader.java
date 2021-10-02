@@ -21,15 +21,17 @@ package org.komunumo.ui.view.website;
 import com.vaadin.flow.component.html.Header;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.configuration.Configuration;
+import org.komunumo.data.service.StatisticService;
 
 public class WebsiteHeader extends Header {
 
-    public WebsiteHeader(@NotNull final Configuration configuration) {
+    public WebsiteHeader(@NotNull final Configuration configuration,
+                         @NotNull final StatisticService statisticService) {
         setId("website-header");
 
         add(
                 new WebsiteLogo(configuration),
-                new WebsiteStats()
+                new WebsiteStats(statisticService)
         );
     }
 
