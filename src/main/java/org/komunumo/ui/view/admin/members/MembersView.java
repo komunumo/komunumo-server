@@ -52,6 +52,7 @@ import java.io.StringWriter;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.komunumo.util.FormatterUtil.formatDateTime;
 
 @Route(value = "admin/members", layout = AdminLayout.class)
 @PageTitle("Member Administration")
@@ -172,7 +173,8 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
             csvWriter.writeNext(new String[] {
                     "ID", "First name", "Last name", "Email",
                     "Address", "Zip code", "City", "State", "Country",
-                    "Member since", "Admin", "Active", "Blocked", "Blocked reason"
+                    "Registration date", "Membership begin", "Membership end",
+                    "Admin", "Active", "Blocked", "Blocked reason"
             });
             grid.getGenericDataView()
                     .getItems().map(member -> new String[] {
@@ -185,7 +187,9 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
                     member.getCity(),
                     member.getState(),
                     member.getCountry(),
-                    member.getMemberSince().toString(),
+                    formatDateTime(member.getRegistrationDate()),
+                    formatDateTime(member.getMembershipBegin()),
+                    formatDateTime(member.getMembershipEnd()),
                     member.getAdmin().toString(),
                     member.getActive().toString(),
                     member.getBlocked().toString(),

@@ -184,13 +184,13 @@ public class JUGSImporter {
                 try {
                     eventMemberService.registerForEvent(eventId, memberId, registerDate, noShow);
                 } catch (final Exception e1) {
-                    if (memberService.get(memberId).isEmpty()) {
+                    if (memberService.get(memberId, true).isEmpty()) {
                         final var member = memberService.newMember();
                         member.setId(memberId);
                         member.setFirstName(RandomStringUtils.randomAlphabetic(32));
                         member.setLastName(RandomStringUtils.randomAlphabetic(32));
                         member.setEmail(RandomStringUtils.randomAlphabetic(32));
-                        member.setMemberSince(registerDate);
+                        member.setRegistrationDate(registerDate);
                         member.setDeleted(true);
                         memberService.store(member);
                         try {
@@ -494,7 +494,7 @@ public class JUGSImporter {
         final var adminIds = List.of(192, 882, 2922, 4423, 5091, 5244, 5889, 7135, 15809);
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
-                    "SELECT id, vname, nname, e_mail, strasse, plz, wohnort, land, datum FROM teilnehmer ORDER BY id");
+                    "SELECT id, vname, nname, e_mail, strasse, plz, wohnort, land, datum, join_as FROM teilnehmer ORDER BY id");
             while (result.next()) {
                 final var member = memberService.get(result.getLong("id"))
                         .orElse(memberService.newMember());
@@ -511,13 +511,28 @@ public class JUGSImporter {
                     member.set(MEMBER.ZIP_CODE, result.getString("plz"));
                     member.set(MEMBER.CITY, result.getString("wohnort"));
                     member.set(MEMBER.COUNTRY, result.getString("land"));
-                    member.set(MEMBER.MEMBER_SINCE, getDateTime(result.getString("datum")));
+                    member.set(MEMBER.REGISTRATION_DATE, getDateTime(result.getString("datum")));
+                    member.set(MEMBER.MEMBERSHIP_BEGIN, getMembershipBegin(result));
                     member.set(MEMBER.ACTIVE, true);
                     member.set(MEMBER.ADMIN, adminIds.contains(result.getInt("id")));
                     memberService.store(member);
                 }
             }
         }
+    }
+
+    private LocalDateTime getMembershipBegin(ResultSet result) throws SQLException {
+        final var joinAs = result.getString("join_as");
+        if (joinAs != null && (
+                joinAs.equalsIgnoreCase("jug.ch corporate member") ||
+                joinAs.equalsIgnoreCase("jug.ch exec member") ||
+                joinAs.equalsIgnoreCase("jug.ch single member") ||
+                joinAs.equalsIgnoreCase("jug.ch student member") ||
+                joinAs.equalsIgnoreCase("JUGS member")
+        )) {
+            return getDateTime(result.getString("datum"));
+        }
+        return null;
     }
 
     private LocalTime getDuration(@NotNull final String startzeit, @NotNull final String zeitende) {

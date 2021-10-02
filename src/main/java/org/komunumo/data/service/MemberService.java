@@ -54,7 +54,9 @@ public class MemberService {
         member.setCity("");
         member.setState("");
         member.setCountry("");
-        member.setMemberSince(LocalDateTime.now());
+        member.setRegistrationDate(LocalDateTime.now());
+        member.setMembershipBegin(null);
+        member.setMembershipEnd(null);
         member.setAdmin(false);
         member.setActive(false);
         member.setBlocked(false);
@@ -86,6 +88,17 @@ public class MemberService {
         return dsl.selectFrom(MEMBER)
                 .where(MEMBER.ID.eq(id)
                         .and(MEMBER.DELETED.isFalse()))
+                .fetchOptionalInto(Member.class);
+    }
+
+    /**
+     * @deprecated remove after migration of JUG.CH to Komunumo has finished
+     */
+    @Deprecated(forRemoval = true)
+    public Optional<Member> get(@NotNull final Long id, final boolean ignoreDeleted) {
+        return dsl.selectFrom(MEMBER)
+                .where(MEMBER.ID.eq(id)
+                        .and(ignoreDeleted ? DSL.noCondition() : MEMBER.DELETED.isFalse()))
                 .fetchOptionalInto(Member.class);
     }
 

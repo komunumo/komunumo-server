@@ -108,7 +108,7 @@ public class AuthService implements VaadinServiceInitListener {
         member.setCity(city);
         member.setState(state);
         member.setCountry(country);
-        member.setMemberSince(LocalDateTime.now());
+        member.setRegistrationDate(LocalDateTime.now());
         member.setAdmin(false);
         member.setActive(false);
         member.setActivationCode(RandomStringUtils.randomAlphanumeric(32));
