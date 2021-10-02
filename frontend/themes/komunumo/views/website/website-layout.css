@@ -24,3 +24,17 @@
     float: right;
     margin: 10px;
 }
+
+#website-header .website-stats .number {
+    font-family: 'Trade Gothic W02 Cn 18', Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
+    font-size: 150px;
+    line-height: 150px;
+}
+
+#website-header .website-stats .text {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 120%;
+    font-weight: bold;
+    margin-left: 1em;
+    text-transform: uppercase;
+}

@@ -28,7 +28,8 @@ public class WebsiteHeader extends Header {
         setId("website-header");
 
         add(
-                new WebsiteLogo(configuration)
+                new WebsiteLogo(configuration),
+                new WebsiteStats()
         );
     }
 
