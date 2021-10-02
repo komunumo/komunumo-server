@@ -18,8 +18,6 @@
 
 package org.komunumo.data.service;
 
-import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
@@ -30,14 +28,11 @@ import org.komunumo.data.entity.Speaker;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Year;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static java.time.Month.DECEMBER;
-import static java.time.Month.JANUARY;
 import static org.jooq.impl.DSL.concat;
 import static org.jooq.impl.DSL.condition;
 import static org.komunumo.data.db.tables.Event.EVENT;
@@ -88,12 +83,6 @@ public class EventService {
 
     public int count() {
         return dsl.fetchCount(EVENT);
-    }
-
-    public int countByYear(@NotNull final Year year) {
-        final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
-        final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
-        return dsl.fetchCount(EVENT, EVENT.DATE.between(firstDay, lastDay));
     }
 
     public Stream<Event> find(final int offset, final int limit, @Nullable final String filter) {

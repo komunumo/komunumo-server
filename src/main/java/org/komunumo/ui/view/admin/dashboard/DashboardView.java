@@ -34,9 +34,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.service.EventMemberService;
-import org.komunumo.data.service.EventMemberService.NoShows;
-import org.komunumo.data.service.EventService;
+import org.komunumo.data.service.StatisticService;
 import org.komunumo.ui.view.admin.AdminLayout;
 import org.komunumo.util.FormatterUtil;
 
@@ -52,13 +50,10 @@ public class DashboardView extends Div {
     private final H2 numberOfEvents = new H2();
     private final H2 noShowRate = new H2();
 
-    private final EventService eventService;
-    private final EventMemberService eventMemberService;
+    private final StatisticService statisticService;
 
-    public DashboardView(@NotNull final EventService eventService,
-                         @NotNull final EventMemberService eventMemberService) {
-        this.eventService = eventService;
-        this.eventMemberService = eventMemberService;
+    public DashboardView(@NotNull final StatisticService statisticService) {
+        this.statisticService = statisticService;
 
         addClassName("dashboard-view");
 
@@ -93,16 +88,16 @@ public class DashboardView extends Div {
 
     private void populateCharts() {
         // Top row widgets
-        final var registrations = eventMemberService.countByYear(Year.now(), NoShows.INCLUDE);
-        final var events = eventService.countByYear(Year.now());
-        final var noShows = eventMemberService.countByYear(Year.now(), NoShows.ONLY);
+        final var registrations = statisticService.countAttendeesByYear(Year.now(), StatisticService.NoShows.INCLUDE);
+        final var events = statisticService.countEventsByYear(Year.now());
+        final var noShows = statisticService.countAttendeesByYear(Year.now(), StatisticService.NoShows.ONLY);
         numberOfRegistrations.setText(FormatterUtil.formatNumber(registrations));
         numberOfEvents.setText(FormatterUtil.formatNumber(events));
         noShowRate.setText(FormatterUtil.formatNumber(registrations == 0 ? 0 : noShows * 100L / registrations) + "%");
 
         // First chart
         final var configuration = monthlyVisitors.getConfiguration();
-        eventMemberService.calculateMonthlyVisitorsByYear(Year.now()).stream()
+        statisticService.calculateMonthlyAttendeesByYear(Year.now()).stream()
                 .map(data -> new ListSeries(data.getLocation(),
                         data.getJanuary(), data.getFebruary(), data.getMarch(),
                         data.getApril(), data.getMay(), data.getJune(),

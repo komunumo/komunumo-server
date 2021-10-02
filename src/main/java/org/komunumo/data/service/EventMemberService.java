@@ -20,7 +20,6 @@ package org.komunumo.data.service;
 
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.EventMemberRecord;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.db.tables.records.MemberRecord;
@@ -28,19 +27,12 @@ import org.komunumo.data.entity.Member;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Year;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static java.time.Month.DECEMBER;
-import static java.time.Month.JANUARY;
-import static org.jooq.impl.DSL.month;
 import static org.jooq.impl.DSL.select;
-import static org.komunumo.data.db.tables.Event.EVENT;
 import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
 import static org.komunumo.data.db.tables.EventOrganizer.EVENT_ORGANIZER;
 import static org.komunumo.data.db.tables.Member.MEMBER;
@@ -147,165 +139,4 @@ public class EventMemberService {
         return dsl.fetchCount(EVENT_MEMBER);
     }
 
-    public int countByYear(@NotNull final Year year, @NotNull final NoShows noShows) {
-        final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
-        final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
-        return dsl.fetchCount(EVENT_MEMBER,
-                EVENT_MEMBER.DATE.between(firstDay, lastDay)
-                        .and(noShows == NoShows.INCLUDE
-                                ? DSL.noCondition()
-                                : EVENT_MEMBER.NO_SHOW.eq(noShows == NoShows.ONLY)));
-    }
-
-    public Collection<MonthlyVisitors> calculateMonthlyVisitorsByYear(@NotNull final Year year) {
-        final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
-        final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
-
-        return dsl.select(
-                        EVENT.LOCATION.as("Location"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(1)).as("January"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(2)).as("February"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(3)).as("March"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(4)).as("April"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(5)).as("May"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(6)).as("June"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(7)).as("July"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(8)).as("August"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(9)).as("September"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(10)).as("October"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(11)).as("November"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(12)).as("December"))
-                .from(EVENT_MEMBER)
-                .leftJoin(EVENT).on(EVENT_MEMBER.EVENT_ID.eq(EVENT.ID))
-                .where(EVENT.DATE.greaterOrEqual(firstDay).and(EVENT.DATE.lessOrEqual(lastDay)))
-                .groupBy(EVENT.LOCATION)
-                .orderBy(EVENT.LOCATION)
-                .fetchInto(MonthlyVisitors.class);
-    }
-
-    @SuppressWarnings("unused") // setters used via reflection by jOOQ
-    public static class MonthlyVisitors {
-        private String location;
-
-        private int january;
-        private int february;
-        private int march;
-        private int april;
-        private int may;
-        private int june;
-        private int july;
-        private int august;
-        private int september;
-        private int october;
-        private int november;
-        private int december;
-
-        public String getLocation() {
-            return location;
-        }
-
-        public void setLocation(@NotNull final String location) {
-            this.location = location;
-        }
-
-        public int getJanuary() {
-            return january;
-        }
-
-        public void setJanuary(final int january) {
-            this.january = january;
-        }
-
-        public int getFebruary() {
-            return february;
-        }
-
-        public void setFebruary(final int february) {
-            this.february = february;
-        }
-
-        public int getMarch() {
-            return march;
-        }
-
-        public void setMarch(final int march) {
-            this.march = march;
-        }
-
-        public int getApril() {
-            return april;
-        }
-
-        public void setApril(final int april) {
-            this.april = april;
-        }
-
-        public int getMay() {
-            return may;
-        }
-
-        public void setMay(final int may) {
-            this.may = may;
-        }
-
-        public int getJune() {
-            return june;
-        }
-
-        public void setJune(final int june) {
-            this.june = june;
-        }
-
-        public int getJuly() {
-            return july;
-        }
-
-        public void setJuly(final int july) {
-            this.july = july;
-        }
-
-        public int getAugust() {
-            return august;
-        }
-
-        public void setAugust(final int august) {
-            this.august = august;
-        }
-
-        public int getSeptember() {
-            return september;
-        }
-
-        public void setSeptember(final int september) {
-            this.september = september;
-        }
-
-        public int getOctober() {
-            return october;
-        }
-
-        public void setOctober(final int october) {
-            this.october = october;
-        }
-
-        public int getNovember() {
-            return november;
-        }
-
-        public void setNovember(final int november) {
-            this.november = november;
-        }
-
-        public int getDecember() {
-            return december;
-        }
-
-        public void setDecember(final int december) {
-            this.december = december;
-        }
-    }
-
-    public enum NoShows {
-        INCLUDE, EXCLUDE, ONLY
-    }
 }
