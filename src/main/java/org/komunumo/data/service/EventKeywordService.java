@@ -23,6 +23,7 @@ import org.jooq.DSLContext;
 import org.komunumo.data.db.tables.records.EventKeywordRecord;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.db.tables.records.KeywordRecord;
+import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Keyword;
 import org.springframework.stereotype.Service;
 
@@ -101,4 +102,9 @@ public class EventKeywordService {
                 .execute();
     }
 
+    public void removeAllKeywordsFromEvent(@NotNull final Event event) {
+        dsl.delete(EVENT_KEYWORD)
+                .where(EVENT_KEYWORD.EVENT_ID.eq(event.getId()))
+                .execute();
+    }
 }
