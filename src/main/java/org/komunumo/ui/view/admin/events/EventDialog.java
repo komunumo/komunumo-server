@@ -237,12 +237,10 @@ public class EventDialog extends EditDialog<Event> {
 
     @Override
     public void open(@NotNull final Event event, @Nullable final Callback afterSave) {
-        speakers = eventSpeakerService.getSpeakersForEvent(event)
-                .collect(Collectors.toSet());
+        speakers = Set.copyOf(event.getSpeakers());
         organizers = eventMemberService.getOrganizersForEvent(event)
                 .collect(Collectors.toSet());
-        keywords = eventKeywordService.getKeywordsForEvent(event)
-                .collect(Collectors.toSet());
+        keywords = Set.copyOf(event.getKeywords());
         super.open(event,
                 () -> {
                     if (afterOpen != null) {

@@ -74,6 +74,17 @@ public class EventService {
         return event;
     }
 
+    public Event copyEvent(@NotNull final Event originalEvent) {
+        final var newEvent = originalEvent.copy().into(Event.class);
+        newEvent.setSpeakers(originalEvent.getSpeakers());
+        newEvent.setKeywords(originalEvent.getKeywords());
+        newEvent.setLocation("");
+        newEvent.setDate(null);
+        newEvent.setVisible(false);
+        newEvent.setAttendeeCount(0);
+        return newEvent;
+    }
+
     public Optional<Event> get(@NotNull final Long id) {
         return dsl.selectFrom(EVENT)
                 .where(EVENT.ID.eq(id))

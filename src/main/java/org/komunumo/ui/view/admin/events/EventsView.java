@@ -156,9 +156,11 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
         grid.addColumn(new ComponentRenderer<>(event -> {
             final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), clickEvent -> showEventDialog(event));
             editButton.setTitle("Edit this event");
+            final var copyButton = new EnhancedButton(new Icon(VaadinIcon.COPY), clickEvent -> copyEvent(event));
+            copyButton.setTitle("Copy this event");
             final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), clickEvent -> deleteEvent(event));
             deleteButton.setTitle("Delete this event");
-            return new HorizontalLayout(editButton, deleteButton);
+            return new HorizontalLayout(editButton, copyButton, deleteButton);
 
         }))
             .setHeader("Actions")
@@ -199,6 +201,10 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
                 memberService, eventMemberService,
                 keywordService, eventKeywordService)
                 .open(event, this::reloadGridItems);
+    }
+
+    private void copyEvent(@NotNull final Event event) {
+        showEventDialog(eventService.copyEvent(event));
     }
 
     private void deleteEvent(@NotNull final Event event) {
