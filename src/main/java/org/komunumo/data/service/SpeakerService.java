@@ -29,7 +29,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.jooq.impl.DSL.concat;
-import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
+import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
 @Service
@@ -90,7 +90,7 @@ public class SpeakerService {
     }
 
     private Speaker addEventCount(@NotNull final Speaker speaker) {
-        final var eventCount = dsl.fetchCount(EVENT_MEMBER, EVENT_MEMBER.MEMBER_ID.eq(speaker.getId()));
+        final var eventCount = dsl.fetchCount(EVENT_SPEAKER, EVENT_SPEAKER.SPEAKER_ID.eq(speaker.getId()));
         speaker.setEventCount(eventCount);
         return speaker;
     }
