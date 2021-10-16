@@ -52,8 +52,7 @@
     "@vaadin/vaadin-virtual-list": "21.0.3",
     "construct-style-sheets-polyfill": "2.4.16",
     "lit": "2.0.0",
-    "lumo-css-framework": "3.0.14",
-    "multiselect-combo-box": "2.4.2"
+    "lumo-css-framework": "3.0.14"
   },
   "devDependencies": {
     "@types/validator": "13.1.0",
@@ -138,8 +137,7 @@
       "@vaadin/vaadin-upload": "21.0.3",
       "@vaadin/vaadin-virtual-list": "21.0.3",
       "construct-style-sheets-polyfill": "2.4.16",
-      "lit": "2.0.0",
-      "multiselect-combo-box": "2.4.2"
+      "lit": "2.0.0"
     },
     "devDependencies": {
       "@types/validator": "13.1.0",
@@ -166,6 +164,6 @@
       "workbox-precaching": "6.2.0",
       "workbox-webpack-plugin": "6.2.0"
     },
-    "hash": "db4b615582c8ce37b6e0a0f6de062742120982d0ab1b90eda30b400d112136b1"
+    "hash": "4da5b6f8a75b0d871097eb5c75537e3e9b2ca9cf85f04a46db963589d9db6421"
   }
 }
