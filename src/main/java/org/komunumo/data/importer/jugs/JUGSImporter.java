@@ -385,13 +385,14 @@ public class JUGSImporter {
         }
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
-                    "SELECT id, ort, datum, startzeit, zeitende, titel, untertitel, agenda, abstract, sichtbar, verantwortung FROM events_neu WHERE sichtbar='ja' OR datum >= '2021-01-01' ORDER BY id");
+                    "SELECT id, ort, datum, startzeit, zeitende, titel, untertitel, agenda, abstract, sichtbar, verantwortung, url_webinar FROM events_neu WHERE sichtbar='ja' OR datum >= '2021-01-01' ORDER BY id");
             while (result.next()) {
                 final var event = eventService.get(result.getLong("id"))
                         .orElse(eventService.newEvent());
                 if (event.get(EVENT.ID) == null) {
                     event.set(EVENT.ID, result.getLong("id"));
                     event.set(EVENT.LOCATION, getEmptyForNull(result.getString("ort")));
+                    event.set(EVENT.WEBINAR_URL, getEmptyForNull(result.getString("url_webinar")));
                     event.set(EVENT.DATE, getDateTime(result.getString("datum"), result.getString("startzeit")));
                     event.set(EVENT.DURATION, getDuration(result.getString("startzeit"), result.getString("zeitende")));
                     event.set(EVENT.TITLE, getEmptyForNull(result.getString("titel")));
