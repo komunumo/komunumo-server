@@ -41,6 +41,7 @@ import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.AuthService;
 import org.komunumo.ui.view.admin.dashboard.DashboardView;
 import org.komunumo.ui.view.admin.events.EventsView;
+import org.komunumo.ui.view.admin.bigmarker.BigMarkerView;
 import org.komunumo.ui.view.admin.keywords.KeywordsView;
 import org.komunumo.ui.view.admin.members.MembersView;
 import org.komunumo.ui.view.admin.speakers.SpeakersView;
@@ -134,6 +135,7 @@ public class AdminLayout extends AppLayout {
         final var views  = new LinkedHashMap<String, Class<? extends Component>>();
         views.put("Dashboard", DashboardView.class);
         views.put("Events", EventsView.class);
+        views.put("Bigmarker", BigMarkerView.class);
         views.put("Keywords", KeywordsView.class);
         views.put("Members", MembersView.class);
         views.put("Speakers", SpeakersView.class);
