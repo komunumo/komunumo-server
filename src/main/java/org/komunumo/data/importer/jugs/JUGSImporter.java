@@ -512,27 +512,12 @@ public class JUGSImporter {
                     member.set(MEMBER.CITY, result.getString("wohnort"));
                     member.set(MEMBER.COUNTRY, result.getString("land"));
                     member.set(MEMBER.REGISTRATION_DATE, getDateTime(result.getString("datum")));
-                    member.set(MEMBER.MEMBERSHIP_BEGIN, getMembershipBegin(result));
                     member.set(MEMBER.ACTIVE, true);
                     member.set(MEMBER.ADMIN, adminIds.contains(result.getInt("id")));
                     memberService.store(member);
                 }
             }
         }
-    }
-
-    private LocalDateTime getMembershipBegin(ResultSet result) throws SQLException {
-        final var joinAs = result.getString("join_as");
-        if (joinAs != null && (
-                joinAs.equalsIgnoreCase("jug.ch corporate member") ||
-                joinAs.equalsIgnoreCase("jug.ch exec member") ||
-                joinAs.equalsIgnoreCase("jug.ch single member") ||
-                joinAs.equalsIgnoreCase("jug.ch student member") ||
-                joinAs.equalsIgnoreCase("JUGS member")
-        )) {
-            return getDateTime(result.getString("datum"));
-        }
-        return null;
     }
 
     private LocalTime getDuration(@NotNull final String startzeit, @NotNull final String zeitende) {
