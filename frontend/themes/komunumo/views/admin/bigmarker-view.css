@@ -19,3 +19,7 @@
 .bigmarker-view {
     padding: var(--lumo-space-m) var(--lumo-space-l);
 }
+
+vaadin-select {
+    padding-right: var(--lumo-space-m);
+}
