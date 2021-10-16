@@ -46,6 +46,11 @@ import org.komunumo.ui.component.DateTimePicker;
 import org.komunumo.ui.component.EditDialog;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -53,6 +58,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 public class EventDialog extends EditDialog<Event> {
 
@@ -99,6 +105,7 @@ public class EventDialog extends EditDialog<Event> {
         final var level = new Select<>(EventLevel.values());
         final var language = new Select<>(EventLanguage.values());
         final var location = new ComboBox<String>("Location");
+        final var webinarUrl = new TextField("Webinar URL");
         final var date = new DateTimePicker("Date & Time");
         final var duration = new TimePicker("Duration");
         final var visible = new Checkbox("Visible");
@@ -120,6 +127,14 @@ public class EventDialog extends EditDialog<Event> {
         language.setLabel("Language");
         location.setItems(eventService.getAllLocations());
         location.setAllowCustomValue(true);
+        location.addValueChangeListener(changeEvent -> {
+            final var value = changeEvent.getValue();
+            final var isOnline = "Online".equalsIgnoreCase(value);
+            webinarUrl.setEnabled(isOnline);
+            webinarUrl.setRequiredIndicatorVisible(visible.getValue() && isOnline);
+            binder.validate();
+        });
+        webinarUrl.setValueChangeMode(EAGER);
         date.setMin(LocalDateTime.now());
         duration.setStep(Duration.ofMinutes(15));
         duration.setMinTime(LocalTime.of(1, 0));
@@ -137,7 +152,7 @@ public class EventDialog extends EditDialog<Event> {
         });
 
         formLayout.add(title, subtitle, speaker, organizer, level, description, keyword, agenda,
-                language, location, date, duration, visible);
+                language, location, webinarUrl, date, duration, visible);
 
         binder.forField(title)
                 .withValidator(new StringLengthValidator(
@@ -185,6 +200,11 @@ public class EventDialog extends EditDialog<Event> {
                         "Please select a location")
                 .bind(Event::getLocation, Event::setLocation);
 
+        binder.forField(webinarUrl)
+                .withValidator(value -> !visible.getValue() || !"Online".equalsIgnoreCase(location.getValue()) || validateUrl(value),
+                        "Please enter a valid URL")
+                .bind(Event::getWebinarUrl, Event::setWebinarUrl);
+
         binder.forField(date)
                 .withValidator(value -> isPastEvent(date) || !visible.getValue() && (value == null || value.isAfter(LocalDateTime.now()))
                                 || value != null && value.isAfter(LocalDateTime.now()),
@@ -200,11 +220,34 @@ public class EventDialog extends EditDialog<Event> {
                 .bind(Event::getVisible, Event::setVisible);
 
         afterOpen = () -> {
+            webinarUrl.setEnabled("Online".equalsIgnoreCase(location.getValue()));
             if (isPastEvent(date)) {
                 binder.setReadOnly(true);
                 binder.setValidatorsDisabled(true);
             }
         };
+    }
+
+    private boolean validateUrl(@Nullable final String url) {
+        if (url != null && !url.isBlank()) {
+            try {
+                final var request = HttpRequest.newBuilder(new URI(url))
+                        .GET()
+                        .timeout(Duration.of(5, SECONDS))
+                        .build();
+                final var client = HttpClient.newBuilder()
+                        .followRedirects(HttpClient.Redirect.ALWAYS)
+                        .build();
+                final var response = client.send(request,
+                        HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+                if (response.statusCode() == 200) {
+                    return true;
+                }
+            } catch (final Exception e) {
+                return false;
+            }
+        }
+        return false;
     }
 
     private boolean isPastEvent(@NotNull final DateTimePicker date) {
