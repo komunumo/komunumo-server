@@ -67,6 +67,7 @@ public class EventService {
         event.setSubtitle("");
         event.setDescription("");
         event.setAgenda("");
+        event.setWebinarUrl("");
         event.setVisible(false);
         event.setSpeakers(List.of());
         event.setKeywords(List.of());
@@ -79,6 +80,7 @@ public class EventService {
         newEvent.setSpeakers(originalEvent.getSpeakers());
         newEvent.setKeywords(originalEvent.getKeywords());
         newEvent.setLocation("");
+        newEvent.setWebinarUrl("");
         newEvent.setDate(null);
         newEvent.setVisible(false);
         newEvent.setAttendeeCount(0);
