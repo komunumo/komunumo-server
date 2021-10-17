@@ -25,7 +25,6 @@ import java.util.Locale;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -134,20 +133,21 @@ public class BigMarkerReport {
         return webinarUrl;
     }
 
-    public List<BigMarkerAttendee> getAttendees() {
-        final var sheet = workbook.getSheet("attend list");
+    public List<BigMarkerRegistration> getRegistrations() {
+        final var sheet = workbook.getSheet("registered list");
         final var columnHeaders = findHeaders(sheet);
         final var firstNameColumn = findColumn(columnHeaders, "First Name").orElseThrow();
         final var lastNameColumn = findColumn(columnHeaders, "Last Name").orElseThrow();
         final var emailColumn = findColumn(columnHeaders, "Email").orElseThrow();
         final var registrationDateColumn = findColumn(columnHeaders, "Registration Date").orElseThrow();
         final var timezoneColumn = findColumn(columnHeaders, "Time Zone").orElseThrow();
+        final var unsubscribedColumn = findColumn(columnHeaders, "Unsubscribed").orElseThrow();
+        final var attendedLiveColumn = findColumn(columnHeaders, "Attended Live").orElseThrow();
         final var firstDataRowIndex = findCell(sheet, "#").orElseThrow().getRowIndex() + 1;
-        final var totalAttendees = Integer.parseUnsignedInt(
-                findCell(sheet, "Total Attendees", "Total Attended").orElseThrow().getStringCellValue());
+        final var totalRegistered = Integer.parseUnsignedInt(findCell(sheet, "Total Registered").orElseThrow().getStringCellValue());
 
-        final var attendees = new ArrayList<BigMarkerAttendee>();
-        for (int rowNum = firstDataRowIndex; rowNum < firstDataRowIndex + totalAttendees; rowNum++) {
+        final var attendees = new ArrayList<BigMarkerRegistration>();
+        for (int rowNum = firstDataRowIndex; rowNum < firstDataRowIndex + totalRegistered; rowNum++) {
             final var row = sheet.getRow(rowNum);
             final var firstName = getStringFromRow(row, firstNameColumn).orElse("");
             final var lastName = getStringFromRow(row, lastNameColumn).orElse("");
@@ -156,7 +156,9 @@ public class BigMarkerReport {
             final var timezone = getStringFromRow(row, timezoneColumn).orElse(null);
             final var registrationDate = date == null || timezone == null ? null :
                     ZonedDateTime.ofInstant(date.toInstant(), ZoneId.of(timezone));
-            final var attendee = new BigMarkerAttendee(firstName, lastName, email, registrationDate);
+            final var unsubscribed = getStringFromRow(row, unsubscribedColumn).orElseThrow().equals("Yes");
+            final var attendedLive = getStringFromRow(row, attendedLiveColumn).orElseThrow().equals("Yes");
+            final var attendee = new BigMarkerRegistration(firstName, lastName, email, registrationDate, unsubscribed, attendedLive);
             attendees.add(attendee);
         }
         return Collections.unmodifiableList(attendees);

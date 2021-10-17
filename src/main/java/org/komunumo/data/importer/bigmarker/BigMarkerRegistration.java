@@ -23,21 +23,27 @@ import java.time.ZonedDateTime;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BigMarkerAttendee {
+public class BigMarkerRegistration {
 
     private final String firstName;
     private final String lastName;
     private final String email;
     private final ZonedDateTime registrationDate;
+    private final boolean unsubscribed;
+    private final boolean attendedLive;
 
-    public BigMarkerAttendee(@NotNull final String firstName,
-                             @NotNull final String lastName,
-                             @NotNull final String email,
-                             @Nullable final ZonedDateTime registrationDate) {
+    public BigMarkerRegistration(@NotNull final String firstName,
+                                 @NotNull final String lastName,
+                                 @NotNull final String email,
+                                 @Nullable final ZonedDateTime registrationDate,
+                                 final boolean unsubscribed,
+                                 final boolean attendedLive) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.registrationDate = registrationDate;
+        this.unsubscribed = unsubscribed;
+        this.attendedLive = attendedLive;
     }
 
     public String getFirstName() {
@@ -56,12 +62,20 @@ public class BigMarkerAttendee {
         return registrationDate;
     }
 
+    public boolean hasAttendedLive() {
+        return attendedLive;
+    }
+
+    public boolean hasUnsubscribed() {
+        return unsubscribed;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        final var that = (BigMarkerAttendee) o;
+        final var that = (BigMarkerRegistration) o;
         return email.equals(that.email);
     }
 
@@ -72,11 +86,13 @@ public class BigMarkerAttendee {
 
     @Override
     public String toString() {
-        return "BigMarkerAttendee{" +
+        return "BigMarkerRegistration{" +
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", registrationDate=" + registrationDate +
+                ", unsubscribed=" + unsubscribed +
+                ", attendedLive=" + attendedLive +
                 '}';
     }
 }

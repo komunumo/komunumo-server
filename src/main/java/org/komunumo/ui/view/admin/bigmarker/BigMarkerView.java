@@ -30,7 +30,7 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.importer.bigmarker.BigMarkerAttendee;
+import org.komunumo.data.importer.bigmarker.BigMarkerRegistration;
 import org.komunumo.data.importer.bigmarker.BigMarkerReport;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
@@ -67,7 +67,7 @@ public class BigMarkerView extends ResizableView {
     private Component createImportReportComponents() {
         final var title = new H3("Import reports");
 
-        final var grid = new Grid<BigMarkerAttendee>();
+        final var grid = new Grid<BigMarkerRegistration>();
 
         final var buffer = new MemoryBuffer();
         final var upload = new Upload(buffer);
@@ -76,19 +76,25 @@ public class BigMarkerView extends ResizableView {
             try {
                 final var report = new BigMarkerReport(buffer.getInputStream());
 
-                grid.addColumn(BigMarkerAttendee::getFirstName)
+                grid.addColumn(BigMarkerRegistration::getFirstName)
                         .setHeader("First name")
                         .setAutoWidth(true);
-                grid.addColumn(BigMarkerAttendee::getLastName)
+                grid.addColumn(BigMarkerRegistration::getLastName)
                         .setHeader("Last name")
                         .setAutoWidth(true);
-                grid.addColumn(BigMarkerAttendee::getEmail)
+                grid.addColumn(BigMarkerRegistration::getEmail)
                         .setHeader("Email")
                         .setAutoWidth(true);
-                grid.addColumn(BigMarkerAttendee::getRegistrationDate)
+                grid.addColumn(BigMarkerRegistration::getRegistrationDate)
                         .setHeader("Registration date")
                         .setAutoWidth(true);
-                grid.setItems(report.getAttendees());
+                grid.addColumn(BigMarkerRegistration::hasUnsubscribed)
+                        .setHeader("Unsubscribed")
+                        .setAutoWidth(true);
+                grid.addColumn(BigMarkerRegistration::hasAttendedLive)
+                        .setHeader("Attended live")
+                        .setAutoWidth(true);
+                grid.setItems(report.getRegistrations());
 
                 Notification.show("Excel file successfully parsed.");
             } catch (final IOException e) {
