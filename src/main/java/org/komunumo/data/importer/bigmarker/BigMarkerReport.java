@@ -50,6 +50,8 @@ public class BigMarkerReport {
     private final String webinarName;
     private final String webinarUrl;
 
+    private List<BigMarkerRegistration> registrations = null;
+
     public BigMarkerReport(@NotNull final InputStream inputStream) throws IOException {
         this.workbook = new XSSFWorkbook(inputStream);
 
@@ -133,7 +135,11 @@ public class BigMarkerReport {
         return webinarUrl;
     }
 
-    public List<BigMarkerRegistration> getRegistrations() {
+    public synchronized List<BigMarkerRegistration> getRegistrations() {
+        if (registrations != null) {
+            return registrations;
+        }
+
         final var sheet = workbook.getSheet("registered list");
         final var columnHeaders = findHeaders(sheet);
         final var firstNameColumn = findColumn(columnHeaders, "First Name").orElseThrow();
@@ -161,7 +167,8 @@ public class BigMarkerReport {
             final var attendee = new BigMarkerRegistration(firstName, lastName, email, registrationDate, unsubscribed, attendedLive);
             attendees.add(attendee);
         }
-        return Collections.unmodifiableList(attendees);
+        registrations = Collections.unmodifiableList(attendees);
+        return registrations;
     }
 
 }
