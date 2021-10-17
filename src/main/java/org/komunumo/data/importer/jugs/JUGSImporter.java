@@ -100,7 +100,7 @@ public class JUGSImporter {
                 importEvents(eventService, eventMemberService, memberService, connection);
                 importKeywords(eventService, keywordService, eventKeywordService, connection);
                 importSpeakers(speakerService, eventSpeakerService, eventService, connection);
-                importAttendees(eventMemberService, eventService, memberService, connection);
+                importRegistrations(eventMemberService, eventService, memberService, connection);
                 updateEventLevel(eventService);
             }
         };
@@ -162,10 +162,10 @@ public class JUGSImporter {
         sandroRuchId = sandroRuch.getId().intValue();
     }
 
-    private void importAttendees(@NotNull final EventMemberService eventMemberService,
-                                 @NotNull final EventService eventService,
-                                 @NotNull final MemberService memberService,
-                                 @NotNull final Connection connection)
+    private void importRegistrations(@NotNull final EventMemberService eventMemberService,
+                                     @NotNull final EventService eventService,
+                                     @NotNull final MemberService memberService,
+                                     @NotNull final Connection connection)
             throws SQLException {
         if (eventMemberService.count() > 0) {
             return;
@@ -177,6 +177,10 @@ public class JUGSImporter {
                 final var eventId = result.getLong("events_id");
                 if (eventId == 0) {
                     continue;
+                }
+                final var event = eventService.get(eventId);
+                if (event.isEmpty() || "Online".equalsIgnoreCase(event.get().getLocation())) {
+                    continue; // online event registrations will be imported from BigMarker
                 }
                 final var memberId = result.getLong("personen_id");
                 final var registerDate = getRegisterDate(result.getString("aenderung"), result.getString("anmdatum"));
