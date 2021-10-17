@@ -179,12 +179,13 @@ public class JUGSImporter {
                     continue;
                 }
                 final var event = eventService.get(eventId);
-                if (event.isEmpty() || "Online".equalsIgnoreCase(event.get().getLocation())) {
-                    continue; // online event registrations will be imported from BigMarker
+                if (event.isEmpty()) {
+                    continue;
                 }
                 final var memberId = result.getLong("personen_id");
                 final var registerDate = getRegisterDate(result.getString("aenderung"), result.getString("anmdatum"));
-                final var noShow = result.getString("noshow") != null && result.getString("noshow").equals("1");
+                final var noShow = "Online".equalsIgnoreCase(event.get().getLocation())
+                        || result.getString("noshow") != null && result.getString("noshow").equals("1");
                 try {
                     eventMemberService.registerForEvent(eventId, memberId, registerDate, noShow);
                 } catch (final Exception e1) {
