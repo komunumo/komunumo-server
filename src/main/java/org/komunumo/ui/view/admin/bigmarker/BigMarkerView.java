@@ -19,6 +19,7 @@
 package org.komunumo.ui.view.admin.bigmarker;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
@@ -29,6 +30,7 @@ import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import elemental.json.Json;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.importer.bigmarker.BigMarkerRegistration;
 import org.komunumo.data.importer.bigmarker.BigMarkerReport;
@@ -39,6 +41,7 @@ import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 
 @Route(value = "admin/bigmarker", layout = AdminLayout.class)
 @PageTitle("BigMarker")
@@ -60,41 +63,59 @@ public class BigMarkerView extends ResizableView {
         addClassName("bigmarker-view");
         add(
                 new H2("BigMarker"),
-                createImportReportComponents()
+                createImportRegistrationsComponents()
         );
     }
 
-    private Component createImportReportComponents() {
-        final var title = new H3("Import reports");
-
-        final var grid = new Grid<BigMarkerRegistration>();
+    private Component createImportRegistrationsComponents() {
+        final var title = new H3("Import registrations");
 
         final var buffer = new MemoryBuffer();
         final var upload = new Upload(buffer);
         upload.setAcceptedFileTypes("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        upload.addSucceededListener(event -> {
+        upload.addSucceededListener(succeededEvent -> {
             try {
                 final var report = new BigMarkerReport(buffer.getInputStream());
+                final var registrations = report.getRegistrations();
 
+                final var grid = new Grid<BigMarkerRegistration>();
                 grid.addColumn(BigMarkerRegistration::getFirstName)
-                        .setHeader("First name")
+                        .setHeader("First Name")
                         .setAutoWidth(true);
                 grid.addColumn(BigMarkerRegistration::getLastName)
-                        .setHeader("Last name")
+                        .setHeader("Last Name")
                         .setAutoWidth(true);
                 grid.addColumn(BigMarkerRegistration::getEmail)
                         .setHeader("Email")
                         .setAutoWidth(true);
                 grid.addColumn(BigMarkerRegistration::getRegistrationDate)
-                        .setHeader("Registration date")
+                        .setHeader("Registration Date")
                         .setAutoWidth(true);
                 grid.addColumn(BigMarkerRegistration::hasUnsubscribed)
                         .setHeader("Unsubscribed")
                         .setAutoWidth(true);
                 grid.addColumn(BigMarkerRegistration::hasAttendedLive)
-                        .setHeader("Attended live")
+                        .setHeader("Attended Live")
                         .setAutoWidth(true);
-                grid.setItems(report.getRegistrations());
+                grid.setItems(registrations);
+                upload.getElement().getParent().appendChild(grid.getElement());
+
+                final var importButton = new Button("Start Import");
+                importButton.setDisableOnClick(true);
+                importButton.setEnabled(false);
+                importButton.addClickListener(buttonClickEvent -> {
+                    try {
+                        report.importRegistrations(eventService, eventMemberService, memberService);
+                        importButton.getElement().removeFromParent();
+                        grid.getElement().removeFromParent();
+                        upload.getElement().setPropertyJson("files", Json.createArray());
+                        Notification.show("Import finished successfully.");
+                    } catch (final NoSuchElementException e) {
+                        Notification.show(e.getMessage());
+                    }
+                });
+                importButton.setEnabled(!registrations.isEmpty());
+                upload.getElement().getParent().appendChild(importButton.getElement());
 
                 Notification.show("Excel file successfully parsed.");
             } catch (final IOException e) {
@@ -104,7 +125,7 @@ public class BigMarkerView extends ResizableView {
         upload.addFileRejectedListener(event -> Notification.show(event.getErrorMessage()));
 
         return new Div(
-                title, upload, grid
+                title, upload
         );
     }
 
