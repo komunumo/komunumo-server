@@ -160,6 +160,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
             copyButton.setTitle("Copy this event");
             final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), clickEvent -> deleteEvent(event));
             deleteButton.setTitle("Delete this event");
+            deleteButton.setEnabled(!event.getVisible() && event.getAttendeeCount() == 0);
             return new HorizontalLayout(editButton, copyButton, deleteButton);
 
         }))
