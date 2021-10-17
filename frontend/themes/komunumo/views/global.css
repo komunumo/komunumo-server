@@ -33,7 +33,7 @@ vaadin-button[theme="primary"] {
     color: var(--white);
 }
 
-vaadin-button[theme="primary"][disabled] {
+vaadin-button[disabled] {
     filter: var(--disabled);
 }
 
