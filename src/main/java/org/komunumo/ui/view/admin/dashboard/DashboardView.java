@@ -97,7 +97,7 @@ public class DashboardView extends Div {
 
         // First chart
         final var configuration = monthlyVisitors.getConfiguration();
-        statisticService.calculateMonthlyAttendeesByYear(Year.now()).stream()
+        statisticService.calculateMonthlyVisitorsByYear(Year.now()).stream()
                 .map(data -> new ListSeries(data.getLocation(),
                         data.getJanuary(), data.getFebruary(), data.getMarch(),
                         data.getApril(), data.getMay(), data.getJune(),

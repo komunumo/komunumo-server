@@ -79,7 +79,7 @@ public class StatisticService {
                 .execute();
     }
 
-    public Collection<MonthlyVisitors> calculateMonthlyAttendeesByYear(@NotNull final Year year) {
+    public Collection<MonthlyVisitors> calculateMonthlyVisitorsByYear(@NotNull final Year year) {
         final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
         final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
 
@@ -100,6 +100,7 @@ public class StatisticService {
                 .from(EVENT_MEMBER)
                 .leftJoin(EVENT).on(EVENT_MEMBER.EVENT_ID.eq(EVENT.ID))
                 .where(EVENT.DATE.greaterOrEqual(firstDay).and(EVENT.DATE.lessOrEqual(lastDay)))
+                        .and(EVENT_MEMBER.NO_SHOW.isFalse())
                 .groupBy(EVENT.LOCATION)
                 .orderBy(EVENT.LOCATION)
                 .fetchInto(StatisticService.MonthlyVisitors.class);
