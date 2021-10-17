@@ -109,7 +109,7 @@ public class BigMarkerView extends ResizableView {
                         importButton.getElement().removeFromParent();
                         grid.getElement().removeFromParent();
                         upload.getElement().setPropertyJson("files", Json.createArray());
-                        Notification.show("Import finished successfully.");
+                        Notification.show(String.format("Successfully imported %d registrations.", registrations.size()));
                     } catch (final NoSuchElementException e) {
                         Notification.show(e.getMessage());
                     }

@@ -106,6 +106,8 @@ public class MemberService {
         return dsl.selectFrom(MEMBER)
                 .where(MEMBER.EMAIL.eq(email)
                         .and(MEMBER.DELETED.isFalse()))
+                .orderBy(MEMBER.REGISTRATION_DATE.desc())
+                .limit(1)
                 .fetchOptionalInto(Member.class);
     }
 

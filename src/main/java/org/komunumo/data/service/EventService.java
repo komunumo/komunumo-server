@@ -93,6 +93,16 @@ public class EventService {
                 .fetchOptionalInto(Event.class);
     }
 
+    public Optional<Event> getByWebinarUrl(@NotNull final String webinarUrl) {
+        final var event = dsl.selectFrom(EVENT)
+                .where(EVENT.WEBINAR_URL.eq(webinarUrl))
+                .fetchOptionalInto(Event.class);
+        if (event.isEmpty() && !webinarUrl.endsWith("/")) {
+            return getByWebinarUrl(webinarUrl.concat("/"));
+        }
+        return event;
+    }
+
     public void store(@NotNull final Event event) {
         event.store();
     }

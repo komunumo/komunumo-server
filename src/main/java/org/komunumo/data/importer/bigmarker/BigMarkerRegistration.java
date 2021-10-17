@@ -70,6 +70,10 @@ public class BigMarkerRegistration {
         return unsubscribed;
     }
 
+    public boolean isNoShow() {
+        return !hasAttendedLive() && !hasUnsubscribed();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

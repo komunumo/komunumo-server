@@ -46,11 +46,19 @@ public class EventMemberService {
         this.dsl = dsl;
     }
 
+    public EventMemberRecord newRegistration() {
+        return dsl.newRecord(EVENT_MEMBER);
+    }
+
     public Optional<EventMemberRecord> get(@NotNull final Long eventId,
                                            @NotNull final Long memberId) {
         return dsl.fetchOptional(EVENT_MEMBER,
                 EVENT_MEMBER.EVENT_ID.eq(eventId)
                         .and(EVENT_MEMBER.MEMBER_ID.eq(memberId)));
+    }
+
+    public void store(@NotNull final EventMemberRecord registration) {
+        registration.store();
     }
 
     public void registerForEvent(@NotNull final EventRecord event,
