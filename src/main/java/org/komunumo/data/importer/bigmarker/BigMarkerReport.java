@@ -49,7 +49,6 @@ public class BigMarkerReport {
 
     private final Workbook workbook;
 
-    private final String webinarName;
     private final String webinarUrl;
 
     private List<BigMarkerRegistration> registrations = null;
@@ -58,7 +57,6 @@ public class BigMarkerReport {
         this.workbook = new XSSFWorkbook(inputStream);
 
         final var summary = workbook.getSheet("summary");
-        webinarName = findCell(summary, "Webinar Name").orElseThrow().getStringCellValue();
         webinarUrl = findCell(summary, "URL").orElseThrow().getStringCellValue();
     }
 
@@ -113,6 +111,8 @@ public class BigMarkerReport {
             switch (cell.getCellType()) {
                 case NUMERIC: return Optional.ofNullable(cell.getDateCellValue());
                 case STRING: return getOptionalDateFromString(cell.getStringCellValue());
+                default:
+                    throw new IllegalStateException("Unexpected date cell type: " + cell.getCellType());
             }
         }
         return Optional.empty();
@@ -127,14 +127,6 @@ public class BigMarkerReport {
             }
         }
         return Optional.empty();
-    }
-
-    public String getWebinarName() {
-        return webinarName;
-    }
-
-    public String getWebinarUrl() {
-        return webinarUrl;
     }
 
     public synchronized List<BigMarkerRegistration> getRegistrations() {
