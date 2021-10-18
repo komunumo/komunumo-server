@@ -20,6 +20,6 @@
     padding: var(--lumo-space-m) var(--lumo-space-l);
 }
 
-vaadin-select {
-    padding-right: var(--lumo-space-m);
+vaadin-button {
+    margin-right: var(--lumo-space-m);
 }

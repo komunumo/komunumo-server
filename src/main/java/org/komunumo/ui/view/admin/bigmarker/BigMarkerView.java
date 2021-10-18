@@ -101,12 +101,16 @@ public class BigMarkerView extends ResizableView {
                 upload.getElement().getParent().appendChild(grid.getElement());
 
                 final var importButton = new Button("Start Import");
+                final var cancelButton = new Button("Cancel");
+
                 importButton.setDisableOnClick(true);
                 importButton.setEnabled(false);
                 importButton.addClickListener(buttonClickEvent -> {
                     try {
+                        cancelButton.setEnabled(false);
                         report.importRegistrations(eventService, eventMemberService, memberService);
                         importButton.getElement().removeFromParent();
+                        cancelButton.getElement().removeFromParent();
                         grid.getElement().removeFromParent();
                         upload.getElement().setPropertyJson("files", Json.createArray());
                         Notification.show(String.format("Successfully imported %d registrations.", registrations.size()));
@@ -116,6 +120,14 @@ public class BigMarkerView extends ResizableView {
                 });
                 importButton.setEnabled(!registrations.isEmpty());
                 upload.getElement().getParent().appendChild(importButton.getElement());
+
+                cancelButton.addClickListener(buttonClickEvent -> {
+                    importButton.getElement().removeFromParent();
+                    cancelButton.getElement().removeFromParent();
+                    grid.getElement().removeFromParent();
+                    upload.getElement().setPropertyJson("files", Json.createArray());
+                });
+                upload.getElement().getParent().appendChild(cancelButton.getElement());
 
                 Notification.show("Excel file successfully parsed.");
             } catch (final IOException e) {
