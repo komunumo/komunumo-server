@@ -159,7 +159,7 @@ public class BigMarkerReport {
             final var row = sheet.getRow(rowNum);
             final var firstName = getStringFromRow(row, firstNameColumn).orElse("");
             final var lastName = getStringFromRow(row, lastNameColumn).orElse("");
-            final var email = getStringFromRow(row, emailColumn).orElseThrow();
+            final var email = getStringFromRow(row, emailColumn).orElse(null);
             final var date = getDateFromRow(row, registrationDateColumn).orElse(null);
             final var timezone = getStringFromRow(row, timezoneColumn).orElse(null);
             final var registrationDate = date == null || timezone == null ? null :
@@ -175,7 +175,8 @@ public class BigMarkerReport {
 
     private Member getOrCreateMember(@NotNull final MemberService memberService,
                                      @NotNull final BigMarkerRegistration registration) {
-        final var existingMember = memberService.getByEmail(registration.getEmail());
+        final Optional<Member> existingMember = registration.getEmail() == null ? Optional.empty() :
+                memberService.getByEmail(registration.getEmail());
         if (existingMember.isPresent()) {
             return existingMember.get();
         }

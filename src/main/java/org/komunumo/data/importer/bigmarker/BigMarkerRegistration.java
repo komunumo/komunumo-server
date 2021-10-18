@@ -18,10 +18,11 @@
 
 package org.komunumo.data.importer.bigmarker;
 
-import java.time.ZonedDateTime;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.time.ZonedDateTime;
+import java.util.Locale;
 
 public class BigMarkerRegistration {
 
@@ -34,7 +35,7 @@ public class BigMarkerRegistration {
 
     public BigMarkerRegistration(@NotNull final String firstName,
                                  @NotNull final String lastName,
-                                 @NotNull final String email,
+                                 @Nullable final String email,
                                  @Nullable final ZonedDateTime registrationDate,
                                  final boolean unsubscribed,
                                  final boolean attendedLive) {
@@ -55,6 +56,10 @@ public class BigMarkerRegistration {
     }
 
     public String getEmail() {
+        if (email == null && firstName.startsWith("Guest-")) {
+            return String.format("%s@bigmarker.com", firstName.replaceAll("[()]", "")
+                    .toLowerCase(Locale.getDefault()));
+        }
         return email;
     }
 
@@ -75,17 +80,21 @@ public class BigMarkerRegistration {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         final var that = (BigMarkerRegistration) o;
-        return email.equals(that.email);
+        return getEmail().equals(that.getEmail());
     }
 
     @Override
     public int hashCode() {
-        return email.hashCode();
+        return getEmail().hashCode();
     }
 
     @Override
