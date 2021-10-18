@@ -116,6 +116,9 @@ public class BigMarkerView extends ResizableView {
                         Notification.show(String.format("Successfully imported %d registrations.", registrations.size()));
                     } catch (final NoSuchElementException e) {
                         Notification.show(e.getMessage());
+                        importButton.setText("Retry Import");
+                        importButton.setEnabled(true);
+                        cancelButton.setEnabled(true);
                     }
                 });
                 importButton.setEnabled(!registrations.isEmpty());
