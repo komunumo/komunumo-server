@@ -12,6 +12,7 @@
 node_modules/
 frontend/generated/
 pnpmfile.js
+pnpm-lock.yaml
 
 # Browser drivers for local integration tests
 drivers/
