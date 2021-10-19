@@ -20,6 +20,6 @@
     padding: var(--lumo-space-m) var(--lumo-space-l);
 }
 
-vaadin-button {
+.bigmarker-view vaadin-button {
     margin-right: var(--lumo-space-m);
 }
