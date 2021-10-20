@@ -50,7 +50,6 @@ import org.komunumo.ui.view.logout.LogoutView;
 import org.komunumo.util.GravatarUtil;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 public class AdminLayout extends AppLayout {
@@ -132,29 +131,31 @@ public class AdminLayout extends AppLayout {
     private Component[] createMenuItems() {
         final var tabs = new ArrayList<Tab>();
 
-        final var views  = new LinkedHashMap<String, Class<? extends Component>>();
-        views.put("Dashboard", DashboardView.class);
-        views.put("Events", EventsView.class);
-        views.put("Bigmarker", BigMarkerView.class);
-        views.put("Keywords", KeywordsView.class);
-        views.put("Members", MembersView.class);
-        views.put("Speakers", SpeakersView.class);
-        views.put("Sponsors", SponsorsView.class);
+        final var views  = new ArrayList<AdminMenuItem>();
+        views.add(new AdminMenuItem("Dashboard", DashboardView.class, false));
+        views.add(new AdminMenuItem("Events", EventsView.class, false));
+        views.add(new AdminMenuItem("Keywords", KeywordsView.class, false));
+        views.add(new AdminMenuItem("Members", MembersView.class, false));
+        views.add(new AdminMenuItem("Speakers", SpeakersView.class, false));
+        views.add(new AdminMenuItem("Sponsors", SponsorsView.class, false));
+        views.add(new AdminMenuItem("Bigmarker", BigMarkerView.class, true));
 
-        views.forEach((title, klass) -> {
-            if (authService.isAccessGranted(klass)) {
-                tabs.add(createTab(title, klass));
+        views.forEach(adminMenuItem -> {
+            if (authService.isAccessGranted(adminMenuItem.getNavigationTarget())) {
+                tabs.add(createTab(adminMenuItem));
             }
         });
 
         return tabs.toArray(new Tab[0]);
     }
 
-    private static Tab createTab(@NotNull final String text,
-                                 @NotNull final Class<? extends Component> navigationTarget) {
+    private static Tab createTab(@NotNull final AdminMenuItem adminMenuItem) {
         final var tab = new Tab();
-        tab.add(new RouterLink(text, navigationTarget));
-        ComponentUtil.setData(tab, Class.class, navigationTarget);
+        tab.add(new RouterLink(adminMenuItem.getTitle(), adminMenuItem.getNavigationTarget()));
+        ComponentUtil.setData(tab, Class.class, adminMenuItem.getNavigationTarget());
+        if (adminMenuItem.isNewSection()) {
+            tab.addClassName("new-section");
+        }
         return tab;
     }
 

@@ -37,6 +37,10 @@ vaadin-button[disabled] {
     filter: var(--disabled);
 }
 
+vaadin-tab.new-section {
+    border-top: 3px solid var(--lumo-contrast-10pct);
+}
+
 h1, h2 {
     font-family: 'Trade Gothic LT W04 Bd CnNo-20', "Arial Narrow", Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
     text-transform: uppercase;
