@@ -127,7 +127,7 @@ public class JUGSImporter {
         }
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
-                    "SELECT DISTINCT events_id, eventlabels_id FROM eventsxeventlabels");
+                    "SELECT DISTINCT events_id, eventlabels_id FROM eventsXeventlabels");
             while (result.next()) {
                 final var eventId = result.getLong("events_id");
                 final var keywordId = result.getLong("eventlabels_id");
