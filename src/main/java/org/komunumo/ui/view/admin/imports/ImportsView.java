@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.ui.view.admin.bigmarker;
+package org.komunumo.ui.view.admin.imports;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -43,16 +43,16 @@ import org.komunumo.ui.view.admin.AdminLayout;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
-@Route(value = "admin/bigmarker", layout = AdminLayout.class)
-@PageTitle("BigMarker")
-@CssImport(value = "./themes/komunumo/views/admin/bigmarker-view.css")
-public class BigMarkerView extends ResizableView {
+@Route(value = "admin/imports", layout = AdminLayout.class)
+@PageTitle("Imports")
+@CssImport(value = "./themes/komunumo/views/admin/imports-view.css")
+public class ImportsView extends ResizableView {
 
     private final MemberService memberService;
     private final EventService eventService;
     private final EventMemberService eventMemberService;
 
-    public BigMarkerView(
+    public ImportsView(
             @NotNull final MemberService memberService,
             @NotNull final EventService eventService,
             @NotNull final EventMemberService eventMemberService) {
@@ -60,7 +60,7 @@ public class BigMarkerView extends ResizableView {
         this.eventService = eventService;
         this.eventMemberService = eventMemberService;
 
-        addClassName("bigmarker-view");
+        addClassName("imports-view");
         add(
                 new H2("BigMarker"),
                 createImportRegistrationsComponents()

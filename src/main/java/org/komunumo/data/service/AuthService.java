@@ -31,7 +31,7 @@ import org.komunumo.configuration.Configuration;
 import org.komunumo.data.entity.Member;
 import org.komunumo.ui.view.admin.dashboard.DashboardView;
 import org.komunumo.ui.view.admin.events.EventsView;
-import org.komunumo.ui.view.admin.bigmarker.BigMarkerView;
+import org.komunumo.ui.view.admin.imports.ImportsView;
 import org.komunumo.ui.view.admin.keywords.KeywordsView;
 import org.komunumo.ui.view.admin.members.MembersView;
 import org.komunumo.ui.view.admin.speakers.SpeakersView;
@@ -198,11 +198,11 @@ public class AuthService implements VaadinServiceInitListener {
 
             // restrict to admins
             if (member.getAdmin() && (navigationTarget == EventsView.class
-                    || navigationTarget == BigMarkerView.class
                     || navigationTarget == KeywordsView.class
                     || navigationTarget == MembersView.class
                     || navigationTarget == SpeakersView.class
-                    || navigationTarget == SponsorsView.class)) {
+                    || navigationTarget == SponsorsView.class
+                    || navigationTarget == ImportsView.class)) {
                 return true;
             }
         } else if (member != null && member.getBlocked()) {

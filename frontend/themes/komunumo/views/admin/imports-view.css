@@ -16,10 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-.bigmarker-view {
+.imports-view {
     padding: var(--lumo-space-m) var(--lumo-space-l);
 }
 
-.bigmarker-view vaadin-button {
+.imports-view vaadin-button {
     margin-right: var(--lumo-space-m);
 }
