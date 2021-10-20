@@ -94,6 +94,7 @@ public class JUGSImporter {
             Thread.sleep(30_000); // wait 30 seconds to be sure this import does not slow down the startup
             if (dbURL != null && dbUser != null && dbPass != null) {
                 final var connection = DriverManager.getConnection(dbURL, dbUser, dbPass);
+                connection.setReadOnly(true);
                 importSponsors(sponsorService, connection);
                 importMembers(memberService, connection);
                 addMissingMembers(memberService);
