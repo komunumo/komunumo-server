@@ -106,6 +106,16 @@ public class StatisticService {
                 .fetchInto(StatisticService.MonthlyVisitors.class);
     }
 
+    public Year[] getYears() {
+        return dsl.selectDistinct(DSL.year(EVENT.DATE).as("year"))
+                .from(EVENT)
+                .where(EVENT.DATE.isNotNull())
+                .orderBy(DSL.field("year").desc())
+                .stream()
+                .map(record -> Year.of((Integer) record.getValue("year")))
+                .toArray(Year[]::new);
+    }
+
     public enum NoShows {
         INCLUDE, EXCLUDE, ONLY
     }

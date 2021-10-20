@@ -70,7 +70,7 @@ public class DashboardView extends Div {
         board.add(monthlyVisitorsWrapper);
 
         add(board);
-        populateCharts();
+        populateCharts(Year.now());
     }
 
     private WrapperCard createBadge(@NotNull final String title, @NotNull final H2 h2, @NotNull final String h2ClassName,
@@ -86,18 +86,18 @@ public class DashboardView extends Div {
         return new WrapperCard("wrapper", new Component[]{titleSpan, h2, descriptionSpan}, "card", "space-m");
     }
 
-    private void populateCharts() {
+    private void populateCharts(@NotNull final Year year) {
         // Top row widgets
-        final var registrations = statisticService.countAttendeesByYear(Year.now(), StatisticService.NoShows.INCLUDE);
-        final var events = statisticService.countEventsByYear(Year.now());
-        final var noShows = statisticService.countAttendeesByYear(Year.now(), StatisticService.NoShows.ONLY);
+        final var registrations = statisticService.countAttendeesByYear(year, StatisticService.NoShows.INCLUDE);
+        final var events = statisticService.countEventsByYear(year);
+        final var noShows = statisticService.countAttendeesByYear(year, StatisticService.NoShows.ONLY);
         numberOfRegistrations.setText(FormatterUtil.formatNumber(registrations));
         numberOfEvents.setText(FormatterUtil.formatNumber(events));
         noShowRate.setText(FormatterUtil.formatNumber(registrations == 0 ? 0 : noShows * 100L / registrations) + "%");
 
         // First chart
         final var configuration = monthlyVisitors.getConfiguration();
-        statisticService.calculateMonthlyVisitorsByYear(Year.now()).stream()
+        statisticService.calculateMonthlyVisitorsByYear(year).stream()
                 .map(data -> new ListSeries(data.getLocation(),
                         data.getJanuary(), data.getFebruary(), data.getMarch(),
                         data.getApril(), data.getMay(), data.getJune(),
