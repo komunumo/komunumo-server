@@ -16,29 +16,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.data.importer.bigmarker;
+package org.komunumo.util;
 
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class ColumnHeader {
-        private final int index;
-        private final String title;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 
-        public ColumnHeader(final int index, @NotNull final String title) {
-            this.index = index;
-            this.title = title;
-        }
+public class DateUtil {
 
-        public int getIndex() {
-            return index;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        @Override
-        public String toString() {
-            return title;
-        }
+    public static LocalDate dateToLocalDate(@Nullable Date date) {
+        return date == null ? null :
+                date.toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate();
     }
+
+    private DateUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
+}
