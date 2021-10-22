@@ -34,6 +34,8 @@ import elemental.json.Json;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.importer.bigmarker.BigMarkerRegistration;
 import org.komunumo.data.importer.bigmarker.BigMarkerReport;
+import org.komunumo.data.importer.clubdesk.ClubDeskFile;
+import org.komunumo.data.importer.clubdesk.ClubDeskMember;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.MemberService;
@@ -63,7 +65,9 @@ public class ImportsView extends ResizableView {
         addClassName("imports-view");
         add(
                 new H2("BigMarker"),
-                createImportRegistrationsComponents()
+                createImportRegistrationsComponents(),
+                new H2("ClubDesk"),
+                createImportMembersComponents()
         );
     }
 
@@ -122,6 +126,101 @@ public class ImportsView extends ResizableView {
                     }
                 });
                 importButton.setEnabled(!registrations.isEmpty());
+                upload.getElement().getParent().appendChild(importButton.getElement());
+
+                cancelButton.addClickListener(buttonClickEvent -> {
+                    importButton.getElement().removeFromParent();
+                    cancelButton.getElement().removeFromParent();
+                    grid.getElement().removeFromParent();
+                    upload.getElement().setPropertyJson("files", Json.createArray());
+                });
+                upload.getElement().getParent().appendChild(cancelButton.getElement());
+
+                Notification.show("Excel file successfully parsed.");
+            } catch (final IOException e) {
+                Notification.show(e.getMessage());
+            }
+        });
+        upload.addFileRejectedListener(event -> Notification.show(event.getErrorMessage()));
+
+        return new Div(
+                title, upload
+        );
+    }
+
+    private Component createImportMembersComponents() {
+        final var title = new H3("Import members");
+
+        final var buffer = new MemoryBuffer();
+        final var upload = new Upload(buffer);
+        upload.setAcceptedFileTypes("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        upload.addSucceededListener(succeededEvent -> {
+            try {
+                final var clubDeskFile = new ClubDeskFile(buffer.getInputStream());
+                final var members = clubDeskFile.getMembers();
+
+                final var grid = new Grid<ClubDeskMember>();
+                grid.addColumn(ClubDeskMember::getMembershipBeginDate)
+                        .setHeader("Membership Begin Date")
+                        .setAutoWidth(true);
+                grid.addColumn(ClubDeskMember::getMembershipEndDate)
+                        .setHeader("Membership End Date")
+                        .setAutoWidth(true);
+                grid.addColumn(ClubDeskMember::getMembershipId)
+                        .setHeader("Membership ID")
+                        .setAutoWidth(true);
+                grid.addColumn(ClubDeskMember::getMembershipFee)
+                        .setHeader("Membership Fee")
+                        .setAutoWidth(true);
+                grid.addColumn(ClubDeskMember::getFirstName)
+                        .setHeader("First Name")
+                        .setAutoWidth(true);
+                grid.addColumn(ClubDeskMember::getFirstName)
+                        .setHeader("First Name")
+                        .setAutoWidth(true);
+                grid.addColumn(ClubDeskMember::getLastName)
+                        .setHeader("Last Name")
+                        .setAutoWidth(true);
+                grid.addColumn(ClubDeskMember::getCompany)
+                        .setHeader("Company")
+                        .setAutoWidth(true);
+                grid.addColumn(ClubDeskMember::getEmail)
+                        .setHeader("Email")
+                        .setAutoWidth(true);
+                grid.addColumn(ClubDeskMember::getAddress)
+                        .setHeader("Address")
+                        .setAutoWidth(true);
+                grid.addColumn(ClubDeskMember::getZipCode)
+                        .setHeader("Zip Code")
+                        .setAutoWidth(true);
+                grid.addColumn(ClubDeskMember::getCity)
+                        .setHeader("City")
+                        .setAutoWidth(true);
+                grid.setItems(members);
+                upload.getElement().getParent().appendChild(grid.getElement());
+
+                final var importButton = new Button("Start Import");
+                final var cancelButton = new Button("Cancel");
+
+                importButton.setDisableOnClick(true);
+                importButton.setEnabled(false);
+                importButton.addClickListener(buttonClickEvent -> {
+                    try {
+                        cancelButton.setEnabled(false);
+                        // report.importRegistrations(eventService, eventMemberService, memberService);
+                        importButton.getElement().removeFromParent();
+                        cancelButton.getElement().removeFromParent();
+                        grid.getElement().removeFromParent();
+                        upload.getElement().setPropertyJson("files", Json.createArray());
+                        Notification.show(String.format("Successfully imported %d members.", members.size()));
+                    } catch (final NoSuchElementException e) {
+                        Notification.show(e.getMessage());
+                        importButton.setText("Retry Import");
+                        importButton.setEnabled(true);
+                        cancelButton.setEnabled(true);
+                    }
+                });
+                importButton.setEnabled(!members.isEmpty());
                 upload.getElement().getParent().appendChild(importButton.getElement());
 
                 cancelButton.addClickListener(buttonClickEvent -> {
