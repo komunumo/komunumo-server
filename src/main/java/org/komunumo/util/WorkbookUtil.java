@@ -81,8 +81,14 @@ public class WorkbookUtil {
     public static Optional<String> getStringFromRow(@NotNull final Row row,
                                                     @NotNull final ColumnHeader column) {
         final var cell = row.getCell(column.getIndex());
-        if (cell != null && cell.getCellType().equals(CellType.STRING)) {
-            return Optional.ofNullable(cell.getStringCellValue());
+        if (cell != null) {
+            switch (cell.getCellType()) {
+                case STRING: return Optional.ofNullable(cell.getStringCellValue());
+                case BLANK: return Optional.of("");
+                case NUMERIC: return Optional.of(Double.toString(cell.getNumericCellValue()));
+                case BOOLEAN: return Optional.of(Boolean.toString(cell.getBooleanCellValue()));
+                case ERROR: throw new IllegalStateException("Error in cell: code + " + cell.getErrorCellValue());
+            }
         }
         return Optional.empty();
     }
@@ -108,16 +114,16 @@ public class WorkbookUtil {
                         .orElse(null)));
     }
 
-    public static Optional<Integer> getIntegerFromRow(@NotNull final Row row,
-                                                      @NotNull final ColumnHeader column) {
+    public static Optional<Long> getLongFromRow(@NotNull final Row row,
+                                                   @NotNull final ColumnHeader column) {
         final var cell = row.getCell(column.getIndex());
         if (cell != null) {
             switch (cell.getCellType()) {
-                case NUMERIC: return Optional.of((int) cell.getNumericCellValue());
+                case NUMERIC: return Optional.of((long) cell.getNumericCellValue());
                 case STRING:
                     final var value = cell.getStringCellValue();
                     if (value != null && !value.isBlank()) {
-                        return Optional.of(Integer.parseInt(value));
+                        return Optional.of(Long.parseLong(value));
                     }
                     break;
                 default:

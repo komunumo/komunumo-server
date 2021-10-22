@@ -22,6 +22,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.service.MemberService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,8 +32,8 @@ import java.util.List;
 
 import static org.komunumo.util.WorkbookUtil.findColumn;
 import static org.komunumo.util.WorkbookUtil.getColumnHeaders;
-import static org.komunumo.util.WorkbookUtil.getIntegerFromRow;
 import static org.komunumo.util.WorkbookUtil.getLocalDateFromRow;
+import static org.komunumo.util.WorkbookUtil.getLongFromRow;
 import static org.komunumo.util.WorkbookUtil.getStringFromRow;
 
 public class ClubDeskFile {
@@ -54,7 +55,6 @@ public class ClubDeskFile {
         final var membershipBeginDateColumn = findColumn(columnHeaders, "Eintritt").orElseThrow();
         final var membershipEndDateColumn = findColumn(columnHeaders, "Austritt").orElseThrow();
         final var membershipIdColumn = findColumn(columnHeaders, "M-Nr.").orElseThrow();
-        final var membershipFeeColumn = findColumn(columnHeaders, "Mitgliederbeitrag").orElseThrow();
         final var firstNameColumn = findColumn(columnHeaders, "Vorname").orElseThrow();
         final var lastNameColumn = findColumn(columnHeaders, "Nachname").orElseThrow();
         final var companyColumn = findColumn(columnHeaders, "Firma").orElseThrow();
@@ -62,6 +62,7 @@ public class ClubDeskFile {
         final var addressColumn = findColumn(columnHeaders, "Adresse").orElseThrow();
         final var zipCodeColumn = findColumn(columnHeaders, "PLZ").orElseThrow();
         final var cityColumn = findColumn(columnHeaders, "Ort").orElseThrow();
+        final var commentColumn = findColumn(columnHeaders, "Bemerkungen").orElseThrow();
 
         final var clubDeskMembers = new ArrayList<ClubDeskMember>();
         for (final Row row : sheet) {
@@ -70,21 +71,41 @@ public class ClubDeskFile {
             }
             final var membershipBeginDate = getLocalDateFromRow(row, membershipBeginDateColumn).orElse(null);
             final var membershipEndDate = getLocalDateFromRow(row, membershipEndDateColumn).orElse(null);
-            final var membershipId = getIntegerFromRow(row, membershipIdColumn).orElse(null);
-            final var membershipFee = getIntegerFromRow(row, membershipFeeColumn).orElse(null);
+            final var membershipId = getLongFromRow(row, membershipIdColumn).orElse(null);
             final var firstName = getStringFromRow(row, firstNameColumn).orElse("");
             final var lastName = getStringFromRow(row, lastNameColumn).orElse("");
             final var company = getStringFromRow(row, companyColumn).orElse("");
             final var email = getStringFromRow(row, emailColumn).orElse("");
             final var address = getStringFromRow(row, addressColumn).orElse("");
-            final var zipCode = getStringFromRow(row, zipCodeColumn).orElse("");
+            final var zipCode = getStringFromRow(row, zipCodeColumn).orElse("").replaceFirst("\\.0$", "");
             final var city = getStringFromRow(row, cityColumn).orElse("");
+            final var comment = getStringFromRow(row, commentColumn).orElse("");
             final var clubDeskMember = new ClubDeskMember(
-                    membershipBeginDate, membershipEndDate, membershipId, membershipFee,
-                    firstName, lastName, company, email, address, zipCode, city);
+                    membershipBeginDate, membershipEndDate, membershipId,
+                    firstName, lastName, company, email,
+                    address, zipCode, city, comment);
             clubDeskMembers.add(clubDeskMember);
         }
         members = Collections.unmodifiableList(clubDeskMembers);
         return members;
+    }
+
+    public void importMembers(@NotNull final MemberService memberService) {
+        for (final var clubDeskMember : getMembers()) {
+            final var email = clubDeskMember.getEmail();
+            final var member = memberService.getByEmail(email).orElse(memberService.newMember());
+            member.setMembershipBegin(clubDeskMember.getMembershipBeginDate());
+            member.setMembershipEnd(clubDeskMember.getMembershipEndDate());
+            member.setMembershipId(clubDeskMember.getMembershipId());
+            member.setFirstName(clubDeskMember.getFirstName());
+            member.setLastName(clubDeskMember.getLastName());
+            member.setCompany(clubDeskMember.getCompany());
+            member.setEmail(clubDeskMember.getEmail());
+            member.setAddress(clubDeskMember.getAddress());
+            member.setZipCode(clubDeskMember.getZipCode());
+            member.setCity(clubDeskMember.getCity());
+            member.setComment(clubDeskMember.getComment());
+            memberService.store(member);
+        }
     }
 }

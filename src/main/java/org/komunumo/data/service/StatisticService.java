@@ -44,7 +44,7 @@ public class StatisticService {
     }
 
     public int countMembersByYear(@NotNull final Year year) {
-        final var endOfYear = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
+        final var endOfYear = year.atMonth(DECEMBER).atEndOfMonth();
         return dsl.fetchCount(MEMBER,
                 MEMBER.ACCOUNT_DELETED.isFalse().and(MEMBER.MEMBERSHIP_BEGIN.lessOrEqual(endOfYear)).and(
                         MEMBER.MEMBERSHIP_END.isNull().or(MEMBER.MEMBERSHIP_END.greaterOrEqual(endOfYear))));

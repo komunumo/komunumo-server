@@ -169,12 +169,6 @@ public class ImportsView extends ResizableView {
                 grid.addColumn(ClubDeskMember::getMembershipId)
                         .setHeader("Membership ID")
                         .setAutoWidth(true);
-                grid.addColumn(ClubDeskMember::getMembershipFee)
-                        .setHeader("Membership Fee")
-                        .setAutoWidth(true);
-                grid.addColumn(ClubDeskMember::getFirstName)
-                        .setHeader("First Name")
-                        .setAutoWidth(true);
                 grid.addColumn(ClubDeskMember::getFirstName)
                         .setHeader("First Name")
                         .setAutoWidth(true);
@@ -207,7 +201,7 @@ public class ImportsView extends ResizableView {
                 importButton.addClickListener(buttonClickEvent -> {
                     try {
                         cancelButton.setEnabled(false);
-                        // report.importRegistrations(eventService, eventMemberService, memberService);
+                        clubDeskFile.importMembers(memberService);
                         importButton.getElement().removeFromParent();
                         cancelButton.getElement().removeFromParent();
                         grid.getElement().removeFromParent();

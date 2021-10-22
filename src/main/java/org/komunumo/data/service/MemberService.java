@@ -47,6 +47,7 @@ public class MemberService {
                 .into(Member.class);
         member.setFirstName("");
         member.setLastName("");
+        member.setCompany("");
         member.setEmail("");
         member.setAdmin(false);
         member.setAddress("");
@@ -62,6 +63,7 @@ public class MemberService {
         member.setAccountBlocked(false);
         member.setAccountBlockedReason("");
         member.setAccountDeleted(false);
+        member.setComment("");
         return member;
     }
 
@@ -124,6 +126,7 @@ public class MemberService {
             // just anonymize member data
             member.setFirstName(RandomStringUtils.randomAlphabetic(32));
             member.setLastName(RandomStringUtils.randomAlphabetic(32));
+            member.setCompany("");
             member.setEmail(RandomStringUtils.randomAlphabetic(32));
             member.setAddress("");
             member.setZipCode("");
@@ -138,6 +141,7 @@ public class MemberService {
             member.setAccountBlocked(false);
             member.setAccountBlockedReason("");
             member.setAccountDeleted(true);
+            member.setComment("");
             store(member);
         }
     }

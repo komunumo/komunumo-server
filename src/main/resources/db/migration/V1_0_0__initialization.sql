@@ -23,6 +23,7 @@ CREATE TABLE member (
 
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
+    company VARCHAR(255) NOT NULL DEFAULT '',
     email VARCHAR(255) NOT NULL,
     address VARCHAR(255) NOT NULL DEFAULT '',
     zip_code VARCHAR(255) NOT NULL DEFAULT '',
@@ -30,8 +31,9 @@ CREATE TABLE member (
     state VARCHAR(255) NOT NULL DEFAULT '',
     country VARCHAR(255) NOT NULL DEFAULT '',
     registration_date DATETIME NOT NULL,
-    membership_begin DATETIME NULL,
-    membership_end DATETIME NULL,
+    membership_begin DATE NULL,
+    membership_end DATE NULL,
+    membership_id INTEGER UNSIGNED NOT NULL DEFAULT 0,
     admin BOOLEAN NOT NULL DEFAULT 0,
     password_salt VARCHAR(255) NULL,
     password_hash VARCHAR(255) NULL,
@@ -41,6 +43,7 @@ CREATE TABLE member (
     account_blocked BOOLEAN NOT NULL DEFAULT 0,
     account_blocked_reason VARCHAR(255) NOT NULL DEFAULT '',
     account_deleted BOOLEAN NOT NULL DEFAULT 0,
+    comment MEDIUMTEXT NOT NULL DEFAULT '',
 
     PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;

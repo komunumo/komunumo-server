@@ -21,6 +21,7 @@ package org.komunumo.ui.view.admin.members;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.textfield.EmailField;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.EmailValidator;
@@ -41,6 +42,7 @@ public class MemberDialog extends EditDialog<Member> {
     public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<Member> binder) {
         final var firstName = new TextField("First name");
         final var lastName = new TextField("Last name");
+        final var company = new TextField("Company");
         final var email = new EmailField("Email");
         final var active = new Checkbox("Active");
         final var address = new TextField("Address");
@@ -51,6 +53,7 @@ public class MemberDialog extends EditDialog<Member> {
         final var admin = new Checkbox("Member is Admin");
         final var blocked = new Checkbox("Account Blocked");
         final var blockedReason = new TextField("Reason");
+        final var comment = new TextArea("Comment");
 
         firstName.setRequiredIndicatorVisible(true);
         firstName.setValueChangeMode(EAGER);
@@ -70,9 +73,9 @@ public class MemberDialog extends EditDialog<Member> {
         blockedReason.setValueChangeMode(EAGER);
         blockedReason.setEnabled(false);
 
-        formLayout.add(firstName, lastName, email, active,
+        formLayout.add(firstName, lastName, company, email, active,
                 address, zipCode, city, state, country,
-                admin, blocked, blockedReason);
+                admin, blocked, blockedReason, comment);
 
         binder.forField(firstName)
                 .withValidator(new StringLengthValidator(
@@ -83,6 +86,9 @@ public class MemberDialog extends EditDialog<Member> {
                 .withValidator(new StringLengthValidator(
                         "Please enter the last name of the member (max. 255 chars)", 1, 255))
                 .bind(Member::getLastName, Member::setLastName);
+
+        binder.forField(company)
+                .bind(Member::getCompany, Member::setCompany);
 
         binder.forField(email)
                 .withValidator(new EmailValidator(
@@ -131,6 +137,9 @@ public class MemberDialog extends EditDialog<Member> {
                 .withValidator(new StringLengthValidator(
                         "The reason is too long (max. 255 chars)", 0, 255))
                 .bind(Member::getAccountBlockedReason, Member::setAccountBlockedReason);
+
+        binder.forField(comment)
+                .bind(Member::getComment, Member::setComment);
     }
 
 }

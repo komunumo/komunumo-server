@@ -18,6 +18,8 @@
 
 package org.komunumo.data.importer.clubdesk;
 
+import java.util.Objects;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,9 +29,7 @@ public class ClubDeskMember {
 
     private final LocalDate membershipBeginDate;
     private final LocalDate membershipEndDate;
-
-    private final Integer membershipId;
-    private final Integer membershipFee;
+    private final Long membershipId;
 
     private final String firstName;
     private final String lastName;
@@ -40,21 +40,22 @@ public class ClubDeskMember {
     private final String zipCode;
     private final String city;
 
+    private final String comment;
+
     public ClubDeskMember(@Nullable final LocalDate membershipBeginDate,
                           @Nullable final LocalDate membershipEndDate,
-                          @Nullable final Integer membershipId,
-                          @Nullable final Integer membershipFee,
+                          @Nullable final Long membershipId,
                           @NotNull final String firstName,
                           @NotNull final String lastName,
                           @NotNull final String company,
                           @NotNull final String email,
                           @NotNull final String address,
                           @NotNull final String zipCode,
-                          @NotNull final String city) {
+                          @NotNull final String city,
+                          @NotNull final String comment) {
         this.membershipBeginDate = membershipBeginDate;
         this.membershipEndDate = membershipEndDate;
         this.membershipId = membershipId;
-        this.membershipFee = membershipFee;
         this.firstName = firstName;
         this.lastName = lastName;
         this.company = company;
@@ -62,6 +63,7 @@ public class ClubDeskMember {
         this.address = address;
         this.zipCode = zipCode;
         this.city = city;
+        this.comment = comment;
     }
 
     public LocalDate getMembershipBeginDate() {
@@ -72,12 +74,8 @@ public class ClubDeskMember {
         return membershipEndDate;
     }
 
-    public Integer getMembershipId() {
+    public Long getMembershipId() {
         return membershipId;
-    }
-
-    public Integer getMembershipFee() {
-        return membershipFee;
     }
 
     public String getFirstName() {
@@ -108,6 +106,10 @@ public class ClubDeskMember {
         return city;
     }
 
+    public String getComment() {
+        return comment;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -117,13 +119,13 @@ public class ClubDeskMember {
             return false;
         }
 
-        ClubDeskMember that = (ClubDeskMember) o;
-        return membershipId == that.membershipId;
+        final var that = (ClubDeskMember) o;
+        return Objects.equals(membershipId, that.membershipId);
     }
 
     @Override
     public int hashCode() {
-        return membershipId;
+        return membershipId != null ? membershipId.hashCode() : 0;
     }
 
     @Override
@@ -132,7 +134,6 @@ public class ClubDeskMember {
                 "membershipBeginDate=" + membershipBeginDate +
                 ", membershipEndDate=" + membershipEndDate +
                 ", membershipId=" + membershipId +
-                ", membershipFee=" + membershipFee +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", company='" + company + '\'' +
@@ -140,6 +141,7 @@ public class ClubDeskMember {
                 ", address='" + address + '\'' +
                 ", zipCode='" + zipCode + '\'' +
                 ", city='" + city + '\'' +
+                ", comment='" + comment + '\'' +
                 '}';
     }
 }

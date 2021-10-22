@@ -52,6 +52,7 @@ import java.io.StringWriter;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.komunumo.util.FormatterUtil.formatDate;
 import static org.komunumo.util.FormatterUtil.formatDateTime;
 
 @Route(value = "admin/members", layout = AdminLayout.class)
@@ -188,8 +189,8 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
                     member.getState(),
                     member.getCountry(),
                     formatDateTime(member.getRegistrationDate()),
-                    formatDateTime(member.getMembershipBegin()),
-                    formatDateTime(member.getMembershipEnd()),
+                    formatDate(member.getMembershipBegin()),
+                    formatDate(member.getMembershipEnd()),
                     member.getAdmin().toString(),
                     member.getAccountActive().toString(),
                     member.getAccountBlocked().toString(),
