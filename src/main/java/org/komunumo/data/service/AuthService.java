@@ -78,9 +78,9 @@ public class AuthService implements VaadinServiceInitListener {
                              @NotNull final String password)
             throws AccessDeniedException {
         final var member = memberService.getByEmail(email).orElse(null);
-        if (member != null && member.getActive() && checkPassword(member, password)) {
+        if (member != null && member.getAccountActive() && checkPassword(member, password)) {
             VaadinSession.getCurrent().setAttribute(Member.class, member);
-            if (member.getBlocked()) {
+            if (member.getAccountBlocked()) {
                 UI.getCurrent().navigate(BlockedView.class);
             } else if (member.getPasswordChange()) {
                 UI.getCurrent().navigate(ChangePasswordView.class);
@@ -111,7 +111,7 @@ public class AuthService implements VaadinServiceInitListener {
         member.setCountry(country);
         member.setRegistrationDate(LocalDateTime.now());
         member.setAdmin(false);
-        member.setActive(false);
+        member.setAccountActive(false);
         member.setActivationCode(RandomStringUtils.randomAlphanumeric(32));
         memberService.store(member);
 
@@ -130,7 +130,7 @@ public class AuthService implements VaadinServiceInitListener {
             throws AccessDeniedException {
         final var member = memberService.getByEmail(email).orElse(null);
         if (member != null && member.getActivationCode().equals(activationCode)) {
-            member.setActive(true);
+            member.setAccountActive(true);
             memberService.store(member);
         } else {
             throw new AccessDeniedException("Activation failed");
@@ -141,7 +141,7 @@ public class AuthService implements VaadinServiceInitListener {
         final var member = memberService.getByEmail(email);
         if (member.isPresent()) {
             final var record = member.get();
-            if (record.getActive()) {
+            if (record.getAccountActive()) {
                 final var password = RandomStringUtils.randomAscii(32);
                 final var passwordSalt = createPasswordSalt();
                 final var passwordHash = getPasswordHash(password, passwordSalt);
@@ -189,7 +189,7 @@ public class AuthService implements VaadinServiceInitListener {
         final var member = getCurrentUser();
 
         // restrict to members
-        if (member != null && member.getActive() && !member.getBlocked()) {
+        if (member != null && member.getAccountActive() && !member.getAccountBlocked()) {
             if (navigationTarget == DashboardView.class // TODO only for admins / use profile page for members instead
                     || navigationTarget == ChangePasswordView.class
                     || navigationTarget == LogoutView.class) {
@@ -205,7 +205,7 @@ public class AuthService implements VaadinServiceInitListener {
                     || navigationTarget == ImportsView.class)) {
                 return true;
             }
-        } else if (member != null && member.getBlocked()) {
+        } else if (member != null && member.getAccountBlocked()) {
             if (navigationTarget == BlockedView.class) {
                 return true;
             }

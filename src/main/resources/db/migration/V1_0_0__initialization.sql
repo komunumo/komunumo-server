@@ -37,10 +37,10 @@ CREATE TABLE member (
     password_hash VARCHAR(255) NULL,
     password_change BOOLEAN NOT NULL DEFAULT 0,
     activation_code VARCHAR(255) NULL,
-    active BOOLEAN NOT NULL DEFAULT 0,
-    blocked BOOLEAN NOT NULL DEFAULT 0,
-    blocked_reason VARCHAR(255) NOT NULL DEFAULT '',
-    deleted BOOLEAN NOT NULL DEFAULT 0,
+    account_active BOOLEAN NOT NULL DEFAULT 0,
+    account_blocked BOOLEAN NOT NULL DEFAULT 0,
+    account_blocked_reason VARCHAR(255) NOT NULL DEFAULT '',
+    account_deleted BOOLEAN NOT NULL DEFAULT 0,
 
     PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;

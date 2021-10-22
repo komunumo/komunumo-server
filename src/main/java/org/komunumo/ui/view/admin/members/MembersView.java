@@ -115,8 +115,8 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         grid.addColumn(new ComponentRenderer<>(member -> new Icon(member.getAdmin() ? VaadinIcon.CHECK : VaadinIcon.MINUS)))
                 .setHeader("Admin").setAutoWidth(true).setFlexGrow(0);
         grid.addColumn(new ComponentRenderer<>(member -> {
-                    final var icon = new Icon(member.getBlocked() ? VaadinIcon.BAN : VaadinIcon.MINUS);
-                    icon.getElement().setAttribute("title", member.getBlockedReason());
+                    final var icon = new Icon(member.getAccountBlocked() ? VaadinIcon.BAN : VaadinIcon.MINUS);
+                    icon.getElement().setAttribute("title", member.getAccountBlockedReason());
                     return icon;
                 }))
                 .setHeader("Blocked").setAutoWidth(true).setFlexGrow(0);
@@ -171,10 +171,10 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
             final var stringWriter = new StringWriter();
             final var csvWriter = new CSVWriter(stringWriter);
             csvWriter.writeNext(new String[] {
-                    "ID", "First name", "Last name", "Email",
-                    "Address", "Zip code", "City", "State", "Country",
-                    "Registration date", "Membership begin", "Membership end",
-                    "Admin", "Active", "Blocked", "Blocked reason"
+                    "ID", "First Name", "Last Name", "E-Mail",
+                    "Address", "Zip Code", "City", "State", "Country",
+                    "Registration Date", "Membership Begin", "Membership End",
+                    "Admin", "Account Active", "Account Blocked", "Account Blocked reason"
             });
             grid.getGenericDataView()
                     .getItems().map(member -> new String[] {
@@ -191,9 +191,9 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
                     formatDateTime(member.getMembershipBegin()),
                     formatDateTime(member.getMembershipEnd()),
                     member.getAdmin().toString(),
-                    member.getActive().toString(),
-                    member.getBlocked().toString(),
-                    member.getBlockedReason()
+                    member.getAccountActive().toString(),
+                    member.getAccountBlocked().toString(),
+                    member.getAccountBlockedReason()
             }).forEach(csvWriter::writeNext);
             return new ByteArrayInputStream(stringWriter.toString().getBytes(UTF_8));
         });

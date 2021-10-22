@@ -50,7 +50,7 @@ public class DataInitializer {
                     record.setLastName("Admin");
                     record.setEmail(admin.getEmail());
                     record.setAdmin(true);
-                    record.setActive(true);
+                    record.setAccountActive(true);
                     memberService.store(record);
                     authService.resetPassword(admin.getEmail());
                 }

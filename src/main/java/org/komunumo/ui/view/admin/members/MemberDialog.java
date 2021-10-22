@@ -48,8 +48,8 @@ public class MemberDialog extends EditDialog<Member> {
         final var city = new TextField("City");
         final var state = new TextField("State");
         final var country = new TextField("Country");
-        final var admin = new Checkbox("Admin");
-        final var blocked = new Checkbox("Blocked");
+        final var admin = new Checkbox("Member is Admin");
+        final var blocked = new Checkbox("Account Blocked");
         final var blockedReason = new TextField("Reason");
 
         firstName.setRequiredIndicatorVisible(true);
@@ -57,11 +57,18 @@ public class MemberDialog extends EditDialog<Member> {
         lastName.setRequiredIndicatorVisible(true);
         lastName.setValueChangeMode(EAGER);
         blocked.addValueChangeListener(event -> {
-            blockedReason.setRequiredIndicatorVisible(event.getValue());
-            blockedReason.focus();
+            final var isBlocked = event.getValue();
+            blockedReason.setEnabled(isBlocked);
+            blockedReason.setRequiredIndicatorVisible(isBlocked);
+            if (isBlocked) {
+                blockedReason.focus();
+            } else {
+                blockedReason.setValue("");
+            }
             binder.validate();
         });
         blockedReason.setValueChangeMode(EAGER);
+        blockedReason.setEnabled(false);
 
         formLayout.add(firstName, lastName, email, active,
                 address, zipCode, city, state, country,
@@ -85,7 +92,7 @@ public class MemberDialog extends EditDialog<Member> {
                 .bind(Member::getEmail, Member::setEmail);
 
         binder.forField(active)
-                .bind(Member::getActive, Member::setActive);
+                .bind(Member::getAccountActive, Member::setAccountActive);
 
         binder.forField(address)
                 .withValidator(new StringLengthValidator(
@@ -116,14 +123,14 @@ public class MemberDialog extends EditDialog<Member> {
                 .bind(Member::getAdmin, Member::setAdmin);
 
         binder.forField(blocked)
-                .bind(Member::getBlocked, Member::setBlocked);
+                .bind(Member::getAccountBlocked, Member::setAccountBlocked);
 
         binder.forField(blockedReason)
                 .withValidator(value -> !blocked.getValue() || blocked.getValue() && !value.isBlank(),
                         "If you want to block this member, you must enter a reason")
                 .withValidator(new StringLengthValidator(
                         "The reason is too long (max. 255 chars)", 0, 255))
-                .bind(Member::getBlockedReason, Member::setBlockedReason);
+                .bind(Member::getAccountBlockedReason, Member::setAccountBlockedReason);
     }
 
 }

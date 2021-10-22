@@ -58,22 +58,22 @@ public class MemberService {
         member.setMembershipBegin(null);
         member.setMembershipEnd(null);
         member.setAdmin(false);
-        member.setActive(false);
-        member.setBlocked(false);
-        member.setBlockedReason("");
-        member.setDeleted(false);
+        member.setAccountActive(false);
+        member.setAccountBlocked(false);
+        member.setAccountBlockedReason("");
+        member.setAccountDeleted(false);
         return member;
     }
 
     public int count() {
-        return dsl.fetchCount(MEMBER, MEMBER.DELETED.isFalse());
+        return dsl.fetchCount(MEMBER, MEMBER.ACCOUNT_DELETED.isFalse());
     }
 
     public Stream<Member> find(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl.select(MEMBER.asterisk())
                 .from(MEMBER)
-                .where(MEMBER.DELETED.isFalse().and(
+                .where(MEMBER.ACCOUNT_DELETED.isFalse().and(
                         filterValue == null ? DSL.noCondition() :
                         concat(concat(MEMBER.FIRST_NAME, " "), MEMBER.LAST_NAME).like(filterValue)
                                 .or(MEMBER.EMAIL.like(filterValue))))
@@ -87,7 +87,7 @@ public class MemberService {
     public Optional<Member> get(@NotNull final Long id) {
         return dsl.selectFrom(MEMBER)
                 .where(MEMBER.ID.eq(id)
-                        .and(MEMBER.DELETED.isFalse()))
+                        .and(MEMBER.ACCOUNT_DELETED.isFalse()))
                 .fetchOptionalInto(Member.class);
     }
 
@@ -98,14 +98,14 @@ public class MemberService {
     public Optional<Member> get(@NotNull final Long id, final boolean ignoreDeleted) {
         return dsl.selectFrom(MEMBER)
                 .where(MEMBER.ID.eq(id)
-                        .and(ignoreDeleted ? DSL.noCondition() : MEMBER.DELETED.isFalse()))
+                        .and(ignoreDeleted ? DSL.noCondition() : MEMBER.ACCOUNT_DELETED.isFalse()))
                 .fetchOptionalInto(Member.class);
     }
 
     public Optional<Member> getByEmail(@NotNull final String email) {
         return dsl.selectFrom(MEMBER)
                 .where(MEMBER.EMAIL.eq(email)
-                        .and(MEMBER.DELETED.isFalse()))
+                        .and(MEMBER.ACCOUNT_DELETED.isFalse()))
                 .orderBy(MEMBER.REGISTRATION_DATE.desc())
                 .limit(1)
                 .fetchOptionalInto(Member.class);
@@ -134,10 +134,10 @@ public class MemberService {
             member.setPasswordSalt("");
             member.setPasswordHash("");
             member.setActivationCode("");
-            member.setActive(false);
-            member.setBlocked(false);
-            member.setBlockedReason("");
-            member.setDeleted(true);
+            member.setAccountActive(false);
+            member.setAccountBlocked(false);
+            member.setAccountBlockedReason("");
+            member.setAccountDeleted(true);
             store(member);
         }
     }
@@ -145,7 +145,7 @@ public class MemberService {
     public Stream<Member> getAllAdmins() {
         return dsl.selectFrom(MEMBER)
                 .where(MEMBER.ADMIN.isTrue()
-                        .and(MEMBER.DELETED.isFalse()))
+                        .and(MEMBER.ACCOUNT_DELETED.isFalse()))
                 .orderBy(MEMBER.FIRST_NAME, MEMBER.LAST_NAME)
                 .fetchInto(Member.class)
                 .stream();

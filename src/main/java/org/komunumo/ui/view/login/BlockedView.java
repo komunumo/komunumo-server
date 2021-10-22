@@ -48,8 +48,8 @@ public class BlockedView extends Div implements BeforeEnterObserver {
     @Override
     public void beforeEnter(@NotNull final BeforeEnterEvent event) {
         final var member = VaadinSession.getCurrent().getAttribute(MemberRecord.class);
-        if (member.getBlocked()) {
-            final var reason = member.getBlockedReason();
+        if (member.getAccountBlocked()) {
+            final var reason = member.getAccountBlockedReason();
             message.setText(reason.isBlank() ? "unknown" : reason);
         } else {
             event.forwardTo(LoginView.class);

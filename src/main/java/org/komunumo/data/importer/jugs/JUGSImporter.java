@@ -197,7 +197,7 @@ public class JUGSImporter {
                         member.setLastName(RandomStringUtils.randomAlphabetic(32));
                         member.setEmail(RandomStringUtils.randomAlphabetic(32));
                         member.setRegistrationDate(registerDate);
-                        member.setDeleted(true);
+                        member.setAccountDeleted(true);
                         memberService.store(member);
                         try {
                             eventMemberService.registerForEvent(eventId, memberId, registerDate, noShow);
@@ -519,7 +519,7 @@ public class JUGSImporter {
                     member.set(MEMBER.CITY, result.getString("wohnort"));
                     member.set(MEMBER.COUNTRY, result.getString("land"));
                     member.set(MEMBER.REGISTRATION_DATE, getDateTime(result.getString("datum")));
-                    member.set(MEMBER.ACTIVE, true);
+                    member.set(MEMBER.ACCOUNT_ACTIVE, true);
                     member.set(MEMBER.ADMIN, adminIds.contains(result.getInt("id")));
                     memberService.store(member);
                 }
