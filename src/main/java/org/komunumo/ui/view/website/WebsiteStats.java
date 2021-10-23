@@ -27,6 +27,8 @@ import org.komunumo.data.service.StatisticService;
 import java.time.Year;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static java.time.Month.DECEMBER;
+import static java.time.Month.JANUARY;
 import static org.komunumo.util.FormatterUtil.formatNumber;
 
 public class WebsiteStats extends Div {
@@ -48,7 +50,7 @@ public class WebsiteStats extends Div {
 
     private Stats getRandomStats() {
 //        final var randomNumber = new Random().nextInt(7);
-        final var randomNumber = ThreadLocalRandom.current().nextInt(0, 7);
+        final var randomNumber = ThreadLocalRandom.current().nextInt(0, 9);
         switch (randomNumber) {
             case 0: return getAttendeesActualYear();
             case 1: return getUniqueAttendeesActualYear();
@@ -56,7 +58,9 @@ public class WebsiteStats extends Div {
             case 3: return getUniqueAttendeesLastYear();
             case 4: return getMemberCountLastYear();
             case 5: return getMembersJoinedLastYear();
-            case 6: return getEventCountLastYear();
+            case 6: return getMembersJoinedThisYear();
+            case 7: return getEventCountLastYear();
+            case 8: return getEventCountThisYear();
         }
         throw new RuntimeException("random website stats out of bounds");
     }
@@ -101,7 +105,16 @@ public class WebsiteStats extends Div {
         final var membersNow = statisticService.countMembersByYear(year);
         final var membersBefore = statisticService.countMembersByYear(year.minusYears(1));
         final var number = membersNow - membersBefore;
-        final var text = String.format("new members joined JUG Switzerland in %s.", year);
+        final var text = String.format("new members joined JUG Switzerland during %s.", year);
+        return new Stats(number, text);
+    }
+
+    private Stats getMembersJoinedThisYear() {
+        final var year = Year.now();
+        final var firstDay = year.atMonth(JANUARY).atDay(1);
+        final var lastDay = year.atMonth(DECEMBER).atEndOfMonth();
+        final var number = statisticService.countNewMembers(firstDay, lastDay);
+        final var text = String.format("new members joined JUG Switzerland in %s so far.", year);
         return new Stats(number, text);
     }
 
@@ -109,6 +122,13 @@ public class WebsiteStats extends Div {
         final var year = Year.now().minusYears(1);
         final var number = statisticService.countEventsByYear(year);
         final var text = String.format("events were organized by JUG Switzerland during %s.", year);
+        return new Stats(number, text);
+    }
+
+    private Stats getEventCountThisYear() {
+        final var year = Year.now();
+        final var number = statisticService.countEventsByYear(year);
+        final var text = String.format("events were organized by JUG Switzerland in %s so far.", year);
         return new Stats(number, text);
     }
 

@@ -18,6 +18,8 @@
 
 package org.komunumo.data.service;
 
+import java.time.LocalDate;
+
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -48,6 +50,11 @@ public class StatisticService {
         return dsl.fetchCount(MEMBER,
                 MEMBER.ACCOUNT_DELETED.isFalse().and(MEMBER.MEMBERSHIP_BEGIN.lessOrEqual(endOfYear)).and(
                         MEMBER.MEMBERSHIP_END.isNull().or(MEMBER.MEMBERSHIP_END.greaterOrEqual(endOfYear))));
+    }
+
+    public int countNewMembers(@NotNull final LocalDate fromDate, @NotNull final LocalDate toDate) {
+        return dsl.fetchCount(MEMBER, MEMBER.ACCOUNT_DELETED.isFalse()
+                .and(MEMBER.MEMBERSHIP_BEGIN.between(fromDate, toDate)));
     }
 
     public int countEventsByYear(@NotNull final Year year) {
