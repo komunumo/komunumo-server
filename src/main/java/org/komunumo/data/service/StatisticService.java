@@ -53,7 +53,8 @@ public class StatisticService {
     public int countEventsByYear(@NotNull final Year year) {
         final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
         final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
-        return dsl.fetchCount(EVENT, EVENT.DATE.between(firstDay, lastDay));
+        return dsl.fetchCount(EVENT, EVENT.DATE.between(firstDay, lastDay)
+                .and(EVENT.VISIBLE.isTrue()));
     }
 
     public int countAttendeesByYear(@NotNull final Year year, @NotNull final NoShows noShows) {
