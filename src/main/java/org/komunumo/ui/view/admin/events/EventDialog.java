@@ -31,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
+import org.komunumo.data.db.enums.EventType;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Keyword;
 import org.komunumo.data.entity.Member;
@@ -95,6 +96,7 @@ public class EventDialog extends EditDialog<Event> {
 
     @Override
     public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<Event> binder) {
+        final var type = new Select<>(EventType.values());
         final var title = new TextField("Title");
         final var subtitle = new TextField("Subtitle");
         final var speaker = new MultiselectComboBox<Speaker>("Speaker");
@@ -110,6 +112,8 @@ public class EventDialog extends EditDialog<Event> {
         final var duration = new TimePicker("Duration");
         final var visible = new Checkbox("Visible");
 
+        type.setLabel("Type");
+        type.setRequiredIndicatorVisible(true);
         title.setRequiredIndicatorVisible(true);
         title.setValueChangeMode(EAGER);
         subtitle.setValueChangeMode(EAGER);
@@ -151,8 +155,13 @@ public class EventDialog extends EditDialog<Event> {
             binder.validate();
         });
 
-        formLayout.add(title, subtitle, speaker, organizer, level, description, keyword, agenda,
+        formLayout.add(type, title, subtitle, speaker, organizer, level, description, keyword, agenda,
                 language, location, webinarUrl, date, duration, visible);
+
+        binder.forField(type)
+                .withValidator(value -> !visible.getValue() || value != null,
+                        "Please select a type")
+                .bind(Event::getType, Event::setType);
 
         binder.forField(title)
                 .withValidator(new StringLengthValidator(

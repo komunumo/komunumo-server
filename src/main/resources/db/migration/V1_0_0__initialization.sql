@@ -1,6 +1,7 @@
 CREATE TABLE event (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 
+    type ENUM('Talk', 'Workshop', 'Meetup', 'Sponsored') NOT NULL,
     title VARCHAR(255) NOT NULL,
     subtitle VARCHAR(255) NOT NULL DEFAULT '',
     description MEDIUMTEXT NOT NULL DEFAULT '',
@@ -73,7 +74,6 @@ CREATE TABLE event_organizer (
 
 CREATE TABLE keyword (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-
     keyword VARCHAR(255) NOT NULL,
 
     PRIMARY KEY (id),

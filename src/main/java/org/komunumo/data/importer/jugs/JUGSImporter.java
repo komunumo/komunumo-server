@@ -19,12 +19,16 @@
 package org.komunumo.data.importer.jugs;
 
 import com.vaadin.flow.spring.annotation.SpringComponent;
+
+import java.util.Locale;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
+import org.komunumo.data.db.enums.EventType;
 import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Speaker;
@@ -391,7 +395,7 @@ public class JUGSImporter {
         }
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
-                    "SELECT id, ort, datum, startzeit, zeitende, titel, untertitel, agenda, abstract, sichtbar, verantwortung, url_webinar FROM events_neu WHERE sichtbar='ja' OR datum >= '2021-01-01' ORDER BY id");
+                    "SELECT id, ort, datum, startzeit, zeitende, titel, untertitel, agenda, abstract, sichtbar, verantwortung, url_webinar, anm_formular FROM events_neu WHERE sichtbar='ja' OR datum >= '2021-01-01' ORDER BY id");
             while (result.next()) {
                 final var event = eventService.get(result.getLong("id"))
                         .orElse(eventService.newEvent());
@@ -406,6 +410,25 @@ public class JUGSImporter {
                     event.set(EVENT.AGENDA, getEmptyForNull(result.getString("agenda")));
                     event.set(EVENT.DESCRIPTION, getEmptyForNull(result.getString("abstract")));
                     event.set(EVENT.VISIBLE, result.getString("sichtbar").equalsIgnoreCase("ja"));
+
+                    final var eventTitle = getEmptyForNull(result.getString("titel")).toLowerCase(Locale.getDefault());
+                    if (eventTitle.contains("workshoptage")
+                            || eventTitle.contains("/ch/open")
+                            || eventTitle.contains("ch open")
+                            || eventTitle.contains("baselone")
+                            || (getEmptyForNull(result.getString("anm_formular")).isEmpty()
+                                    && !getEmptyForNull(result.getString("ort")).equalsIgnoreCase("Online"))) {
+                        event.setType(EventType.Sponsored);
+                    } else if (eventTitle.contains("bier")
+                            || eventTitle.contains("networking")
+                            || eventTitle.contains("the beer event")) {
+                        event.setType(EventType.Meetup);
+                    } else if (eventTitle.contains("workshop")) {
+                        event.setType(EventType.Workshop);
+                    } else {
+                        event.setType(EventType.Talk);
+                    }
+
                     eventService.store(event);
                     addOrganizers(memberService, eventMemberService, event, result.getString("verantwortung"));
                 }
