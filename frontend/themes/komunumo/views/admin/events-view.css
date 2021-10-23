@@ -16,10 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-vaadin-icon[icon="vaadin:eye"] {
-    color: var(--green);
-}
-
 vaadin-icon[icon="vaadin:eye-slash"] {
-    color: var(--red);
+    color: gray;
 }
