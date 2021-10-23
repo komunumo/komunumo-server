@@ -135,6 +135,30 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
+        grid.addColumn(new ComponentRenderer<>(
+                event -> {
+                    Icon icon;
+                    switch (event.getType()){
+                        case Talk:
+                            icon = new Icon(VaadinIcon.PRESENTATION);
+                            break;
+                        case Workshop:
+                            icon = new Icon(VaadinIcon.LAPTOP);
+                            break;
+                        case Meetup:
+                            icon = new Icon(VaadinIcon.GROUP);
+                            break;
+                        case Sponsored:
+                            icon = new Icon(VaadinIcon.MONEY);
+                            break;
+                        default:
+                            icon = new Icon(VaadinIcon.QUESTION_CIRCLE_O);
+                    }
+                    icon.setSize("16px");
+                    icon.getElement().setAttribute("title", event.getType().toString());
+                    return icon;
+                })).setHeader("Type").setAutoWidth(true).setFlexGrow(0);
+
         grid.addColumn(TemplateRenderer.<Event>of("<span style=\"font-weight: bold;\">[[item.title]]</span><br/><span inner-h-t-m-l=\"[[item.speaker]]\"></span>")
                 .withProperty("title", Event::getTitle)
                 .withProperty("speaker", this::renderSpeakerLinks))
