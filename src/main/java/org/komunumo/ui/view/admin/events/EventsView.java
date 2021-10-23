@@ -172,8 +172,8 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
 
         grid.addColumn(Event::getAttendeeCount).setHeader("Attendees").setAutoWidth(true).setFlexGrow(0).setKey("attendees");
 
-        grid.addColumn(new ComponentRenderer<>(event -> new Icon(event.getVisible() ? VaadinIcon.EYE : VaadinIcon.EYE_SLASH)))
-                .setHeader("Visible")
+        grid.addColumn(new ComponentRenderer<>(event -> new Icon(event.getPublished() ? VaadinIcon.EYE : VaadinIcon.EYE_SLASH)))
+                .setHeader("Published")
                 .setAutoWidth(true)
                 .setFlexGrow(0);
 
@@ -184,7 +184,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
             copyButton.setTitle("Copy this event");
             final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), clickEvent -> deleteEvent(event));
             deleteButton.setTitle("Delete this event");
-            deleteButton.setEnabled(!event.getVisible() && event.getAttendeeCount() == 0);
+            deleteButton.setEnabled(!event.getPublished() && event.getAttendeeCount() == 0);
             return new HorizontalLayout(editButton, copyButton, deleteButton);
 
         }))
@@ -253,7 +253,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
             final var stringWriter = new StringWriter();
             final var csvWriter = new CSVWriter(stringWriter);
             csvWriter.writeNext(new String[]{
-                    "ID", "Title", "Subtitle", "Speaker", "Description", "Keywords", "Agenda", "Level", "Language", "Location", "Date", "Visible"
+                    "ID", "Title", "Subtitle", "Speaker", "Description", "Keywords", "Agenda", "Level", "Language", "Location", "Date", "Published"
             });
             grid.getGenericDataView()
                     .getItems().map(event -> new String[]{
@@ -268,7 +268,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
                     event.getLanguage() != null ? event.getLanguage().toString() : null,
                     event.getLocation(),
                     event.getDate() != null ? event.getDate().toString() : null,
-                    event.getVisible().toString()
+                    event.getPublished().toString()
             }).forEach(csvWriter::writeNext);
             return new ByteArrayInputStream(stringWriter.toString().getBytes(UTF_8));
         });

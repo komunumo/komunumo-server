@@ -68,7 +68,7 @@ public class EventService {
         event.setDescription("");
         event.setAgenda("");
         event.setWebinarUrl("");
-        event.setVisible(false);
+        event.setPublished(false);
         event.setSpeakers(List.of());
         event.setKeywords(List.of());
         event.setAttendeeCount(0);
@@ -82,7 +82,7 @@ public class EventService {
         newEvent.setLocation("");
         newEvent.setWebinarUrl("");
         newEvent.setDate(null);
-        newEvent.setVisible(false);
+        newEvent.setPublished(false);
         newEvent.setAttendeeCount(0);
         return newEvent;
     }
@@ -139,7 +139,7 @@ public class EventService {
 
     public Stream<Event> upcomingEvents() {
         return dsl.selectFrom(EVENT)
-                .where(condition(EVENT.VISIBLE)
+                .where(condition(EVENT.PUBLISHED)
                         // minusHours(1) - show events as upcoming which had just started
                         .and(EVENT.DATE.greaterOrEqual(LocalDateTime.now().minusHours(1))))
                 .orderBy(EVENT.DATE.asc())

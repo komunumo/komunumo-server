@@ -12,7 +12,7 @@ CREATE TABLE event (
     webinar_url VARCHAR(255) NOT NULL DEFAULT '',
     date DATETIME NULL,
     duration TIME NULL,
-    visible BOOLEAN NOT NULL DEFAULT 0,
+    published BOOLEAN NOT NULL DEFAULT 0,
 
     PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;

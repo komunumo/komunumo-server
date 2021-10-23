@@ -110,7 +110,7 @@ public class EventDialog extends EditDialog<Event> {
         final var webinarUrl = new TextField("Webinar URL");
         final var date = new DateTimePicker("Date & Time");
         final var duration = new TimePicker("Duration");
-        final var visible = new Checkbox("Visible");
+        final var published = new Checkbox("Published");
 
         type.setLabel("Type");
         type.setRequiredIndicatorVisible(true);
@@ -135,7 +135,7 @@ public class EventDialog extends EditDialog<Event> {
             final var value = changeEvent.getValue();
             final var isOnline = "Online".equalsIgnoreCase(value);
             webinarUrl.setEnabled(isOnline);
-            webinarUrl.setRequiredIndicatorVisible(visible.getValue() && isOnline);
+            webinarUrl.setRequiredIndicatorVisible(published.getValue() && isOnline);
             binder.validate();
         });
         webinarUrl.setValueChangeMode(EAGER);
@@ -143,7 +143,7 @@ public class EventDialog extends EditDialog<Event> {
         duration.setStep(Duration.ofMinutes(15));
         duration.setMinTime(LocalTime.of(1, 0));
         duration.setMaxTime(LocalTime.of(3, 0));
-        visible.addValueChangeListener(changeEvent -> {
+        published.addValueChangeListener(changeEvent -> {
             final var value = changeEvent.getValue();
             speaker.setRequiredIndicatorVisible(value);
             level.setRequiredIndicatorVisible(value);
@@ -156,10 +156,10 @@ public class EventDialog extends EditDialog<Event> {
         });
 
         formLayout.add(type, title, subtitle, speaker, organizer, level, description, keyword, agenda,
-                language, location, webinarUrl, date, duration, visible);
+                language, location, webinarUrl, date, duration, published);
 
         binder.forField(type)
-                .withValidator(value -> !visible.getValue() || value != null,
+                .withValidator(value -> !published.getValue() || value != null,
                         "Please select a type")
                 .bind(Event::getType, Event::setType);
 
@@ -174,7 +174,7 @@ public class EventDialog extends EditDialog<Event> {
                 .bind(Event::getSubtitle, Event::setSubtitle);
 
         binder.forField(speaker)
-                .withValidator(value -> !visible.getValue() || !value.isEmpty(),
+                .withValidator(value -> !published.getValue() || !value.isEmpty(),
                         "Please select at least one speaker")
                 .bind(this::getSpeakers, this::setSpeakers);
 
@@ -184,12 +184,12 @@ public class EventDialog extends EditDialog<Event> {
                 .bind(this::getOrganizer, this::setOrganizer);
 
         binder.forField(level)
-                .withValidator(value -> !visible.getValue() || value != null,
+                .withValidator(value -> !published.getValue() || value != null,
                         "Please select a level")
                 .bind(Event::getLevel, Event::setLevel);
 
         binder.forField(description)
-                .withValidator(value -> !visible.getValue() || value != null && !value.isBlank(),
+                .withValidator(value -> !published.getValue() || value != null && !value.isBlank(),
                         "Please enter a description")
                 .bind(Event::getDescription, Event::setDescription);
 
@@ -200,33 +200,33 @@ public class EventDialog extends EditDialog<Event> {
                 .bind(Event::getAgenda, Event::setAgenda);
 
         binder.forField(language)
-                .withValidator(value -> !visible.getValue() || value != null,
+                .withValidator(value -> !published.getValue() || value != null,
                         "Please select a language")
                 .bind(Event::getLanguage, Event::setLanguage);
 
         binder.forField(location)
-                .withValidator(value -> !visible.getValue() || value != null,
+                .withValidator(value -> !published.getValue() || value != null,
                         "Please select a location")
                 .bind(Event::getLocation, Event::setLocation);
 
         binder.forField(webinarUrl)
-                .withValidator(value -> !visible.getValue() || !"Online".equalsIgnoreCase(location.getValue()) || validateUrl(value),
+                .withValidator(value -> !published.getValue() || !"Online".equalsIgnoreCase(location.getValue()) || validateUrl(value),
                         "Please enter a valid URL")
                 .bind(Event::getWebinarUrl, Event::setWebinarUrl);
 
         binder.forField(date)
-                .withValidator(value -> isPastEvent(date) || !visible.getValue() && (value == null || value.isAfter(LocalDateTime.now()))
+                .withValidator(value -> isPastEvent(date) || !published.getValue() && (value == null || value.isAfter(LocalDateTime.now()))
                                 || value != null && value.isAfter(LocalDateTime.now()),
                         "Please enter a date and time in the future")
                 .bind(Event::getDate, Event::setDate);
 
         binder.forField(duration)
-                .withValidator(value -> !visible.getValue() || (value != null && value.isAfter(LocalTime.MIN) && value.isBefore(LocalTime.MAX)),
+                .withValidator(value -> !published.getValue() || (value != null && value.isAfter(LocalTime.MIN) && value.isBefore(LocalTime.MAX)),
                         "Please enter a duration")
                 .bind(Event::getDuration, Event::setDuration);
 
-        binder.forField(visible)
-                .bind(Event::getVisible, Event::setVisible);
+        binder.forField(published)
+                .bind(Event::getPublished, Event::setPublished);
 
         afterOpen = () -> {
             webinarUrl.setEnabled("Online".equalsIgnoreCase(location.getValue()));

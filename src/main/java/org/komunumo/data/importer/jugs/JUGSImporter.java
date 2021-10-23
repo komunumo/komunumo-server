@@ -235,7 +235,7 @@ public class JUGSImporter {
 
     private void updateEventLevel(@NotNull final EventService eventService) {
         eventService.find(0, Integer.MAX_VALUE, null)
-                .filter(Event::getVisible)
+                .filter(Event::getPublished)
                 .filter(event -> event.getLevel() == null)
                 .map(event -> eventService.get(event.getId()))
                 .filter(Optional::isPresent)
@@ -298,7 +298,7 @@ public class JUGSImporter {
 
                         if (event.getLevel() == null) {
                             final var levelTalk = result.getInt("level");
-                            if (levelTalk >= 1 && levelTalk <= 3 || event.get(EVENT.VISIBLE)) {
+                            if (levelTalk >= 1 && levelTalk <= 3 || event.get(EVENT.PUBLISHED)) {
                                 EventLevel level;
                                 switch (levelTalk) {
                                     case 1:
@@ -409,7 +409,7 @@ public class JUGSImporter {
                     event.set(EVENT.SUBTITLE, getEmptyForNull(result.getString("untertitel")));
                     event.set(EVENT.AGENDA, getEmptyForNull(result.getString("agenda")));
                     event.set(EVENT.DESCRIPTION, getEmptyForNull(result.getString("abstract")));
-                    event.set(EVENT.VISIBLE, result.getString("sichtbar").equalsIgnoreCase("ja"));
+                    event.set(EVENT.PUBLISHED, result.getString("sichtbar").equalsIgnoreCase("ja"));
 
                     final var eventTitle = getEmptyForNull(result.getString("titel")).toLowerCase(Locale.getDefault());
                     if (eventTitle.contains("workshoptage")
