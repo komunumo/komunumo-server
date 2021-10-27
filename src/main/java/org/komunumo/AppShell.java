@@ -18,6 +18,7 @@
 
 package org.komunumo;
 
+import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
@@ -29,5 +30,6 @@ import com.vaadin.flow.theme.Theme;
 @SuppressWarnings("unused")
 @Theme(value = "komunumo")
 @PWA(name = "Komunumo", shortName = "Komunumo", offlineResources = {"images/logo.png"})
+@NpmPackage(value = "lumo-css-framework", version = "^4.0.10")
 public class AppShell implements AppShellConfigurator {
 }

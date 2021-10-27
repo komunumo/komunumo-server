@@ -54,6 +54,7 @@
     "@vaadin/vaadin-virtual-list": "21.0.3",
     "construct-style-sheets-polyfill": "2.4.16",
     "lit": "2.0.0",
+    "lumo-css-framework": "^4.0.10",
     "multiselect-combo-box": "2.4.2"
   },
   "devDependencies": {
@@ -137,6 +138,7 @@
       "@vaadin/vaadin-virtual-list": "21.0.3",
       "construct-style-sheets-polyfill": "2.4.16",
       "lit": "2.0.0",
+      "lumo-css-framework": "^4.0.10",
       "multiselect-combo-box": "2.4.2"
     },
     "devDependencies": {
@@ -164,6 +166,6 @@
       "workbox-precaching": "6.2.0",
       "workbox-webpack-plugin": "6.2.0"
     },
-    "hash": "e4768f94c3b44f987da3f58415774b0e8e1cec41a116e634bde380da4e0c9768"
+    "hash": "25156faf539de58819a01b50fdb526a7636d9ae17d1b7269a42d93c4bf3f8f3e"
   }
 }
