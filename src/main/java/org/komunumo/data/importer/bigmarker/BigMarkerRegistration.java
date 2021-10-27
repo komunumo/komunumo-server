@@ -32,19 +32,22 @@ public class BigMarkerRegistration {
     private final ZonedDateTime registrationDate;
     private final boolean unsubscribed;
     private final boolean attendedLive;
+    private final String membership;
 
     public BigMarkerRegistration(@NotNull final String firstName,
                                  @NotNull final String lastName,
                                  @Nullable final String email,
                                  @Nullable final ZonedDateTime registrationDate,
                                  final boolean unsubscribed,
-                                 final boolean attendedLive) {
+                                 final boolean attendedLive,
+                                 @Nullable final String membership) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.registrationDate = registrationDate;
         this.unsubscribed = unsubscribed;
         this.attendedLive = attendedLive;
+        this.membership = membership;
     }
 
     public String getFirstName() {
@@ -79,6 +82,10 @@ public class BigMarkerRegistration {
         return !hasAttendedLive() && !hasUnsubscribed();
     }
 
+    public String getMembership() {
+        return membership;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -106,6 +113,7 @@ public class BigMarkerRegistration {
                 ", registrationDate=" + registrationDate +
                 ", unsubscribed=" + unsubscribed +
                 ", attendedLive=" + attendedLive +
+                ", membership=" + membership +
                 '}';
     }
 }

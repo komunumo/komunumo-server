@@ -101,6 +101,9 @@ public class ImportsView extends ResizableView {
                 grid.addColumn(BigMarkerRegistration::hasAttendedLive)
                         .setHeader("Attended Live")
                         .setAutoWidth(true);
+                grid.addColumn(BigMarkerRegistration::getMembership)
+                        .setHeader("Membership")
+                        .setAutoWidth(true);
                 grid.setItems(registrations);
                 upload.getElement().getParent().appendChild(grid.getElement());
 

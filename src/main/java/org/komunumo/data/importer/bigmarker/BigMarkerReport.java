@@ -18,6 +18,8 @@
 
 package org.komunumo.data.importer.bigmarker;
 
+import java.util.Locale;
+
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jetbrains.annotations.NotNull;
@@ -71,6 +73,7 @@ public class BigMarkerReport {
         final var timezoneColumn = findColumn(columnHeaders, "Time Zone").orElseThrow();
         final var unsubscribedColumn = findColumn(columnHeaders, "Unsubscribed").orElseThrow();
         final var attendedLiveColumn = findColumn(columnHeaders, "Attended Live").orElseThrow();
+        final var membershipColumn = findColumn(columnHeaders, "Membership");
         final var firstDataRowIndex = findCell(sheet, "#").orElseThrow().getRowIndex() + 1;
         final var totalRegistered = Integer.parseUnsignedInt(findCell(sheet, "Total Registered").orElseThrow().getStringCellValue());
 
@@ -86,7 +89,8 @@ public class BigMarkerReport {
                     ZonedDateTime.ofInstant(date.toInstant(), ZoneId.of(timezone));
             final var unsubscribed = getStringFromRow(row, unsubscribedColumn).orElseThrow().equals("Yes");
             final var attendedLive = getStringFromRow(row, attendedLiveColumn).orElseThrow().equals("Yes");
-            final var attendee = new BigMarkerRegistration(firstName, lastName, email, registrationDate, unsubscribed, attendedLive);
+            final var membership = membershipColumn.map(columnHeader -> getStringFromRow(row, columnHeader).orElseThrow()).orElse(null);
+            final var attendee = new BigMarkerRegistration(firstName, lastName, email, registrationDate, unsubscribed, attendedLive, membership);
             attendees.add(attendee);
         }
         registrations = Collections.unmodifiableList(attendees);
@@ -107,6 +111,12 @@ public class BigMarkerReport {
         newMember.setEmail(registration.getEmail());
         if (registration.getRegistrationDate() != null) {
             newMember.setRegistrationDate(registration.getRegistrationDate().toLocalDateTime());
+        }
+        final var membership = registration.getMembership();
+        if (membership != null && !membership.isBlank() && !membership.toLowerCase(Locale.getDefault()).contains("none")) {
+            newMember.setComment("Registered at BigMarker\nMembership: " + registration.getMembership());
+        } else {
+            newMember.setComment("Registered at BigMarker");
         }
         memberService.store(newMember);
         return newMember;
