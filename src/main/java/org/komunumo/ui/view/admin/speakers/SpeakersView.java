@@ -57,6 +57,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Route(value = "admin/speakers", layout = AdminLayout.class)
 @PageTitle("Speaker Administration")
+@CssImport(value = "./themes/komunumo/views/admin/speakers-view.css")
 @CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
 public class SpeakersView extends ResizableView implements HasUrlParameter<String> {
 

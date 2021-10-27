@@ -49,6 +49,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Route(value = "admin/keywords", layout = AdminLayout.class)
 @PageTitle("Keyword Administration")
+@CssImport(value = "./themes/komunumo/views/admin/keywords-view.css")
 @CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
 public class KeywordsView extends ResizableView {
 

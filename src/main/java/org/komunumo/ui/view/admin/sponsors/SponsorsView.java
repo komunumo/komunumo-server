@@ -56,6 +56,7 @@ import static org.komunumo.util.FormatterUtil.formatDate;
 
 @Route(value = "admin/sponsors", layout = AdminLayout.class)
 @PageTitle("Sponsor Administration")
+@CssImport(value = "./themes/komunumo/views/admin/sponsors-view.css")
 @CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
 public class SponsorsView extends ResizableView implements HasUrlParameter<String> {
 

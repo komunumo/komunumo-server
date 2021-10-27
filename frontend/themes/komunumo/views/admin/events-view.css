@@ -16,6 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+.events-view {
+    height: 100%;
+}
+
 vaadin-icon[icon="vaadin:eye-slash"] {
     color: gray;
 }

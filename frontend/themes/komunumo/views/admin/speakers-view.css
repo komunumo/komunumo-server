@@ -16,14 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-.members-view {
+.speakers-view {
     height: 100%;
-}
-
-vaadin-icon[icon="vaadin:check"] {
-    color: var(--green);
-}
-
-vaadin-icon[icon="vaadin:ban"] {
-    color: var(--red);
 }
