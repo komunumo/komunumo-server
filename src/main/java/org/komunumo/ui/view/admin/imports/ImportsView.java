@@ -21,11 +21,14 @@ package org.komunumo.ui.view.admin.imports;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
@@ -36,38 +39,63 @@ import org.komunumo.data.importer.bigmarker.BigMarkerRegistration;
 import org.komunumo.data.importer.bigmarker.BigMarkerReport;
 import org.komunumo.data.importer.clubdesk.ClubDeskFile;
 import org.komunumo.data.importer.clubdesk.ClubDeskMember;
+import org.komunumo.data.importer.jugs.JUGSImporter;
+import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
+import org.komunumo.data.service.EventSpeakerService;
+import org.komunumo.data.service.KeywordService;
 import org.komunumo.data.service.MemberService;
+import org.komunumo.data.service.SpeakerService;
+import org.komunumo.data.service.SponsorService;
 import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
+import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
+
 @Route(value = "admin/imports", layout = AdminLayout.class)
 @PageTitle("Imports")
 @CssImport(value = "./themes/komunumo/views/admin/imports-view.css")
 public class ImportsView extends ResizableView {
 
+    private final SponsorService sponsorService;
     private final MemberService memberService;
     private final EventService eventService;
     private final EventMemberService eventMemberService;
+    private final SpeakerService speakerService;
+    private final EventSpeakerService eventSpeakerService;
+    private final KeywordService keywordService;
+    private final EventKeywordService eventKeywordService;
 
     public ImportsView(
+            @NotNull final SponsorService sponsorService,
             @NotNull final MemberService memberService,
             @NotNull final EventService eventService,
-            @NotNull final EventMemberService eventMemberService) {
+            @NotNull final EventMemberService eventMemberService,
+            @NotNull final SpeakerService speakerService,
+            @NotNull final EventSpeakerService eventSpeakerService,
+            @NotNull final KeywordService keywordService,
+            @NotNull final EventKeywordService eventKeywordService) {
+        this.sponsorService = sponsorService;
         this.memberService = memberService;
         this.eventService = eventService;
         this.eventMemberService = eventMemberService;
+        this.speakerService = speakerService;
+        this.eventSpeakerService = eventSpeakerService;
+        this.keywordService = keywordService;
+        this.eventKeywordService = eventKeywordService;
 
         addClassName("imports-view");
         add(
                 new H2("BigMarker"),
                 createImportRegistrationsComponents(),
                 new H2("ClubDesk"),
-                createImportMembersComponents()
+                createImportMembersComponents(),
+                new H2("Java User Group Switzerland"),
+                createImportJavaUserGroupSwitzerland()
         );
     }
 
@@ -238,6 +266,42 @@ public class ImportsView extends ResizableView {
         return new Div(
                 title, upload
         );
+    }
+
+    private Component createImportJavaUserGroupSwitzerland() {
+        final var dbURL = new TextField("Database URL");
+        final var dbUser = new TextField("Database User");
+        final var dbPass = new PasswordField("Database Password");
+        final var importButton = new Button("Start Import");
+
+        dbURL.setValueChangeMode(EAGER);
+        dbUser.setValueChangeMode(EAGER);
+        dbPass.setValueChangeMode(EAGER);
+
+        dbURL.addValueChangeListener(changeEvent -> importButton.setEnabled(
+                !dbURL.isEmpty() && !dbUser.isEmpty() && !dbPass.isEmpty()
+        ));
+        dbUser.addValueChangeListener(changeEvent -> importButton.setEnabled(
+                !dbURL.isEmpty() && !dbUser.isEmpty() && !dbPass.isEmpty()
+        ));
+        dbPass.addValueChangeListener(changeEvent -> importButton.setEnabled(
+                !dbURL.isEmpty() && !dbUser.isEmpty() && !dbPass.isEmpty()
+        ));
+
+        importButton.setDisableOnClick(true);
+        importButton.setEnabled(!dbURL.isEmpty() && !dbUser.isEmpty() && !dbPass.isEmpty());
+        importButton.addClickListener(buttonClickEvent -> {
+            final var importer = new JUGSImporter(sponsorService, memberService, eventService, eventMemberService,
+                    speakerService, eventSpeakerService, keywordService, eventKeywordService);
+            importer.importFromJavaUserGroupSwitzerland(dbURL.getValue(), dbUser.getValue(), dbPass.getValue());
+        });
+
+        final var dbForm = new FormLayout(dbURL, dbUser, dbPass);
+        dbForm.setResponsiveSteps(
+                new FormLayout.ResponsiveStep("0", 1, FormLayout.ResponsiveStep.LabelsPosition.TOP),
+                new FormLayout.ResponsiveStep("800px", 3, FormLayout.ResponsiveStep.LabelsPosition.TOP));
+
+        return new Div(dbForm, importButton);
     }
 
 }

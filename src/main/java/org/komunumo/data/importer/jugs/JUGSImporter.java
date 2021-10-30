@@ -18,10 +18,8 @@
 
 package org.komunumo.data.importer.jugs;
 
-import com.vaadin.flow.spring.annotation.SpringComponent;
-
-import java.util.Locale;
-
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.notification.Notification;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
@@ -40,9 +38,6 @@ import org.komunumo.data.service.KeywordService;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.data.service.SponsorService;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -56,8 +51,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static org.komunumo.data.db.tables.Event.EVENT;
@@ -67,25 +64,25 @@ import static org.komunumo.data.db.tables.Member.MEMBER;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
 
-@SpringComponent
 @SuppressWarnings({"SqlResolve", "removal", "java:S112", "java:S1192", "java:S3776"})
 public class JUGSImporter {
 
-    @Value("${JUGS_DB_URL}")
-    private String dbURL;
-
-    @Value("${JUGS_DB_USER}")
-    private String dbUser;
-
-    @Value("${JUGS_DB_PASS}")
-    private String dbPass;
+    private final SponsorService sponsorService;
+    private final MemberService memberService;
+    private final EventService eventService;
+    private final EventMemberService eventMemberService;
+    private final SpeakerService speakerService;
+    private final EventSpeakerService eventSpeakerService;
+    private final KeywordService keywordService;
+    private final EventKeywordService eventKeywordService;
 
     private int hansMaerkiId;
     private int rogerSuessId;
     private int sandroRuchId;
 
-    @Bean
-    public CommandLineRunner importFromJavaUserGroupSwitzerland(
+    private UI ui = null;
+
+    public JUGSImporter(
             @NotNull final SponsorService sponsorService,
             @NotNull final MemberService memberService,
             @NotNull final EventService eventService,
@@ -94,39 +91,60 @@ public class JUGSImporter {
             @NotNull final EventSpeakerService eventSpeakerService,
             @NotNull final KeywordService keywordService,
             @NotNull final EventKeywordService eventKeywordService) {
-        return args -> {
-            Thread.sleep(30_000); // wait 30 seconds to be sure this import does not slow down the startup
-            if (dbURL != null && dbUser != null && dbPass != null) {
-                final var connection = DriverManager.getConnection(dbURL, dbUser, dbPass);
-                connection.setReadOnly(true);
-                importSponsors(sponsorService, connection);
-                importMembers(memberService, connection);
-                addMissingMembers(memberService);
-                importEvents(eventService, eventMemberService, memberService, connection);
-                importKeywords(eventService, keywordService, eventKeywordService, connection);
-                importSpeakers(speakerService, eventSpeakerService, eventService, connection);
-                importRegistrations(eventMemberService, eventService, memberService, connection);
-                updateEventLevel(eventService);
-            }
-        };
+        this.sponsorService = sponsorService;
+        this.memberService = memberService;
+        this.eventService = eventService;
+        this.eventMemberService = eventMemberService;
+        this.speakerService = speakerService;
+        this.eventSpeakerService = eventSpeakerService;
+        this.keywordService = keywordService;
+        this.eventKeywordService = eventKeywordService;
     }
 
-    private void importKeywords(@NotNull final EventService eventService,
-                                @NotNull final KeywordService keywordService,
-                                @NotNull final EventKeywordService eventKeywordService,
-                                @NotNull final Connection connection)
+    private void showNotification(@NotNull final String message) {
+        ui.access(() -> Notification.show(message));
+    }
+
+    public void importFromJavaUserGroupSwitzerland(
+            @NotNull final String dbURL,
+            @NotNull final String dbUser,
+            @NotNull final String dbPass) {
+        ui = UI.getCurrent();
+        new Thread(() -> {
+            try {
+                showNotification("Importing data from Java User Group Switzerland in the background...");
+                final var connection = DriverManager.getConnection(dbURL, dbUser, dbPass);
+                connection.setReadOnly(true);
+                importSponsors(connection);
+                importMembers(connection);
+                addMissingMembers();
+                importEvents(connection);
+                importKeywords(connection);
+                importSpeakers(connection);
+                importRegistrations(connection);
+                updateEventLevel();
+                showNotification("Importing data from Java User Group Switzerland successfully finished.");
+            } catch (final SQLException e) {
+                showNotification("Error importing data from Java User Group Switzerland: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    private void importKeywords(@NotNull final Connection connection)
             throws SQLException {
-        if (keywordService.count() > 0) {
-            return;
-        }
+        final var counter = new AtomicInteger(0);
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
                     "SELECT id, bezeichnung FROM eventlabels");
             while (result.next()) {
-                final var keyword = keywordService.newKeyword();
-                keyword.set(KEYWORD.ID, result.getLong("id"));
-                keyword.set(KEYWORD.KEYWORD_, result.getString("bezeichnung"));
-                keywordService.store(keyword);
+                final var keyword = keywordService.get(result.getLong("id"))
+                        .orElse(keywordService.newKeyword());
+                if (keyword.getId() == null) {
+                    keyword.set(KEYWORD.ID, result.getLong("id"));
+                    keyword.set(KEYWORD.KEYWORD_, result.getString("bezeichnung"));
+                    keywordService.store(keyword);
+                    counter.incrementAndGet();
+                }
             }
         }
         try (var statement = connection.createStatement()) {
@@ -137,7 +155,9 @@ public class JUGSImporter {
                 final var keywordId = result.getLong("eventlabels_id");
                 final var event = eventService.get(eventId);
                 final var keyword = keywordService.get(keywordId);
-                if (event.isPresent() && keyword.isPresent()) {
+                if (event.isPresent() && keyword.isPresent()
+                        && eventKeywordService.getKeywordsForEvent(event.orElseThrow())
+                            .filter(record -> record.getId() == keywordId).findAny().isEmpty()) {
                     final var eventKeyword = eventKeywordService.newEventKeyword();
                     eventKeyword.set(EVENT_KEYWORD.EVENT_ID, eventId);
                     eventKeyword.set(EVENT_KEYWORD.KEYWORD_ID, keywordId);
@@ -145,36 +165,35 @@ public class JUGSImporter {
                 }
             }
         }
+        showNotification(counter.get() + " new keywords imported.");
     }
 
-    private void addMissingMembers(@NotNull final MemberService memberService) {
-        final var hansMaerki = memberService.newMember();
+    private void addMissingMembers() {
+        final var hansMaerki = memberService.getByName("Hans", "Märki")
+                .orElse(memberService.newMember());
         hansMaerki.setFirstName("Hans");
         hansMaerki.setLastName("Märki");
         memberService.store(hansMaerki);
         hansMaerkiId = hansMaerki.getId().intValue();
 
-        final var rogerSuess = memberService.newMember();
+        final var rogerSuess = memberService.getByName("Roger", "Süess")
+                .orElse(memberService.newMember());
         rogerSuess.setFirstName("Roger");
         rogerSuess.setLastName("Süess");
         memberService.store(rogerSuess);
         rogerSuessId = rogerSuess.getId().intValue();
 
-        final var sandroRuch = memberService.newMember();
+        final var sandroRuch = memberService.getByName("Sandro", "Ruch")
+                .orElse(memberService.newMember());
         sandroRuch.setFirstName("Sandro");
         sandroRuch.setLastName("Ruch");
         memberService.store(sandroRuch);
         sandroRuchId = sandroRuch.getId().intValue();
     }
 
-    private void importRegistrations(@NotNull final EventMemberService eventMemberService,
-                                     @NotNull final EventService eventService,
-                                     @NotNull final MemberService memberService,
-                                     @NotNull final Connection connection)
+    private void importRegistrations(@NotNull final Connection connection)
             throws SQLException {
-        if (eventMemberService.count() > 0) {
-            return;
-        }
+        final var counter = new AtomicInteger(0);
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
                     "SELECT events_id, personen_id, aenderung, anmdatum, noshow FROM eventteiln");
@@ -192,7 +211,9 @@ public class JUGSImporter {
                 final var noShow = "Online".equalsIgnoreCase(event.get().getLocation())
                         || result.getString("noshow") != null && result.getString("noshow").equals("1");
                 try {
-                    eventMemberService.registerForEvent(eventId, memberId, registerDate, noShow);
+                    if (eventMemberService.registerForEvent(eventId, memberId, registerDate, noShow)) {
+                        counter.incrementAndGet();
+                    }
                 } catch (final Exception e1) {
                     if (memberService.get(memberId, true).isEmpty()) {
                         final var member = memberService.newMember();
@@ -204,7 +225,9 @@ public class JUGSImporter {
                         member.setAccountDeleted(true);
                         memberService.store(member);
                         try {
-                            eventMemberService.registerForEvent(eventId, memberId, registerDate, noShow);
+                            if (eventMemberService.registerForEvent(eventId, memberId, registerDate, noShow)) {
+                                counter.incrementAndGet();
+                            }
                         } catch (final Exception e2) {
                             if (eventService.get(eventId).isPresent()) {
                                 throw e2;
@@ -218,6 +241,7 @@ public class JUGSImporter {
                 }
             }
         }
+        showNotification(counter.get() + " new registrations imported.");
     }
 
     private LocalDateTime getRegisterDate(@Nullable final String aenderung, @Nullable final String anmdatum) {
@@ -233,7 +257,7 @@ public class JUGSImporter {
         } else return Objects.requireNonNullElse(dateTime, LocalDateTime.MIN);
     }
 
-    private void updateEventLevel(@NotNull final EventService eventService) {
+    private void updateEventLevel() {
         eventService.find(0, Integer.MAX_VALUE, null)
                 .filter(Event::getPublished)
                 .filter(event -> event.getLevel() == null)
@@ -244,16 +268,12 @@ public class JUGSImporter {
                     event.set(EVENT.LEVEL, EventLevel.All);
                     eventService.store(event);
                 });
+        showNotification("Updating event levels done.");
     }
 
-    private void importSpeakers(@NotNull final SpeakerService speakerService,
-                                @NotNull final EventSpeakerService eventSpeakerService,
-                                @NotNull final EventService eventService,
-                                @NotNull final Connection connection)
+    private void importSpeakers(@NotNull final Connection connection)
             throws SQLException {
-        if (speakerService.count() > 0) {
-            return;
-        }
+        final var counter = new AtomicInteger(0);
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
                     "SELECT id, vname, nname, firma, bio, image, e_mail, twitter, firmenurl, events_id, lang_talk, abstract, level FROM eventspeaker ORDER BY id DESC");
@@ -271,6 +291,7 @@ public class JUGSImporter {
                     speaker.set(SPEAKER.EMAIL, getEmptyForNull(result.getString("e_mail")));
                     speaker.set(SPEAKER.TWITTER, getTwitter(result.getString("twitter")));
                     speaker.set(SPEAKER.WEBSITE, getEmptyForNull(result.getString("firmenurl")));
+                    counter.incrementAndGet();
                     speakerService.store(speaker);
                 }
                 final var eventId = result.getLong("events_id");
@@ -333,6 +354,7 @@ public class JUGSImporter {
                 }
             }
         }
+        showNotification(counter.get() + " new speakers imported.");
     }
 
     private Speaker getSpeaker(final @NotNull SpeakerService speakerService,
@@ -385,14 +407,9 @@ public class JUGSImporter {
         }
     }
 
-    private void importEvents(@NotNull final EventService eventService,
-                              @NotNull final EventMemberService eventMemberService,
-                              @NotNull final MemberService memberService,
-                              @NotNull final Connection connection)
+    private void importEvents(@NotNull final Connection connection)
             throws SQLException {
-        if (eventService.count() > 0) {
-            return;
-        }
+        final var counter = new AtomicInteger(0);
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
                     "SELECT id, ort, datum, startzeit, zeitende, titel, untertitel, agenda, abstract, sichtbar, verantwortung, url_webinar, anm_formular FROM events_neu WHERE sichtbar='ja' OR datum >= '2021-01-01' ORDER BY id");
@@ -431,9 +448,11 @@ public class JUGSImporter {
 
                     eventService.store(event);
                     addOrganizers(memberService, eventMemberService, event, result.getString("verantwortung"));
+                    counter.incrementAndGet();
                 }
             }
         }
+        showNotification(counter.get() + " new events imported.");
     }
 
     private void addOrganizers(@NotNull final MemberService memberService,
@@ -515,12 +534,9 @@ public class JUGSImporter {
         return text != null ? text : "";
     }
 
-    private void importMembers(@NotNull final MemberService memberService,
-                               @NotNull final Connection connection)
+    private void importMembers(@NotNull final Connection connection)
             throws SQLException {
-        if (memberService.count() > 1) {
-            return;
-        }
+        final var counter = new AtomicInteger(0);
         final var adminIds = List.of(192, 882, 2922, 4423, 5091, 5244, 5889, 7135, 15809);
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
@@ -545,9 +561,11 @@ public class JUGSImporter {
                     member.set(MEMBER.ACCOUNT_ACTIVE, true);
                     member.set(MEMBER.ADMIN, adminIds.contains(result.getInt("id")));
                     memberService.store(member);
+                    counter.incrementAndGet();
                 }
             }
         }
+        showNotification(counter.get() + " new members imported.");
     }
 
     private LocalTime getDuration(@NotNull final String startzeit, @NotNull final String zeitende) {
@@ -603,12 +621,9 @@ public class JUGSImporter {
         }
     }
 
-    private void importSponsors(@NotNull final SponsorService sponsorService,
-                                @NotNull final Connection connection)
+    private void importSponsors(@NotNull final Connection connection)
             throws SQLException {
-        if (sponsorService.count() > 0) {
-            return;
-        }
+        final var counter = new AtomicInteger(0);
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
                     "SELECT id, firma, sponsortyp, url, logo FROM sponsoren WHERE aktiv='ja' ORDER BY id");
@@ -622,9 +637,11 @@ public class JUGSImporter {
                     sponsor.set(SPONSOR.WEBSITE, result.getString("url"));
                     sponsor.set(SPONSOR.LOGO, "https://jug.ch/images/sponsors/" + result.getString("logo"));
                     sponsorService.store(sponsor);
+                    counter.incrementAndGet();
                 }
             }
         }
+        showNotification(counter.get() + " new sponsors imported.");
     }
 
     private SponsorLevel getSponsorLevel(@NotNull final String sponsortyp) {

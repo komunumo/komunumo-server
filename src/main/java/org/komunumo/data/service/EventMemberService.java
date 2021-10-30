@@ -120,7 +120,7 @@ public class EventMemberService {
      * @deprecated remove after migration of JUG.CH to Komunumo has finished
      */
     @Deprecated(forRemoval = true)
-    public void registerForEvent(final long eventId,
+    public boolean registerForEvent(final long eventId,
                                  final long memberId,
                                  @NotNull final LocalDateTime registerDate,
                                  final boolean noShow) {
@@ -133,6 +133,7 @@ public class EventMemberService {
             eventMember.setNoShow(noShow);
             eventMember.store();
         }
+        return hasRegistered.isEmpty();
     }
 
     public void unregisterFromEvent(@NotNull final EventRecord event,

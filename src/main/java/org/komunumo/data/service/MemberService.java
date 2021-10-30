@@ -113,6 +113,19 @@ public class MemberService {
                 .fetchOptionalInto(Member.class);
     }
 
+    /**
+     * @deprecated remove after migration of JUG.CH to Komunumo has finished
+     */
+    public Optional<Member> getByName(@NotNull final String firstName, @NotNull final String lastName) {
+        return dsl.selectFrom(MEMBER)
+                .where(MEMBER.FIRST_NAME.eq(firstName)
+                        .and(MEMBER.LAST_NAME.eq(lastName))
+                        .and(MEMBER.ACCOUNT_DELETED.isFalse()))
+                .orderBy(MEMBER.REGISTRATION_DATE.desc())
+                .limit(1)
+                .fetchOptionalInto(Member.class);
+    }
+
     public void store(@NotNull final Member member) {
         member.store();
     }
