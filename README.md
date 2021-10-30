@@ -103,6 +103,10 @@ docker run -p 8080:8080 komunumo:latest
 
 We are using [Maven](https://maven.apache.org/) to build the *Komunumo* project. You do not need to have Maven installed! *Komunumo* makes use of the Maven Wrapper. In the root folder of this project, instead of using the `mvn` command directly just call the wrapper script `./mvnw` (or `.\mvnw` on Windows).
 
+### Mail
+
+While developing, I highly recommend not to use your real mail server. Instead, I suggest using [FakeSMTP](http://nilhcem.com/FakeSMTP/). It runs locally on your machine and does not deliver any mail to a real mail account. Instead, all mails are kept locally inside the FakeSMTP client. You can be sure not to accidentally send mails.
+
 ### Database
 
 While developing, sometimes it is very useful to reset the database manually. You can do this very easily using Maven and Flyway:
