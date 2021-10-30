@@ -26,10 +26,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class EnhancedButton extends Button {
 
-    public EnhancedButton(@NotNull final Component icon) {
-        super(icon);
-    }
-
     public EnhancedButton(@NotNull final Component icon, @NotNull final ComponentEventListener<ClickEvent<Button>> clickListener) {
         super(icon, clickListener);
     }
