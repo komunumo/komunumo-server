@@ -137,23 +137,12 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
 
         grid.addColumn(new ComponentRenderer<>(
                 event -> {
-                    Icon icon;
-                    switch (event.getType()){
-                        case Talk:
-                            icon = new Icon(VaadinIcon.PRESENTATION);
-                            break;
-                        case Workshop:
-                            icon = new Icon(VaadinIcon.LAPTOP);
-                            break;
-                        case Meetup:
-                            icon = new Icon(VaadinIcon.GROUP);
-                            break;
-                        case Sponsored:
-                            icon = new Icon(VaadinIcon.MONEY);
-                            break;
-                        default:
-                            icon = new Icon(VaadinIcon.QUESTION_CIRCLE_O);
-                    }
+                    final var icon = switch (event.getType()) {
+                        case Talk -> new Icon(VaadinIcon.PRESENTATION);
+                        case Workshop -> new Icon(VaadinIcon.LAPTOP);
+                        case Meetup -> new Icon(VaadinIcon.GROUP);
+                        case Sponsored -> new Icon(VaadinIcon.MONEY);
+                    };
                     icon.setSize("16px");
                     icon.getElement().setAttribute("title", event.getType().toString());
                     return icon;

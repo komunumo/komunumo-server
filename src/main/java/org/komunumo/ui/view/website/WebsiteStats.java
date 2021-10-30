@@ -39,9 +39,9 @@ public class WebsiteStats extends Div {
         this.statisticService = statisticService;
 
         final var stats = getRandomStats();
-        final var number = new Span(new Text(formatNumber(stats.getNumber())));
+        final var number = new Span(new Text(formatNumber(stats.number())));
         number.addClassName("number");
-        final var text = new Span(new Text(stats.getText()));
+        final var text = new Span(new Text(stats.text()));
         text.addClassName("text");
 
         add(number, text);
@@ -132,23 +132,6 @@ public class WebsiteStats extends Div {
         return new Stats(number, text);
     }
 
-    private static class Stats {
-
-        private final int number;
-        private final String text;
-
-        public Stats(final int number, @NotNull final String text) {
-            this.number = number;
-            this.text = text;
-        }
-
-        public int getNumber() {
-            return number;
-        }
-
-        public String getText() {
-            return text;
-        }
-    }
+    private record Stats(int number, String text) { }
 
 }

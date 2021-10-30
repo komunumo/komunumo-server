@@ -19,31 +19,5 @@
 package org.komunumo.ui.view.admin;
 
 import com.vaadin.flow.component.Component;
-import org.jetbrains.annotations.NotNull;
 
-public class AdminMenuItem {
-
-    private final String title;
-    private final Class<? extends Component> navigationTarget;
-    private final boolean newSection;
-
-    public AdminMenuItem(@NotNull final String title,
-                         @NotNull final Class<? extends Component> navigationTarget,
-                         final boolean newSection) {
-        this.title = title;
-        this.navigationTarget = navigationTarget;
-        this.newSection = newSection;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public Class<? extends Component> getNavigationTarget() {
-        return navigationTarget;
-    }
-
-    public boolean isNewSection() {
-        return newSection;
-    }
-}
+public record AdminMenuItem(String title, Class<? extends Component> navigationTarget, boolean newSection) { }

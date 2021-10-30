@@ -99,22 +99,22 @@ public class BigMarkerReport {
 
     private Member getOrCreateMember(@NotNull final MemberService memberService,
                                      @NotNull final BigMarkerRegistration registration) {
-        final Optional<Member> existingMember = registration.getEmail() == null ? Optional.empty() :
-                memberService.getByEmail(registration.getEmail());
+        final Optional<Member> existingMember = registration.email() == null ? Optional.empty() :
+                memberService.getByEmail(registration.email());
         if (existingMember.isPresent()) {
             return existingMember.get();
         }
 
         final var newMember = memberService.newMember();
-        newMember.setFirstName(registration.getFirstName());
-        newMember.setLastName(registration.getLastName());
-        newMember.setEmail(registration.getEmail());
-        if (registration.getRegistrationDate() != null) {
-            newMember.setRegistrationDate(registration.getRegistrationDate().toLocalDateTime());
+        newMember.setFirstName(registration.firstName());
+        newMember.setLastName(registration.lastName());
+        newMember.setEmail(registration.email());
+        if (registration.registrationDate() != null) {
+            newMember.setRegistrationDate(registration.registrationDate().toLocalDateTime());
         }
-        final var membership = registration.getMembership();
+        final var membership = registration.membership();
         if (membership != null && !membership.isBlank() && !membership.toLowerCase(Locale.getDefault()).contains("none")) {
-            newMember.setComment("Registered at BigMarker\nMembership: " + registration.getMembership());
+            newMember.setComment("Registered at BigMarker\nMembership: " + registration.membership());
         } else {
             newMember.setComment("Registered at BigMarker");
         }
@@ -131,16 +131,16 @@ public class BigMarkerReport {
             final var member = getOrCreateMember(memberService, registration);
             final var existingRegistration = eventMemberService.get(event.getId(), member.getId());
             if (existingRegistration.isPresent()) {
-                existingRegistration.get().setNoShow(registration.isNoShow());
+                existingRegistration.get().setNoShow(registration.noShow());
                 eventMemberService.store(existingRegistration.get());
             } else {
                 final var newRegistration = eventMemberService.newRegistration();
                 newRegistration.setEventId(event.getId());
                 newRegistration.setMemberId(member.getId());
-                if (registration.getRegistrationDate() != null) {
-                    newRegistration.setDate(registration.getRegistrationDate().toLocalDateTime());
+                if (registration.registrationDate() != null) {
+                    newRegistration.setDate(registration.registrationDate().toLocalDateTime());
                 }
-                newRegistration.setNoShow(registration.isNoShow());
+                newRegistration.setNoShow(registration.noShow());
                 eventMemberService.store(newRegistration);
             }
         }

@@ -320,20 +320,12 @@ public class JUGSImporter {
                         if (event.getLevel() == null) {
                             final var levelTalk = result.getInt("level");
                             if (levelTalk >= 1 && levelTalk <= 3 || event.get(EVENT.PUBLISHED)) {
-                                EventLevel level;
-                                switch (levelTalk) {
-                                    case 1:
-                                        level = EventLevel.Beginner;
-                                        break;
-                                    case 2:
-                                        level = EventLevel.Intermediate;
-                                        break;
-                                    case 3:
-                                        level = EventLevel.Advanced;
-                                        break;
-                                    default:
-                                        level = EventLevel.All;
-                                }
+                                final var level = switch (levelTalk) {
+                                    case 1 -> EventLevel.Beginner;
+                                    case 2 -> EventLevel.Intermediate;
+                                    case 3 -> EventLevel.Advanced;
+                                    default -> EventLevel.All;
+                                };
                                 event.setLevel(level);
                                 eventModified = true;
                             }
@@ -462,61 +454,84 @@ public class JUGSImporter {
         if (verantwortung != null && !verantwortung.isBlank()) {
             final List<Integer> organizerIds = new ArrayList<>();
             switch (verantwortung) {
-                case "Alain": organizerIds.add(4790); break;
-                case "Alex": organizerIds.add(6845); break;
-                case "Andreas": organizerIds.add(1227); break;
-                case "Arif": organizerIds.add(21); break;
-                case "Arif, Arthy": organizerIds.add(21); organizerIds.add(100); break;
-                case "Arthy": organizerIds.add(100); break;
-                case "Bruno Schaeffer": organizerIds.add(1864); break;
-                case "Christian": organizerIds.add(2922); break;
-                case "Christoph": organizerIds.add(1108); break;
-                case "Corsin": organizerIds.add(828); break;
-                case "Dani":
-                case "Daniel": organizerIds.add(1486); break;
-                case "Dom":
-                case "Dominik":
-                case "Dominik Berger": organizerIds.add(15809); break;
-                case "Edwin": organizerIds.add(1116); break;
-                case "Edwin / Martin": organizerIds.add(1116); organizerIds.add(1820); break;
-                case "Erich": organizerIds.add(882); break;
-                case "Florin / Jochen": organizerIds.add(3241); organizerIds.add(5600); break;
-                case "Hans Märki, /ch/open": organizerIds.add(hansMaerkiId); break;
-                case "Jochen": organizerIds.add(5600); break;
-                case "Lukas": organizerIds.add(5187); break;
-                case "Marc": organizerIds.add(3790); break;
-                case "Marcus": organizerIds.add(5889); break;
-                case "Marcus/Peti": organizerIds.add(5889); organizerIds.add(5244); break;
-                case "Markus":
-                case "Markus Pilz": organizerIds.add(1518); break;
-                case "Martin Jäger": organizerIds.add(67); break;
-                case "Martin Jäger, Edwin": organizerIds.add(67); organizerIds.add(1116); break;
-                case "Martin":
-                case "Martin Kernland": organizerIds.add(1820); break;
-                case "Matthias": organizerIds.add(12206); break;
-                case "Matthias Zimmermann": organizerIds.add(12206); break;
-                case "Micha": organizerIds.add(11465); break;
-                case "Micha / Bruno Schaeffer": organizerIds.add(11465); organizerIds.add(1864); break;
-                case "Milan": organizerIds.add(11457); break;
-                case "Oliver": organizerIds.add(14587); break;
-                case "Patrick": organizerIds.add(7135); break;
-                case "Patrick/Corsin": organizerIds.add(7135); organizerIds.add(828); break;
-                case "Peter": organizerIds.add(11480); break;
-                case "Peti": organizerIds.add(5244); break;
-                case "Philipp":
-                case "Philipp Oser": organizerIds.add(192); break;
-                case "Philipp (Qbi)": organizerIds.add(192); organizerIds.add(1099); break;
-                case "Qbi": organizerIds.add(1099); break;
-                case "Roger": organizerIds.add(rogerSuessId); break;
-                case "Roger / Arthy": organizerIds.add(rogerSuessId); organizerIds.add(100); break;
-                case "Ruedi": organizerIds.add(4396); break;
-                case "Sandro Ruch": organizerIds.add(sandroRuchId); break;
-                case "Serano": organizerIds.add(4628); break;
-                case "Silvano": organizerIds.add(575); break;
-                case "Silvano, Peter": organizerIds.add(575); organizerIds.add(11480); break;
-                case "Simon": organizerIds.add(15228); break;
-                case "Thomas":
-                case "Thomas Wenger": organizerIds.add(4423); break;
+                case "Alain" -> organizerIds.add(4790);
+                case "Alex" -> organizerIds.add(6845);
+                case "Andreas" -> organizerIds.add(1227);
+                case "Arif" -> organizerIds.add(21);
+                case "Arif, Arthy" -> {
+                    organizerIds.add(21);
+                    organizerIds.add(100);
+                }
+                case "Arthy" -> organizerIds.add(100);
+                case "Bruno Schaeffer" -> organizerIds.add(1864);
+                case "Christian" -> organizerIds.add(2922);
+                case "Christoph" -> organizerIds.add(1108);
+                case "Corsin" -> organizerIds.add(828);
+                case "Dani", "Daniel" -> organizerIds.add(1486);
+                case "Dom", "Dominik", "Dominik Berger" -> organizerIds.add(15809);
+                case "Edwin" -> organizerIds.add(1116);
+                case "Edwin / Martin" -> {
+                    organizerIds.add(1116);
+                    organizerIds.add(1820);
+                }
+                case "Erich" -> organizerIds.add(882);
+                case "Florin / Jochen" -> {
+                    organizerIds.add(3241);
+                    organizerIds.add(5600);
+                }
+                case "Hans Märki, /ch/open" -> organizerIds.add(hansMaerkiId);
+                case "Jochen" -> organizerIds.add(5600);
+                case "Lukas" -> organizerIds.add(5187);
+                case "Marc" -> organizerIds.add(3790);
+                case "Marcus" -> organizerIds.add(5889);
+                case "Marcus/Peti" -> {
+                    organizerIds.add(5889);
+                    organizerIds.add(5244);
+                }
+                case "Markus", "Markus Pilz" -> organizerIds.add(1518);
+                case "Martin Jäger" -> organizerIds.add(67);
+                case "Martin Jäger, Edwin" -> {
+                    organizerIds.add(67);
+                    organizerIds.add(1116);
+                }
+                case "Martin", "Martin Kernland" -> organizerIds.add(1820);
+                case "Matthias" -> organizerIds.add(12206);
+                case "Matthias Zimmermann" -> organizerIds.add(12206);
+                case "Micha" -> organizerIds.add(11465);
+                case "Micha / Bruno Schaeffer" -> {
+                    organizerIds.add(11465);
+                    organizerIds.add(1864);
+                }
+                case "Milan" -> organizerIds.add(11457);
+                case "Oliver" -> organizerIds.add(14587);
+                case "Patrick" -> organizerIds.add(7135);
+                case "Patrick/Corsin" -> {
+                    organizerIds.add(7135);
+                    organizerIds.add(828);
+                }
+                case "Peter" -> organizerIds.add(11480);
+                case "Peti" -> organizerIds.add(5244);
+                case "Philipp", "Philipp Oser" -> organizerIds.add(192);
+                case "Philipp (Qbi)" -> {
+                    organizerIds.add(192);
+                    organizerIds.add(1099);
+                }
+                case "Qbi" -> organizerIds.add(1099);
+                case "Roger" -> organizerIds.add(rogerSuessId);
+                case "Roger / Arthy" -> {
+                    organizerIds.add(rogerSuessId);
+                    organizerIds.add(100);
+                }
+                case "Ruedi" -> organizerIds.add(4396);
+                case "Sandro Ruch" -> organizerIds.add(sandroRuchId);
+                case "Serano" -> organizerIds.add(4628);
+                case "Silvano" -> organizerIds.add(575);
+                case "Silvano, Peter" -> {
+                    organizerIds.add(575);
+                    organizerIds.add(11480);
+                }
+                case "Simon" -> organizerIds.add(15228);
+                case "Thomas", "Thomas Wenger" -> organizerIds.add(4423);
             }
             final var organizers = organizerIds.stream()
                     .map(Integer::longValue)

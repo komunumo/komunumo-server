@@ -18,47 +18,15 @@
 
 package org.komunumo.data.importer.bigmarker;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.time.ZonedDateTime;
 import java.util.Locale;
 
-public class BigMarkerRegistration {
+public record BigMarkerRegistration(String firstName, String lastName, String email,
+                                    ZonedDateTime registrationDate, boolean unsubscribed, boolean attendedLive,
+                                    String membership) {
 
-    private final String firstName;
-    private final String lastName;
-    private final String email;
-    private final ZonedDateTime registrationDate;
-    private final boolean unsubscribed;
-    private final boolean attendedLive;
-    private final String membership;
-
-    public BigMarkerRegistration(@NotNull final String firstName,
-                                 @NotNull final String lastName,
-                                 @Nullable final String email,
-                                 @Nullable final ZonedDateTime registrationDate,
-                                 final boolean unsubscribed,
-                                 final boolean attendedLive,
-                                 @Nullable final String membership) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.registrationDate = registrationDate;
-        this.unsubscribed = unsubscribed;
-        this.attendedLive = attendedLive;
-        this.membership = membership;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getEmail() {
+    @Override
+    public String email() {
         if (email == null && firstName.startsWith("Guest-")) {
             return String.format("%s@bigmarker.com", firstName.replaceAll("[()]", "")
                     .toLowerCase(Locale.getDefault()));
@@ -66,54 +34,8 @@ public class BigMarkerRegistration {
         return email;
     }
 
-    public ZonedDateTime getRegistrationDate() {
-        return registrationDate;
+    public boolean noShow() {
+        return !attendedLive() && !unsubscribed();
     }
 
-    public boolean hasAttendedLive() {
-        return attendedLive;
-    }
-
-    public boolean hasUnsubscribed() {
-        return unsubscribed;
-    }
-
-    public boolean isNoShow() {
-        return !hasAttendedLive() && !hasUnsubscribed();
-    }
-
-    public String getMembership() {
-        return membership;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        final var that = (BigMarkerRegistration) o;
-        return getEmail().equals(that.getEmail());
-    }
-
-    @Override
-    public int hashCode() {
-        return getEmail().hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "BigMarkerRegistration{" +
-                "firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", registrationDate=" + registrationDate +
-                ", unsubscribed=" + unsubscribed +
-                ", attendedLive=" + attendedLive +
-                ", membership=" + membership +
-                '}';
-    }
 }

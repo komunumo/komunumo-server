@@ -92,19 +92,19 @@ public class ClubDeskFile {
 
     public void importMembers(@NotNull final MemberService memberService) {
         for (final var clubDeskMember : getMembers()) {
-            final var email = clubDeskMember.getEmail();
+            final var email = clubDeskMember.email();
             final var member = memberService.getByEmail(email).orElse(memberService.newMember());
-            member.setMembershipBegin(clubDeskMember.getMembershipBeginDate());
-            member.setMembershipEnd(clubDeskMember.getMembershipEndDate());
-            member.setMembershipId(clubDeskMember.getMembershipId());
-            member.setFirstName(clubDeskMember.getFirstName());
-            member.setLastName(clubDeskMember.getLastName());
-            member.setCompany(clubDeskMember.getCompany());
-            member.setEmail(clubDeskMember.getEmail());
-            member.setAddress(clubDeskMember.getAddress());
-            member.setZipCode(clubDeskMember.getZipCode());
-            member.setCity(clubDeskMember.getCity());
-            member.setComment(clubDeskMember.getComment());
+            member.setMembershipBegin(clubDeskMember.membershipBeginDate());
+            member.setMembershipEnd(clubDeskMember.membershipEndDate());
+            member.setMembershipId(clubDeskMember.membershipId());
+            member.setFirstName(clubDeskMember.firstName());
+            member.setLastName(clubDeskMember.lastName());
+            member.setCompany(clubDeskMember.company());
+            member.setEmail(clubDeskMember.email());
+            member.setAddress(clubDeskMember.address());
+            member.setZipCode(clubDeskMember.zipCode());
+            member.setCity(clubDeskMember.city());
+            member.setComment(clubDeskMember.comment());
             memberService.store(member);
         }
     }

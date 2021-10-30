@@ -18,27 +18,4 @@
 
 package org.komunumo.data.importer;
 
-import org.jetbrains.annotations.NotNull;
-
-public class ColumnHeader {
-        private final int index;
-        private final String title;
-
-        public ColumnHeader(final int index, @NotNull final String title) {
-            this.index = index;
-            this.title = title;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        @Override
-        public String toString() {
-            return title;
-        }
-    }
+public record ColumnHeader(int index, String title) { }

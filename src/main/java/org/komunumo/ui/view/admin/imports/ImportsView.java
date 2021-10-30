@@ -111,25 +111,25 @@ public class ImportsView extends ResizableView {
                 final var registrations = report.getRegistrations();
 
                 final var grid = new Grid<BigMarkerRegistration>();
-                grid.addColumn(BigMarkerRegistration::getFirstName)
+                grid.addColumn(BigMarkerRegistration::firstName)
                         .setHeader("First Name")
                         .setAutoWidth(true);
-                grid.addColumn(BigMarkerRegistration::getLastName)
+                grid.addColumn(BigMarkerRegistration::lastName)
                         .setHeader("Last Name")
                         .setAutoWidth(true);
-                grid.addColumn(BigMarkerRegistration::getEmail)
+                grid.addColumn(BigMarkerRegistration::email)
                         .setHeader("Email")
                         .setAutoWidth(true);
-                grid.addColumn(BigMarkerRegistration::getRegistrationDate)
+                grid.addColumn(BigMarkerRegistration::registrationDate)
                         .setHeader("Registration Date")
                         .setAutoWidth(true);
-                grid.addColumn(BigMarkerRegistration::hasUnsubscribed)
+                grid.addColumn(BigMarkerRegistration::unsubscribed)
                         .setHeader("Unsubscribed")
                         .setAutoWidth(true);
-                grid.addColumn(BigMarkerRegistration::hasAttendedLive)
+                grid.addColumn(BigMarkerRegistration::attendedLive)
                         .setHeader("Attended Live")
                         .setAutoWidth(true);
-                grid.addColumn(BigMarkerRegistration::getMembership)
+                grid.addColumn(BigMarkerRegistration::membership)
                         .setHeader("Membership")
                         .setAutoWidth(true);
                 grid.setItems(registrations);
@@ -191,34 +191,34 @@ public class ImportsView extends ResizableView {
                 final var members = clubDeskFile.getMembers();
 
                 final var grid = new Grid<ClubDeskMember>();
-                grid.addColumn(ClubDeskMember::getMembershipBeginDate)
+                grid.addColumn(ClubDeskMember::membershipBeginDate)
                         .setHeader("Membership Begin Date")
                         .setAutoWidth(true);
-                grid.addColumn(ClubDeskMember::getMembershipEndDate)
+                grid.addColumn(ClubDeskMember::membershipEndDate)
                         .setHeader("Membership End Date")
                         .setAutoWidth(true);
-                grid.addColumn(ClubDeskMember::getMembershipId)
+                grid.addColumn(ClubDeskMember::membershipId)
                         .setHeader("Membership ID")
                         .setAutoWidth(true);
-                grid.addColumn(ClubDeskMember::getFirstName)
+                grid.addColumn(ClubDeskMember::firstName)
                         .setHeader("First Name")
                         .setAutoWidth(true);
-                grid.addColumn(ClubDeskMember::getLastName)
+                grid.addColumn(ClubDeskMember::lastName)
                         .setHeader("Last Name")
                         .setAutoWidth(true);
-                grid.addColumn(ClubDeskMember::getCompany)
+                grid.addColumn(ClubDeskMember::company)
                         .setHeader("Company")
                         .setAutoWidth(true);
-                grid.addColumn(ClubDeskMember::getEmail)
+                grid.addColumn(ClubDeskMember::email)
                         .setHeader("Email")
                         .setAutoWidth(true);
-                grid.addColumn(ClubDeskMember::getAddress)
+                grid.addColumn(ClubDeskMember::address)
                         .setHeader("Address")
                         .setAutoWidth(true);
-                grid.addColumn(ClubDeskMember::getZipCode)
+                grid.addColumn(ClubDeskMember::zipCode)
                         .setHeader("Zip Code")
                         .setAutoWidth(true);
-                grid.addColumn(ClubDeskMember::getCity)
+                grid.addColumn(ClubDeskMember::city)
                         .setHeader("City")
                         .setAutoWidth(true);
                 grid.setItems(members);

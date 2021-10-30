@@ -71,7 +71,7 @@ public class WorkbookUtil {
     public static Optional<ColumnHeader> findColumn(@NotNull final List<ColumnHeader> columnHeaders,
                                                     @NotNull final String title) {
         for (final ColumnHeader columnHeader : columnHeaders) {
-            if (columnHeader.getTitle().contains(title)) {
+            if (columnHeader.title().contains(title)) {
                 return Optional.of(columnHeader);
             }
         }
@@ -80,7 +80,7 @@ public class WorkbookUtil {
 
     public static Optional<String> getStringFromRow(@NotNull final Row row,
                                                     @NotNull final ColumnHeader column) {
-        final var cell = row.getCell(column.getIndex());
+        final var cell = row.getCell(column.index());
         if (cell != null) {
             switch (cell.getCellType()) {
                 case STRING: return Optional.ofNullable(cell.getStringCellValue());
@@ -95,14 +95,13 @@ public class WorkbookUtil {
 
     public static Optional<Date> getDateFromRow(@NotNull final Row row,
                                                 @NotNull final ColumnHeader column) {
-        final var cell = row.getCell(column.getIndex());
+        final var cell = row.getCell(column.index());
         if (cell != null) {
-            switch (cell.getCellType()) {
-                case NUMERIC: return Optional.ofNullable(cell.getDateCellValue());
-                case STRING: return getOptionalDateFromString(cell.getStringCellValue());
-                default:
-                    throw new IllegalStateException("Unexpected date cell type: " + cell.getCellType());
-            }
+            return switch (cell.getCellType()) {
+                case NUMERIC -> Optional.ofNullable(cell.getDateCellValue());
+                case STRING -> getOptionalDateFromString(cell.getStringCellValue());
+                default -> throw new IllegalStateException("Unexpected date cell type: " + cell.getCellType());
+            };
         }
         return Optional.empty();
     }
@@ -116,7 +115,7 @@ public class WorkbookUtil {
 
     public static Optional<Long> getLongFromRow(@NotNull final Row row,
                                                    @NotNull final ColumnHeader column) {
-        final var cell = row.getCell(column.getIndex());
+        final var cell = row.getCell(column.index());
         if (cell != null) {
             switch (cell.getCellType()) {
                 case NUMERIC: return Optional.of((long) cell.getNumericCellValue());

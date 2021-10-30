@@ -141,7 +141,7 @@ public class AdminLayout extends AppLayout {
         views.add(new AdminMenuItem("Imports", ImportsView.class, true));
 
         views.forEach(adminMenuItem -> {
-            if (authService.isAccessGranted(adminMenuItem.getNavigationTarget())) {
+            if (authService.isAccessGranted(adminMenuItem.navigationTarget())) {
                 tabs.add(createTab(adminMenuItem));
             }
         });
@@ -151,9 +151,9 @@ public class AdminLayout extends AppLayout {
 
     private static Tab createTab(@NotNull final AdminMenuItem adminMenuItem) {
         final var tab = new Tab();
-        tab.add(new RouterLink(adminMenuItem.getTitle(), adminMenuItem.getNavigationTarget()));
-        ComponentUtil.setData(tab, Class.class, adminMenuItem.getNavigationTarget());
-        if (adminMenuItem.isNewSection()) {
+        tab.add(new RouterLink(adminMenuItem.title(), adminMenuItem.navigationTarget()));
+        ComponentUtil.setData(tab, Class.class, adminMenuItem.navigationTarget());
+        if (adminMenuItem.newSection()) {
             tab.addClassName("new-section");
         }
         return tab;
