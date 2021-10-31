@@ -19,3 +19,12 @@
 article.event-preview {
     max-width: 372px;
 }
+
+article.event-preview .keywords {
+    padding-top: 5px;
+}
+
+article.event-preview .speakers {
+    border-top: 1px solid #bfbfbf;
+    padding-top: 5px;
+}

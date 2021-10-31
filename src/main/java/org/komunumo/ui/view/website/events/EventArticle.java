@@ -51,17 +51,20 @@ public class EventArticle extends Article {
         addClassName("event-article");
     }
 
-    protected void addHeader(@NotNull final Event event) {
+    protected void addHeader(@NotNull final Event event, final boolean withLocation) {
         final var upcoming = new Span(new Text("upcoming"));
         upcoming.addClassName("upcoming");
-
-        final var location = new Span(new Text(event.getLocation()));
-        location.addClassName("location");
 
         final var dateTime = new Span(new Text(event.getDate().format(DATE_TIME_FORMATTER).concat("h")));
         dateTime.addClassName("date-time");
 
-        add(new Div(upcoming, location, dateTime));
+        if (withLocation) {
+            final var location = new Span(new Text(event.getLocation()));
+            location.addClassName("location");
+            add(new Div(upcoming, location, dateTime));
+        } else {
+            add(new Div(upcoming, dateTime));
+        }
     }
 
     protected void addTitle(@NotNull final Event event) {

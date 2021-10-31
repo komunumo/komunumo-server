@@ -29,7 +29,7 @@ public class EventPreview extends EventArticle {
         super();
         addClassName("event-preview");
 
-        addHeader(event);
+        addHeader(event, true);
         addTitle(event);
         addSpeakers(event);
         addKeywords(event);

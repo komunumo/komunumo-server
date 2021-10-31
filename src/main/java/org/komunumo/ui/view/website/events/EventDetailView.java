@@ -18,13 +18,20 @@
 
 package org.komunumo.ui.view.website.events;
 
+import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.NotFoundException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.EventService;
 import org.komunumo.ui.view.website.WebsiteLayout;
 
@@ -53,11 +60,89 @@ public class EventDetailView extends EventArticle implements BeforeEnterObserver
         final var event = eventService.getByEventUrl(location, Year.of(year), url)
                 .orElseThrow(NotFoundException::new);
 
-        addHeader(event);
+        addSpeakerBox(event);
+        addHeader(event, false);
         addTitle(event);
-        addSpeakers(event);
+        addLocation(event);
+        addRoom(event);
         addKeywords(event);
+        addAgenda(event);
+        addBorder();
+        addSpeakers(event);
         addDescription(event);
+        addLevel(event);
+        addLanguage(event);
+    }
+
+    private void addSpeakerBox(@NotNull final Event event) {
+        final var div = new Div();
+        div.addClassName("speakerbox");
+        for (final var speaker : event.getSpeakers()) {
+            div.add(new Div(
+                    new Image(speaker.getPhoto(), speaker.getFullName()),
+                    new Html("<div>%s</div>".formatted(speaker.getBio()))
+            ));
+        }
+        add(div);
+    }
+
+    private void addLocation(@NotNull final Event event) {
+        final var locationLabel = new Span(new Text("Location:"));
+        locationLabel.addClassName("location-label");
+        final var location = new Div(
+                locationLabel,
+                new Span(new Text(event.getLocation()))
+        );
+        location.addClassName("location");
+        add(location);
+    }
+
+    private void addRoom(@NotNull final Event event) { // TODO there is no room property on the event
+        final var roomLabel = new Span(new Text("Room:"));
+        roomLabel.addClassName("room-label");
+        final var room = new Div(
+                roomLabel,
+                new Html("<span>%s</span>".formatted("Testikowski"))
+        );
+        room.addClassName("room");
+        add(room);
+    }
+
+    private void addAgenda(@NotNull final Event event) {
+        final var agendaLabel = new Span(new Text("Agenda:"));
+        agendaLabel.addClassName("agenda-label");
+        final var agenda = new Div(
+                agendaLabel,
+                new Html("<span>%s</span>".formatted(event.getAgenda()))
+        );
+        agenda.addClassName("agenda");
+        add(agenda);
+    }
+
+    private void addBorder() {
+        add(new Hr());
+    }
+
+    private void addLevel(@NotNull final Event event) {
+        final var levelLabel = new Span(new Text("Level:"));
+        levelLabel.addClassName("level-label");
+        final var level = new Div(
+                levelLabel,
+                new Span(new Text(event.getLevel().toString()))
+        );
+        level.addClassName("level");
+        add(level);
+    }
+
+    private void addLanguage(@NotNull final Event event) {
+        final var languageLabel = new Span(new Text("Language:"));
+        languageLabel.addClassName("language-label");
+        final var language = new Div(
+                languageLabel,
+                new Span(new Text(event.getLanguage().toString()))
+        );
+        language.addClassName("language");
+        add(language);
     }
 
 }

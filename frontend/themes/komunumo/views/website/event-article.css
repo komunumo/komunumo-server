@@ -47,15 +47,6 @@ article.event-article h3 {
     margin-top: 5px;
 }
 
-article.event-article .speakers {
-    border-top: 1px solid #bfbfbf;
-}
-
-article.event-article .speakers,
-article.event-article .keywords {
-    padding-top: 5px;
-}
-
 article.event-article .speaker-label,
 article.event-article .company-label,
 article.event-article .keyword-label {
