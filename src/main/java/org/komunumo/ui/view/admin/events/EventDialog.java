@@ -45,6 +45,7 @@ import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.DateTimePicker;
 import org.komunumo.ui.component.EditDialog;
+import org.komunumo.util.URLUtil;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.net.URI;
@@ -110,12 +111,18 @@ public class EventDialog extends EditDialog<Event> {
         final var webinarUrl = new TextField("Webinar URL");
         final var date = new DateTimePicker("Date & Time");
         final var duration = new TimePicker("Duration");
+        final var eventUrl = new TextField("Event URL");
         final var published = new Checkbox("Published");
 
         type.setLabel("Type");
         type.setRequiredIndicatorVisible(true);
         title.setRequiredIndicatorVisible(true);
         title.setValueChangeMode(EAGER);
+        title.addValueChangeListener(changeEvent -> {
+            if (eventUrl.getValue().equals(URLUtil.createReadableUrl(changeEvent.getOldValue()))) {
+                eventUrl.setValue(URLUtil.createReadableUrl(changeEvent.getValue()));
+            }
+        });
         subtitle.setValueChangeMode(EAGER);
         speaker.setOrdered(true);
         speaker.setItemLabelGenerator(value -> String.format("%s %s", value.getFirstName(), value.getLastName()));
@@ -143,6 +150,7 @@ public class EventDialog extends EditDialog<Event> {
         duration.setStep(Duration.ofMinutes(15));
         duration.setMinTime(LocalTime.of(1, 0));
         duration.setMaxTime(LocalTime.of(3, 0));
+        eventUrl.setValueChangeMode(EAGER);
         published.addValueChangeListener(changeEvent -> {
             final var value = changeEvent.getValue();
             speaker.setRequiredIndicatorVisible(value);
@@ -152,11 +160,12 @@ public class EventDialog extends EditDialog<Event> {
             location.setRequiredIndicatorVisible(value);
             date.setRequiredIndicatorVisible(value);
             duration.setRequiredIndicatorVisible(value);
+            eventUrl.setRequiredIndicatorVisible(value);
             binder.validate();
         });
 
         formLayout.add(type, title, subtitle, speaker, organizer, level, description, keyword, agenda,
-                language, location, webinarUrl, date, duration, published);
+                language, location, webinarUrl, date, duration, eventUrl, published);
 
         binder.forField(type)
                 .withValidator(value -> !published.getValue() || value != null,
@@ -224,6 +233,11 @@ public class EventDialog extends EditDialog<Event> {
                 .withValidator(value -> !published.getValue() || (value != null && value.isAfter(LocalTime.MIN) && value.isBefore(LocalTime.MAX)),
                         "Please enter a duration")
                 .bind(Event::getDuration, Event::setDuration);
+
+        binder.forField(eventUrl) // TODO check for duplicates
+                .withValidator(value -> !published.getValue() || value != null && !value.isBlank(),
+                        "Please enter a valid event URL")
+                .bind(Event::getEventUrl, Event::setEventUrl);
 
         binder.forField(published)
                 .bind(Event::getPublished, Event::setPublished);
