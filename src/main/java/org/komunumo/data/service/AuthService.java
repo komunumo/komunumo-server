@@ -216,6 +216,7 @@ public class AuthService implements VaadinServiceInitListener {
         }
 
         if (navigationTarget == HomeView.class
+                || navigationTarget == org.komunumo.ui.view.website.events.EventsView.class
                 || navigationTarget == LoginView.class) {
             return true;
         }
