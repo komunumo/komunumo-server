@@ -18,6 +18,8 @@
 
 package org.komunumo.data.service;
 
+import java.time.Year;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
@@ -72,6 +74,7 @@ public class EventService {
         event.setSpeakers(List.of());
         event.setKeywords(List.of());
         event.setAttendeeCount(0);
+        event.setUrl("");
         return event;
     }
 
@@ -84,12 +87,21 @@ public class EventService {
         newEvent.setDate(null);
         newEvent.setPublished(false);
         newEvent.setAttendeeCount(0);
+        newEvent.setUrl("");
         return newEvent;
     }
 
     public Optional<Event> get(@NotNull final Long id) {
         return dsl.selectFrom(EVENT)
                 .where(EVENT.ID.eq(id))
+                .fetchOptionalInto(Event.class);
+    }
+
+    public Optional<Event> getByUrl(@NotNull final String location, @NotNull final Year year, @NotNull final String url) {
+        return dsl.selectFrom(EVENT)
+                .where(EVENT.LOCATION.eq(location)
+                        .and(DSL.year(EVENT.DATE).eq(year.getValue()))
+                        .and(EVENT.URL.eq(url)))
                 .fetchOptionalInto(Event.class);
     }
 
