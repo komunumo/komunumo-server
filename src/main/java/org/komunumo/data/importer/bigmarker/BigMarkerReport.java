@@ -86,7 +86,7 @@ public class BigMarkerReport {
             final var date = getDateFromRow(row, registrationDateColumn).orElse(null);
             final var timezone = getStringFromRow(row, timezoneColumn).orElse(null);
             final var registrationDate = date == null || timezone == null ? null :
-                    ZonedDateTime.ofInstant(date.toInstant(), ZoneId.of(timezone));
+                    ZonedDateTime.ofInstant(date.toInstant(), !timezone.isBlank() ? ZoneId.of(timezone) : ZoneId.systemDefault());
             final var unsubscribed = getStringFromRow(row, unsubscribedColumn).orElseThrow().equals("Yes");
             final var attendedLive = getStringFromRow(row, attendedLiveColumn).orElseThrow().equals("Yes");
             final var membership = membershipColumn.map(columnHeader -> getStringFromRow(row, columnHeader).orElseThrow()).orElse(null);
