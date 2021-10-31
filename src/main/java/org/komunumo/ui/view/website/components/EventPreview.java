@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.ui.view.website.home.component;
+package org.komunumo.ui.view.website.components;
 
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Text;
@@ -101,7 +101,7 @@ public class EventPreview extends Article {
         final var html = paragraphEnd > 0 ? description.substring(0, paragraphEnd + 4) : description;
         final var more = new Paragraph(
                 new Image("/images/more.gif", "more"),
-                new Anchor("javascript:alert('TODO: Implement this link!');", "more")
+                new Anchor(event.getCompleteEventUrl(), "more")
         );
         more.addClassName("more");
         return new Div(new Html(html), more);
