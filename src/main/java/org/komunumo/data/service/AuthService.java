@@ -41,6 +41,7 @@ import org.komunumo.ui.view.login.BlockedView;
 import org.komunumo.ui.view.login.ChangePasswordView;
 import org.komunumo.ui.view.login.LoginView;
 import org.komunumo.ui.view.logout.LogoutView;
+import org.komunumo.ui.view.website.events.EventDetailView;
 import org.komunumo.ui.view.website.home.HomeView;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
@@ -217,6 +218,7 @@ public class AuthService implements VaadinServiceInitListener {
 
         if (navigationTarget == HomeView.class
                 || navigationTarget == org.komunumo.ui.view.website.events.EventsView.class
+                || navigationTarget == EventDetailView.class
                 || navigationTarget == LoginView.class) {
             return true;
         }

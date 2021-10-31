@@ -16,23 +16,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.ui.view.website.home;
+package org.komunumo.ui.view.website.events;
 
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
+import com.vaadin.flow.component.dependency.CssImport;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.service.EventService;
-import org.komunumo.ui.view.website.WebsiteLayout;
-import org.komunumo.ui.view.website.events.EventPreview;
+import org.komunumo.data.entity.Event;
 
-@Route(value = "", layout = WebsiteLayout.class)
-@PageTitle("Home")
-public class HomeView extends Div {
+@CssImport("./themes/komunumo/views/website/event-preview.css")
+public class EventPreview extends EventArticle {
 
-    public HomeView(@NotNull final EventService eventService) {
-        eventService.upcomingEvents()
-                .map(EventPreview::new)
-                .forEach(this::add);
+    public EventPreview(@NotNull final Event event) {
+        super();
+        addClassName("event-preview");
+
+        addHeader(event);
+        addTitle(event);
+        addSpeakers(event);
+        addKeywords(event);
+        addDescriptionTeaser(event);
     }
+
 }

@@ -24,6 +24,8 @@ import org.komunumo.data.db.tables.records.EventRecord;
 import java.util.Collections;
 import java.util.List;
 
+import org.komunumo.util.URLUtil;
+
 public class Event extends EventRecord {
 
     private List<Speaker> speakers;
@@ -52,5 +54,11 @@ public class Event extends EventRecord {
 
     public int getAttendeeCount() {
         return attendeeCount;
+    }
+
+    public String getCompleteEventUrl() {
+        return "/event/%s/%d/%s".formatted(
+                URLUtil.createReadableUrl(getLocation()),
+                getDate().getYear(), getEventUrl());
     }
 }

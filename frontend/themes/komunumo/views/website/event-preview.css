@@ -16,62 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-article {
-    border-top: 2px solid #bfbfbf;
-    clear: none;
-    float: left;
-    font-size: 0.8rem;
+article.event-preview {
     max-width: 372px;
-    padding: 6px 20px 4px 4px;
-}
-
-.upcoming {
-    background-color: #930722;
-    color: #ffffff;
-    font-weight: bold;
-    padding: 3px 3px 1px 3px;
-    text-transform: uppercase;
-}
-
-.location {
-    font-weight: bold;
-    margin-left: 1em;
-    text-transform: uppercase;
-}
-
-.date-time {
-    margin-left: 1em;
-}
-
-h2, h3 {
-    margin-top: 5px;
-}
-
-.speakers {
-    border-top: 1px solid #bfbfbf;
-}
-
-.speakers, .keywords {
-    padding-top: 5px;
-}
-
-.speaker-label, .company-label, .keyword-label {
-    font-weight: bold;
-    margin-right: 0.5em;
-    text-transform: uppercase;
-}
-
-.company-label {
-    margin-left: 1em;
-}
-
-.more > a, .more > a:visited, .more > a:active, .more > a:hover {
-    color: #930722;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-.more > img {
-    margin-right: 3px;
-    padding-bottom: 1px;
 }

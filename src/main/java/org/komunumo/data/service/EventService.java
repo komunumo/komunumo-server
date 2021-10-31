@@ -102,7 +102,8 @@ public class EventService {
                 .where(EVENT.LOCATION.eq(location)
                         .and(DSL.year(EVENT.DATE).eq(year.getValue()))
                         .and(EVENT.EVENT_URL.eq(url)))
-                .fetchOptionalInto(Event.class);
+                .fetchOptionalInto(Event.class)
+                .map(this::addAdditionalData);
     }
 
     public Optional<Event> getByWebinarUrl(@NotNull final String webinarUrl) {

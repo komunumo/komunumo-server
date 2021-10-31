@@ -16,34 +16,42 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.ui.view.website.components;
+package org.komunumo.ui.view.website.events;
 
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Article;
+
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Paragraph;
+
 import com.vaadin.flow.component.html.Span;
+
+import java.time.format.DateTimeFormatter;
+
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Keyword;
 
-import java.time.format.DateTimeFormatter;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
-@CssImport("./themes/komunumo/views/website/event-preview.css")
-public class EventPreview extends Article {
+@CssImport("./themes/komunumo/views/website/event-article.css")
+public class EventArticle extends Article {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    public EventPreview(@NotNull final Event event) {
+    public EventArticle() {
+        addClassName("event-article");
+    }
+
+    protected void addHeader(@NotNull final Event event) {
         final var upcoming = new Span(new Text("upcoming"));
         upcoming.addClassName("upcoming");
 
@@ -53,6 +61,17 @@ public class EventPreview extends Article {
         final var dateTime = new Span(new Text(event.getDate().format(DATE_TIME_FORMATTER).concat("h")));
         dateTime.addClassName("date-time");
 
+        add(new Div(upcoming, location, dateTime));
+    }
+
+    protected void addTitle(@NotNull final Event event) {
+        add(new H2(event.getTitle()));
+        if (!event.getSubtitle().isBlank()) {
+            add(new H3(event.getSubtitle()));
+        }
+    }
+
+    protected void addSpeakers(@NotNull final Event event) {
         final var speakers = new Div();
         speakers.addClassName("speakers");
         final var speakerCount = event.getSpeakers().size();
@@ -71,31 +90,27 @@ public class EventPreview extends Article {
             ));
         });
 
-        final var keywordLabel = new Span(new Text("Keywords:"));
-        keywordLabel.addClassName("keyword-label");
-        final var keywordList = new Span(new Text(
-                event.getKeywords().stream()
-                        .map(Keyword::getKeyword)
-                        .collect(Collectors.joining(", "))));
-        final var keywords = new Div(
-                keywordLabel,
-                keywordList
-        );
-        keywords.addClassName("keywords");
-
-        add(new Div(upcoming, location, dateTime));
-        add(new H2(event.getTitle()));
-        if (!event.getSubtitle().isBlank()) {
-            add(new H3(event.getSubtitle()));
-        }
         add(speakers);
-        if (!event.getKeywords().isEmpty()) {
-            add(keywords);
-        }
-        add(getDescription(event));
     }
 
-    private Div getDescription(@NotNull final Event event) {
+    protected void addKeywords(@NotNull final Event event) {
+        if (!event.getKeywords().isEmpty()) {
+            final var keywordLabel = new Span(new Text("Keywords:"));
+            keywordLabel.addClassName("keyword-label");
+            final var keywordList = new Span(new Text(
+                    event.getKeywords().stream()
+                            .map(Keyword::getKeyword)
+                            .collect(Collectors.joining(", "))));
+            final var keywords = new Div(
+                    keywordLabel,
+                    keywordList
+            );
+            keywords.addClassName("keywords");
+            add(keywords);
+        }
+    }
+
+    protected void addDescriptionTeaser(@NotNull final Event event) {
         final var description = event.getDescription();
         final var paragraphEnd = description.contains("</p>") ? description.indexOf("</p>") : description.indexOf("</P>");
         final var html = paragraphEnd > 0 ? description.substring(0, paragraphEnd + 4) : description;
@@ -104,6 +119,11 @@ public class EventPreview extends Article {
                 new Anchor(event.getCompleteEventUrl(), "more")
         );
         more.addClassName("more");
-        return new Div(new Html(html), more);
+        add(new Div(new Html(html), more));
     }
+
+    protected void addDescription(@NotNull final Event event) {
+        add(new Html("<div>%s</div>".formatted(event.getDescription())));
+    }
+
 }
