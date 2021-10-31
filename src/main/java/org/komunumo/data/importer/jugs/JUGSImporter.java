@@ -38,6 +38,7 @@ import org.komunumo.data.service.KeywordService;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.data.service.SponsorService;
+import org.komunumo.util.URLUtil;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -418,6 +419,7 @@ public class JUGSImporter {
                     event.set(EVENT.SUBTITLE, getEmptyForNull(result.getString("untertitel")));
                     event.set(EVENT.AGENDA, getEmptyForNull(result.getString("agenda")));
                     event.set(EVENT.DESCRIPTION, getEmptyForNull(result.getString("abstract")));
+                    event.set(EVENT.EVENT_URL, URLUtil.createReadableUrl(getEmptyForNull(result.getString("titel"))));
                     event.set(EVENT.PUBLISHED, result.getString("sichtbar").equalsIgnoreCase("ja"));
 
                     final var eventTitle = getEmptyForNull(result.getString("titel")).toLowerCase(Locale.getDefault());
