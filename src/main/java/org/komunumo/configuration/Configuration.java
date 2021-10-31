@@ -20,9 +20,11 @@ package org.komunumo.configuration;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @org.springframework.context.annotation.Configuration
 @ConfigurationProperties(prefix = "komunumo")
+@EnableConfigurationProperties
 public class Configuration {
 
     /**
