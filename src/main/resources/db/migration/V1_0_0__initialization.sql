@@ -13,7 +13,7 @@ CREATE TABLE event (
     date DATETIME NULL,
     duration TIME NULL,
     published BOOLEAN NOT NULL DEFAULT 0,
-    url VARCHAR(255) NOT NULL DEFAULT '',
+    event_url VARCHAR(255) NOT NULL DEFAULT '',
 
     PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
