@@ -16,11 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import url('font-import.css');
+@import url("font-import.css");
 
 main.website h1,
 main.website h2 {
-    font-family: 'Trade Gothic LT W04 Bd CnNo-20', "Arial Narrow", Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
+    font-family: "Trade Gothic LT W04 Bd CnNo-20", "Arial Narrow", Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
     text-transform: uppercase;
 }
 
@@ -28,7 +28,7 @@ main.website h3,
 main.website h4,
 main.website h5,
 main.website h6 {
-    font-family: 'Trade Gothic LT W04 Cn No-_18', "Arial Narrow", Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
+    font-family: "Trade Gothic LT W04 Cn No-_18", "Arial Narrow", Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
     font-weight: normal;
     text-transform: uppercase;
 }
@@ -49,13 +49,13 @@ main.website a {
 }
 
 #website-header .website-stats .number {
-    font-family: 'Trade Gothic W02 Cn 18', Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
+    font-family: "Trade Gothic LT W04 Bd CnNo-20", "Arial Narrow", Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
     font-size: 150px;
     line-height: 150px;
 }
 
 #website-header .website-stats .text {
-    font-family: 'Trade Gothic W02 Cn 18', Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
+    font-family: "Trade Gothic LT W04 Cn No-_18", "Arial Narrow", Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
     font-size: 120%;
     font-weight: bold;
     margin-left: 1em;
