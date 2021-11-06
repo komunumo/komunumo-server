@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.StatisticService;
 
 import java.time.Year;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
@@ -33,9 +33,11 @@ import static org.komunumo.util.FormatterUtil.formatNumber;
 
 public class WebsiteStats extends Div {
 
+    private final Random random;
     private final StatisticService statisticService;
 
     public WebsiteStats(@NotNull final StatisticService statisticService) {
+        this.random = new Random();
         this.statisticService = statisticService;
 
         final var stats = getRandomStats();
@@ -49,9 +51,7 @@ public class WebsiteStats extends Div {
     }
 
     private Stats getRandomStats() {
-//        final var randomNumber = new Random().nextInt(7);
-        final var randomNumber = ThreadLocalRandom.current().nextInt(0, 9);
-        switch (randomNumber) {
+        switch (random.nextInt(9)) {
             case 0: return getAttendeesActualYear();
             case 1: return getUniqueAttendeesActualYear();
             case 2: return getAttendeesLastYear();
