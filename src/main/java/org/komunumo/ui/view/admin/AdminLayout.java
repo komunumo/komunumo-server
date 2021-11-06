@@ -115,8 +115,7 @@ public class AdminLayout extends AppLayout {
         final var logoLayout = new HorizontalLayout();
         logoLayout.setId("logo");
         logoLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        logoLayout.add(new Image("images/logo.png", "Komunumo logo"));
-        logoLayout.add(new H1("Komunumo"));
+        logoLayout.add(new Image("images/logo.png", "Komunumo"));
         layout.add(logoLayout, menu);
         return layout;
     }
