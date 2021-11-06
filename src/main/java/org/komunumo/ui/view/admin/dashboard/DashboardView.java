@@ -27,6 +27,7 @@ import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.Tooltip;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
@@ -43,6 +44,7 @@ import java.time.Year;
 @Route(value = "admin/dashboard", layout = AdminLayout.class)
 @RouteAlias(value = "admin", layout = AdminLayout.class)
 @PageTitle("Dashboard")
+@CssImport(value = "./themes/komunumo/views/admin/dashboard-view.css")
 public class DashboardView extends Div {
 
     private final Chart monthlyVisitors = new Chart();

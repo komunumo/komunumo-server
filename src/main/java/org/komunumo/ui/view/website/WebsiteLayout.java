@@ -39,6 +39,7 @@ public class WebsiteLayout extends VerticalLayout implements RouterLayout {
         add(new WebsiteHeader(configuration, statisticService));
 
         main = new Main();
+        main.addClassName("website");
         add(main);
     }
 

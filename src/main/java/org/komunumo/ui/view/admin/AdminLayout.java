@@ -25,6 +25,7 @@ import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.cookieconsent.CookieConsent;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.menubar.MenuBar;
@@ -52,6 +53,7 @@ import org.komunumo.util.GravatarUtil;
 import java.util.ArrayList;
 import java.util.Optional;
 
+@CssImport(value = "./themes/komunumo/views/admin/admin-layout.css")
 public class AdminLayout extends AppLayout {
 
     private final AuthService authService;

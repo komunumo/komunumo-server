@@ -16,15 +16,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-article.event-preview {
+main.website article.event-preview {
     max-width: 372px;
 }
 
-article.event-preview .keywords {
+main.website article.event-preview .keywords {
     padding-top: 5px;
 }
 
-article.event-preview .speakers {
+main.website article.event-preview .speakers {
     border-top: 1px solid #bfbfbf;
     padding-top: 5px;
 }

@@ -15,10 +15,3 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
-@import url('./views/font-import.css');
-@import url('./views/global.css');
-
-@import url('./views/main-view.css');
-@import url('./views/dashboard-view.css');
-@import url('./views/register-view.css');

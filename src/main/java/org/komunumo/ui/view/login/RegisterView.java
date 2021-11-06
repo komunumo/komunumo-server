@@ -19,6 +19,7 @@
 package org.komunumo.ui.view.login;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.Notification;
@@ -31,6 +32,7 @@ import org.komunumo.data.service.AuthService;
 
 @Route("register")
 @PageTitle("Register")
+@CssImport(value = "./themes/komunumo/views/website/register-view.css")
 public class RegisterView extends Div {
 
     public RegisterView(@NotNull final AuthService authService) {
