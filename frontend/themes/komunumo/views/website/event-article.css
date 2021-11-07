@@ -17,6 +17,7 @@
  */
 
 main.website article.event-article {
+    border-top: 2px solid #bfbfbf;
     font-size: 0.8rem;
     padding: 6px 20px 4px 4px;
 }
