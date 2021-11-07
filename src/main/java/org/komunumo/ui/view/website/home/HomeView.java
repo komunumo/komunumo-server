@@ -31,6 +31,7 @@ import org.komunumo.ui.view.website.events.EventPreview;
 public class HomeView extends Div {
 
     public HomeView(@NotNull final EventService eventService) {
+        addClassName("events-view");
         eventService.upcomingEvents()
                 .map(EventPreview::new)
                 .forEach(this::add);

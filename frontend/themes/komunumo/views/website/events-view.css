@@ -16,25 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.ui.view.website.events;
-
-import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
-import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.service.EventService;
-import org.komunumo.ui.view.website.WebsiteLayout;
-
-@Route(value = "events", layout = WebsiteLayout.class)
-@PageTitle("Events")
-@CssImport("./themes/komunumo/views/website/events-view.css")
-public class EventsView extends Div {
-
-    public EventsView(@NotNull final EventService eventService) {
-        addClassName("events-view");
-        eventService.upcomingEvents()
-                .map(EventPreview::new)
-                .forEach(this::add);
-    }
+main.website .events-view {
+    display: flex;
+    flex-wrap: wrap;
 }

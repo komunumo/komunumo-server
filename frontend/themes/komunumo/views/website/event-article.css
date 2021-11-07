@@ -17,9 +17,6 @@
  */
 
 main.website article.event-article {
-    border-top: 2px solid #bfbfbf;
-    clear: none;
-    float: left;
     font-size: 0.8rem;
     padding: 6px 20px 4px 4px;
 }

@@ -18,6 +18,15 @@
 
 @import url("font-import.css");
 
+#main-layout,
+main.website {
+    width: 100%;
+}
+
+main.website {
+    border-top: 2px solid #bfbfbf;
+}
+
 main.website h1,
 main.website h2 {
     font-family: "Trade Gothic LT W04 Bd CnNo-20", "Arial Narrow", Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
