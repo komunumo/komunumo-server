@@ -59,6 +59,11 @@ main.website article.event-article .company-label {
     margin-left: 1em;
 }
 
+main.website article.event-article > a:hover h2,
+main.website article.event-article > a:hover h3 {
+    color: #930722;
+}
+
 main.website article.event-article .more > a,
 main.website article.event-article .more > a:visited,
 main.website article.event-article .more > a:active,

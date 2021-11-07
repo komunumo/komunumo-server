@@ -68,9 +68,10 @@ public class EventArticle extends Article {
     }
 
     protected void addTitle(@NotNull final Event event) {
-        add(new H2(event.getTitle()));
+        final var detailLink = event.getCompleteEventUrl();
+        add(new Anchor(detailLink, new H2(event.getTitle())));
         if (!event.getSubtitle().isBlank()) {
-            add(new H3(event.getSubtitle()));
+            add(new Anchor(detailLink, new H3(event.getSubtitle())));
         }
     }
 
