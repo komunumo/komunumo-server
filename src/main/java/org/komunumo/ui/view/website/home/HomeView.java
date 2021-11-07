@@ -21,6 +21,9 @@ package org.komunumo.ui.view.website.home;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
+import java.util.Optional;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.EventService;
 import org.komunumo.ui.view.website.WebsiteLayout;
@@ -32,7 +35,7 @@ public class HomeView extends Div {
 
     public HomeView(@NotNull final EventService eventService) {
         addClassName("events-view");
-        eventService.upcomingEvents()
+        eventService.upcomingEvents(Optional.empty())
                 .map(EventPreview::new)
                 .forEach(this::add);
     }

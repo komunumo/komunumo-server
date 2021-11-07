@@ -150,11 +150,12 @@ public class EventService {
         dsl.delete(EVENT).where(EVENT.ID.eq(event.getId())).execute();
     }
 
-    public Stream<Event> upcomingEvents() {
+    public Stream<Event> upcomingEvents(@NotNull final Optional<String> location) {
         return dsl.selectFrom(EVENT)
                 .where(condition(EVENT.PUBLISHED)
                         // minusHours(1) - show events as upcoming which had just started
-                        .and(EVENT.DATE.greaterOrEqual(LocalDateTime.now().minusHours(1))))
+                        .and(EVENT.DATE.greaterOrEqual(LocalDateTime.now().minusHours(1)))
+                        .and(location.map(EVENT.LOCATION::eq).orElseGet(DSL::noCondition)))
                 .orderBy(EVENT.DATE.asc())
                 .fetchInto(Event.class)
                 .stream()

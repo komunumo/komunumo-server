@@ -20,20 +20,33 @@ package org.komunumo.ui.view.website.events;
 
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.EventService;
 import org.komunumo.ui.view.website.WebsiteLayout;
 
 @Route(value = "events", layout = WebsiteLayout.class)
+@RouteAlias(value = "events/:location", layout = WebsiteLayout.class)
 @PageTitle("Events")
 @CssImport("./themes/komunumo/views/website/events-view.css")
-public class EventsView extends Div {
+public class EventsView extends Div implements BeforeEnterObserver {
+
+    private final EventService eventService;
 
     public EventsView(@NotNull final EventService eventService) {
+        this.eventService = eventService;
         addClassName("events-view");
-        eventService.upcomingEvents()
+    }
+
+    @Override
+    public void beforeEnter(@NotNull final BeforeEnterEvent beforeEnterEvent) {
+        final var params = beforeEnterEvent.getRouteParameters();
+        final var location = params.get("location");
+        eventService.upcomingEvents(location)
                 .map(EventPreview::new)
                 .forEach(this::add);
     }
