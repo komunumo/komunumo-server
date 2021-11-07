@@ -22,6 +22,7 @@ import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.cookieconsent.CookieConsent;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Main;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.RouterLayout;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +41,12 @@ public class WebsiteLayout extends VerticalLayout implements RouterLayout {
 
         main = new Main();
         main.addClassName("website");
-        add(main);
+
+        final var twitterFeed = new TwitterFeed();
+
+        final var mainLayout = new HorizontalLayout(main, twitterFeed);
+        mainLayout.setId("main-layout");
+        add(mainLayout);
     }
 
     public void showRouterLayoutContent(@NotNull HasElement content) {
