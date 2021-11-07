@@ -34,7 +34,6 @@ public class TwitterFeed extends Div {
         final var timeline = new Anchor("https://twitter.com/jugch", "Tweets by jugch");
         timeline.addClassName("twitter-timeline");
         timeline.getElement().setAttribute("data-chrome", "nofooter");
-        timeline.getElement().setAttribute("data-link-color", "#9c0523");
         timeline.getElement().setAttribute("data-tweet-limit", "3");
 
         add(timeline);
