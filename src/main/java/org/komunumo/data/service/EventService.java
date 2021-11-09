@@ -18,8 +18,6 @@
 
 package org.komunumo.data.service;
 
-import java.time.Year;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
@@ -30,6 +28,7 @@ import org.komunumo.data.entity.Speaker;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -150,12 +149,11 @@ public class EventService {
         dsl.delete(EVENT).where(EVENT.ID.eq(event.getId())).execute();
     }
 
-    public Stream<Event> upcomingEvents(@NotNull final Optional<String> location) {
+    public Stream<Event> upcomingEvents() {
         return dsl.selectFrom(EVENT)
                 .where(condition(EVENT.PUBLISHED)
                         // minusHours(1) - show events as upcoming which had just started
-                        .and(EVENT.DATE.greaterOrEqual(LocalDateTime.now().minusHours(1)))
-                        .and(location.map(EVENT.LOCATION::eq).orElseGet(DSL::noCondition)))
+                        .and(EVENT.DATE.greaterOrEqual(LocalDateTime.now().minusHours(1))))
                 .orderBy(EVENT.DATE.asc())
                 .fetchInto(Event.class)
                 .stream()

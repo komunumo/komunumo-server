@@ -26,8 +26,10 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.EventService;
 import org.komunumo.ui.view.website.WebsiteLayout;
+import org.komunumo.util.URLUtil;
 
 @Route(value = "events", layout = WebsiteLayout.class)
 @RouteAlias(value = "events/:location", layout = WebsiteLayout.class)
@@ -46,7 +48,16 @@ public class EventsView extends Div implements BeforeEnterObserver {
     public void beforeEnter(@NotNull final BeforeEnterEvent beforeEnterEvent) {
         final var params = beforeEnterEvent.getRouteParameters();
         final var location = params.get("location");
-        eventService.upcomingEvents(location)
+        final var events = eventService.upcomingEvents().toList();
+        final var eventLocations = events.stream()
+                .map(Event::getLocation)
+                .distinct()
+                .sorted()
+                .toList();
+        final var locationSelector = new LocationSelector(eventLocations, location.orElse(null));
+        add(locationSelector);
+        events.stream()
+                .filter(event -> location.isEmpty() || URLUtil.createReadableUrl(event.getLocation()).equals(location.get()))
                 .map(EventPreview::new)
                 .forEach(this::add);
     }

@@ -20,3 +20,42 @@ main.website .events-view {
     display: flex;
     flex-wrap: wrap;
 }
+
+main.website ul.location-selector  {
+    display: block;
+    border: none;
+    margin: 0;
+    padding: 0;
+
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+    padding-inline-start: 40px;
+}
+
+main.website ul.location-selector li {
+    min-height: 30px;
+    border-bottom: 1px solid #bfbfbf;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+main.website ul.location-selector li a {
+    display: block;
+    width: 144px;
+    min-height: 21px;
+    margin: 0;
+    padding: 9px 8px 0 8px;
+    font-size: 100%;
+    font-style: normal;
+    color: #333333;
+    text-decoration: none;
+}
+
+main.website ul.location-selector li a.active {
+    background-color: #f3f3f3;
+    font-weight: bold;
+    text-transform: uppercase;
+}
