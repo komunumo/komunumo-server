@@ -18,22 +18,48 @@
 
 package org.komunumo.ui.view.website.home;
 
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.EventService;
 import org.komunumo.ui.view.website.WebsiteLayout;
 import org.komunumo.ui.view.website.events.EventPreview;
+import org.komunumo.ui.view.website.events.LocationSelector;
 
 @Route(value = "", layout = WebsiteLayout.class)
 @PageTitle("Home")
-public class HomeView extends Div {
+@CssImport("./themes/komunumo/views/website/events-view.css")
+public class HomeView extends VerticalLayout {
 
     public HomeView(@NotNull final EventService eventService) {
-        addClassName("events-view");
-        eventService.upcomingEvents()
+        addClassName("home-view");
+
+        final var pageTitle = new H2("Events");
+        pageTitle.setId("page-title");
+
+        final var events = eventService.upcomingEvents().toList();
+        final var eventLocations = events.stream()
+                .map(Event::getLocation)
+                .distinct()
+                .sorted()
+                .toList();
+        final var locationSelector = new LocationSelector(eventLocations);
+
+        final var eventsList = new Div();
+        eventsList.addClassName("events-list");
+        events.stream()
                 .map(EventPreview::new)
-                .forEach(this::add);
+                .forEach(eventsList::add);
+
+        final var eventsLayout = new HorizontalLayout();
+        eventsLayout.add(new Div(pageTitle, locationSelector), eventsList);
+        add(eventsLayout);
     }
+
 }

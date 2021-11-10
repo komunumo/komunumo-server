@@ -32,19 +32,29 @@ public class LocationSelector extends Div {
 
     private final String actualLocation;
 
+    public LocationSelector(@NotNull final List<String> locations) {
+        this(locations, null, true);
+    }
+
     public LocationSelector(@NotNull final List<String> locations, @Nullable final String actualLocation) {
+        this(locations, actualLocation, false);
+    }
+
+    public LocationSelector(@NotNull final List<String> locations, @Nullable final String actualLocation, final boolean onlyLocations) {
         this.actualLocation = actualLocation;
         final var list = new UnorderedList();
         list.addClassName("location-selector");
 
-        final var upcoming = new Anchor("/events", "upcoming");
-        list.add(new ListItem(upcoming));
-        upcoming.addClassName("active");
+        if (!onlyLocations) {
+            final var upcoming = new Anchor("/events", "upcoming");
+            list.add(new ListItem(upcoming));
+            upcoming.addClassName("active");
 
-        final var allCities = new Anchor("/events", "all locations");
-        list.add(new ListItem(allCities));
-        if (actualLocation == null) {
-            allCities.addClassName("active");
+            final var allCities = new Anchor("/events", "all locations");
+            list.add(new ListItem(allCities));
+            if (actualLocation == null) {
+                allCities.addClassName("active");
+            }
         }
 
         locations.stream()
