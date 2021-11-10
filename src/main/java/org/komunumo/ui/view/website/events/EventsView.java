@@ -20,6 +20,10 @@ package org.komunumo.ui.view.website.events;
 
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -35,13 +39,22 @@ import org.komunumo.util.URLUtil;
 @RouteAlias(value = "events/:location", layout = WebsiteLayout.class)
 @PageTitle("Events")
 @CssImport("./themes/komunumo/views/website/events-view.css")
-public class EventsView extends Div implements BeforeEnterObserver {
+public class EventsView extends VerticalLayout implements BeforeEnterObserver {
 
     private final EventService eventService;
+    private final HorizontalLayout eventsLayout;
 
     public EventsView(@NotNull final EventService eventService) {
         this.eventService = eventService;
         addClassName("events-view");
+
+        final var pageTitle = new H2("Events");
+        pageTitle.setId("page-title");
+        final var upcomingTitle = new H1("Upcoming");
+        upcomingTitle.setId("upcoming-title");
+
+        eventsLayout = new HorizontalLayout();
+        add(new HorizontalLayout(pageTitle, upcomingTitle), eventsLayout);
     }
 
     @Override
@@ -55,10 +68,15 @@ public class EventsView extends Div implements BeforeEnterObserver {
                 .sorted()
                 .toList();
         final var locationSelector = new LocationSelector(eventLocations, location.orElse(null));
-        add(locationSelector);
+
+        final var eventsList = new Div();
+        eventsList.addClassName("events-list");
         events.stream()
                 .filter(event -> location.isEmpty() || URLUtil.createReadableUrl(event.getLocation()).equals(location.get()))
                 .map(EventPreview::new)
-                .forEach(this::add);
+                .forEach(eventsList::add);
+
+        eventsLayout.removeAll();
+        eventsLayout.add(locationSelector, eventsList);
     }
 }

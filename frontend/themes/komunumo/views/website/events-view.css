@@ -16,7 +16,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-main.website .events-view {
+main.website #page-title,
+main.website #upcoming-title {
+    border-top: 2px solid #bfbfbf;
+    font-size: 300%;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+main.website #page-title {
+    display: block;
+    padding-inline-start: 40px;
+    width: 160px;
+}
+
+main.website .events-list {
     display: flex;
     flex-wrap: wrap;
 }
