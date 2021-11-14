@@ -110,10 +110,8 @@ public class SpeakerDialog extends EditDialog<Speaker> {
                 .bind(Speaker::getEmail, Speaker::setEmail);
 
         binder.forField(twitter)
-                .withValidator(value -> value.isEmpty() || value.startsWith("https://"),
-                        "The twitter address must start with \"https://\"")
                 .withValidator(new StringLengthValidator(
-                        "The twitter address is too long (max. 255 chars)", 0, 255))
+                        "The twitter username is too long (max. 15 chars)", 0, 15))
                 .bind(Speaker::getTwitter, Speaker::setTwitter);
 
         binder.forField(linkedIn)

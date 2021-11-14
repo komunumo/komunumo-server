@@ -117,7 +117,7 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
         grid.addColumn(TemplateRenderer.<SpeakerListEntity>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
                 .withProperty("email", SpeakerListEntity::email))
                 .setHeader("Email").setAutoWidth(true).setFlexGrow(0).setKey("email");
-        grid.addColumn(TemplateRenderer.<SpeakerListEntity>of("<a href=\"https://twitter.com/[[item.twitter]]\" target=\"_blank\">[[item.twitter]]</a>")
+        grid.addColumn(TemplateRenderer.<SpeakerListEntity>of("<a href=\"https://twitter.com/[[item.twitter]]\" target=\"_blank\" title=\"[[item.twitter]]\">[[item.twitter]]</a>")
                 .withProperty("twitter", SpeakerListEntity::twitter))
                 .setHeader("Twitter").setAutoWidth(true).setFlexGrow(0).setKey("twitter");
 
