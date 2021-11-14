@@ -41,8 +41,8 @@ import com.vaadin.flow.server.VaadinSession;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
+import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.entity.Keyword;
-import org.komunumo.data.entity.Speaker;
 import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
@@ -193,12 +193,12 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
     }
 
     private String renderSpeakerLinks(@NotNull Event event) {
-        final var speakers = event.getSpeakers();
-        if (speakers == null || speakers.isEmpty()) {
+        final var eventSpeakerEntities = event.getSpeakers();
+        if (eventSpeakerEntities == null || eventSpeakerEntities.isEmpty()) {
             return "";
         }
-        return speakers.stream()
-                .map(Speaker::getFullName)
+        return eventSpeakerEntities.stream()
+                .map(EventSpeakerEntity::fullName)
                 .map(String::trim)
                 .map(s -> String.format("<a href=\"/admin/speakers?filter=%s\">%s</a>", URLEncoder.encode(s, UTF_8), s))
                 .collect(Collectors.joining(", "));
@@ -249,7 +249,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
                     event.getId().toString(),
                     event.getTitle(),
                     event.getSubtitle(),
-                    event.getSpeakers().stream().map(Speaker::getFullName).collect(Collectors.joining(", ")),
+                    event.getSpeakers().stream().map(EventSpeakerEntity::fullName).collect(Collectors.joining(", ")),
                     event.getDescription(),
                     event.getKeywords().stream().map(Keyword::getKeyword).collect(Collectors.joining(", ")),
                     event.getAgenda(),

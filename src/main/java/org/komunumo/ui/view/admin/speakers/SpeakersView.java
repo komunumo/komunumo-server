@@ -40,7 +40,7 @@ import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.komunumo.data.entity.Speaker;
+import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.entity.SpeakerListEntity;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.EnhancedButton;
@@ -158,9 +158,9 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
         showSpeakerDialog(speakerService.get(speakerListEntity.id()).orElseGet(speakerService::newSpeaker));
     }
 
-    private void showSpeakerDialog(@NotNull final Speaker speaker) {
-        final var dialog = new SpeakerDialog(speaker.getId() != null ? "Edit Speaker" : "New Speaker");
-        dialog.open(speaker, this::reloadGridItems);
+    private void showSpeakerDialog(@NotNull final SpeakerRecord speakerRecord) {
+        final var dialog = new SpeakerDialog(speakerRecord.getId() != null ? "Edit Speaker" : "New Speaker");
+        dialog.open(speakerRecord, this::reloadGridItems);
     }
 
     private void deleteSpeaker(final SpeakerListEntity speakerListEntity) {

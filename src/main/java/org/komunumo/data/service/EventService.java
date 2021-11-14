@@ -23,8 +23,8 @@ import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.komunumo.data.entity.Event;
+import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.entity.Keyword;
-import org.komunumo.data.entity.Speaker;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -174,12 +174,13 @@ public class EventService {
     }
 
     private void addSpeakers(@NotNull final Event event) {
-        final var speakers = dsl.select(SPEAKER.asterisk())
+        final var speakers = dsl.select(SPEAKER.ID, SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME,
+                        SPEAKER.COMPANY, SPEAKER.PHOTO, SPEAKER.BIO)
                 .from(SPEAKER)
                 .join(EVENT_SPEAKER).on(SPEAKER.ID.eq(EVENT_SPEAKER.SPEAKER_ID))
                 .where(EVENT_SPEAKER.EVENT_ID.eq(event.getId()))
                 .orderBy(SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME)
-                .fetchInto(Speaker.class);
+                .fetchInto(EventSpeakerEntity.class);
         event.setSpeakers(speakers);
     }
 

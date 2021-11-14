@@ -28,8 +28,9 @@ import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
 import org.komunumo.data.db.enums.EventType;
 import org.komunumo.data.db.enums.SponsorLevel;
+import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.entity.Event;
-import org.komunumo.data.entity.Speaker;
+import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
@@ -279,30 +280,33 @@ public class JUGSImporter {
             final var result = statement.executeQuery(
                     "SELECT id, vname, nname, firma, bio, image, e_mail, twitter, firmenurl, events_id, lang_talk, abstract, level FROM eventspeaker ORDER BY id DESC");
             while (result.next()) {
-                final var speaker = getSpeaker(speakerService, result);
-                if (speaker.get(SPEAKER.ID) == null
+                final var speakerRecord = getSpeaker(speakerService, result);
+                if (speakerRecord.get(SPEAKER.ID) == null
                         && (!getEmptyForNull(result.getString("vname")).isBlank()
                         || !getEmptyForNull(result.getString("nname")).isBlank())) {
-                    speaker.set(SPEAKER.ID, result.getLong("id"));
-                    speaker.set(SPEAKER.FIRST_NAME, getEmptyForNull(result.getString("vname")));
-                    speaker.set(SPEAKER.LAST_NAME, getEmptyForNull(result.getString("nname")));
-                    speaker.set(SPEAKER.COMPANY, getEmptyForNull(result.getString("firma")));
-                    speaker.set(SPEAKER.BIO, getEmptyForNull(result.getString("bio")));
-                    speaker.set(SPEAKER.PHOTO, getPhoto(result.getString("image")));
-                    speaker.set(SPEAKER.EMAIL, getEmptyForNull(result.getString("e_mail")));
-                    speaker.set(SPEAKER.TWITTER, getTwitter(result.getString("twitter")));
-                    speaker.set(SPEAKER.WEBSITE, getEmptyForNull(result.getString("firmenurl")));
+                    speakerRecord.set(SPEAKER.ID, result.getLong("id"));
+                    speakerRecord.set(SPEAKER.FIRST_NAME, getEmptyForNull(result.getString("vname")));
+                    speakerRecord.set(SPEAKER.LAST_NAME, getEmptyForNull(result.getString("nname")));
+                    speakerRecord.set(SPEAKER.COMPANY, getEmptyForNull(result.getString("firma")));
+                    speakerRecord.set(SPEAKER.BIO, getEmptyForNull(result.getString("bio")));
+                    speakerRecord.set(SPEAKER.PHOTO, getPhoto(result.getString("image")));
+                    speakerRecord.set(SPEAKER.EMAIL, getEmptyForNull(result.getString("e_mail")));
+                    speakerRecord.set(SPEAKER.TWITTER, getTwitter(result.getString("twitter")));
+                    speakerRecord.set(SPEAKER.WEBSITE, getEmptyForNull(result.getString("firmenurl")));
                     counter.incrementAndGet();
-                    speakerService.store(speaker);
+                    speakerService.store(speakerRecord);
                 }
                 final var eventId = result.getLong("events_id");
                 if (eventId > 0) {
                     final var event = eventService.get(eventId).orElse(null);
                     if (event != null) {
-                        if (speaker.get(SPEAKER.ID) != null) {
+                        if (speakerRecord.get(SPEAKER.ID) != null) {
                             final var speakers = eventSpeakerService.getSpeakersForEvent(event).collect(Collectors.toSet());
-                            if (!speakers.contains(speaker)) {
-                                speakers.add(speaker);
+                            final var eventSpeakerEntity = new EventSpeakerEntity(
+                                    speakerRecord.getId(), speakerRecord.getFirstName(), speakerRecord.getLastName(),
+                                    speakerRecord.getCompany(), speakerRecord.getPhoto(), speakerRecord.getBio());
+                            if (!speakers.contains(eventSpeakerEntity)) {
+                                speakers.add(eventSpeakerEntity);
                                 eventSpeakerService.setEventSpeakers(event, speakers);
                             }
                         }
@@ -350,8 +354,8 @@ public class JUGSImporter {
         showNotification(counter.get() + " new speakers imported.");
     }
 
-    private Speaker getSpeaker(final @NotNull SpeakerService speakerService,
-                               final @NotNull ResultSet result) throws SQLException {
+    private SpeakerRecord getSpeaker(final @NotNull SpeakerService speakerService,
+                                     final @NotNull ResultSet result) throws SQLException {
         final var speakerId = result.getLong("id");
 
         final var speakerById = speakerService.get(speakerId);

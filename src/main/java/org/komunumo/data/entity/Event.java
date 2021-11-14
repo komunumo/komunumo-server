@@ -20,23 +20,22 @@ package org.komunumo.data.entity;
 
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.EventRecord;
+import org.komunumo.util.URLUtil;
 
 import java.util.Collections;
 import java.util.List;
 
-import org.komunumo.util.URLUtil;
-
 public class Event extends EventRecord {
 
-    private List<Speaker> speakers;
+    private List<EventSpeakerEntity> speakers;
     private List<Keyword> keywords;
     private int attendeeCount;
 
-    public void setSpeakers(@NotNull final List<Speaker> speakers) {
-        this.speakers = Collections.unmodifiableList(speakers);
+    public void setSpeakers(@NotNull final List<EventSpeakerEntity> eventSpeakerEntities) {
+        this.speakers = Collections.unmodifiableList(eventSpeakerEntities);
     }
 
-    public List<Speaker> getSpeakers() {
+    public List<EventSpeakerEntity> getSpeakers() {
         return speakers;
     }
 

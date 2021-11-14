@@ -80,14 +80,14 @@ public class EventArticle extends Article {
         speakers.addClassName("speakers");
         final var speakerCount = event.getSpeakers().size();
         final var speakerCounter = new AtomicInteger(0);
-        event.getSpeakers().forEach(speaker -> {
+        event.getSpeakers().forEach(eventSpeakerEntity -> {
             final var counter = speakerCount == 1 ? "" : String.format(" %d", speakerCounter.incrementAndGet());
             final var speakerLabel = new Span(new Text(String.format("Speaker%s:", counter)));
             speakerLabel.addClassName("speaker-label");
-            final var speakerName = new Span(new Text(speaker.getFullName()));
+            final var speakerName = new Span(new Text(eventSpeakerEntity.fullName()));
             final var companyLabel = new Span(new Text("Company:"));
             companyLabel.addClassName("company-label");
-            final var companyName = new Span(new Text(speaker.getCompany()));
+            final var companyName = new Span(new Text(eventSpeakerEntity.company()));
             speakers.add(new Div(
                     speakerLabel, speakerName,
                     companyLabel, companyName

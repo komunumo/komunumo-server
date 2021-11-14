@@ -21,7 +21,7 @@ package org.komunumo.data.service;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.komunumo.data.entity.Event;
-import org.komunumo.data.entity.Speaker;
+import org.komunumo.data.entity.EventSpeakerEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -41,45 +41,46 @@ public class EventSpeakerService {
         this.dsl = dsl;
     }
 
-    public Stream<Speaker> getSpeakersForEvent(@NotNull final Event event) {
+    public Stream<EventSpeakerEntity> getSpeakersForEvent(@NotNull final Event event) {
         return dsl
-                .selectFrom(SPEAKER)
+                .select(SPEAKER.ID, SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME, SPEAKER.COMPANY, SPEAKER.PHOTO, SPEAKER.BIO)
+                .from(SPEAKER)
                 .where(SPEAKER.ID.in(
                         select(EVENT_SPEAKER.SPEAKER_ID)
                                 .from(EVENT_SPEAKER)
                                 .where(EVENT_SPEAKER.EVENT_ID.eq(event.getId()))
                 ))
-                .fetchInto(Speaker.class)
+                .fetchInto(EventSpeakerEntity.class)
                 .stream();
     }
 
     public void setEventSpeakers(@NotNull final Event event,
-                                 @NotNull final Set<Speaker> speakers) {
-        final var eventSpeakers = new HashSet<Speaker>(speakers.size());
-        eventSpeakers.addAll(speakers);
-        getSpeakersForEvent(event).forEach(speaker -> {
-            if (eventSpeakers.contains(speaker)) {
-                eventSpeakers.remove(speaker);
+                                 @NotNull final Set<EventSpeakerEntity> eventSpeakerEntities) {
+        final var eventSpeakers = new HashSet<EventSpeakerEntity>(eventSpeakerEntities.size());
+        eventSpeakers.addAll(eventSpeakerEntities);
+        getSpeakersForEvent(event).forEach(eventSpeakerEntity -> {
+            if (eventSpeakers.contains(eventSpeakerEntity)) {
+                eventSpeakers.remove(eventSpeakerEntity);
             } else {
-                removeSpeakerFromEvent(event, speaker);
+                removeSpeakerFromEvent(event, eventSpeakerEntity);
             }
         });
-        eventSpeakers.forEach(speaker -> addSpeakerToEvent(event, speaker));
+        eventSpeakers.forEach(eventSpeakerEntity -> addSpeakerToEvent(event, eventSpeakerEntity));
     }
 
     private void addSpeakerToEvent(@NotNull final Event event,
-                                   @NotNull final Speaker speaker) {
+                                   @NotNull final EventSpeakerEntity eventSpeakerEntity) {
         final var eventSpeaker = dsl.newRecord(EVENT_SPEAKER);
         eventSpeaker.setEventId(event.getId());
-        eventSpeaker.setSpeakerId(speaker.getId());
+        eventSpeaker.setSpeakerId(eventSpeakerEntity.id());
         eventSpeaker.store();
     }
 
     private void removeSpeakerFromEvent(@NotNull final Event event,
-                                        @NotNull final Speaker speaker) {
+                                        @NotNull final EventSpeakerEntity eventSpeakerEntity) {
         dsl.delete(EVENT_SPEAKER)
                 .where(EVENT_SPEAKER.EVENT_ID.eq(event.getId()))
-                .and(EVENT_SPEAKER.SPEAKER_ID.eq(speaker.getId()))
+                .and(EVENT_SPEAKER.SPEAKER_ID.eq(eventSpeakerEntity.id()))
                 .execute();
     }
 

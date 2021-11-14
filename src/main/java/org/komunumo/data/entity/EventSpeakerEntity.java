@@ -18,21 +18,10 @@
 
 package org.komunumo.data.entity;
 
-import org.komunumo.data.db.tables.records.SpeakerRecord;
+public record EventSpeakerEntity(Long id, String firstName, String lastName, String company, String photo, String bio) {
 
-public class Speaker extends SpeakerRecord {
-
-    private int eventCount;
-
-    public String getFullName() {
-        return String.format("%s %s", getFirstName(), getLastName()).trim();
+    public String fullName() {
+        return String.format("%s %s", firstName(), lastName()).trim();
     }
 
-    public int getEventCount() {
-        return eventCount;
-    }
-
-    public void setEventCount(final int eventCount) {
-        this.eventCount = eventCount;
-    }
 }

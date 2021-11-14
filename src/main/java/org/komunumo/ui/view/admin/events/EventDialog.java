@@ -33,9 +33,9 @@ import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
 import org.komunumo.data.db.enums.EventType;
 import org.komunumo.data.entity.Event;
+import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.entity.Keyword;
 import org.komunumo.data.entity.Member;
-import org.komunumo.data.entity.Speaker;
 import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
@@ -72,7 +72,7 @@ public class EventDialog extends EditDialog<Event> {
     private final KeywordService keywordService;
     private final EventKeywordService eventKeywordService;
 
-    private Set<Speaker> speakers;
+    private Set<EventSpeakerEntity> speakers;
     private Set<Member> organizers;
     private Set<Keyword> keywords;
     private Callback afterOpen;
@@ -100,7 +100,7 @@ public class EventDialog extends EditDialog<Event> {
         final var type = new Select<>(EventType.values());
         final var title = new TextField("Title");
         final var subtitle = new TextField("Subtitle");
-        final var speaker = new MultiselectComboBox<Speaker>("Speaker");
+        final var speaker = new MultiselectComboBox<EventSpeakerEntity>("Speaker");
         final var organizer = new MultiselectComboBox<Member>("Organizer");
         final var description = new TextArea("Description");
         final var keyword = new MultiselectComboBox<Keyword>("Keyword");
@@ -125,8 +125,8 @@ public class EventDialog extends EditDialog<Event> {
         });
         subtitle.setValueChangeMode(EAGER);
         speaker.setOrdered(true);
-        speaker.setItemLabelGenerator(value -> String.format("%s %s", value.getFirstName(), value.getLastName()));
-        speaker.setItems(speakerService.getAllSpeakers());
+        speaker.setItemLabelGenerator(EventSpeakerEntity::fullName);
+        speaker.setItems(speakerService.getAllEventSpeakers());
         organizer.setOrdered(true);
         organizer.setItemLabelGenerator(value -> String.format("%s %s", value.getFirstName(), value.getLastName()));
         organizer.setItems(memberService.getAllAdmins());
@@ -277,12 +277,12 @@ public class EventDialog extends EditDialog<Event> {
         return date.getValue() != null && date.getValue().isBefore(LocalDateTime.now());
     }
 
-    private Set<Speaker> getSpeakers(@NotNull final Event event) {
+    private Set<EventSpeakerEntity> getSpeakers(@NotNull final Event event) {
         return speakers;
     }
 
-    private void setSpeakers(@NotNull final Event event, @Nullable final Set<Speaker> speakers) {
-        this.speakers = speakers != null ? speakers : Set.of();
+    private void setSpeakers(@NotNull final Event event, @Nullable final Set<EventSpeakerEntity> eventSpeakerEntities) {
+        this.speakers = eventSpeakerEntities != null ? eventSpeakerEntities : Set.of();
     }
 
     private Set<Member> getOrganizer(@NotNull final Event event) {

@@ -79,8 +79,8 @@ public class EventDetailView extends EventArticle implements BeforeEnterObserver
         div.addClassName("speakerbox");
         for (final var speaker : event.getSpeakers()) {
             div.add(new Div(
-                    new Image(speaker.getPhoto(), speaker.getFullName()),
-                    new Html("<div>%s</div>".formatted(speaker.getBio()))
+                    new Image(speaker.photo(), speaker.fullName()),
+                    new Html("<div>%s</div>".formatted(speaker.bio()))
             ));
         }
         add(div);
