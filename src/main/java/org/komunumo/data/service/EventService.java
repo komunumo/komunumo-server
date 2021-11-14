@@ -152,11 +152,17 @@ public class EventService {
     public Stream<Event> upcomingEvents() {
         return dsl.selectFrom(EVENT)
                 .where(condition(EVENT.PUBLISHED)
-                        // minusHours(1) - show events as upcoming which had just started
-                        .and(EVENT.DATE.greaterOrEqual(LocalDateTime.now().minusHours(1))))
+                        .and(EVENT.DATE.greaterOrEqual(LocalDateTime.now().withHour(0).withMinute(0))))
                 .orderBy(EVENT.DATE.asc())
                 .fetchInto(Event.class)
                 .stream()
+                .filter(event -> {
+                    final var startDate = event.getDate();
+                    final var eventDuration = event.getDuration();
+                    final var endDate = startDate.plusHours(eventDuration.getHour()).plusMinutes(eventDuration.getMinute());
+                    final var now = LocalDateTime.now();
+                    return now.isBefore(endDate);
+                })
                 .map(this::addAdditionalData);
     }
 
