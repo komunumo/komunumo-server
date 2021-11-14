@@ -20,6 +20,24 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <id>McPringle</id>
+            <name>Marcus Fihlon</name>
+            <email>marcus@fihlon.swiss</email>
+            <url>https://fihlon.swiss/</url>
+            <roles>
+                <role>maintainer</role>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>Europe/Zurich</timezone>
+            <properties>
+                <picUrl>https://gravatar.com/avatar/b7fd700b1ed81ebff879cdd72ed4a2a4?s=400</picUrl>
+            </properties>
+        </developer>
+    </developers>
+
     <properties>
         <java.version>17</java.version>
         <jooq.version>3.15.4</jooq.version>
