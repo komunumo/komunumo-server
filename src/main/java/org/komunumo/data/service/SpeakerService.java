@@ -74,23 +74,7 @@ public class SpeakerService {
                 .stream();
     }
 
-    public Stream<Speaker> find(final int offset, final int limit, @Nullable final String filter) {
-        final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
-        return dsl.selectFrom(SPEAKER)
-                .where(filterValue == null ? DSL.noCondition() :
-                        concat(concat(SPEAKER.FIRST_NAME, " "), SPEAKER.LAST_NAME).like(filterValue)
-                                .or(SPEAKER.COMPANY.like(filterValue))
-                                .or(SPEAKER.EMAIL.like(filterValue))
-                                .or(SPEAKER.TWITTER.like(filterValue)))
-                .orderBy(SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME)
-                .offset(offset)
-                .limit(limit)
-                .fetchInto(Speaker.class)
-                .stream()
-                .map(this::addEventCount);
-    }
-
-    public Stream<SpeakerListEntity> getSpeakerList(final int offset, final int limit, @Nullable final String filter) {
+    public Stream<SpeakerListEntity> find(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl.select(SPEAKER.ID, SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME, SPEAKER.COMPANY, SPEAKER.WEBSITE, SPEAKER.EMAIL, SPEAKER.TWITTER,
                         DSL.count(EVENT_SPEAKER.EVENT_ID).as("event_count"))

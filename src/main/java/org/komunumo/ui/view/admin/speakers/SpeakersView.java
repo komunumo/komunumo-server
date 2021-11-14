@@ -176,7 +176,7 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> speakerService.getSpeakerList(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> speakerService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
     private void downloadSpeakers() {
