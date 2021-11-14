@@ -41,6 +41,7 @@ import com.vaadin.flow.server.VaadinSession;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Speaker;
+import org.komunumo.data.entity.SpeakerListEntity;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
@@ -63,7 +64,7 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
 
     private final SpeakerService speakerService;
     private final TextField filterField;
-    private final Grid<Speaker> grid;
+    private final Grid<SpeakerListEntity> grid;
 
     public SpeakersView(@NotNull final SpeakerService speakerService) {
         this.speakerService = speakerService;
@@ -102,37 +103,36 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
         filterField.setValue(filterValue);
     }
 
-    private Grid<Speaker> createGrid() {
-        final var grid = new Grid<Speaker>();
+    private Grid<SpeakerListEntity> createGrid() {
+        final var grid = new Grid<SpeakerListEntity>();
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
-        grid.addColumn(TemplateRenderer.<Speaker>of("<span style=\"font-weight: bold;\">[[item.firstName]] [[item.lastName]]</span><br/><a href=\"[[item.website]]\" target=\"_blank\" title=\"[[item.title]]\">[[item.company]]</a>")
-                .withProperty("firstName", Speaker::getFirstName)
-                .withProperty("lastName", Speaker::getLastName)
-                .withProperty("company", speaker -> FormatterUtil.formatString(speaker.getCompany(), 50))
-                .withProperty("title", Speaker::getCompany)
-                .withProperty("website", Speaker::getWebsite))
+        grid.addColumn(TemplateRenderer.<SpeakerListEntity>of("<span style=\"font-weight: bold;\">[[item.fullName]]</span><br/><a href=\"[[item.website]]\" target=\"_blank\" title=\"[[item.title]]\">[[item.company]]</a>")
+                .withProperty("fullName", SpeakerListEntity::fullName)
+                .withProperty("company", speakerListEntity -> FormatterUtil.formatString(speakerListEntity.company(), 50))
+                .withProperty("title", SpeakerListEntity::company)
+                .withProperty("website", SpeakerListEntity::website))
                 .setHeader("Name & Company").setAutoWidth(true).setFlexGrow(1);
-        grid.addColumn(TemplateRenderer.<Speaker>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
-                .withProperty("email", Speaker::getEmail))
+        grid.addColumn(TemplateRenderer.<SpeakerListEntity>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
+                .withProperty("email", SpeakerListEntity::email))
                 .setHeader("Email").setAutoWidth(true).setFlexGrow(0).setKey("email");
-        grid.addColumn(TemplateRenderer.<Speaker>of("<a href=\"https://twitter.com/[[item.twitter]]\" target=\"_blank\">[[item.twitter]]</a>")
-                .withProperty("twitter", Speaker::getTwitter))
+        grid.addColumn(TemplateRenderer.<SpeakerListEntity>of("<a href=\"https://twitter.com/[[item.twitter]]\" target=\"_blank\">[[item.twitter]]</a>")
+                .withProperty("twitter", SpeakerListEntity::twitter))
                 .setHeader("Twitter").setAutoWidth(true).setFlexGrow(0).setKey("twitter");
 
-        final var eventCountRenderer = TemplateRenderer.<Speaker>of(
+        final var eventCountRenderer = TemplateRenderer.<SpeakerListEntity>of(
                 "<a href=\"/admin/events?filter=[[item.filterValue]]\">[[item.eventCount]]</a>")
-                .withProperty("eventCount", Speaker::getEventCount)
-                .withProperty("filterValue", speaker -> URLEncoder.encode(speaker.getFullName(), UTF_8));
+                .withProperty("eventCount", SpeakerListEntity::eventCount)
+                .withProperty("filterValue", speakerListEntity -> URLEncoder.encode(speakerListEntity.fullName(), UTF_8));
         grid.addColumn(eventCountRenderer).setHeader("Events").setAutoWidth(true).setFlexGrow(0);
 
-        grid.addColumn(new ComponentRenderer<>(speaker -> {
-            final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), clickEvent -> showSpeakerDialog(speaker));
+        grid.addColumn(new ComponentRenderer<>(speakerListEntity -> {
+            final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), clickEvent -> showSpeakerDialog(speakerListEntity));
             editButton.setTitle("Edit this speaker");
-            final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), clickEvent -> deleteSpeaker(speaker));
+            final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), clickEvent -> deleteSpeaker(speakerListEntity));
             deleteButton.setTitle("Delete this speaker");
-            deleteButton.setEnabled(speaker.getEventCount() == 0);
+            deleteButton.setEnabled(speakerListEntity.eventCount() == 0);
             return new HorizontalLayout(editButton, deleteButton);
         }))
                 .setHeader("Actions")
@@ -154,16 +154,20 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
         showSpeakerDialog(speakerService.newSpeaker());
     }
 
+    private void showSpeakerDialog(@NotNull final SpeakerListEntity speakerListEntity) {
+        showSpeakerDialog(speakerService.get(speakerListEntity.id()).orElseGet(speakerService::newSpeaker));
+    }
+
     private void showSpeakerDialog(@NotNull final Speaker speaker) {
         final var dialog = new SpeakerDialog(speaker.getId() != null ? "Edit Speaker" : "New Speaker");
         dialog.open(speaker, this::reloadGridItems);
     }
 
-    private void deleteSpeaker(final Speaker speaker) {
+    private void deleteSpeaker(final SpeakerListEntity speakerListEntity) {
         new ConfirmDialog("Confirm deletion",
-                String.format("Are you sure you want to permanently delete the speaker \"%s\"?", speaker.getFullName()),
+                String.format("Are you sure you want to permanently delete the speaker \"%s\"?", speakerListEntity.fullName()),
                 "Delete", dialogEvent -> {
-            speakerService.delete(speaker);
+            speakerService.delete(speakerListEntity.id());
             reloadGridItems();
             dialogEvent.getSource().close();
         },
@@ -172,7 +176,7 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> speakerService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> speakerService.getSpeakerList(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
     private void downloadSpeakers() {
@@ -180,28 +184,19 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
             final var stringWriter = new StringWriter();
             final var csvWriter = new CSVWriter(stringWriter);
             csvWriter.writeNext(new String[] {
-                    "ID", "First name", "Last name", "Company", "Bio",
-                    "Email", "Twitter", "LinkedIn", "Website",
-                    "Address", "Zip code", "City", "State", "Country",
-                    "Event count"
+                    "ID", "First name", "Last name", "Company",
+                    "Email", "Twitter", "Website", "Event count"
             });
             grid.getGenericDataView()
-                    .getItems().map(speaker -> new String[] {
-                    speaker.getId().toString(),
-                    speaker.getFirstName(),
-                    speaker.getLastName(),
-                    speaker.getCompany(),
-                    speaker.getBio(),
-                    speaker.getEmail(),
-                    speaker.getTwitter(),
-                    speaker.getLinkedin(),
-                    speaker.getWebsite(),
-                    speaker.getAddress(),
-                    speaker.getZipCode(),
-                    speaker.getCity(),
-                    speaker.getState(),
-                    speaker.getCountry(),
-                    Long.toString(speaker.getEventCount())
+                    .getItems().map(speakerListEntity -> new String[] {
+                    speakerListEntity.id().toString(),
+                    speakerListEntity.firstName(),
+                    speakerListEntity.lastName(),
+                    speakerListEntity.company(),
+                    speakerListEntity.email(),
+                    speakerListEntity.twitter(),
+                    speakerListEntity.website(),
+                    speakerListEntity.eventCount().toString()
             }).forEach(csvWriter::writeNext);
             return new ByteArrayInputStream(stringWriter.toString().getBytes(UTF_8));
         });

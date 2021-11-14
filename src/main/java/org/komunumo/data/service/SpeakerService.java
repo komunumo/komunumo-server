@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.komunumo.data.entity.Speaker;
+import org.komunumo.data.entity.SpeakerListEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -89,6 +90,25 @@ public class SpeakerService {
                 .map(this::addEventCount);
     }
 
+    public Stream<SpeakerListEntity> getSpeakerList(final int offset, final int limit, @Nullable final String filter) {
+        final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
+        return dsl.select(SPEAKER.ID, SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME, SPEAKER.COMPANY, SPEAKER.WEBSITE, SPEAKER.EMAIL, SPEAKER.TWITTER,
+                        DSL.count(EVENT_SPEAKER.EVENT_ID).as("event_count"))
+                .from(SPEAKER)
+                .join(EVENT_SPEAKER).on(SPEAKER.ID.eq(EVENT_SPEAKER.SPEAKER_ID))
+                .where(filterValue == null ? DSL.noCondition() :
+                        concat(SPEAKER.FIRST_NAME, DSL.value(" "), SPEAKER.LAST_NAME).like(filterValue)
+                                .or(SPEAKER.COMPANY.like(filterValue))
+                                .or(SPEAKER.EMAIL.like(filterValue))
+                                .or(SPEAKER.TWITTER.like(filterValue)))
+                .groupBy(SPEAKER.ID)
+                .orderBy(SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME)
+                .offset(offset)
+                .limit(limit)
+                .fetchInto(SpeakerListEntity.class)
+                .stream();
+    }
+
     private Speaker addEventCount(@NotNull final Speaker speaker) {
         final var eventCount = dsl.fetchCount(EVENT_SPEAKER, EVENT_SPEAKER.SPEAKER_ID.eq(speaker.getId()));
         speaker.setEventCount(eventCount);
@@ -121,7 +141,7 @@ public class SpeakerService {
         speaker.store();
     }
 
-    public void delete(@NotNull final Speaker speaker) {
-        speaker.delete();
+    public void delete(final long speakerId) {
+        get(speakerId).ifPresent(Speaker::delete);
     }
 }
