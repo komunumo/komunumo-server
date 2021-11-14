@@ -79,7 +79,7 @@ public class SpeakerService {
         return dsl.select(SPEAKER.ID, SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME, SPEAKER.COMPANY, SPEAKER.WEBSITE, SPEAKER.EMAIL, SPEAKER.TWITTER,
                         DSL.count(EVENT_SPEAKER.EVENT_ID).as("event_count"))
                 .from(SPEAKER)
-                .join(EVENT_SPEAKER).on(SPEAKER.ID.eq(EVENT_SPEAKER.SPEAKER_ID))
+                .leftJoin(EVENT_SPEAKER).on(SPEAKER.ID.eq(EVENT_SPEAKER.SPEAKER_ID))
                 .where(filterValue == null ? DSL.noCondition() :
                         concat(SPEAKER.FIRST_NAME, DSL.value(" "), SPEAKER.LAST_NAME).like(filterValue)
                                 .or(SPEAKER.COMPANY.like(filterValue))
