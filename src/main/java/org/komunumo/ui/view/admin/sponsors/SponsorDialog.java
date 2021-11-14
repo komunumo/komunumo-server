@@ -25,21 +25,21 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.enums.SponsorLevel;
-import org.komunumo.data.entity.Sponsor;
+import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.ui.component.DatePicker;
 import org.komunumo.ui.component.EditDialog;
 import org.komunumo.ui.component.ImageUploadField;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-public class SponsorDialog extends EditDialog<Sponsor> {
+public class SponsorDialog extends EditDialog<SponsorRecord> {
 
     public SponsorDialog(@NotNull final String title) {
         super(title);
     }
 
     @Override
-    public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<Sponsor> binder) {
+    public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<SponsorRecord> binder) {
         final var name = new TextField("Name");
         final var website = new TextField("Website");
         final var level = new ComboBox<SponsorLevel>("Level");
@@ -57,33 +57,33 @@ public class SponsorDialog extends EditDialog<Sponsor> {
         binder.forField(name)
                 .withValidator(new StringLengthValidator(
                         "Please enter the name of the sponsor (max. 255 chars)", 1, 255))
-                .bind(Sponsor::getName, Sponsor::setName);
+                .bind(SponsorRecord::getName, SponsorRecord::setName);
 
         binder.forField(website)
                 .withValidator(value -> value.isEmpty() || value.startsWith("https://"),
                         "The website address must start with \"https://\"")
                 .withValidator(new StringLengthValidator(
                         "The website address is too long (max. 255 chars)", 0, 255))
-                .bind(Sponsor::getWebsite, Sponsor::setWebsite);
+                .bind(SponsorRecord::getWebsite, SponsorRecord::setWebsite);
 
         binder.forField(level)
-                .bind(Sponsor::getLevel, Sponsor::setLevel);
+                .bind(SponsorRecord::getLevel, SponsorRecord::setLevel);
 
         binder.forField(logo)
                 .withValidator(value -> value.isEmpty() || value.startsWith("data:") || value.startsWith("https://"),
                         "The logo must be uploaded or the logo address must be secure (HTTPS)")
                 .withValidator(new StringLengthValidator(
                         "The logo is too big (max. 100 KB)", 0, 100_000))
-                .bind(Sponsor::getLogo, Sponsor::setLogo);
+                .bind(SponsorRecord::getLogo, SponsorRecord::setLogo);
 
         binder.forField(validFrom)
                 .withValidator(value -> value == null || validTo.isEmpty() || value.isBefore(validTo.getValue()),
                         "The valid from date must be before the valid to date")
-                .bind(Sponsor::getValidFrom, Sponsor::setValidFrom);
+                .bind(SponsorRecord::getValidFrom, SponsorRecord::setValidFrom);
 
         binder.forField(validTo)
                 .withValidator(value -> value == null || validFrom.isEmpty() || value.isAfter(validFrom.getValue()),
                         "The valid to date must be after the valid from date")
-                .bind(Sponsor::getValidTo, Sponsor::setValidTo);
+                .bind(SponsorRecord::getValidTo, SponsorRecord::setValidTo);
     }
 }

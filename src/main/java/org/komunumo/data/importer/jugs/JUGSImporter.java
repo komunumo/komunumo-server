@@ -358,7 +358,7 @@ public class JUGSImporter {
                                      final @NotNull ResultSet result) throws SQLException {
         final var speakerId = result.getLong("id");
 
-        final var speakerById = speakerService.get(speakerId);
+        final var speakerById = speakerService.getSpeakerRecord(speakerId);
         if (speakerById.isPresent()) {
             return speakerById.get();
         }
@@ -649,15 +649,15 @@ public class JUGSImporter {
             final var result = statement.executeQuery(
                     "SELECT id, firma, sponsortyp, url, logo FROM sponsoren WHERE aktiv='ja' ORDER BY id");
             while (result.next()) {
-                final var sponsor = sponsorService.get(result.getLong("id"))
+                final var sponsorRecord = sponsorService.getSponsorRecord(result.getLong("id"))
                         .orElse(sponsorService.newSponsor());
-                if (sponsor.get(SPONSOR.ID) == null) {
-                    sponsor.set(SPONSOR.ID, result.getLong("id"));
-                    sponsor.set(SPONSOR.NAME, result.getString("firma"));
-                    sponsor.set(SPONSOR.LEVEL, getSponsorLevel(result.getString("sponsortyp")));
-                    sponsor.set(SPONSOR.WEBSITE, result.getString("url"));
-                    sponsor.set(SPONSOR.LOGO, "https://jug.ch/images/sponsors/" + result.getString("logo"));
-                    sponsorService.store(sponsor);
+                if (sponsorRecord.get(SPONSOR.ID) == null) {
+                    sponsorRecord.set(SPONSOR.ID, result.getLong("id"));
+                    sponsorRecord.set(SPONSOR.NAME, result.getString("firma"));
+                    sponsorRecord.set(SPONSOR.LEVEL, getSponsorLevel(result.getString("sponsortyp")));
+                    sponsorRecord.set(SPONSOR.WEBSITE, result.getString("url"));
+                    sponsorRecord.set(SPONSOR.LOGO, "https://jug.ch/images/sponsors/" + result.getString("logo"));
+                    sponsorService.store(sponsorRecord);
                     counter.incrementAndGet();
                 }
             }

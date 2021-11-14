@@ -40,7 +40,6 @@ import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.entity.SpeakerListEntity;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.EnhancedButton;
@@ -76,7 +75,7 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter speakers by name, company, email, or twitter");
 
-        final var newSpeakerButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> newSpeaker());
+        final var newSpeakerButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), event -> showSpeakerDialog(null));
         newSpeakerButton.setTitle("Add a new speaker");
 
         final var refreshSpeakersButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), event -> reloadGridItems());
@@ -150,15 +149,9 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
         grid.getColumnByKey("email").setVisible(width >= 1200);
     }
 
-    private void newSpeaker() {
-        showSpeakerDialog(speakerService.newSpeaker());
-    }
-
-    private void showSpeakerDialog(@NotNull final SpeakerListEntity speakerListEntity) {
-        showSpeakerDialog(speakerService.get(speakerListEntity.id()).orElseGet(speakerService::newSpeaker));
-    }
-
-    private void showSpeakerDialog(@NotNull final SpeakerRecord speakerRecord) {
+    private void showSpeakerDialog(@Nullable final SpeakerListEntity speakerListEntity) {
+        final var speakerRecord = speakerListEntity == null || speakerListEntity.id() == null ? speakerService.newSpeaker() :
+                speakerService.getSpeakerRecord(speakerListEntity.id()).orElse(speakerService.newSpeaker());
         final var dialog = new SpeakerDialog(speakerRecord.getId() != null ? "Edit Speaker" : "New Speaker");
         dialog.open(speakerRecord, this::reloadGridItems);
     }

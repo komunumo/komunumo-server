@@ -22,7 +22,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
-import org.komunumo.data.entity.Sponsor;
+import org.komunumo.data.db.tables.records.SponsorRecord;
+import org.komunumo.data.entity.SponsorEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -39,9 +40,8 @@ public class SponsorService {
         this.dsl = dsl;
     }
 
-    public Sponsor newSponsor() {
-        final var sponsor = dsl.newRecord(SPONSOR)
-                .into(Sponsor.class);
+    public SponsorRecord newSponsor() {
+        final var sponsor = dsl.newRecord(SPONSOR);
         sponsor.setName("");
         sponsor.setWebsite("");
         sponsor.setLogo("");
@@ -52,7 +52,7 @@ public class SponsorService {
         return dsl.fetchCount(SPONSOR);
     }
 
-    public Stream<Sponsor> find(final int offset, final int limit, @Nullable final String filter) {
+    public Stream<SponsorEntity> find(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl.select(SPONSOR.asterisk())
                 .from(SPONSOR)
@@ -60,22 +60,22 @@ public class SponsorService {
                 .orderBy(SPONSOR.NAME)
                 .offset(offset)
                 .limit(limit)
-                .fetchInto(Sponsor.class)
+                .fetchInto(SponsorEntity.class)
                 .stream();
     }
 
-    public Optional<Sponsor> get(@NotNull final Long id) {
+    public Optional<SponsorRecord> getSponsorRecord(@NotNull final Long id) {
         return dsl.selectFrom(SPONSOR)
                 .where(SPONSOR.ID.eq(id))
-                .fetchOptionalInto(Sponsor.class);
+                .fetchOptional();
     }
 
-    public void store(@NotNull final Sponsor sponsor) {
-        sponsor.store();
+    public void store(@NotNull final SponsorRecord sponsorRecord) {
+        sponsorRecord.store();
     }
 
-    public void delete(@NotNull final Sponsor sponsor) {
-        sponsor.delete();
+    public void delete(final long sponsorId) {
+        getSponsorRecord(sponsorId).ifPresent(SponsorRecord::delete);
     }
 
 }

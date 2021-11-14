@@ -93,7 +93,7 @@ public class SpeakerService {
                 .stream();
     }
 
-    public Optional<SpeakerRecord> get(@NotNull final Long id) {
+    public Optional<SpeakerRecord> getSpeakerRecord(@NotNull final Long id) {
         return dsl.selectFrom(SPEAKER)
                 .where(SPEAKER.ID.eq(id))
                 .fetchOptional();
@@ -120,6 +120,6 @@ public class SpeakerService {
     }
 
     public void delete(final long speakerId) {
-        get(speakerId).ifPresent(SpeakerRecord::delete);
+        getSpeakerRecord(speakerId).ifPresent(SpeakerRecord::delete);
     }
 }

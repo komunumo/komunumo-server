@@ -18,7 +18,8 @@
 
 package org.komunumo.data.entity;
 
-import org.komunumo.data.db.tables.records.SponsorRecord;
+import java.time.LocalDate;
 
-public class Sponsor extends SponsorRecord {
-}
+import org.komunumo.data.db.enums.SponsorLevel;
+
+public record SponsorEntity(Long id, String name, String website, String logo, LocalDate validFrom, LocalDate validTo, SponsorLevel level) { }
