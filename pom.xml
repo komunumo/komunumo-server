@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.komunumo</groupId>
     <artifactId>komunumo-server</artifactId>
-    <name>Project base for Spring Boot and Vaadin Flow</name>
+    <name>Komunumo Server</name>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
