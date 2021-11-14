@@ -99,6 +99,7 @@ public class AdminLayout extends AppLayout {
         if (member != null) {
             final var avatar = new Avatar(String.format("%s %s", member.getFirstName(), member.getLastName()));
             avatar.setImage(GravatarUtil.getGravatarAddress(member.getEmail().toLowerCase()));
+            avatar.getStyle().set("cursor", "pointer");
             return avatar;
         } else {
             return new Avatar();
