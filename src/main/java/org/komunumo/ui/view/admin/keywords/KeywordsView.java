@@ -35,7 +35,8 @@ import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.entity.Keyword;
+import org.jetbrains.annotations.Nullable;
+import org.komunumo.data.entity.KeywordListEntity;
 import org.komunumo.data.service.KeywordService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
@@ -55,7 +56,7 @@ public class KeywordsView extends ResizableView {
 
     private final KeywordService keywordService;
     private final TextField filterField;
-    private final Grid<Keyword> grid;
+    private final Grid<KeywordListEntity> grid;
 
     public KeywordsView(@NotNull final KeywordService keywordService) {
         this.keywordService = keywordService;
@@ -67,7 +68,7 @@ public class KeywordsView extends ResizableView {
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter keywords");
 
-        final var newKeywordButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), clickEvent -> newKeyword());
+        final var newKeywordButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), clickEvent -> showKeywordDialog(null));
         newKeywordButton.setTitle("Add a new keyword");
 
         final var refreshKeywordsButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), clickEvent -> reloadGridItems());
@@ -84,15 +85,15 @@ public class KeywordsView extends ResizableView {
         filterField.focus();
     }
 
-    private Grid<Keyword> createGrid() {
-        final var grid = new Grid<Keyword>();
+    private Grid<KeywordListEntity> createGrid() {
+        final var grid = new Grid<KeywordListEntity>();
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
-        grid.addColumn(Keyword::getKeyword)
+        grid.addColumn(KeywordListEntity::keyword)
                 .setHeader("Keyword").setAutoWidth(true).setFlexGrow(0).setKey("keyword");
 
-        grid.addColumn(Keyword::getEventCount)
+        grid.addColumn(KeywordListEntity::eventCount)
                 .setHeader("Events").setAutoWidth(true).setFlexGrow(0);
 
         grid.addColumn(new ComponentRenderer<>(keyword -> {
@@ -100,7 +101,7 @@ public class KeywordsView extends ResizableView {
             editButton.setTitle("Edit this keyword");
             final var deleteButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), clickEvent -> deleteKeyword(keyword));
             deleteButton.setTitle("Delete this keyword");
-            deleteButton.setEnabled(keyword.getEventCount() == 0);
+            deleteButton.setEnabled(keyword.eventCount() == 0);
             return new HorizontalLayout(editButton, deleteButton);
         }))
                 .setHeader("Actions")
@@ -112,20 +113,18 @@ public class KeywordsView extends ResizableView {
         return grid;
     }
 
-    private void newKeyword() {
-        showKeywordDialog(keywordService.newKeyword());
+    private void showKeywordDialog(@Nullable final KeywordListEntity keywordListEntity) {
+        final var keywordRecord = keywordListEntity == null || keywordListEntity.id() == null ? keywordService.newKeyword() :
+                keywordService.getKeywordRecord(keywordListEntity.id()).orElse(keywordService.newKeyword());
+        final var dialog = new KeywordDialog(keywordRecord.getId() != null ? "Edit Keyword" : "New Keyword");
+        dialog.open(keywordRecord, this::reloadGridItems);
     }
 
-    private void showKeywordDialog(@NotNull final Keyword keyword) {
-        final var dialog = new KeywordDialog(keyword.getId() != null ? "Edit Keyword" : "New Keyword");
-        dialog.open(keyword, this::reloadGridItems);
-    }
-
-    private void deleteKeyword(final Keyword keyword) {
+    private void deleteKeyword(@NotNull final KeywordListEntity keywordListEntity) {
         new ConfirmDialog("Confirm deletion",
-                String.format("Are you sure you want to permanently delete the keyword \"%s\"?", keyword.getKeyword()),
+                String.format("Are you sure you want to permanently delete the keyword \"%s\"?", keywordListEntity.keyword()),
                 "Delete", dialogEvent -> {
-            keywordService.delete(keyword);
+            keywordService.delete(keywordListEntity.id());
             reloadGridItems();
             dialogEvent.getSource().close();
         },
@@ -143,10 +142,10 @@ public class KeywordsView extends ResizableView {
             final var csvWriter = new CSVWriter(stringWriter);
             csvWriter.writeNext(new String[] { "ID", "Keyword", "Event count" });
             grid.getGenericDataView()
-                    .getItems().map(keyword -> new String[] {
-                            keyword.getId().toString(),
-                            keyword.getKeyword(),
-                            Long.toString(keyword.getEventCount())
+                    .getItems().map(keywordListEntity -> new String[] {
+                            keywordListEntity.id().toString(),
+                            keywordListEntity.keyword(),
+                            Long.toString(keywordListEntity.eventCount())
             }).forEach(csvWriter::writeNext);
             return new ByteArrayInputStream(stringWriter.toString().getBytes(UTF_8));
         });

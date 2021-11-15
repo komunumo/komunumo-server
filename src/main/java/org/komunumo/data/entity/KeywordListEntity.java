@@ -18,18 +18,4 @@
 
 package org.komunumo.data.entity;
 
-import org.komunumo.data.db.tables.records.KeywordRecord;
-
-public class Keyword extends KeywordRecord {
-
-    private long eventCount = 0;
-
-    public void setEventCount(final long eventCount) {
-        this.eventCount = eventCount;
-    }
-
-    public long getEventCount() {
-        return eventCount;
-    }
-
-}
+public record KeywordListEntity(Long id, String keyword, Integer eventCount) { }

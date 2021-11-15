@@ -23,23 +23,19 @@ import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Article;
-
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Paragraph;
-
 import com.vaadin.flow.component.html.Span;
-
-import java.time.format.DateTimeFormatter;
-
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
-import org.komunumo.data.entity.Keyword;
+import org.komunumo.data.entity.KeywordEntity;
+
+import java.time.format.DateTimeFormatter;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @CssImport("./themes/komunumo/views/website/event-article.css")
 public class EventArticle extends Article {
@@ -103,7 +99,7 @@ public class EventArticle extends Article {
             keywordLabel.addClassName("keyword-label");
             final var keywordList = new Span(new Text(
                     event.getKeywords().stream()
-                            .map(Keyword::getKeyword)
+                            .map(KeywordEntity::keyword)
                             .collect(Collectors.joining(", "))));
             final var keywords = new Div(
                     keywordLabel,

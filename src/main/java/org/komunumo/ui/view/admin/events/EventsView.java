@@ -42,7 +42,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
-import org.komunumo.data.entity.Keyword;
+import org.komunumo.data.entity.KeywordEntity;
 import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
@@ -251,7 +251,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
                     event.getSubtitle(),
                     event.getSpeakers().stream().map(EventSpeakerEntity::fullName).collect(Collectors.joining(", ")),
                     event.getDescription(),
-                    event.getKeywords().stream().map(Keyword::getKeyword).collect(Collectors.joining(", ")),
+                    event.getKeywords().stream().map(KeywordEntity::keyword).collect(Collectors.joining(", ")),
                     event.getAgenda(),
                     event.getLevel() != null ? event.getLevel().toString() : null,
                     event.getLanguage() != null ? event.getLanguage().toString() : null,

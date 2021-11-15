@@ -139,7 +139,7 @@ public class JUGSImporter {
             final var result = statement.executeQuery(
                     "SELECT id, bezeichnung FROM eventlabels");
             while (result.next()) {
-                final var keyword = keywordService.get(result.getLong("id"))
+                final var keyword = keywordService.getKeywordRecord(result.getLong("id"))
                         .orElse(keywordService.newKeyword());
                 if (keyword.getId() == null) {
                     keyword.set(KEYWORD.ID, result.getLong("id"));
@@ -156,10 +156,10 @@ public class JUGSImporter {
                 final var eventId = result.getLong("events_id");
                 final var keywordId = result.getLong("eventlabels_id");
                 final var event = eventService.get(eventId);
-                final var keyword = keywordService.get(keywordId);
+                final var keyword = keywordService.getKeywordRecord(keywordId);
                 if (event.isPresent() && keyword.isPresent()
                         && eventKeywordService.getKeywordsForEvent(event.orElseThrow())
-                            .filter(record -> record.getId() == keywordId).findAny().isEmpty()) {
+                            .filter(keywordEntity -> keywordEntity.id() == keywordId).findAny().isEmpty()) {
                     final var eventKeyword = eventKeywordService.newEventKeyword();
                     eventKeyword.set(EVENT_KEYWORD.EVENT_ID, eventId);
                     eventKeyword.set(EVENT_KEYWORD.KEYWORD_ID, keywordId);

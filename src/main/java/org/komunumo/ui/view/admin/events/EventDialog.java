@@ -34,7 +34,7 @@ import org.komunumo.data.db.enums.EventLevel;
 import org.komunumo.data.db.enums.EventType;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
-import org.komunumo.data.entity.Keyword;
+import org.komunumo.data.entity.KeywordEntity;
 import org.komunumo.data.entity.Member;
 import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventMemberService;
@@ -74,7 +74,7 @@ public class EventDialog extends EditDialog<Event> {
 
     private Set<EventSpeakerEntity> speakers;
     private Set<Member> organizers;
-    private Set<Keyword> keywords;
+    private Set<KeywordEntity> keywords;
     private Callback afterOpen;
 
     public EventDialog(@NotNull final String title,
@@ -103,7 +103,7 @@ public class EventDialog extends EditDialog<Event> {
         final var speaker = new MultiselectComboBox<EventSpeakerEntity>("Speaker");
         final var organizer = new MultiselectComboBox<Member>("Organizer");
         final var description = new TextArea("Description");
-        final var keyword = new MultiselectComboBox<Keyword>("Keyword");
+        final var keyword = new MultiselectComboBox<KeywordEntity>("Keyword");
         final var agenda = new TextArea("Agenda");
         final var level = new Select<>(EventLevel.values());
         final var language = new Select<>(EventLanguage.values());
@@ -132,7 +132,7 @@ public class EventDialog extends EditDialog<Event> {
         organizer.setItems(memberService.getAllAdmins());
         organizer.setRequiredIndicatorVisible(true);
         keyword.setOrdered(true);
-        keyword.setItemLabelGenerator(Keyword::getKeyword);
+        keyword.setItemLabelGenerator(KeywordEntity::keyword);
         keyword.setItems(keywordService.getAllKeywords());
         level.setLabel("Level");
         language.setLabel("Language");
@@ -293,11 +293,11 @@ public class EventDialog extends EditDialog<Event> {
         this.organizers = organizers != null ? organizers : Set.of();
     }
 
-    private Set<Keyword> getKeyword(@NotNull final Event event) {
+    private Set<KeywordEntity> getKeyword(@NotNull final Event event) {
         return keywords;
     }
 
-    private void setKeyword(@NotNull final Event event, @Nullable final Set<Keyword> keywords) {
+    private void setKeyword(@NotNull final Event event, @Nullable final Set<KeywordEntity> keywords) {
         this.keywords = keywords != null ? keywords : Set.of();
     }
 

@@ -28,7 +28,7 @@ import java.util.List;
 public class Event extends EventRecord {
 
     private List<EventSpeakerEntity> speakers;
-    private List<Keyword> keywords;
+    private List<KeywordEntity> keywords;
     private int attendeeCount;
 
     public void setSpeakers(@NotNull final List<EventSpeakerEntity> eventSpeakerEntities) {
@@ -39,11 +39,11 @@ public class Event extends EventRecord {
         return speakers;
     }
 
-    public void setKeywords(@NotNull final List<Keyword> keywords) {
-        this.keywords = Collections.unmodifiableList(keywords);
+    public void setKeywords(@NotNull final List<KeywordEntity> keywordEntities) {
+        this.keywords = Collections.unmodifiableList(keywordEntities);
     }
 
-    public List<Keyword> getKeywords() {
+    public List<KeywordEntity> getKeywords() {
         return keywords;
     }
 

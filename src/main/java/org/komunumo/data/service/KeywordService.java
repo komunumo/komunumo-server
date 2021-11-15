@@ -22,7 +22,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
-import org.komunumo.data.entity.Keyword;
+import org.komunumo.data.db.tables.records.KeywordRecord;
+import org.komunumo.data.entity.KeywordEntity;
+import org.komunumo.data.entity.KeywordListEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -40,52 +42,46 @@ public class KeywordService {
         this.dsl = dsl;
     }
 
-    public Keyword newKeyword() {
-        return dsl.newRecord(KEYWORD)
-                .into(Keyword.class);
+    public KeywordRecord newKeyword() {
+        return dsl.newRecord(KEYWORD);
     }
 
     public int count() {
         return dsl.fetchCount(KEYWORD);
     }
 
-    public Stream<Keyword> getAllKeywords() {
+    public Stream<KeywordEntity> getAllKeywords() {
         return dsl.selectFrom(KEYWORD)
                 .orderBy(KEYWORD.KEYWORD_)
-                .fetchInto(Keyword.class)
+                .fetchInto(KeywordEntity.class)
                 .stream();
     }
 
-    public Stream<Keyword> find(final int offset, final int limit, @Nullable final String filter) {
+    public Stream<KeywordListEntity> find(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
-        return dsl.selectFrom(KEYWORD)
+        return dsl.select(KEYWORD.ID, KEYWORD.KEYWORD_, DSL.count(EVENT_KEYWORD.EVENT_ID).as("event_count"))
+                .from(KEYWORD)
+                .leftJoin(EVENT_KEYWORD).on(KEYWORD.ID.eq(EVENT_KEYWORD.KEYWORD_ID))
                 .where(filterValue == null ? DSL.noCondition() : KEYWORD.KEYWORD_.like(filterValue))
                 .groupBy(KEYWORD.ID)
                 .orderBy(KEYWORD.KEYWORD_)
                 .offset(offset)
                 .limit(limit)
-                .fetchInto(Keyword.class)
-                .stream()
-                .map(this::addEventCount);
+                .fetchInto(KeywordListEntity.class)
+                .stream();
     }
 
-    private Keyword addEventCount(@NotNull final Keyword keyword) {
-        final var eventCount = dsl.fetchCount(EVENT_KEYWORD, EVENT_KEYWORD.KEYWORD_ID.eq(keyword.getId()));
-        keyword.setEventCount(eventCount);
-        return keyword;
-    }
-
-    public Optional<Keyword> get(@NotNull final Long id) {
+    public Optional<KeywordRecord> getKeywordRecord(@NotNull final Long id) {
         return dsl.selectFrom(KEYWORD)
                 .where(KEYWORD.ID.eq(id))
-                .fetchOptionalInto(Keyword.class);
+                .fetchOptional();
     }
 
-    public void store(@NotNull final Keyword keyword) {
-        keyword.store();
+    public void store(@NotNull final KeywordRecord keywordRecord) {
+        keywordRecord.store();
     }
 
-    public void delete(@NotNull final Keyword keyword) {
-        keyword.delete();
+    public void delete(final long keywordId) {
+        getKeywordRecord(keywordId).ifPresent(KeywordRecord::delete);
     }
 }

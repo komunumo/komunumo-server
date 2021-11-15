@@ -24,7 +24,7 @@ import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
-import org.komunumo.data.entity.Keyword;
+import org.komunumo.data.entity.KeywordEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -190,7 +190,7 @@ public class EventService {
                 .join(EVENT_KEYWORD).on(KEYWORD.ID.eq(EVENT_KEYWORD.KEYWORD_ID))
                 .where(EVENT_KEYWORD.EVENT_ID.eq(event.getId()))
                 .orderBy(KEYWORD.KEYWORD_)
-                .fetchInto(Keyword.class);
+                .fetchInto(KeywordEntity.class);
         event.setKeywords(keywords);
     }
 

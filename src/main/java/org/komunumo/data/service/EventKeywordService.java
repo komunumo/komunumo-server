@@ -22,9 +22,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.komunumo.data.db.tables.records.EventKeywordRecord;
 import org.komunumo.data.db.tables.records.EventRecord;
-import org.komunumo.data.db.tables.records.KeywordRecord;
 import org.komunumo.data.entity.Event;
-import org.komunumo.data.entity.Keyword;
+import org.komunumo.data.entity.KeywordEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -60,7 +59,7 @@ public class EventKeywordService {
         event.store();
     }
 
-    public Stream<Keyword> getKeywordsForEvent(@NotNull final EventRecord event) {
+    public Stream<KeywordEntity> getKeywordsForEvent(@NotNull final EventRecord event) {
         return dsl
                 .selectFrom(KEYWORD)
                 .where(KEYWORD.ID.in(
@@ -68,37 +67,37 @@ public class EventKeywordService {
                                 .from(EVENT_KEYWORD)
                                 .where(EVENT_KEYWORD.EVENT_ID.eq(event.getId()))
                 ))
-                .fetchInto(Keyword.class)
+                .fetchInto(KeywordEntity.class)
                 .stream();
     }
 
-    public void setEventKeywords(@NotNull final EventRecord event,
-                                 @NotNull final Set<Keyword> keywords) {
-        final var eventKeywords = new HashSet<Keyword>(keywords.size());
-        eventKeywords.addAll(keywords);
-        getKeywordsForEvent(event).forEach(keyword -> {
-            if (eventKeywords.contains(keyword)) {
-                eventKeywords.remove(keyword);
+    public void setEventKeywords(@NotNull final EventRecord eventRecord,
+                                 @NotNull final Set<KeywordEntity> keywordEntities) {
+        final var eventKeywords = new HashSet<KeywordEntity>(keywordEntities.size());
+        eventKeywords.addAll(keywordEntities);
+        getKeywordsForEvent(eventRecord).forEach(keywordEntity -> {
+            if (eventKeywords.contains(keywordEntity)) {
+                eventKeywords.remove(keywordEntity);
             } else {
-                removeKeywordsFromEvent(event, keyword);
+                removeKeywordsFromEvent(eventRecord, keywordEntity);
             }
         });
-        eventKeywords.forEach(keyword -> addKeywordToEvent(event, keyword));
+        eventKeywords.forEach(keywordEntity -> addKeywordToEvent(eventRecord, keywordEntity));
     }
 
-    private void addKeywordToEvent(@NotNull final EventRecord event,
-                                   @NotNull final KeywordRecord keyword) {
+    private void addKeywordToEvent(@NotNull final EventRecord eventRecord,
+                                   @NotNull final KeywordEntity keywordEntity) {
         final var eventKeyword = dsl.newRecord(EVENT_KEYWORD);
-        eventKeyword.setEventId(event.getId());
-        eventKeyword.setKeywordId(keyword.getId());
+        eventKeyword.setEventId(eventRecord.getId());
+        eventKeyword.setKeywordId(keywordEntity.id());
         eventKeyword.store();
     }
 
     private void removeKeywordsFromEvent(@NotNull final EventRecord event,
-                                         @NotNull final KeywordRecord keyword) {
+                                         @NotNull final KeywordEntity keywordEntity) {
         dsl.delete(EVENT_KEYWORD)
                 .where(EVENT_KEYWORD.EVENT_ID.eq(event.getId()))
-                .and(EVENT_KEYWORD.KEYWORD_ID.eq(keyword.getId()))
+                .and(EVENT_KEYWORD.KEYWORD_ID.eq(keywordEntity.id()))
                 .execute();
     }
 
