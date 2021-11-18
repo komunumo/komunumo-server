@@ -46,6 +46,7 @@ import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.entity.KeywordEntity;
+import org.komunumo.data.service.AuthService;
 import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
@@ -73,6 +74,7 @@ import static org.komunumo.util.FormatterUtil.formatDateTime;
 @CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
 public class EventsView extends ResizableView implements HasUrlParameter<String> {
 
+    private final AuthService authService;
     private final EventService eventService;
     private final SpeakerService speakerService;
     private final EventSpeakerService eventSpeakerService;
@@ -84,13 +86,15 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
     private final TextField filterField;
     private final Grid<Event> grid;
 
-    public EventsView(@NotNull final EventService eventService,
+    public EventsView(@NotNull final AuthService authService,
+                      @NotNull final EventService eventService,
                       @NotNull final SpeakerService speakerService,
                       @NotNull final EventSpeakerService eventSpeakerService,
                       @NotNull final MemberService memberService,
                       @NotNull final EventMemberService eventMemberService,
                       @NotNull final KeywordService keywordService,
                       @NotNull final EventKeywordService eventKeywordService) {
+        this.authService = authService;
         this.eventService = eventService;
         this.speakerService = speakerService;
         this.eventSpeakerService = eventSpeakerService;
@@ -218,7 +222,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
 
     private void showEventDialog(@NotNull final Event event) {
         new EventDialog(event.getId() != null ? "Edit Event" : "New Event",
-                eventService,
+                authService, eventService,
                 speakerService, eventSpeakerService,
                 memberService, eventMemberService,
                 keywordService, eventKeywordService)

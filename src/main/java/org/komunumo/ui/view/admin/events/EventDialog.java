@@ -36,6 +36,7 @@ import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.entity.KeywordEntity;
 import org.komunumo.data.entity.Member;
+import org.komunumo.data.service.AuthService;
 import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
@@ -64,6 +65,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 
 public class EventDialog extends EditDialog<Event> {
 
+    private final AuthService authService;
     private final EventService eventService;
     private final SpeakerService speakerService;
     private final EventSpeakerService eventSpeakerService;
@@ -78,6 +80,7 @@ public class EventDialog extends EditDialog<Event> {
     private Callback afterOpen;
 
     public EventDialog(@NotNull final String title,
+                       @NotNull final AuthService authService,
                        @NotNull final EventService eventService,
                        @NotNull final SpeakerService speakerService,
                        @NotNull final EventSpeakerService eventSpeakerService,
@@ -86,6 +89,7 @@ public class EventDialog extends EditDialog<Event> {
                        @NotNull final KeywordService keywordService,
                        @NotNull final EventKeywordService eventKeywordService) {
         super(title);
+        this.authService = authService;
         this.eventService = eventService;
         this.speakerService = speakerService;
         this.eventSpeakerService = eventSpeakerService;
@@ -306,6 +310,9 @@ public class EventDialog extends EditDialog<Event> {
         speakers = Set.copyOf(event.getSpeakers());
         organizers = eventMemberService.getOrganizersForEvent(event)
                 .collect(Collectors.toSet());
+        if (organizers.isEmpty() && event.getId() == null) {
+            organizers.add(authService.getCurrentUser());
+        }
         keywords = Set.copyOf(event.getKeywords());
         super.open(event,
                 () -> {
