@@ -38,6 +38,9 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
+
+import java.time.LocalDateTime;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
@@ -148,7 +151,8 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
                     return icon;
                 })).setHeader("Type").setAutoWidth(true).setFlexGrow(0);
 
-        grid.addColumn(TemplateRenderer.<Event>of("<span style=\"font-weight: bold;\">[[item.title]]</span><br/><span inner-h-t-m-l=\"[[item.speaker]]\"></span>")
+        grid.addColumn(TemplateRenderer.<Event>of("<span class$=\"[[item.event-class]]\">[[item.title]]</span><br/><span inner-h-t-m-l=\"[[item.speaker]]\"></span>")
+                .withProperty("event-class", this::getEventClass)
                 .withProperty("title", Event::getTitle)
                 .withProperty("speaker", this::renderSpeakerLinks))
                 .setHeader("Title & Speaker").setFlexGrow(1);
@@ -184,6 +188,10 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
         grid.setHeightFull();
 
         return grid;
+    }
+
+    private String getEventClass(@NotNull final Event event) {
+        return event.getDate() == null || event.getDate().isAfter(LocalDateTime.now()) ? "upcoming-event" : "past-event";
     }
 
     @Override

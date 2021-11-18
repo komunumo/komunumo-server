@@ -20,6 +20,10 @@
     height: 100%;
 }
 
+.events-view .upcoming-event {
+    font-weight: bold;
+}
+
 vaadin-icon[icon="vaadin:eye-slash"] {
     color: gray;
 }
