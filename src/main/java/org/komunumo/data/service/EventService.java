@@ -195,7 +195,7 @@ public class EventService {
     }
 
     private void addAttendeeCount(@NotNull final Event event) {
-        final var attendeeCount = dsl.fetchCount(EVENT_MEMBER, EVENT_MEMBER.EVENT_ID.eq(event.getId()));
+        final var attendeeCount = dsl.fetchCount(EVENT_MEMBER, EVENT_MEMBER.EVENT_ID.eq(event.getId()).and(EVENT_MEMBER.NO_SHOW.isFalse()));
         event.setAttendeeCount(attendeeCount);
     }
 
