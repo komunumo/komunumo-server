@@ -26,6 +26,7 @@ import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.cookieconsent.CookieConsent;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.menubar.MenuBarVariant;
@@ -120,7 +121,7 @@ public class AdminLayout extends AppLayout {
         final var logoLayout = new HorizontalLayout();
         logoLayout.setId("logo");
         logoLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        logoLayout.add(new Image("images/logo.png", "Komunumo"));
+        logoLayout.add(new H2("Komunumo"));
         layout.add(logoLayout, menu);
         return layout;
     }
