@@ -40,12 +40,19 @@
 
     <contributors>
         <contributor>
+            <name>Gunnar Donis</name>
+            <email>mr.funky@gmx.de</email>
+            <roles>
+                <role>designer</role>
+            </roles>
+            <timezone>Europe/Zurich</timezone>
+        </contributor>
+        <contributor>
             <name>Simon Martinelli</name>
             <email>simon@martinelli.ch</email>
             <organization>72 Services, LLC</organization>
             <organizationUrl>https://72.services/</organizationUrl>
             <roles>
-                <role>architect</role>
                 <role>reviewer</role>
             </roles>
             <timezone>Europe/Zurich</timezone>
