@@ -65,23 +65,6 @@
   padding: var(--lumo-space-m);
 }
 
-/* Text colors */
-.dashboard-view .error-text, [theme~="badge"][theme~="error"] {
-  color: var(--red);
-}
-
-.dashboard-view .primary-text, [theme~="badge"] {
-  color: var(--blue);
-}
-
-.dashboard-view .secondary-text {
-  color: var(--lumo-secondary-text-color);
-}
-
-.dashboard-view .success-text, [theme~="badge"][theme~="success"] {
-  color: var(--green);
-}
-
 /* Charts */
 .dashboard-view vaadin-chart {
   padding-top: var(--lumo-space-s);

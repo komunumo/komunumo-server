@@ -16,27 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-:root {
-    --red: #bf6626;
-    --green: #00ff99;
-    --blue: #29abe2;
-    --white: #ffffff;
-    --disabled: opacity(30%);
-}
-
-a, vaadin-button {
-    color: var(--blue);
-}
-
-vaadin-button[theme="primary"] {
-    background-color: var(--blue);
-    color: var(--white);
-}
-
-vaadin-button[disabled] {
-    filter: var(--disabled);
-}
-
 vaadin-tab.new-section {
     border-top: 3px solid var(--lumo-contrast-10pct);
 }
