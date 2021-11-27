@@ -20,10 +20,35 @@ package org.komunumo.data.entity;
 
 import org.komunumo.data.db.tables.records.MemberRecord;
 
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
 public class Member extends MemberRecord {
 
     public String getFullName() {
         return String.format("%s %s", getFirstName(), getLastName()).trim();
+    }
+
+    public Set<Role> getRoles() {
+        final var roles = new HashSet<Role>();
+        if (getAccountActive() && !getAccountBlocked() && !getPasswordChange() && !getAccountDeleted()) {
+            if (getAdmin()) {
+                roles.add(Role.ADMIN);
+            }
+            if (isMembershipActive()) {
+                roles.add(Role.MEMBER);
+            }
+        }
+        return Set.copyOf(roles);
+    }
+
+    public boolean isMembershipActive() {
+        final var today = LocalDate.now();
+        final var membershipBegin = getMembershipBegin();
+        final var membershipEnd = getMembershipEnd();
+        return (membershipBegin != null && membershipBegin.minusDays(1).isBefore(today))
+                && (membershipEnd == null || membershipEnd.plusDays(1).isAfter(today));
     }
 
 }

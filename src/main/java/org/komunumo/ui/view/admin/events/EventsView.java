@@ -39,14 +39,14 @@ import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
 
-import java.time.LocalDateTime;
+import javax.annotation.security.RolesAllowed;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.entity.KeywordEntity;
-import org.komunumo.data.service.AuthService;
+import org.komunumo.data.entity.Role;
 import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
@@ -54,6 +54,7 @@ import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.KeywordService;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.SpeakerService;
+import org.komunumo.security.AuthenticatedUser;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
@@ -62,6 +63,7 @@ import org.komunumo.ui.view.admin.AdminLayout;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,9 +74,10 @@ import static org.komunumo.util.FormatterUtil.formatDateTime;
 @PageTitle("Event Administration")
 @CssImport(value = "./themes/komunumo/views/admin/events-view.css")
 @CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
+@RolesAllowed(Role.Type.ADMIN)
 public class EventsView extends ResizableView implements HasUrlParameter<String> {
 
-    private final AuthService authService;
+    private final AuthenticatedUser authenticatedUser;
     private final EventService eventService;
     private final SpeakerService speakerService;
     private final EventSpeakerService eventSpeakerService;
@@ -86,7 +89,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
     private final TextField filterField;
     private final Grid<Event> grid;
 
-    public EventsView(@NotNull final AuthService authService,
+    public EventsView(@NotNull final AuthenticatedUser authenticatedUser,
                       @NotNull final EventService eventService,
                       @NotNull final SpeakerService speakerService,
                       @NotNull final EventSpeakerService eventSpeakerService,
@@ -94,7 +97,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
                       @NotNull final EventMemberService eventMemberService,
                       @NotNull final KeywordService keywordService,
                       @NotNull final EventKeywordService eventKeywordService) {
-        this.authService = authService;
+        this.authenticatedUser = authenticatedUser;
         this.eventService = eventService;
         this.speakerService = speakerService;
         this.eventSpeakerService = eventSpeakerService;
@@ -222,7 +225,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
 
     private void showEventDialog(@NotNull final Event event) {
         new EventDialog(event.getId() != null ? "Edit Event" : "New Event",
-                authService, eventService,
+                authenticatedUser, eventService,
                 speakerService, eventSpeakerService,
                 memberService, eventMemberService,
                 keywordService, eventKeywordService)

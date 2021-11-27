@@ -34,7 +34,11 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import elemental.json.Json;
+
+import javax.annotation.security.RolesAllowed;
+
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.entity.Role;
 import org.komunumo.data.importer.bigmarker.BigMarkerRegistration;
 import org.komunumo.data.importer.bigmarker.BigMarkerReport;
 import org.komunumo.data.importer.clubdesk.ClubDeskFile;
@@ -59,6 +63,7 @@ import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 @Route(value = "admin/imports", layout = AdminLayout.class)
 @PageTitle("Imports")
 @CssImport(value = "./themes/komunumo/views/admin/imports-view.css")
+@RolesAllowed(Role.Type.ADMIN)
 public class ImportsView extends ResizableView {
 
     private final SponsorService sponsorService;

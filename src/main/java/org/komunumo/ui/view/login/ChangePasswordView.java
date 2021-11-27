@@ -30,15 +30,22 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
+import javax.annotation.security.PermitAll;
+
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.service.AuthService;
-import org.komunumo.data.service.AuthService.AccessDeniedException;
+import org.komunumo.security.SecurityConfiguration;
+import org.komunumo.security.SecurityService;
+import org.komunumo.security.AuthenticatedUser;
+import org.springframework.security.core.AuthenticationException;
 
 @Route("change-password")
 @PageTitle("Change Password")
+@PermitAll
 public class ChangePasswordView extends VerticalLayout {
 
-    public ChangePasswordView(@NotNull final AuthService authService) {
+    public ChangePasswordView(@NotNull final AuthenticatedUser authenticatedUser,
+                              @NotNull final SecurityService securityService) {
         final var title = new H2("Change password");
         final var oldPassword = new PasswordField("Old password (or one time password)");
         oldPassword.setRequired(true);
@@ -56,8 +63,8 @@ public class ChangePasswordView extends VerticalLayout {
                 Notification.show("You have a typo! Your new password and repeat password does not match.");
             } else {
                 try {
-                    authService.changePassword(oldPassword.getValue(), newPassword.getValue());
-                    final var okButton = new Button("OK", clickEvent -> authService.logout());
+                    securityService.changePassword(oldPassword.getValue(), newPassword.getValue());
+                    final var okButton = new Button("OK", clickEvent -> authenticatedUser.logout(SecurityConfiguration.LOGIN_URL));
                     okButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
                     final var dialog = new Dialog();
                     dialog.add(
@@ -70,9 +77,9 @@ public class ChangePasswordView extends VerticalLayout {
                     );
                     dialog.setCloseOnEsc(false);
                     dialog.setCloseOnOutsideClick(false);
-                    dialog.addDialogCloseActionListener(closeEvent -> authService.logout());
+                    dialog.addDialogCloseActionListener(closeEvent -> authenticatedUser.logout());
                     dialog.open();
-                } catch (final AccessDeniedException e) {
+                } catch (final AuthenticationException e) {
                     Notification.show(e.getMessage());
                 }
             }

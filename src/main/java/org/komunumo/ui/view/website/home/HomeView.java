@@ -25,6 +25,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.EventService;
@@ -35,6 +36,7 @@ import org.komunumo.ui.view.website.events.LocationSelector;
 @Route(value = "", layout = WebsiteLayout.class)
 @PageTitle("Home")
 @CssImport("./themes/komunumo/views/website/events-view.css")
+@AnonymousAllowed
 public class HomeView extends VerticalLayout {
 
     public HomeView(@NotNull final EventService eventService) {

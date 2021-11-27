@@ -20,7 +20,6 @@ package org.komunumo.ui.view.admin;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -38,8 +37,9 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.service.AuthService;
+import org.komunumo.security.AuthenticatedUser;
 import org.komunumo.ui.view.admin.dashboard.DashboardView;
 import org.komunumo.ui.view.admin.events.EventsView;
 import org.komunumo.ui.view.admin.imports.ImportsView;
@@ -47,7 +47,7 @@ import org.komunumo.ui.view.admin.keywords.KeywordsView;
 import org.komunumo.ui.view.admin.members.MembersView;
 import org.komunumo.ui.view.admin.speakers.SpeakersView;
 import org.komunumo.ui.view.admin.sponsors.SponsorsView;
-import org.komunumo.ui.view.logout.LogoutView;
+import org.komunumo.ui.view.login.ChangePasswordView;
 import org.komunumo.util.GravatarUtil;
 
 import java.util.ArrayList;
@@ -56,12 +56,16 @@ import java.util.Optional;
 @CssImport(value = "./themes/komunumo/views/admin/admin-layout.css")
 public class AdminLayout extends AppLayout {
 
-    private final AuthService authService;
+    private final AuthenticatedUser authenticatedUser;
+    private final AccessAnnotationChecker accessChecker;
     private final Tabs menu;
     private H1 viewTitle;
 
-    public AdminLayout(@NotNull final AuthService authService) {
-        this.authService = authService;
+    public AdminLayout(@NotNull final AuthenticatedUser authenticatedUser,
+                       @NotNull final AccessAnnotationChecker accessChecker) {
+        this.authenticatedUser = authenticatedUser;
+        this.accessChecker = accessChecker;
+
         addToNavbar(new CookieConsent());
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
@@ -89,13 +93,13 @@ public class AdminLayout extends AppLayout {
 
         final var menuItem = menuBar.addItem(createAvatar());
         final var subMenu = menuItem.getSubMenu();
-        subMenu.addItem("Logout", e -> UI.getCurrent().navigate(LogoutView.class));
+        subMenu.addItem("Logout", e -> authenticatedUser.logout());
 
         return menuBar;
     }
 
     private Avatar createAvatar() {
-        final var member = authService.getCurrentUser();
+        final var member = authenticatedUser.get().orElse(null);
         if (member != null) {
             final var avatar = new Avatar(String.format("%s %s", member.getFirstName(), member.getLastName()));
             avatar.setImage(GravatarUtil.getGravatarAddress(member.getEmail().toLowerCase()));
@@ -131,7 +135,10 @@ public class AdminLayout extends AppLayout {
     }
 
     private Component[] createMenuItems() {
-        final var tabs = new ArrayList<Tab>();
+        final var member = authenticatedUser.get().orElse(null);
+        if (member != null && member.getPasswordChange()) {
+            return new Tab[] { createTab(new AdminMenuItem("Change Password", ChangePasswordView.class, false)) };
+        }
 
         final var views  = new ArrayList<AdminMenuItem>();
         views.add(new AdminMenuItem("Dashboard", DashboardView.class, false));
@@ -142,8 +149,9 @@ public class AdminLayout extends AppLayout {
         views.add(new AdminMenuItem("Sponsors", SponsorsView.class, false));
         views.add(new AdminMenuItem("Imports", ImportsView.class, true));
 
+        final var tabs = new ArrayList<Tab>();
         views.forEach(adminMenuItem -> {
-            if (authService.isAccessGranted(adminMenuItem.navigationTarget())) {
+            if (accessChecker.hasAccess(adminMenuItem.navigationTarget())) {
                 tabs.add(createTab(adminMenuItem));
             }
         });

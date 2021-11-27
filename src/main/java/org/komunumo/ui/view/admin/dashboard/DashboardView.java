@@ -35,16 +35,19 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.entity.Role;
 import org.komunumo.data.service.StatisticService;
 import org.komunumo.ui.view.admin.AdminLayout;
 import org.komunumo.util.FormatterUtil;
 
+import javax.annotation.security.RolesAllowed;
 import java.time.Year;
 
 @Route(value = "admin/dashboard", layout = AdminLayout.class)
 @RouteAlias(value = "admin", layout = AdminLayout.class)
 @PageTitle("Dashboard")
 @CssImport(value = "./themes/komunumo/views/admin/dashboard-view.css")
+@RolesAllowed(Role.Type.MEMBER)
 public class DashboardView extends Div {
 
     private final Chart monthlyVisitors = new Chart();
@@ -72,7 +75,7 @@ public class DashboardView extends Div {
         board.add(monthlyVisitorsWrapper);
 
         add(board);
-        populateCharts(Year.now());
+        populateCharts(Year.of(2020));
     }
 
     private WrapperCard createBadge(@NotNull final String title, @NotNull final H2 h2, @NotNull final String h2ClassName,

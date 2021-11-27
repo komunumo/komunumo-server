@@ -27,20 +27,22 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.service.AuthService;
-import org.komunumo.data.service.AuthService.AccessDeniedException;
+import org.komunumo.security.SecurityService;
+import org.springframework.security.authentication.BadCredentialsException;
 
 @Route("activate")
 @PageTitle("Activation")
+@AnonymousAllowed
 public class ActivationView extends Composite<Component> implements BeforeEnterObserver {
 
-    private final AuthService authService;
+    private final SecurityService securityService;
 
     private VerticalLayout layout;
 
-    public ActivationView(@NotNull final AuthService authService) {
-        this.authService = authService;
+    public ActivationView(@NotNull final SecurityService securityService) {
+        this.securityService = securityService;
     }
 
     @Override
@@ -55,12 +57,12 @@ public class ActivationView extends Composite<Component> implements BeforeEnterO
             final var params = event.getLocation().getQueryParameters().getParameters();
             final var email = params.get("email").get(0);
             final var code = params.get("code").get(0);
-            authService.activate(email, code);
+            securityService.activate(email, code);
             layout.add(
                     new Text("Account activated."),
                     new RouterLink("Login", LoginView.class)
             );
-        } catch (final AccessDeniedException e) {
+        } catch (final BadCredentialsException e) {
             layout.add(new Text("Invalid link."));
         }
     }

@@ -22,25 +22,27 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.router.AfterNavigationEvent;
-import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.service.AuthService;
-import org.komunumo.data.service.AuthService.AccessDeniedException;
+import org.komunumo.security.AuthenticatedUser;
+import org.komunumo.security.SecurityService;
 import org.komunumo.ui.view.admin.dashboard.DashboardView;
 
 @Route(value = "login")
 @PageTitle("Login")
-public class LoginView extends LoginOverlay implements AfterNavigationObserver, BeforeEnterObserver {
+@AnonymousAllowed
+public class LoginView extends LoginOverlay implements BeforeEnterObserver {
 
-    private final AuthService authService;
+    private final AuthenticatedUser authenticatedUser;
 
-    public LoginView(@NotNull final AuthService authService) {
-        this.authService = authService;
+    public LoginView(@NotNull final AuthenticatedUser authenticatedUser,
+                     @NotNull final SecurityService securityService) {
+        this.authenticatedUser = authenticatedUser;
+        setAction("login");
 
         final var i18n = LoginI18n.createDefault();
 
@@ -49,7 +51,6 @@ public class LoginView extends LoginOverlay implements AfterNavigationObserver, 
         i18n.getHeader().setDescription("Java User Group Switzerland");
         i18n.setAdditionalInformation(null);
 
-        i18n.setForm(new LoginI18n.Form());
         i18n.getForm().setSubmit("Login");
         i18n.getForm().setTitle("Login");
         i18n.getForm().setUsername("Email");
@@ -62,32 +63,21 @@ public class LoginView extends LoginOverlay implements AfterNavigationObserver, 
         setI18n(i18n);
 
         setForgotPasswordButtonVisible(true);
-
-        addLoginListener(event -> {
-            try {
-                authService.authenticate(event.getUsername(), event.getPassword());
-            } catch (final AccessDeniedException e) {
-                setError(true);
-                Notification.show(e.getMessage());
-            }
-
-        });
-
         addForgotPasswordListener(event -> UI.getCurrent().getPage().executeJs(
-            "var field = document.getElementById('vaadinLoginUsername'); if (field !== null) { return field.value; } else { return null; }")
-            .then(String.class, email -> {
-                if (email.isBlank()) {
-                    Notification.show("Please enter your email address first.");
-                    UI.getCurrent().getPage().executeJs(
-                            "var field = document.getElementById('vaadinLoginUsername'); if (field !== null) { field.focus(); }");
-                } else {
-                    authService.resetPassword(email);
-                    Notification.show("Please check your email account for further instructions.");
-                    UI.getCurrent().getPage().executeJs(
-                            "var field = document.getElementById('vaadinLoginPassword'); if (field !== null) { field.focus(); }");
-                }
-            }
-        ));
+                        "var field = document.getElementById('vaadinLoginUsername'); if (field !== null) { return field.value; } else { return null; }")
+                .then(String.class, email -> {
+                            if (email.isBlank()) {
+                                Notification.show("Please enter your email address first.");
+                                UI.getCurrent().getPage().executeJs(
+                                        "var field = document.getElementById('vaadinLoginUsername'); if (field !== null) { field.focus(); }");
+                            } else {
+                                securityService.resetPassword(email);
+                                Notification.show("Please check your email account for further instructions.");
+                                UI.getCurrent().getPage().executeJs(
+                                        "var field = document.getElementById('vaadinLoginPassword'); if (field !== null) { field.focus(); }");
+                            }
+                        }
+                ));
 
         UI.getCurrent().getPage().executeJs(
                 "var field = document.getElementById('vaadinLoginUsername'); if (field !== null) { field.focus(); }");
@@ -95,16 +85,12 @@ public class LoginView extends LoginOverlay implements AfterNavigationObserver, 
 
     @Override
     public void beforeEnter(@NotNull final BeforeEnterEvent event) {
-        if (authService.isUserLoggedIn()) {
+        if (authenticatedUser.get().isPresent()) {
             event.forwardTo(DashboardView.class);
         } else {
+            setError(event.getLocation().getQueryParameters().getParameters().containsKey("error"));
             setOpened(true);
         }
-    }
-
-    @Override
-    public void afterNavigation(@NotNull final AfterNavigationEvent event) {
-        setError(event.getLocation().getQueryParameters().getParameters().containsKey("error"));
     }
 
 }

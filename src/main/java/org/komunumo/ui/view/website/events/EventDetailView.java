@@ -30,6 +30,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.NotFoundException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.EventService;
@@ -40,6 +41,7 @@ import java.time.Year;
 @Route(value = "event/:location/:year/:url", layout = WebsiteLayout.class)
 @PageTitle("Events") // TODO title based on event
 @CssImport("./themes/komunumo/views/website/event-details.css")
+@AnonymousAllowed
 public class EventDetailView extends EventArticle implements BeforeEnterObserver {
 
     private final EventService eventService;

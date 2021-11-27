@@ -37,7 +37,6 @@ CREATE TABLE member (
     membership_end DATE NULL,
     membership_id INTEGER UNSIGNED NOT NULL DEFAULT 0,
     admin BOOLEAN NOT NULL DEFAULT 0,
-    password_salt VARCHAR(255) NULL,
     password_hash VARCHAR(255) NULL,
     password_change BOOLEAN NOT NULL DEFAULT 0,
     activation_code VARCHAR(255) NULL,

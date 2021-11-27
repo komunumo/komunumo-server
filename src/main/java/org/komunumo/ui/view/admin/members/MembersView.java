@@ -38,9 +38,13 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
+
+import javax.annotation.security.RolesAllowed;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Member;
+import org.komunumo.data.entity.Role;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
@@ -59,6 +63,7 @@ import static org.komunumo.util.FormatterUtil.formatDateTime;
 @PageTitle("Member Administration")
 @CssImport(value = "./themes/komunumo/views/admin/members-view.css")
 @CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
+@RolesAllowed(Role.Type.ADMIN)
 public class MembersView extends ResizableView implements HasUrlParameter<String> {
 
     private final MemberService memberService;

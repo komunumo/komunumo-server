@@ -36,7 +36,6 @@ import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.entity.KeywordEntity;
 import org.komunumo.data.entity.Member;
-import org.komunumo.data.service.AuthService;
 import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
@@ -44,6 +43,7 @@ import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.KeywordService;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.SpeakerService;
+import org.komunumo.security.AuthenticatedUser;
 import org.komunumo.ui.component.DateTimePicker;
 import org.komunumo.ui.component.EditDialog;
 import org.komunumo.util.URLUtil;
@@ -65,7 +65,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 
 public class EventDialog extends EditDialog<Event> {
 
-    private final AuthService authService;
+    private final AuthenticatedUser authenticatedUser;
     private final EventService eventService;
     private final SpeakerService speakerService;
     private final EventSpeakerService eventSpeakerService;
@@ -80,7 +80,7 @@ public class EventDialog extends EditDialog<Event> {
     private Callback afterOpen;
 
     public EventDialog(@NotNull final String title,
-                       @NotNull final AuthService authService,
+                       @NotNull final AuthenticatedUser authenticatedUser,
                        @NotNull final EventService eventService,
                        @NotNull final SpeakerService speakerService,
                        @NotNull final EventSpeakerService eventSpeakerService,
@@ -89,7 +89,7 @@ public class EventDialog extends EditDialog<Event> {
                        @NotNull final KeywordService keywordService,
                        @NotNull final EventKeywordService eventKeywordService) {
         super(title);
-        this.authService = authService;
+        this.authenticatedUser = authenticatedUser;
         this.eventService = eventService;
         this.speakerService = speakerService;
         this.eventSpeakerService = eventSpeakerService;
@@ -310,8 +310,9 @@ public class EventDialog extends EditDialog<Event> {
         speakers = Set.copyOf(event.getSpeakers());
         organizers = eventMemberService.getOrganizersForEvent(event)
                 .collect(Collectors.toSet());
-        if (organizers.isEmpty() && event.getId() == null) {
-            organizers.add(authService.getCurrentUser());
+        final var organizer = authenticatedUser.get();
+        if (organizers.isEmpty() && event.getId() == null && organizer.isPresent()) {
+            organizers.add(organizer.get());
         }
         keywords = Set.copyOf(event.getKeywords());
         super.open(event,

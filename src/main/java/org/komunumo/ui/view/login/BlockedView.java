@@ -26,11 +26,15 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
+
+import javax.annotation.security.PermitAll;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.MemberRecord;
 
 @Route(value = "blocked")
 @PageTitle("Account blocked")
+@PermitAll
 public class BlockedView extends Div implements BeforeEnterObserver {
 
     private final Text message;

@@ -16,20 +16,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo;
+package org.komunumo.data.entity;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.jetbrains.annotations.NotNull;
 
-/**
- * The entry point of the Spring Boot application.
- */
-@SpringBootApplication
-public class Application extends SpringBootServletInitializer {
+public enum Role {
 
-    public static void main(final String... args) {
-        SpringApplication.run(Application.class, args);
+    MEMBER(Type.MEMBER),
+    ADMIN(Type.ADMIN);
+
+    public static class Type {
+        public static final String MEMBER = "MEMBER";
+        public static final String ADMIN = "ADMIN";
+    }
+
+    private final String roleName;
+
+    Role(@NotNull final String roleName) {
+        this.roleName = roleName;
+    }
+
+    public String getRoleName() {
+        return roleName;
     }
 
 }

@@ -29,6 +29,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.EventService;
@@ -39,6 +40,7 @@ import org.komunumo.util.URLUtil;
 @RouteAlias(value = "events/:location", layout = WebsiteLayout.class)
 @PageTitle("Events")
 @CssImport("./themes/komunumo/views/website/events-view.css")
+@AnonymousAllowed
 public class EventsView extends VerticalLayout implements BeforeEnterObserver {
 
     private final EventService eventService;

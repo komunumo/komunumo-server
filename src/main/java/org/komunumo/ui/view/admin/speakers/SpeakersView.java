@@ -38,8 +38,12 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
+
+import javax.annotation.security.RolesAllowed;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.komunumo.data.entity.Role;
 import org.komunumo.data.entity.SpeakerListEntity;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.ui.component.EnhancedButton;
@@ -59,6 +63,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @PageTitle("Speaker Administration")
 @CssImport(value = "./themes/komunumo/views/admin/speakers-view.css")
 @CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
+@RolesAllowed(Role.Type.ADMIN)
 public class SpeakersView extends ResizableView implements HasUrlParameter<String> {
 
     private final SpeakerService speakerService;

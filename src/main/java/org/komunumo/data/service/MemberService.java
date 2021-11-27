@@ -116,6 +116,7 @@ public class MemberService {
     /**
      * @deprecated remove after migration of JUG.CH to Komunumo has finished
      */
+    @Deprecated
     public Optional<Member> getByName(@NotNull final String firstName, @NotNull final String lastName) {
         return dsl.selectFrom(MEMBER)
                 .where(MEMBER.FIRST_NAME.eq(firstName)
@@ -147,7 +148,6 @@ public class MemberService {
             member.setState("");
             member.setCountry("");
             member.setAdmin(false);
-            member.setPasswordSalt("");
             member.setPasswordHash("");
             member.setActivationCode("");
             member.setAccountActive(false);

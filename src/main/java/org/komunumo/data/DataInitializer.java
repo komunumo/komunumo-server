@@ -21,8 +21,8 @@ package org.komunumo.data;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.configuration.Configuration;
-import org.komunumo.data.service.AuthService;
 import org.komunumo.data.service.MemberService;
+import org.komunumo.security.SecurityService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 
@@ -32,8 +32,8 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner createAdminAccount(
             @NotNull final Configuration configuration,
-            @NotNull final MemberService memberService,
-            @NotNull final AuthService authService) {
+            @NotNull final SecurityService securityService,
+            @NotNull final MemberService memberService) {
         return args -> {
             final var admin = configuration.getAdmin();
             if (admin != null && admin.getEmail() != null) {
@@ -52,7 +52,7 @@ public class DataInitializer {
                     record.setAdmin(true);
                     record.setAccountActive(true);
                     memberService.store(record);
-                    authService.resetPassword(admin.getEmail());
+                    securityService.resetPassword(admin.getEmail());
                 }
             }
         };

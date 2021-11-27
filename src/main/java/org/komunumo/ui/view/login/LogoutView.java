@@ -16,21 +16,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.ui.view.logout;
+package org.komunumo.ui.view.login;
 
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
+import javax.annotation.security.PermitAll;
+
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.service.AuthService;
+import org.komunumo.security.AuthenticatedUser;
 
 @Route("logout")
 @PageTitle("Logout")
+@PermitAll
 public class LogoutView extends Composite<VerticalLayout> {
 
-    public LogoutView(@NotNull final AuthService authService) {
-        authService.logout();
+    public LogoutView(@NotNull final AuthenticatedUser authenticatedUser) {
+        authenticatedUser.logout();
     }
 
 }
