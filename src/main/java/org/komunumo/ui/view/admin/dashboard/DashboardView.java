@@ -75,7 +75,7 @@ public class DashboardView extends Div {
         board.add(monthlyVisitorsWrapper);
 
         add(board);
-        populateCharts(Year.of(2020));
+        populateCharts(Year.now());
     }
 
     private WrapperCard createBadge(@NotNull final String title, @NotNull final H2 h2, @NotNull final String h2ClassName,
