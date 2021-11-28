@@ -81,9 +81,7 @@ public class DashboardView extends Div {
     private WrapperCard createBadge(@NotNull final String title, @NotNull final H2 h2, @NotNull final String h2ClassName,
                                     @NotNull final String description, @NotNull final String badgeTheme) {
         final var titleSpan = new Span(title);
-        titleSpan.getElement().setAttribute("theme", badgeTheme);
-
-        h2.addClassName(h2ClassName);
+        titleSpan.addClassName("badge-title");
 
         final var descriptionSpan = new Span(description);
         descriptionSpan.addClassName("secondary-text");

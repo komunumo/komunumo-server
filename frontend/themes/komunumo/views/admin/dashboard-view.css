@@ -60,6 +60,10 @@
   margin-top: var(--lumo-space-m);
 }
 
+.dashboard-view .card .badge-title {
+    font-weight: bold;
+}
+
 /* Spacing */
 .dashboard-view .space-m {
   padding: var(--lumo-space-m);
