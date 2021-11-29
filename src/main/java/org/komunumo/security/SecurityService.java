@@ -83,7 +83,7 @@ public class SecurityService implements UserDetailsService {
         if (member.isPresent()) {
             final var record = member.get();
             if (record.getAccountActive()) {
-                final var password = RandomStringUtils.randomAscii(32);
+                final var password = RandomStringUtils.randomAscii(32).replaceAll("\\s", "_");
                 final var passwordHash = passwordEncoder.encode(password);
                 record.setPasswordHash(passwordHash);
                 record.setPasswordChange(true);
