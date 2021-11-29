@@ -30,14 +30,13 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-
-import javax.annotation.security.PermitAll;
-
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.security.AuthenticatedUser;
 import org.komunumo.security.SecurityConfiguration;
 import org.komunumo.security.SecurityService;
-import org.komunumo.security.AuthenticatedUser;
 import org.springframework.security.core.AuthenticationException;
+
+import javax.annotation.security.PermitAll;
 
 @Route("change-password")
 @PageTitle("Change Password")
@@ -61,6 +60,8 @@ public class ChangePasswordView extends VerticalLayout {
                 Notification.show("Please fill out all three password fields!");
             } else if (!newPassword.getValue().equals(repeatPassword.getValue())) {
                 Notification.show("You have a typo! Your new password and repeat password does not match.");
+            } else if (newPassword.getValue().equals(oldPassword.getValue())) {
+                Notification.show("Your new password is not allowed to be equal to your old password.");
             } else {
                 try {
                     securityService.changePassword(oldPassword.getValue(), newPassword.getValue());
