@@ -86,7 +86,6 @@ public class EventService {
         newEvent.setDate(null);
         newEvent.setPublished(false);
         newEvent.setAttendeeCount(0);
-        newEvent.setEventUrl("");
         return newEvent;
     }
 
