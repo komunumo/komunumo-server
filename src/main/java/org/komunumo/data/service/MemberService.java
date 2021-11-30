@@ -131,32 +131,37 @@ public class MemberService {
         member.store();
     }
 
+    private void anonymize(@NotNull final Member member) {
+        member.setFirstName(RandomStringUtils.randomAlphabetic(32));
+        member.setLastName(RandomStringUtils.randomAlphabetic(32));
+        member.setCompany("");
+        member.setEmail(RandomStringUtils.randomAlphabetic(32));
+        member.setAddress("");
+        member.setZipCode("");
+        member.setCity("");
+        member.setState("");
+        member.setCountry("");
+        member.setAdmin(false);
+        member.setPasswordHash("");
+        member.setActivationCode("");
+        member.setAccountActive(false);
+        member.setAccountBlocked(false);
+        member.setAccountBlockedReason("");
+        member.setAccountDeleted(true);
+        member.setComment("");
+        store(member);
+    }
+
+    /**
+     * The member will not be deleted from the database. The entity will be
+     * anonymized and marked as deleted. Reason: The ID of the member is used
+     * in a lot of references. To keep the references intact and not to get
+     * wrong statistics, the record stays in the database forever.
+     *
+     * @param member the member to be deleted
+     */
     public void delete(@NotNull final Member member) {
-        try {
-            member.delete();
-        } catch (final Exception e) {
-            // member id used in foreign keys
-            // need to keep the member entity
-            // just anonymize member data
-            member.setFirstName(RandomStringUtils.randomAlphabetic(32));
-            member.setLastName(RandomStringUtils.randomAlphabetic(32));
-            member.setCompany("");
-            member.setEmail(RandomStringUtils.randomAlphabetic(32));
-            member.setAddress("");
-            member.setZipCode("");
-            member.setCity("");
-            member.setState("");
-            member.setCountry("");
-            member.setAdmin(false);
-            member.setPasswordHash("");
-            member.setActivationCode("");
-            member.setAccountActive(false);
-            member.setAccountBlocked(false);
-            member.setAccountBlockedReason("");
-            member.setAccountDeleted(true);
-            member.setComment("");
-            store(member);
-        }
+        anonymize(member);
     }
 
     public Stream<Member> getAllAdmins() {
