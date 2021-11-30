@@ -111,8 +111,9 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
-        grid.addColumn(TemplateRenderer.<Member>of("<span style=\"font-weight: bold;\">[[item.fullName]]</span>")
-                .withProperty("fullName", Member::getFullName))
+        grid.addColumn(TemplateRenderer.<Member>of("<span style=\"font-weight: bold;\">[[item.fullName]]</span><br/><span>[[item.company]]</span>")
+                .withProperty("fullName", Member::getFullName)
+                .withProperty("company", Member::getCompany))
                 .setHeader("Name").setAutoWidth(true).setFlexGrow(1);
         grid.addColumn(TemplateRenderer.<Member>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
                 .withProperty("email", Member::getEmail))
