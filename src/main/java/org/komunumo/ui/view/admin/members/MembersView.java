@@ -149,7 +149,7 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         final var end = member.getMembershipEnd();
 
         if (begin == null && end == null) {
-            return "—";
+            return "no";
         } else if (begin != null && end == null) {
             return "since %d".formatted(begin.getYear());
         } else if (begin != null) {
