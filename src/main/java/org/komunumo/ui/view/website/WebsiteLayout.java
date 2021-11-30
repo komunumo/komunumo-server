@@ -49,6 +49,7 @@ public class WebsiteLayout extends VerticalLayout implements RouterLayout {
         final var mainLayout = new HorizontalLayout(main, twitterFeed);
         mainLayout.setId("main-layout");
         add(mainLayout);
+        add(new WebsiteFooter(configuration));
 
         final var page = UI.getCurrent().getPage();
         page.retrieveExtendedClientDetails(extendedClientDetails -> pageResized(extendedClientDetails.getBodyClientWidth()));
@@ -59,6 +60,7 @@ public class WebsiteLayout extends VerticalLayout implements RouterLayout {
         twitterFeed.setVisible(width >= 1350);
     }
 
+    @Override
     public void showRouterLayoutContent(@NotNull HasElement content) {
         main.removeAll();
         main.add(content.getElement().getComponent()
@@ -66,6 +68,7 @@ public class WebsiteLayout extends VerticalLayout implements RouterLayout {
                         "WebsiteLayout content must be a Component")));
     }
 
+    @Override
     public void removeRouterLayoutContent(@NotNull HasElement oldContent) {
         main.removeAll();
     }
