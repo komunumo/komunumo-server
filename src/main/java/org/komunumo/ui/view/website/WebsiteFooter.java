@@ -20,24 +20,28 @@ package org.komunumo.ui.view.website;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.configuration.Configuration;
+import org.komunumo.data.entity.Client;
 
 public class WebsiteFooter extends Footer {
 
-    private final Configuration configuration;
+    private final Client client;
 
     public WebsiteFooter(@NotNull Configuration configuration) {
-        this.configuration = configuration;
+        this.client = configuration.getClient();
 
         setId("website-footer");
 
         add(
-                createAbout()
+                createAbout(),
+                createContact()
         );
     }
 
@@ -46,10 +50,30 @@ public class WebsiteFooter extends Footer {
         layout.setId("website-footer-about");
 
         final var title = new Div(new H2("About"));
-        final var about = new Html("<div>%s</div>".formatted(configuration.getClient().getAbout()));
+        final var about = new Html("<div>%s</div>".formatted(client.getAbout()));
         layout.add(new HorizontalLayout(title, about));
 
         return layout;
+    }
+
+    private Component createContact() {
+        final var layout = new HorizontalLayout();
+        layout.setId("website-footer-contact");
+
+        final var title = new H2("Contact");
+        final var name = new Div(new Text(client.getName()));
+        final var address = new Div(new Text(client.getAddress()));
+        final var email = createEmail(client.getEmail());
+        final var copyright = new Div(new Text(client.getCopyright()));
+        layout.add(new HorizontalLayout(title, new Div(name, address, email, copyright)));
+
+        return layout;
+    }
+
+    private Component createEmail(@NotNull final String email) {
+        final var div = new Div(new Anchor(String.format("mailto:%s", email), email));
+        div.addClassName("contact-email");
+        return div;
     }
 
 }

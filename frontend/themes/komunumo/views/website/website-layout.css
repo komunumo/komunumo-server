@@ -80,6 +80,10 @@ main.website a {
     width: 100%;
 }
 
+#website-footer vaadin-horizontal-layout {
+    margin-bottom: 20px;
+}
+
 #website-footer h2 {
     color: white;
     display: block;
@@ -90,4 +94,19 @@ main.website a {
     text-transform: uppercase;
     vertical-align: top;
     width: 220px;
+}
+
+#website-footer .contact-email {
+    margin-bottom: 20px;
+}
+
+#website-footer .contact-email a {
+    color: #0099CB;
+    font-size: 120%;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+#website-footer-contact > vaadin-horizontal-layout > div {
+    margin-top: 5px;
 }
