@@ -19,6 +19,7 @@
 package org.komunumo.ui.view.admin.members;
 
 import com.opencsv.CSVWriter;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -38,9 +39,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
-
-import javax.annotation.security.RolesAllowed;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Member;
@@ -51,6 +49,7 @@ import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
 
+import javax.annotation.security.RolesAllowed;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.util.List;
@@ -118,6 +117,8 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         grid.addColumn(TemplateRenderer.<Member>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
                 .withProperty("email", Member::getEmail))
                 .setHeader("Email").setAutoWidth(true).setKey("email").setFlexGrow(0);
+        grid.addColumn(new ComponentRenderer<>(member -> new Text(getMembershipText(member))))
+                .setHeader("Membership").setAutoWidth(true).setFlexGrow(0);
         grid.addColumn(new ComponentRenderer<>(member -> new Icon(member.getAdmin() ? VaadinIcon.CHECK : VaadinIcon.MINUS)))
                 .setHeader("Admin").setAutoWidth(true).setFlexGrow(0);
         grid.addColumn(new ComponentRenderer<>(member -> {
@@ -140,6 +141,21 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         grid.setHeightFull();
 
         return grid;
+    }
+
+    private String getMembershipText(@NotNull final Member member) {
+        final var begin = member.getMembershipBegin();
+        final var end = member.getMembershipEnd();
+
+        if (begin == null && end == null) {
+            return "—";
+        } else if (begin != null && end == null) {
+            return "since %d".formatted(begin.getYear());
+        } else if (begin != null) {
+            return "from %d to %d".formatted(begin.getYear(), end.getYear());
+        } else {
+            return "until %d".formatted(end.getYear());
+        }
     }
 
     @Override
