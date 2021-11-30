@@ -19,6 +19,8 @@
 package org.komunumo.configuration;
 
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.entity.Client;
+import org.komunumo.data.service.ClientService;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
@@ -26,6 +28,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @ConfigurationProperties(prefix = "komunumo")
 @EnableConfigurationProperties
 public class Configuration {
+
+    private final ClientService clientService;
 
     /**
      * Version information of Komunumo.
@@ -46,6 +50,15 @@ public class Configuration {
      * Configure website settings.
      */
     private Website website;
+
+    /**
+     * Configure client.
+     */
+    private Client client;
+
+    public Configuration(@NotNull ClientService clientService) {
+        this.clientService = clientService;
+    }
 
     public String getVersion() {
         return version;
@@ -77,6 +90,14 @@ public class Configuration {
 
     public void setWebsite(@NotNull final Website website) {
         this.website = website;
+    }
+
+    public void setClient(@NotNull final Long clientId) {
+        this.client = clientService.getClient(clientId).orElseThrow();
+    }
+
+    public Client getClient() {
+        return client;
     }
 
 }

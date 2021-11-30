@@ -1,3 +1,16 @@
+CREATE TABLE client (
+    id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+
+    name VARCHAR(255) NOT NULL,
+    about MEDIUMTEXT NOT NULL DEFAULT '',
+
+    PRIMARY KEY (id)
+) DEFAULT CHARSET=utf8;
+
+INSERT INTO client (id, name, about) VALUES (1, 'Default', '<p>Default client.</p>');
+
+CREATE INDEX client_name ON client (name);
+
 CREATE TABLE event (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 
