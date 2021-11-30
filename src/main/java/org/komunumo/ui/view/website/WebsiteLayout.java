@@ -19,6 +19,7 @@
 package org.komunumo.ui.view.website;
 
 import com.vaadin.flow.component.HasElement;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.cookieconsent.CookieConsent;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Main;
@@ -33,6 +34,7 @@ import org.komunumo.data.service.StatisticService;
 public class WebsiteLayout extends VerticalLayout implements RouterLayout {
 
     private final Main main;
+    private final TwitterFeed twitterFeed;
 
     public WebsiteLayout(@NotNull final Configuration configuration,
                          @NotNull final StatisticService statisticService) {
@@ -42,11 +44,19 @@ public class WebsiteLayout extends VerticalLayout implements RouterLayout {
         main = new Main();
         main.addClassName("website");
 
-        final var twitterFeed = new TwitterFeed();
+        twitterFeed = new TwitterFeed();
 
         final var mainLayout = new HorizontalLayout(main, twitterFeed);
         mainLayout.setId("main-layout");
         add(mainLayout);
+
+        final var page = UI.getCurrent().getPage();
+        page.retrieveExtendedClientDetails(extendedClientDetails -> pageResized(extendedClientDetails.getBodyClientWidth()));
+        page.addBrowserWindowResizeListener(event -> pageResized(event.getWidth()));
+    }
+
+    private void pageResized(final int width) {
+        twitterFeed.setVisible(width >= 1350);
     }
 
     public void showRouterLayoutContent(@NotNull HasElement content) {
