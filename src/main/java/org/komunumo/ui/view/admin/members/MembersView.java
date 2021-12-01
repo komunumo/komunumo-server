@@ -23,6 +23,7 @@ import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
@@ -121,13 +122,13 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         grid.addColumn(new ComponentRenderer<>(member -> new Text(getMembershipText(member))))
                 .setHeader("Membership").setAutoWidth(true).setFlexGrow(0);
         grid.addColumn(new ComponentRenderer<>(member -> new Icon(member.getAdmin() ? VaadinIcon.CHECK : VaadinIcon.MINUS)))
-                .setHeader("Admin").setAutoWidth(true).setFlexGrow(0);
+                .setHeader("Admin").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER).setFlexGrow(0);
         grid.addColumn(new ComponentRenderer<>(member -> {
                     final var icon = new Icon(member.getAccountBlocked() ? VaadinIcon.BAN : VaadinIcon.MINUS);
                     icon.getElement().setAttribute("title", member.getAccountBlockedReason());
                     return icon;
                 }))
-                .setHeader("Blocked").setAutoWidth(true).setFlexGrow(0);
+                .setHeader("Blocked").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER).setFlexGrow(0);
         grid.addColumn(new ComponentRenderer<>(member -> {
             final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), clickEvent -> showMemberDialog(member));
             editButton.setTitle("Edit this member");
