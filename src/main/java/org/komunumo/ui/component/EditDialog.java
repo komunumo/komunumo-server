@@ -227,6 +227,15 @@ public abstract class EditDialog<R extends UpdatableRecord<?>> extends Dialog {
         }
     }
 
+    @Override
+    public void close() {
+        final var record = binder.getBean();
+        if (record != null) {
+            record.reset();
+        }
+        super.close();
+    }
+
     private void focusFirstFormField() {
         //noinspection rawtypes
         formLayout.getChildren()
