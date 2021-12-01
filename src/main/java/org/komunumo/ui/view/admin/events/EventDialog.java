@@ -28,6 +28,9 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
+
+import java.time.Year;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.EventLanguage;
@@ -148,16 +151,17 @@ public class EventDialog extends EditDialog<Event> {
             final var isOnline = "Online".equalsIgnoreCase(value);
             webinarUrl.setEnabled(isOnline);
             webinarUrl.setRequiredIndicatorVisible(published.getValue() && isOnline);
-            eventUrl.setPrefixComponent(new Span(URLUtil.createReadableUrl(value).concat("/")));
+            updateEventUrlPrefix(location, date, eventUrl);
             binder.validate();
         });
         webinarUrl.setValueChangeMode(EAGER);
         date.setMin(LocalDateTime.now());
+        date.addValueChangeListener(changeEvent -> updateEventUrlPrefix(location, date, eventUrl));
         duration.setStep(Duration.ofMinutes(15));
         duration.setMinTime(LocalTime.of(1, 0));
         duration.setMaxTime(LocalTime.of(3, 0));
         eventUrl.setValueChangeMode(EAGER);
-        eventUrl.setPrefixComponent(new Span("<location>/"));
+        updateEventUrlPrefix(location, date, eventUrl);
         published.addValueChangeListener(changeEvent -> {
             final var value = changeEvent.getValue();
             speaker.setRequiredIndicatorVisible(value);
@@ -256,6 +260,16 @@ public class EventDialog extends EditDialog<Event> {
                 binder.setValidatorsDisabled(true);
             }
         };
+    }
+
+    private void updateEventUrlPrefix(@NotNull final ComboBox<String> location,
+                                      @NotNull final DateTimePicker date,
+                                      @NotNull final TextField eventUrl) {
+        final var locationValue = location.getValue();
+        final var dateValue = date.getValue();
+        final var locationText = locationValue == null || locationValue.isBlank() ? "{location}" : URLUtil.createReadableUrl(locationValue);
+        final var year = dateValue == null ? "{year}" : Year.from(dateValue).toString();
+        eventUrl.setPrefixComponent(new Span("%s/%s/".formatted(locationText, year)));
     }
 
     private boolean validateUrl(@Nullable final String url) {
