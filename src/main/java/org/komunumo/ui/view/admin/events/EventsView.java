@@ -22,6 +22,7 @@ import com.opencsv.CSVWriter;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
@@ -156,7 +157,10 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
                     icon.setSize("16px");
                     icon.getElement().setAttribute("title", event.getType().toString());
                     return icon;
-                })).setHeader("Type").setAutoWidth(true).setFlexGrow(0);
+                })).setHeader("Type")
+                .setAutoWidth(true)
+                .setTextAlign(ColumnTextAlign.CENTER)
+                .setFlexGrow(0);
 
         grid.addColumn(TemplateRenderer.<Event>of("<span class$=\"[[item.event-class]]\">[[item.title]]</span><br/><span inner-h-t-m-l=\"[[item.speaker]]\"></span>")
                 .withProperty("event-class", this::getEventClass)
@@ -170,11 +174,17 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
                 .withProperty("location", Event::getLocation);
         grid.addColumn(dateRenderer).setHeader("Date & Location").setAutoWidth(true).setFlexGrow(0).setKey("dateLocation");
 
-        grid.addColumn(Event::getAttendeeCount).setHeader("Attendees").setAutoWidth(true).setFlexGrow(0).setKey("attendees");
+        grid.addColumn(Event::getAttendeeCount)
+                .setHeader("Attendees")
+                .setAutoWidth(true)
+                .setTextAlign(ColumnTextAlign.CENTER)
+                .setFlexGrow(0)
+                .setKey("attendees");
 
         grid.addColumn(new ComponentRenderer<>(event -> new Icon(event.getPublished() ? VaadinIcon.EYE : VaadinIcon.EYE_SLASH)))
                 .setHeader("Published")
                 .setAutoWidth(true)
+                .setTextAlign(ColumnTextAlign.CENTER)
                 .setFlexGrow(0);
 
         grid.addColumn(new ComponentRenderer<>(event -> {
