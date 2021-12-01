@@ -21,6 +21,7 @@ package org.komunumo.ui.view.admin.events;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
@@ -147,6 +148,7 @@ public class EventDialog extends EditDialog<Event> {
             final var isOnline = "Online".equalsIgnoreCase(value);
             webinarUrl.setEnabled(isOnline);
             webinarUrl.setRequiredIndicatorVisible(published.getValue() && isOnline);
+            eventUrl.setPrefixComponent(new Span(URLUtil.createReadableUrl(value).concat("/")));
             binder.validate();
         });
         webinarUrl.setValueChangeMode(EAGER);
@@ -155,6 +157,7 @@ public class EventDialog extends EditDialog<Event> {
         duration.setMinTime(LocalTime.of(1, 0));
         duration.setMaxTime(LocalTime.of(3, 0));
         eventUrl.setValueChangeMode(EAGER);
+        eventUrl.setPrefixComponent(new Span("<location>/"));
         published.addValueChangeListener(changeEvent -> {
             final var value = changeEvent.getValue();
             speaker.setRequiredIndicatorVisible(value);
