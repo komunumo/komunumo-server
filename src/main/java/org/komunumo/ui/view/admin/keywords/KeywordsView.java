@@ -22,6 +22,7 @@ import com.opencsv.CSVWriter;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
@@ -99,7 +100,7 @@ public class KeywordsView extends ResizableView {
                 .setHeader("Keyword").setAutoWidth(true).setFlexGrow(0).setKey("keyword");
 
         grid.addColumn(KeywordListEntity::eventCount)
-                .setHeader("Events").setAutoWidth(true).setFlexGrow(0);
+                .setHeader("Events").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER).setFlexGrow(0);
 
         grid.addColumn(new ComponentRenderer<>(keyword -> {
             final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), clickEvent -> showKeywordDialog(keyword));
