@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
+import org.jooq.Record3;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
@@ -68,6 +69,7 @@ import static org.komunumo.data.db.tables.Event.EVENT;
 import static org.komunumo.data.db.tables.EventKeyword.EVENT_KEYWORD;
 import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
 import static org.komunumo.data.db.tables.EventOrganizer.EVENT_ORGANIZER;
+import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
 import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 import static org.komunumo.data.db.tables.Member.MEMBER;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
@@ -91,6 +93,7 @@ public class JUGSImporter {
     private int sandroRuchId;
 
     private int memberMergeCount = 0;
+    private int speakerMergeCount = 0;
 
     private UI ui = null;
 
@@ -138,6 +141,7 @@ public class JUGSImporter {
                 importRegistrations(connection);
                 updateEventLevel();
                 mergeMembers();
+                mergeSpeakers();
                 showNotification("Importing data from Java User Group Switzerland successfully finished.");
             } catch (final SQLException e) {
                 showNotification("Error importing data from Java User Group Switzerland: " + e.getMessage());
@@ -696,8 +700,7 @@ public class JUGSImporter {
     }
 
     private void mergeMembers(@NotNull final Record2<String, Integer> record) {
-        final var email = record.get(SPEAKER.EMAIL);
-        mergeMembers(email);
+        mergeMembers(record.get(MEMBER.EMAIL));
         memberMergeCount += record.get("email_count", Integer.class);
     }
 
@@ -764,6 +767,54 @@ public class JUGSImporter {
 
         member1.store();
         member2.delete();
+    }
+
+    private void mergeSpeakers() {
+        speakerMergeCount = 0;
+        dsl.select(SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME, DSL.count(DSL.asterisk()).as("name_count"))
+                .from(SPEAKER)
+                .groupBy(SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME)
+                .having(DSL.count(DSL.asterisk()).greaterThan(1))
+                .stream().forEach(this::mergeSpeakers);
+        showNotification(speakerMergeCount + " duplicate speakers merged");
+    }
+
+    private void mergeSpeakers(@NotNull final Record3<String, String, Integer> record) {
+        mergeSpeakers(record.get(SPEAKER.FIRST_NAME), record.get(SPEAKER.LAST_NAME));
+        speakerMergeCount += record.get("name_count", Integer.class);
+    }
+
+    private void mergeSpeakers(@NotNull final String firstName, @NotNull final String lastName) {
+        final var recordList = dsl.selectFrom(SPEAKER)
+                .where(SPEAKER.FIRST_NAME.eq(firstName).and(SPEAKER.LAST_NAME.eq(lastName)))
+                .orderBy(SPEAKER.ID.desc())
+                .stream().collect(Collectors.toList());
+        while (recordList.size() > 1) {
+            final var speaker1 = recordList.get(0);
+            final var speaker2 = recordList.get(1);
+            if (speaker1.getId() > speaker2.getId()) {
+                mergeSpeakers(speaker1, speaker2);
+                recordList.remove(1);
+            } else {
+                mergeSpeakers(speaker2, speaker1);
+                recordList.remove(0);
+            }
+        }
+    }
+
+    private void mergeSpeakers(@NotNull final SpeakerRecord speaker1, @NotNull final SpeakerRecord speaker2) {
+        dsl.selectFrom(EVENT_SPEAKER)
+                .where(EVENT_SPEAKER.SPEAKER_ID.eq(speaker2.getId()))
+                .forEach(record ->
+                        dsl.insertInto(EVENT_SPEAKER, EVENT_SPEAKER.EVENT_ID, EVENT_SPEAKER.SPEAKER_ID)
+                                .values(record.getEventId(), speaker1.getId())
+                                .onDuplicateKeyIgnore()
+                                .execute());
+        dsl.deleteFrom(EVENT_SPEAKER)
+                .where(EVENT_SPEAKER.SPEAKER_ID.eq(speaker2.getId()))
+                .execute();
+
+        speaker2.delete();
     }
 
 }
