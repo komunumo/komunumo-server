@@ -22,6 +22,7 @@ import com.opencsv.CSVWriter;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
@@ -129,7 +130,7 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
                 "<a href=\"/admin/events?filter=[[item.filterValue]]\">[[item.eventCount]]</a>")
                 .withProperty("eventCount", SpeakerListEntity::eventCount)
                 .withProperty("filterValue", speakerListEntity -> URLEncoder.encode(speakerListEntity.fullName(), UTF_8));
-        grid.addColumn(eventCountRenderer).setHeader("Events").setAutoWidth(true).setFlexGrow(0);
+        grid.addColumn(eventCountRenderer).setHeader("Events").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER).setFlexGrow(0);
 
         grid.addColumn(new ComponentRenderer<>(speakerListEntity -> {
             final var editButton = new EnhancedButton(new Icon(VaadinIcon.EDIT), clickEvent -> showSpeakerDialog(speakerListEntity));
