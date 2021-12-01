@@ -34,10 +34,8 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import elemental.json.Json;
-
-import javax.annotation.security.RolesAllowed;
-
 import org.jetbrains.annotations.NotNull;
+import org.jooq.DSLContext;
 import org.komunumo.data.entity.Role;
 import org.komunumo.data.importer.bigmarker.BigMarkerRegistration;
 import org.komunumo.data.importer.bigmarker.BigMarkerReport;
@@ -55,6 +53,7 @@ import org.komunumo.data.service.SponsorService;
 import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
 
+import javax.annotation.security.RolesAllowed;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
@@ -66,6 +65,7 @@ import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 @RolesAllowed(Role.Type.ADMIN)
 public class ImportsView extends ResizableView {
 
+    private final DSLContext dsl;
     private final SponsorService sponsorService;
     private final MemberService memberService;
     private final EventService eventService;
@@ -76,6 +76,7 @@ public class ImportsView extends ResizableView {
     private final EventKeywordService eventKeywordService;
 
     public ImportsView(
+            @NotNull final DSLContext dsl,
             @NotNull final SponsorService sponsorService,
             @NotNull final MemberService memberService,
             @NotNull final EventService eventService,
@@ -84,6 +85,7 @@ public class ImportsView extends ResizableView {
             @NotNull final EventSpeakerService eventSpeakerService,
             @NotNull final KeywordService keywordService,
             @NotNull final EventKeywordService eventKeywordService) {
+        this.dsl = dsl;
         this.sponsorService = sponsorService;
         this.memberService = memberService;
         this.eventService = eventService;
@@ -296,7 +298,7 @@ public class ImportsView extends ResizableView {
         importButton.setDisableOnClick(true);
         importButton.setEnabled(!dbURL.isEmpty() && !dbUser.isEmpty() && !dbPass.isEmpty());
         importButton.addClickListener(buttonClickEvent -> {
-            final var importer = new JUGSImporter(sponsorService, memberService, eventService, eventMemberService,
+            final var importer = new JUGSImporter(dsl, sponsorService, memberService, eventService, eventMemberService,
                     speakerService, eventSpeakerService, keywordService, eventKeywordService);
             importer.importFromJavaUserGroupSwitzerland(dbURL.getValue(), dbUser.getValue(), dbPass.getValue());
         });

@@ -24,10 +24,14 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jooq.DSLContext;
+import org.jooq.Record2;
+import org.jooq.impl.DSL;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
 import org.komunumo.data.db.enums.EventType;
 import org.komunumo.data.db.enums.SponsorLevel;
+import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
@@ -58,17 +62,21 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.komunumo.data.db.tables.Event.EVENT;
 import static org.komunumo.data.db.tables.EventKeyword.EVENT_KEYWORD;
+import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
+import static org.komunumo.data.db.tables.EventOrganizer.EVENT_ORGANIZER;
 import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 import static org.komunumo.data.db.tables.Member.MEMBER;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
 
-@SuppressWarnings({"SqlResolve", "removal", "java:S112", "java:S1192", "java:S3776"})
+@SuppressWarnings({"SqlResolve", "removal", "java:S112", "java:S1192", "java:S3776", "deprecation"})
 public class JUGSImporter {
 
+    private final DSLContext dsl;
     private final SponsorService sponsorService;
     private final MemberService memberService;
     private final EventService eventService;
@@ -82,9 +90,12 @@ public class JUGSImporter {
     private int rogerSuessId;
     private int sandroRuchId;
 
+    private int memberMergeCount = 0;
+
     private UI ui = null;
 
     public JUGSImporter(
+            @NotNull final DSLContext dsl,
             @NotNull final SponsorService sponsorService,
             @NotNull final MemberService memberService,
             @NotNull final EventService eventService,
@@ -93,6 +104,7 @@ public class JUGSImporter {
             @NotNull final EventSpeakerService eventSpeakerService,
             @NotNull final KeywordService keywordService,
             @NotNull final EventKeywordService eventKeywordService) {
+        this.dsl = dsl;
         this.sponsorService = sponsorService;
         this.memberService = memberService;
         this.eventService = eventService;
@@ -125,6 +137,7 @@ public class JUGSImporter {
                 importSpeakers(connection);
                 importRegistrations(connection);
                 updateEventLevel();
+                mergeMembers();
                 showNotification("Importing data from Java User Group Switzerland successfully finished.");
             } catch (final SQLException e) {
                 showNotification("Error importing data from Java User Group Switzerland: " + e.getMessage());
@@ -670,6 +683,87 @@ public class JUGSImporter {
                 sponsortyp.equalsIgnoreCase("Platin")
                         ? "Platinum"
                         : WordUtils.capitalizeFully(sponsortyp));
+    }
+
+    private void mergeMembers() {
+        memberMergeCount = 0;
+        dsl.select(MEMBER.EMAIL, DSL.count(MEMBER.EMAIL).as("email_count"))
+                .from(MEMBER)
+                .groupBy(MEMBER.EMAIL)
+                .having(DSL.count(MEMBER.EMAIL).greaterThan(1))
+                .stream().forEach(this::mergeMembers);
+        showNotification(memberMergeCount + " duplicate members merged");
+    }
+
+    private void mergeMembers(@NotNull final Record2<String, Integer> record) {
+        final var email = record.get(SPEAKER.EMAIL);
+        mergeMembers(email);
+        memberMergeCount += record.get("email_count", Integer.class);
+    }
+
+    private void mergeMembers(@NotNull final String email) {
+        final var recordList = dsl.selectFrom(MEMBER)
+                .where(MEMBER.EMAIL.eq(email))
+                .orderBy(MEMBER.ID.asc())
+                .stream().collect(Collectors.toList());
+        while (recordList.size() > 1) {
+            mergeMembers(recordList.get(0), recordList.get(1));
+            recordList.remove(1);
+        }
+    }
+
+    private void mergeMembers(@NotNull final MemberRecord member1, @NotNull final MemberRecord member2) {
+        dsl.update(EVENT_ORGANIZER)
+                .set(EVENT_ORGANIZER.MEMBER_ID, member1.getId())
+                .where(EVENT_ORGANIZER.MEMBER_ID.eq(member2.getId()))
+                .execute();
+
+        dsl.selectFrom(EVENT_MEMBER)
+                .where(EVENT_MEMBER.MEMBER_ID.eq(member2.getId()))
+                .forEach(record ->
+                        dsl.insertInto(EVENT_MEMBER, EVENT_MEMBER.EVENT_ID, EVENT_MEMBER.MEMBER_ID, EVENT_MEMBER.DATE, EVENT_MEMBER.NO_SHOW)
+                                .values(record.getEventId(), member1.getId(), record.getDate(), record.getNoShow())
+                                .onDuplicateKeyIgnore()
+                                .execute());
+        dsl.deleteFrom(EVENT_MEMBER)
+                .where(EVENT_MEMBER.MEMBER_ID.eq(member2.getId()))
+                .execute();
+
+        Stream.of(MEMBER.FIRST_NAME, MEMBER.LAST_NAME, MEMBER.COMPANY, MEMBER.EMAIL, MEMBER.ADDRESS, MEMBER.ZIP_CODE,
+                MEMBER.CITY, MEMBER.STATE, MEMBER.COUNTRY).forEach(field -> {
+            if (!member2.get(field).isBlank()) {
+                member1.set(field, member2.get(field));
+            }
+        });
+
+        if (member1.getRegistrationDate() == null && member2.getRegistrationDate() != null
+                || member1.getRegistrationDate() != null && member2.getRegistrationDate() != null
+                && member1.getRegistrationDate().isAfter(member2.getRegistrationDate())) {
+            member1.setRegistrationDate(member2.getRegistrationDate());
+        }
+
+        if (member1.getMembershipBegin() == null && member2.getMembershipBegin() != null
+                || member1.getMembershipBegin() != null && member2.getMembershipBegin() != null
+                && member1.getMembershipBegin().isAfter(member2.getMembershipBegin())) {
+            member1.setMembershipBegin(member2.getMembershipBegin());
+        }
+
+        if (member1.getMembershipEnd() == null && member2.getMembershipEnd() != null
+                || member1.getMembershipEnd() != null && member2.getMembershipEnd() != null
+                && member1.getMembershipEnd().isBefore(member2.getMembershipEnd())) {
+            member1.setMembershipEnd(member2.getMembershipEnd());
+        }
+
+        if (member1.getMembershipId() == 0 && member2.getMembershipId() > 0) {
+            member1.setMembershipId(member2.getMembershipId());
+        }
+
+        if (!member1.getAdmin() && member2.getAdmin()) {
+            member1.setAdmin(true);
+        }
+
+        member1.store();
+        member2.delete();
     }
 
 }
