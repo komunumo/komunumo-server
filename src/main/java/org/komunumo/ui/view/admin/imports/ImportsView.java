@@ -31,6 +31,7 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
+import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import elemental.json.Json;
@@ -98,15 +99,16 @@ public class ImportsView extends ResizableView {
         addClassName("imports-view");
         add(
                 new H2("BigMarker"),
-                createImportRegistrationsComponents(),
+                createImportBigMarkerRegistrations(),
+                createImportBigMarkerRegistrationsMulti(),
                 new H2("ClubDesk"),
-                createImportMembersComponents(),
+                createImportClubDeskMembers(),
                 new H2("Java User Group Switzerland"),
                 createImportJavaUserGroupSwitzerland()
         );
     }
 
-    private Component createImportRegistrationsComponents() {
+    private Component createImportBigMarkerRegistrations() {
         final var title = new H3("Import registrations");
 
         final var buffer = new MemoryBuffer();
@@ -186,7 +188,36 @@ public class ImportsView extends ResizableView {
         );
     }
 
-    private Component createImportMembersComponents() {
+    private Component createImportBigMarkerRegistrationsMulti() {
+        final var title = new H3("Import multiple registrations");
+
+        final var buffer = new MultiFileMemoryBuffer();
+        final var upload = new Upload(buffer);
+        upload.setAcceptedFileTypes("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        upload.addSucceededListener(succeededEvent -> {
+            try {
+                final var report = new BigMarkerReport(buffer.getInputStream(succeededEvent.getFileName()));
+                final var registrations = report.getRegistrations();
+
+                try {
+                    report.importRegistrations(eventService, eventMemberService, memberService);
+                    Notification.show(String.format("Successfully imported %d registrations from excel file '%s'.",
+                            registrations.size(), succeededEvent.getFileName()));
+                } catch (final NoSuchElementException e) {
+                    Notification.show(e.getMessage());
+                }
+            } catch (final IOException e) {
+                Notification.show(e.getMessage());
+            }
+        });
+        upload.addFileRejectedListener(event -> Notification.show(event.getErrorMessage()));
+
+        return new Div(
+                title, upload
+        );
+    }
+
+    private Component createImportClubDeskMembers() {
         final var title = new H3("Import members");
 
         final var buffer = new MemoryBuffer();
