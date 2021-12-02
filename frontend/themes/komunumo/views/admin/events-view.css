@@ -24,6 +24,6 @@
     font-weight: bold;
 }
 
-vaadin-icon[icon="vaadin:eye-slash"] {
-    color: gray;
+.events-view vaadin-icon[icon="vaadin:eye-slash"] {
+    color: var(--lumo-disabled-text-color);
 }
