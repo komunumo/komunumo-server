@@ -58,9 +58,18 @@ public class EventDetailView extends EventArticle implements BeforeEnterObserver
         final var location = params.get("location").orElseThrow(NotFoundException::new);
         final var year = params.getInteger("year").orElseThrow(NotFoundException::new);
         final var url = params.get("url").orElseThrow(NotFoundException::new);
+        final var previewCode = getPreviewCode(beforeEnterEvent);
 
         final var event = eventService.getByEventUrl(location, Year.of(year), url)
                 .orElseThrow(NotFoundException::new);
+
+        if (!previewCode.isBlank() && event.getPublished()) {
+            beforeEnterEvent.forwardTo(event.getCompleteEventUrl()); // TODO "301 Moved Permanently"
+        }
+
+        if (!event.getPublished() && !previewCode.equals(event.getEventPreviewCode())) {
+            throw new NotFoundException();
+        }
 
         addSpeakerBox(event);
         addHeader(event, false);
@@ -74,6 +83,12 @@ public class EventDetailView extends EventArticle implements BeforeEnterObserver
         addDescription(event);
         addLevel(event);
         addLanguage(event);
+    }
+
+    private String getPreviewCode(@NotNull final BeforeEnterEvent beforeEnterEvent) {
+        final var params = beforeEnterEvent.getLocation().getQueryParameters().getParameters();
+        final var preview = params.getOrDefault("preview", null);
+        return preview != null ? preview.get(0) : "";
     }
 
     private void addSpeakerBox(@NotNull final Event event) {

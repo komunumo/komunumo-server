@@ -19,12 +19,14 @@
 package org.komunumo.ui.view.admin.events;
 
 import com.opencsv.CSVWriter;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -181,7 +183,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
                 .setFlexGrow(0)
                 .setKey("attendees");
 
-        grid.addColumn(new ComponentRenderer<>(event -> new Icon(event.getPublished() ? VaadinIcon.EYE : VaadinIcon.EYE_SLASH)))
+        grid.addColumn(new ComponentRenderer<>(this::createPublishStateIcon))
                 .setHeader("Published")
                 .setAutoWidth(true)
                 .setTextAlign(ColumnTextAlign.CENTER)
@@ -205,6 +207,11 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
         grid.setHeightFull();
 
         return grid;
+    }
+
+    private Component createPublishStateIcon(@NotNull final Event event) {
+        final var url = event.getPublished() ? event.getCompleteEventUrl() : event.getCompleteEventPreviewUrl();
+        return new Anchor(url, new Icon(event.getPublished() ? VaadinIcon.EYE : VaadinIcon.EYE_SLASH));
     }
 
     private String getEventClass(@NotNull final Event event) {

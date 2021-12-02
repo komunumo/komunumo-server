@@ -18,6 +18,7 @@
 
 package org.komunumo.data.entity;
 
+import org.apache.commons.codec.digest.Crypt;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.util.URLUtil;
@@ -59,5 +60,13 @@ public class Event extends EventRecord {
         return "/event/%s/%d/%s".formatted(
                 URLUtil.createReadableUrl(getLocation()),
                 getDate().getYear(), getEventUrl());
+    }
+
+    public String getCompleteEventPreviewUrl() {
+        return "%s?preview=%s".formatted(getCompleteEventUrl(), getEventPreviewCode());
+    }
+
+    public String getEventPreviewCode() {
+        return Integer.toHexString(getCompleteEventUrl().hashCode());
     }
 }
