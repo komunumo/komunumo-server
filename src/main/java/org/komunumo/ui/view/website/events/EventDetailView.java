@@ -64,7 +64,7 @@ public class EventDetailView extends EventArticle implements BeforeEnterObserver
                 .orElseThrow(NotFoundException::new);
 
         if (!previewCode.isBlank() && event.getPublished()) {
-            beforeEnterEvent.forwardTo(event.getCompleteEventUrl()); // TODO "301 Moved Permanently"
+            beforeEnterEvent.forwardTo(event.getCompleteEventUrl());
         }
 
         if (!event.getPublished() && !previewCode.equals(event.getEventPreviewCode())) {
