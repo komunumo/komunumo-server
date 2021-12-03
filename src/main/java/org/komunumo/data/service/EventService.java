@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
+import org.komunumo.data.db.tables.records.EventUrlJugRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.entity.KeywordEntity;
@@ -40,6 +41,7 @@ import static org.komunumo.data.db.tables.Event.EVENT;
 import static org.komunumo.data.db.tables.EventKeyword.EVENT_KEYWORD;
 import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
 import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
+import static org.komunumo.data.db.tables.EventUrlJug.EVENT_URL_JUG;
 import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
@@ -203,5 +205,9 @@ public class EventService {
                 .from(EVENT)
                 .orderBy(EVENT.LOCATION)
                 .fetchSet(EVENT.LOCATION);
+    }
+
+    public @NotNull Stream<EventUrlJugRecord> getEventRedirectUrls() {
+        return dsl.selectFrom(EVENT_URL_JUG).stream();
     }
 }

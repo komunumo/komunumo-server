@@ -70,6 +70,7 @@ import static org.komunumo.data.db.tables.EventKeyword.EVENT_KEYWORD;
 import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
 import static org.komunumo.data.db.tables.EventOrganizer.EVENT_ORGANIZER;
 import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
+import static org.komunumo.data.db.tables.EventUrlJug.EVENT_URL_JUG;
 import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 import static org.komunumo.data.db.tables.Member.MEMBER;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
@@ -426,7 +427,7 @@ public class JUGSImporter {
         final var counter = new AtomicInteger(0);
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
-                    "SELECT id, ort, datum, startzeit, zeitende, titel, untertitel, agenda, abstract, sichtbar, verantwortung, url_webinar, anm_formular FROM events_neu WHERE sichtbar='ja' OR datum >= '2021-01-01' ORDER BY id");
+                    "SELECT id, ort, datum, startzeit, zeitende, titel, untertitel, agenda, abstract, sichtbar, verantwortung, urldatei, url_webinar, anm_formular FROM events_neu WHERE sichtbar='ja' OR datum >= '2021-01-01' ORDER BY id");
             while (result.next()) {
                 final var event = eventService.get(result.getLong("id"))
                         .orElse(eventService.newEvent());
@@ -464,6 +465,13 @@ public class JUGSImporter {
                     eventService.store(event);
                     addOrganizers(memberService, eventMemberService, event, result.getString("verantwortung"));
                     counter.incrementAndGet();
+
+                    if (result.getString("urldatei") != null && !result.getString("urldatei").isBlank()) {
+                        dsl.insertInto(EVENT_URL_JUG, EVENT_URL_JUG.URL_JUG, EVENT_URL_JUG.EVENT_ID)
+                                .values(result.getString("urldatei"), result.getLong("id"))
+                                .onDuplicateKeyIgnore()
+                                .execute();
+                    }
                 }
             }
         }

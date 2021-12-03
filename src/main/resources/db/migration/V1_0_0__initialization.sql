@@ -37,6 +37,14 @@ CREATE TABLE event (
 
 CREATE INDEX event_date ON event (date);
 
+CREATE TABLE event_url_jug (
+    url_jug VARCHAR(255) NOT NULL,
+    event_id INTEGER UNSIGNED NOT NULL,
+
+    PRIMARY KEY (url_jug),
+    CONSTRAINT FOREIGN KEY (event_id) REFERENCES event(id)
+) DEFAULT CHARSET=utf8;
+
 CREATE TABLE member (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 

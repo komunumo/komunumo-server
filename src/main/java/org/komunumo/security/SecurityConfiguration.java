@@ -23,6 +23,7 @@ import com.vaadin.flow.spring.security.VaadinWebSecurityConfigurerAdapter;
 import java.security.SecureRandom;
 
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.service.EventService;
 import org.komunumo.ui.view.login.LoginView;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,6 +39,12 @@ public class SecurityConfiguration extends VaadinWebSecurityConfigurerAdapter {
 
     public static final String LOGIN_URL = "login";
     public static final String LOGOUT_URL = "/";
+
+    private final EventService eventService;
+
+    public SecurityConfiguration(@NotNull final EventService eventService) {
+        this.eventService = eventService;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -75,5 +82,7 @@ public class SecurityConfiguration extends VaadinWebSecurityConfigurerAdapter {
 
                 // (development mode) H2 debugging console
                 "/h2-console/**");
+
+        eventService.getEventRedirectUrls().forEach(record -> web.ignoring().antMatchers(record.getUrlJug()));
     }
 }
