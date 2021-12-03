@@ -167,14 +167,16 @@ public class EventDetailView extends EventArticle implements BeforeEnterObserver
     }
 
     private void addLanguage(@NotNull final Event event) {
-        final var languageLabel = new Span(new Text("Language:"));
-        languageLabel.addClassName("language-label");
-        final var language = new Div(
-                languageLabel,
-                new Span(new Text(event.getLanguage().toString()))
-        );
-        language.addClassName("language");
-        add(language);
+        if (event.getLanguage() != null) {
+            final var languageLabel = new Span(new Text("Language:"));
+            languageLabel.addClassName("language-label");
+            final var language = new Div(
+                    languageLabel,
+                    new Span(new Text(event.getLanguage().toString()))
+            );
+            language.addClassName("language");
+            add(language);
+        }
     }
 
 }
