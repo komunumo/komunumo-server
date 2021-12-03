@@ -31,12 +31,18 @@ import com.vaadin.flow.router.NotFoundException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.EventService;
 import org.komunumo.ui.view.website.WebsiteLayout;
 
 import java.time.Year;
+
+import org.komunumo.util.URLUtil;
 
 @Route(value = "event/:location/:year/:url", layout = WebsiteLayout.class)
 @PageTitle("Events") // TODO title based on event
@@ -45,6 +51,7 @@ import java.time.Year;
 public class EventDetailView extends EventArticle implements BeforeEnterObserver {
 
     private final EventService eventService;
+    private final Map<String, String> locationMapper = new HashMap<>();
 
     public EventDetailView(@NotNull final EventService eventService) {
         super();
@@ -60,7 +67,7 @@ public class EventDetailView extends EventArticle implements BeforeEnterObserver
         final var url = params.get("url").orElseThrow(NotFoundException::new);
         final var previewCode = getPreviewCode(beforeEnterEvent);
 
-        final var event = eventService.getByEventUrl(location, Year.of(year), url)
+        final var event = eventService.getByEventUrl(mapLocation(location), Year.of(year), url)
                 .orElseThrow(NotFoundException::new);
 
         if (!previewCode.isBlank() && event.getPublished()) {
@@ -83,6 +90,14 @@ public class EventDetailView extends EventArticle implements BeforeEnterObserver
         addDescription(event);
         addLevel(event);
         addLanguage(event);
+    }
+
+    private String mapLocation(@NotNull final String location) {
+        if (!locationMapper.containsKey(location)) {
+            eventService.getAllLocations()
+                    .forEach(value -> locationMapper.put(URLUtil.createReadableUrl(value), value));
+        }
+        return locationMapper.getOrDefault(location, location);
     }
 
     private String getPreviewCode(@NotNull final BeforeEnterEvent beforeEnterEvent) {
