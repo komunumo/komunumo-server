@@ -22,14 +22,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
+import org.komunumo.data.db.tables.records.SponsorDomainRecord;
 import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.data.entity.SponsorEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
+import static org.komunumo.data.db.tables.SponsorDomain.SPONSOR_DOMAIN;
 
 @Service
 public class SponsorService {
@@ -78,4 +82,31 @@ public class SponsorService {
         getSponsorRecord(sponsorId).ifPresent(SponsorRecord::delete);
     }
 
+    public Set<String> getSponsorDomains(@NotNull final SponsorRecord sponsorRecord) {
+        return dsl.selectFrom(SPONSOR_DOMAIN)
+                .where(SPONSOR_DOMAIN.SPONSOR_ID.eq(sponsorRecord.getId()))
+                .stream()
+                .map(SponsorDomainRecord::getDomain)
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
+    public void setSponsorDomains(@NotNull final SponsorRecord sponsorRecord, @NotNull final Set<String> sponsorDomains) {
+        final var newDomains = sponsorDomains.stream().map(String::toLowerCase).collect(Collectors.toUnmodifiableSet());
+        final var oldDomains = getSponsorDomains(sponsorRecord);
+        oldDomains.forEach(domain -> {
+            if (!newDomains.contains(domain)) {
+                dsl.deleteFrom(SPONSOR_DOMAIN)
+                        .where(SPONSOR_DOMAIN.SPONSOR_ID.eq(sponsorRecord.getId())
+                                .and(SPONSOR_DOMAIN.DOMAIN.eq(domain)))
+                        .execute();
+            }
+        });
+        newDomains.forEach(domain -> {
+            if (!oldDomains.contains(domain)) {
+                dsl.insertInto(SPONSOR_DOMAIN, SPONSOR_DOMAIN.SPONSOR_ID, SPONSOR_DOMAIN.DOMAIN)
+                        .values(sponsorRecord.getId(), domain)
+                        .execute();
+            }
+        });
+    }
 }

@@ -24,18 +24,26 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.db.tables.records.SponsorRecord;
+import org.komunumo.data.service.SponsorService;
 import org.komunumo.ui.component.DatePicker;
 import org.komunumo.ui.component.EditDialog;
 import org.komunumo.ui.component.ImageUploadField;
+import org.komunumo.ui.component.TagField;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
 public class SponsorDialog extends EditDialog<SponsorRecord> {
 
-    public SponsorDialog(@NotNull final String title) {
+    private final SponsorService sponsorService;
+
+    private TagField domains;
+
+    public SponsorDialog(@NotNull final String title, @NotNull final SponsorService sponsorService) {
         super(title);
+        this.sponsorService = sponsorService;
     }
 
     @Override
@@ -46,13 +54,14 @@ public class SponsorDialog extends EditDialog<SponsorRecord> {
         final var logo = new ImageUploadField("Logo");
         final var validFrom = new DatePicker("Valid from");
         final var validTo = new DatePicker("Valid to");
+        domains = new TagField("Domains");
 
         name.setRequiredIndicatorVisible(true);
         name.setValueChangeMode(EAGER);
         website.setValueChangeMode(EAGER);
         level.setItems(SponsorLevel.values());
 
-        formLayout.add(name, website, level, logo, validFrom, validTo);
+        formLayout.add(name, website, level, logo, validFrom, validTo, domains);
 
         binder.forField(name)
                 .withValidator(new StringLengthValidator(
@@ -85,5 +94,18 @@ public class SponsorDialog extends EditDialog<SponsorRecord> {
                 .withValidator(value -> value == null || validFrom.isEmpty() || value.isAfter(validFrom.getValue()),
                         "The valid to date must be after the valid from date")
                 .bind(SponsorRecord::getValidTo, SponsorRecord::setValidTo);
+    }
+
+    @Override
+    public void open(@NotNull final SponsorRecord sponsorRecord, @Nullable final Callback afterSave) {
+        domains.setItems(sponsorService.getSponsorDomains(sponsorRecord));
+        super.open(sponsorRecord,
+                () -> {
+                    sponsorService.setSponsorDomains(sponsorRecord, domains.getItems());
+                    if (afterSave != null) {
+                        afterSave.execute();
+                    }
+                }
+        );
     }
 }

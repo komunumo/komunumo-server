@@ -160,7 +160,7 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
     private void showSponsorDialog(@Nullable final SponsorEntity sponsorEntity) {
         final var sponsorRecord = sponsorEntity == null || sponsorEntity.id() == null ? sponsorService.newSponsor() :
                 sponsorService.getSponsorRecord(sponsorEntity.id()).orElse(sponsorService.newSponsor());
-        final var dialog = new SponsorDialog(sponsorRecord.getId() != null ? "Edit Sponsor" : "New Sponsor");
+        final var dialog = new SponsorDialog(sponsorRecord.getId() != null ? "Edit Sponsor" : "New Sponsor", sponsorService);
         dialog.open(sponsorRecord, this::reloadGridItems);
     }
 

@@ -158,3 +158,12 @@ CREATE TABLE sponsor (
 
     PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
+
+CREATE TABLE sponsor_domain (
+    sponsor_id INTEGER UNSIGNED NOT NULL,
+    domain VARCHAR(255) NOT NULL DEFAULT '',
+
+    PRIMARY KEY (sponsor_id, domain),
+    CONSTRAINT FOREIGN KEY (sponsor_id) REFERENCES sponsor(id)
+) DEFAULT CHARSET=utf8;
+
