@@ -46,7 +46,7 @@ public class TagField extends TextField {
 
     @Override
     public void setValue(@NotNull final String value) {
-        this.tags = Arrays.stream(value.split(","))
+        this.tags = value.isBlank() ? new HashSet<>() : Arrays.stream(value.split(","))
                 .filter(s -> !s.isBlank())
                 .collect(Collectors.toSet());
         updateItemView();
@@ -54,7 +54,7 @@ public class TagField extends TextField {
 
     @Override
     public String getValue() {
-        return tags.stream()
+        return tags.isEmpty() ? "" : tags.stream()
                 .sorted()
                 .collect(Collectors.joining(","));
     }
