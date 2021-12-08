@@ -23,6 +23,9 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
+
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.SponsorLevel;
@@ -33,13 +36,16 @@ import org.komunumo.ui.component.EditDialog;
 import org.komunumo.ui.component.ImageUploadField;
 import org.komunumo.ui.component.TagField;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
 public class SponsorDialog extends EditDialog<SponsorRecord> {
 
     private final SponsorService sponsorService;
 
-    private TagField domains;
+    private String domainCSV;
 
     public SponsorDialog(@NotNull final String title, @NotNull final SponsorService sponsorService) {
         super(title);
@@ -54,7 +60,7 @@ public class SponsorDialog extends EditDialog<SponsorRecord> {
         final var logo = new ImageUploadField("Logo");
         final var validFrom = new DatePicker("Valid from");
         final var validTo = new DatePicker("Valid to");
-        domains = new TagField("Domains");
+        final var domains = new TagField("Domains");
 
         name.setRequiredIndicatorVisible(true);
         name.setValueChangeMode(EAGER);
@@ -94,18 +100,34 @@ public class SponsorDialog extends EditDialog<SponsorRecord> {
                 .withValidator(value -> value == null || validFrom.isEmpty() || value.isAfter(validFrom.getValue()),
                         "The valid to date must be after the valid from date")
                 .bind(SponsorRecord::getValidTo, SponsorRecord::setValidTo);
+
+        binder.forField(domains)
+                .bind(this::getDomains, this::setDomains);
     }
 
     @Override
     public void open(@NotNull final SponsorRecord sponsorRecord, @Nullable final Callback afterSave) {
-        domains.setItems(sponsorService.getSponsorDomains(sponsorRecord));
+        final var domainList = sponsorService.getSponsorDomains(sponsorRecord);
+        domainCSV = domainList.isEmpty() ? "" : domainList.stream()
+                .sorted().collect(Collectors.joining(","));
         super.open(sponsorRecord,
                 () -> {
-                    sponsorService.setSponsorDomains(sponsorRecord, domains.getItems());
+                    sponsorService.setSponsorDomains(sponsorRecord,
+                            domainCSV.isBlank() ? Set.of() : Arrays.stream(domainCSV.split(","))
+                                    .collect(Collectors.toUnmodifiableSet()));
                     if (afterSave != null) {
                         afterSave.execute();
                     }
                 }
         );
     }
+
+    private String getDomains(@NotNull final SponsorRecord sponsorRecord) {
+        return domainCSV;
+    }
+
+    private void setDomains(@NotNull final SponsorRecord sponsorRecord, @Nullable final String domainCSV) {
+        this.domainCSV = domainCSV != null ? domainCSV : "";
+    }
+
 }
