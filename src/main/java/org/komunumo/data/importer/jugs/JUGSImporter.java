@@ -680,9 +680,16 @@ public class JUGSImporter {
                     sponsorRecord.set(SPONSOR.ID, result.getLong("id"));
                     sponsorRecord.set(SPONSOR.NAME, result.getString("firma"));
                     sponsorRecord.set(SPONSOR.LEVEL, getSponsorLevel(result.getString("sponsortyp")));
-                    sponsorRecord.set(SPONSOR.WEBSITE, result.getString("url"));
+                    sponsorRecord.set(SPONSOR.WEBSITE, result.getString("url").replaceFirst("^http://", "https://"));
                     sponsorRecord.set(SPONSOR.LOGO, "https://jug.ch/images/sponsors/" + result.getString("logo"));
                     sponsorService.store(sponsorRecord);
+                    if (!sponsorRecord.getWebsite().isBlank()) {
+                        final var domain = URLUtil.getDomainFromUrl(sponsorRecord.getWebsite());
+                        final var sponsorDomainRecord = sponsorService.newSponsorDomain();
+                        sponsorDomainRecord.setSponsorId(sponsorRecord.getId());
+                        sponsorDomainRecord.setDomain(domain);
+                        sponsorDomainRecord.store();
+                    }
                     counter.incrementAndGet();
                 }
             }

@@ -52,6 +52,10 @@ public class SponsorService {
         return sponsor;
     }
 
+    public @NotNull SponsorDomainRecord newSponsorDomain() {
+        return dsl.newRecord(SPONSOR_DOMAIN);
+    }
+
     public int count() {
         return dsl.fetchCount(SPONSOR);
     }

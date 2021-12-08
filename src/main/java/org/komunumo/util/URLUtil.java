@@ -38,6 +38,10 @@ public class URLUtil {
                 StandardCharsets.UTF_8);
     }
 
+    public static String getDomainFromUrl(@NotNull final String url) {
+        return url.replaceAll(".+//|www.|/.+|/$", "");
+    }
+
     public URLUtil() {
         throw new IllegalStateException("Utility class");
     }

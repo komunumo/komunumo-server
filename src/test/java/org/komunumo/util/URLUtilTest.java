@@ -35,4 +35,19 @@ class URLUtilTest {
         assertEquals("count-from-1-to-3", URLUtil.createReadableUrl("Count from 1 to 3"));
     }
 
+    @Test
+    @SuppressWarnings("HttpUrlsUsage")
+    void getDomainFromUrl() {
+        assertEquals("komunumo.org", URLUtil.getDomainFromUrl("komunumo.org"));
+        assertEquals("komunumo.org", URLUtil.getDomainFromUrl("www.komunumo.org"));
+        assertEquals("komunumo.org", URLUtil.getDomainFromUrl("http://komunumo.org"));
+        assertEquals("komunumo.org", URLUtil.getDomainFromUrl("http://komunumo.org/"));
+        assertEquals("komunumo.org", URLUtil.getDomainFromUrl("http://www.komunumo.org/"));
+        assertEquals("komunumo.org", URLUtil.getDomainFromUrl("https://komunumo.org/"));
+        assertEquals("komunumo.org", URLUtil.getDomainFromUrl("https://komunumo.org/index.html"));
+        assertEquals("komunumo.org", URLUtil.getDomainFromUrl("https://komunumo.org/subdir"));
+        assertEquals("komunumo.org", URLUtil.getDomainFromUrl("https://komunumo.org/subdir/"));
+        assertEquals("komunumo.org", URLUtil.getDomainFromUrl("https://komunumo.org/subdir/index.html"));
+        assertEquals("", URLUtil.getDomainFromUrl(""));
+    }
 }
