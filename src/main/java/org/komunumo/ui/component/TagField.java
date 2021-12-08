@@ -96,7 +96,9 @@ public class TagField extends TextField {
         if (keyPressEvent.getKey().equals(Key.ENTER)) {
             final var newValue = super.getValue();
             if (!newValue.isBlank()) {
-                tags.add(newValue.trim());
+                Arrays.stream(newValue.split(","))
+                        .filter(value -> !value.isBlank())
+                        .forEach(value -> tags.add(value.trim()));
                 super.setValue("");
                 updateItemView();
             }
