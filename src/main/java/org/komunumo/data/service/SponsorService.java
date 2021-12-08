@@ -18,9 +18,12 @@
 
 package org.komunumo.data.service;
 
+import java.time.LocalDate;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
+import org.jooq.Record1;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.SponsorDomainRecord;
 import org.komunumo.data.db.tables.records.SponsorRecord;
@@ -113,4 +116,16 @@ public class SponsorService {
             }
         });
     }
+
+    public Set<String> getActiveSponsorDomains() {
+        return dsl.select(SPONSOR_DOMAIN.DOMAIN)
+                .from(SPONSOR_DOMAIN, SPONSOR)
+                .where(SPONSOR_DOMAIN.SPONSOR_ID.eq(SPONSOR.ID))
+                .and(SPONSOR.VALID_FROM.isNull().or(SPONSOR.VALID_FROM.lessOrEqual(LocalDate.now())))
+                .and(SPONSOR.VALID_TO.isNull().or(SPONSOR.VALID_TO.greaterOrEqual(LocalDate.now())))
+                .stream()
+                .map(Record1::value1)
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
 }

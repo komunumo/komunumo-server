@@ -40,11 +40,16 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
+
+import java.time.LocalDate;
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Member;
 import org.komunumo.data.entity.Role;
 import org.komunumo.data.service.MemberService;
+import org.komunumo.data.service.SponsorService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
@@ -67,11 +72,14 @@ import static org.komunumo.util.FormatterUtil.formatDateTime;
 public class MembersView extends ResizableView implements HasUrlParameter<String> {
 
     private final MemberService memberService;
+    private final SponsorService sponsorService;
     private final TextField filterField;
     private final Grid<Member> grid;
 
-    public MembersView(@NotNull final MemberService memberService) {
+    public MembersView(@NotNull final MemberService memberService,
+                       @NotNull final SponsorService sponsorService) {
         this.memberService = memberService;
+        this.sponsorService = sponsorService;
 
         addClassNames("members-view", "flex", "flex-col", "h-full");
 
@@ -108,6 +116,8 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
     }
 
     private Grid<Member> createGrid() {
+        final var sponsorDomains = sponsorService.getActiveSponsorDomains();
+
         final var grid = new Grid<Member>();
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
@@ -119,7 +129,7 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         grid.addColumn(TemplateRenderer.<Member>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
                 .withProperty("email", Member::getEmail))
                 .setHeader("Email").setAutoWidth(true).setKey("email").setFlexGrow(0);
-        grid.addColumn(new ComponentRenderer<>(member -> new Text(getMembershipText(member))))
+        grid.addColumn(new ComponentRenderer<>(member -> new Text(getMembershipText(member, sponsorDomains))))
                 .setHeader("Membership").setAutoWidth(true).setFlexGrow(0);
         grid.addColumn(new ComponentRenderer<>(member -> new Icon(member.getAdmin() ? VaadinIcon.CHECK : VaadinIcon.MINUS)))
                 .setHeader("Admin").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER).setFlexGrow(0);
@@ -145,19 +155,40 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         return grid;
     }
 
-    private String getMembershipText(@NotNull final Member member) {
+    @SuppressWarnings("ConstantConditions") // for better readability
+    private String getMembershipText(@NotNull final Member member, @NotNull Set<String> sponsorDomains) {
         final var begin = member.getMembershipBegin();
         final var end = member.getMembershipEnd();
 
-        if (begin == null && end == null) {
-            return "no";
-        } else if (begin != null && end == null) {
-            return "since %d".formatted(begin.getYear());
-        } else if (begin != null) {
+        // is active member
+        if (begin != null && end == null) {
+            return "since %d" .formatted(begin.getYear());
+        }
+        if (begin != null && end != null && end.isAfter(LocalDate.now().minusDays(1))) {
             return "from %d to %d".formatted(begin.getYear(), end.getYear());
-        } else {
+        }
+        if (begin == null && end != null && end.isAfter(LocalDate.now().minusDays(1))) {
             return "until %d".formatted(end.getYear());
         }
+
+        // is active sponsor member
+        if (!member.getEmail().isBlank()) {
+            final var emailDomain = member.getEmail().split("@", 2)[1];
+            if (sponsorDomains.contains(emailDomain)) {
+                return "sponsored";
+            }
+        }
+
+        // no member
+        if (begin == null && end == null) {
+            return "no";
+        } else if (begin != null && end != null) {
+            return "from %d to %d".formatted(begin.getYear(), end.getYear());
+        } else if (begin == null && end != null) {
+            return "until %d".formatted(end.getYear());
+        }
+
+        return "unknown";
     }
 
     @Override
