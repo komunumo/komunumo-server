@@ -27,38 +27,41 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.textfield.TextField;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @CssImport("./themes/komunumo/views/admin/tag-field.css")
 public class TagField extends TextField {
 
-    private Set<String> items;
+    private Set<String> tags;
 
     public TagField(@NotNull final String label) {
-        this(label, Set.of());
-    }
-
-    public TagField(@NotNull final String label, @NotNull final Set<String> items) {
         super(label);
         addClassName("komunumo-tag-field");
-        setItems(items);
         addKeyPressListener(this::keyPressListener);
+        tags = new HashSet<>();
     }
 
-    public void setItems(@NotNull final Set<String> items) {
-        this.items = new HashSet<>(items);
+    @Override
+    public void setValue(@NotNull final String value) {
+        this.tags = Arrays.stream(value.split(","))
+                .filter(s -> !s.isBlank())
+                .collect(Collectors.toSet());
         updateItemView();
     }
 
-    public Set<String> getItems() {
-        return Collections.unmodifiableSet(items);
+    @Override
+    public String getValue() {
+        return tags.stream()
+                .sorted()
+                .collect(Collectors.joining(","));
     }
 
     private void updateItemView() {
         final var itemView = new Span();
-        items.stream().sorted().forEach(item -> itemView.add(createItemView(item)));
+        tags.stream().sorted().forEach(item -> itemView.add(createItemView(item)));
         setPrefixComponent(itemView);
     }
 
@@ -73,8 +76,9 @@ public class TagField extends TextField {
         tagRemoveButton.addClassName("tag-remove-button");
         tagRemoveButton.setTitle("remove");
         tagRemoveButton.addClickListener(clickListener -> {
-            items.remove(item);
+            tags.remove(item);
             updateItemView();
+            triggerChangeEvent();
             focus();
         });
 
@@ -82,12 +86,18 @@ public class TagField extends TextField {
         return tag;
     }
 
+    private void triggerChangeEvent() {
+        final var originalValue = super.getValue();
+        super.setValue(originalValue.concat(" "));
+        super.setValue(originalValue);
+    }
+
     private void keyPressListener(@NotNull final KeyPressEvent keyPressEvent) {
         if (keyPressEvent.getKey().equals(Key.ENTER)) {
-            final var value = getValue();
-            if (!value.isBlank()) {
-                items.add(value.trim());
-                setValue("");
+            final var newValue = super.getValue();
+            if (!newValue.isBlank()) {
+                tags.add(newValue.trim());
+                super.setValue("");
                 updateItemView();
             }
         }
