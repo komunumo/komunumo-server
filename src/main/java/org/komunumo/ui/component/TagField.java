@@ -48,6 +48,7 @@ public class TagField extends TextField {
     public void setValue(@NotNull final String value) {
         this.tags = value.isBlank() ? new HashSet<>() : Arrays.stream(value.split(","))
                 .filter(s -> !s.isBlank())
+                .map(String::trim)
                 .collect(Collectors.toSet());
         updateItemView();
     }
