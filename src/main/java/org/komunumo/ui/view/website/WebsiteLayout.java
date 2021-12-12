@@ -28,6 +28,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.RouterLayout;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.configuration.Configuration;
+import org.komunumo.data.service.SponsorService;
 import org.komunumo.data.service.StatisticService;
 
 @CssImport(value = "./themes/komunumo/views/website/website-layout.css")
@@ -37,7 +38,8 @@ public class WebsiteLayout extends VerticalLayout implements RouterLayout {
     private final TwitterFeed twitterFeed;
 
     public WebsiteLayout(@NotNull final Configuration configuration,
-                         @NotNull final StatisticService statisticService) {
+                         @NotNull final StatisticService statisticService,
+                         @NotNull final SponsorService sponsorService) {
         addClassName("website");
 
         add(new CookieConsent());
@@ -48,7 +50,7 @@ public class WebsiteLayout extends VerticalLayout implements RouterLayout {
         twitterFeed = new TwitterFeed();
 
         final var mainLayout = new HorizontalLayout(
-                new VerticalLayout(main),
+                new VerticalLayout(main, new SponsorBlock(sponsorService)),
                 twitterFeed);
         mainLayout.setId("main-layout");
         add(mainLayout);

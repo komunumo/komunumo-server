@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.impl.DSL;
+import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.db.tables.records.SponsorDomainRecord;
 import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.data.entity.SponsorEntity;
@@ -128,4 +129,13 @@ public class SponsorService {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
+    public Stream<SponsorEntity> getActiveSponsors(@NotNull final SponsorLevel level) {
+        return dsl.selectFrom(SPONSOR)
+                .where(SPONSOR.LEVEL.eq(level))
+                .and(SPONSOR.VALID_FROM.isNull().or(SPONSOR.VALID_FROM.lessOrEqual(LocalDate.now())))
+                .and(SPONSOR.VALID_TO.isNull().or(SPONSOR.VALID_TO.greaterOrEqual(LocalDate.now())))
+                .orderBy(SPONSOR.NAME)
+                .fetchInto(SponsorEntity.class)
+                .stream();
+    }
 }
