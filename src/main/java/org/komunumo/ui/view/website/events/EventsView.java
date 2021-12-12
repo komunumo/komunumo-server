@@ -21,9 +21,6 @@ package org.komunumo.ui.view.website.events;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -33,6 +30,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.EventService;
+import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.WebsiteLayout;
 import org.komunumo.util.URLUtil;
 
@@ -41,22 +39,18 @@ import org.komunumo.util.URLUtil;
 @PageTitle("Events")
 @CssImport("./themes/komunumo/views/website/events-view.css")
 @AnonymousAllowed
-public class EventsView extends VerticalLayout implements BeforeEnterObserver {
+public class EventsView extends ContentBlock implements BeforeEnterObserver {
 
     private final EventService eventService;
-    private final HorizontalLayout eventsLayout;
 
     public EventsView(@NotNull final EventService eventService) {
+        super("Events");
+
         this.eventService = eventService;
         addClassName("events-view");
 
-        final var pageTitle = new H2("Events");
-        pageTitle.setId("page-title");
         final var upcomingTitle = new H1("Upcoming");
         upcomingTitle.setId("upcoming-title");
-
-        eventsLayout = new HorizontalLayout();
-        add(new HorizontalLayout(pageTitle, upcomingTitle), eventsLayout);
     }
 
     @Override
@@ -78,7 +72,7 @@ public class EventsView extends VerticalLayout implements BeforeEnterObserver {
                 .map(EventPreview::new)
                 .forEach(eventsList::add);
 
-        eventsLayout.removeAll();
-        eventsLayout.add(locationSelector, eventsList);
+        setSubMenu(locationSelector);
+        setContent(eventsList);
     }
 }

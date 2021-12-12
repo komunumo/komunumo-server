@@ -19,16 +19,23 @@
 package org.komunumo.ui.view.website;
 
 import com.vaadin.flow.component.HasElement;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.cookieconsent.CookieConsent;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Main;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.RouterLayout;
+
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.configuration.Configuration;
 import org.komunumo.data.service.StatisticService;
+import org.komunumo.ui.view.website.events.LocationSelector;
 
 @CssImport(value = "./themes/komunumo/views/website/website-layout.css")
 public class WebsiteLayout extends VerticalLayout implements RouterLayout {

@@ -16,20 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-main.website #page-title,
-main.website #upcoming-title {
-    border-top: 2px solid #bfbfbf;
-    font-size: 300%;
-    margin-top: 0;
-    padding-top: 0;
-}
-
-main.website #page-title {
-    display: block;
-    padding-inline-start: 40px;
-    width: 160px;
-}
-
 main.website .events-list {
     display: flex;
     flex-wrap: wrap;
@@ -45,7 +31,6 @@ main.website ul.location-selector  {
     margin-block-end: 1em;
     margin-inline-start: 0;
     margin-inline-end: 0;
-    padding-inline-start: 40px;
 }
 
 main.website ul.location-selector li {
@@ -63,13 +48,17 @@ main.website ul.location-selector li a {
     margin: 0;
     padding: 9px 8px 0 8px;
     font-size: 100%;
-    font-style: normal;
+    font-weight: normal;
     color: #333333;
     text-decoration: none;
 }
 
+main.website ul.location-selector li a:hover,
 main.website ul.location-selector li a.active {
     background-color: #f3f3f3;
+}
+
+main.website ul.location-selector li a.active {
     font-weight: bold;
     text-transform: uppercase;
 }

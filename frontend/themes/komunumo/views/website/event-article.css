@@ -16,12 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-main.website article.event-article {
-    border-top: 2px solid #bfbfbf;
-    font-size: 0.8rem;
-    padding: 6px 20px 4px 4px;
-}
-
 main.website article.event-article .upcoming {
     background-color: #930722;
     color: #ffffff;
