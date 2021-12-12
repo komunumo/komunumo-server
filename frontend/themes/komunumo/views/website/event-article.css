@@ -20,18 +20,15 @@ main.website article.event-article .upcoming {
     background-color: #930722;
     color: #ffffff;
     font-weight: bold;
+    margin-right: 1em;
     padding: 3px 3px 1px 3px;
     text-transform: uppercase;
 }
 
 main.website article.event-article .location {
     font-weight: bold;
-    margin-left: 1em;
+    margin-right: 1em;
     text-transform: uppercase;
-}
-
-main.website article.event-article .date-time {
-    margin-left: 1em;
 }
 
 main.website article.event-article h2,
