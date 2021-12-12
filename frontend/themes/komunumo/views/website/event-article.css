@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-main.website article.event-article .upcoming {
+.website article.event-article .upcoming {
     background-color: #930722;
     color: #ffffff;
     font-weight: bold;
@@ -25,44 +25,44 @@ main.website article.event-article .upcoming {
     text-transform: uppercase;
 }
 
-main.website article.event-article .location {
+.website article.event-article .location {
     font-weight: bold;
     margin-right: 1em;
     text-transform: uppercase;
 }
 
-main.website article.event-article h2,
-main.website article.event-article h3 {
+.website article.event-article h2,
+.website article.event-article h3 {
     margin-top: 5px;
 }
 
-main.website article.event-article .speaker-label,
-main.website article.event-article .company-label,
-main.website article.event-article .keyword-label {
+.website article.event-article .speaker-label,
+.website article.event-article .company-label,
+.website article.event-article .keyword-label {
     font-weight: bold;
     margin-right: 0.5em;
     text-transform: uppercase;
 }
 
-main.website article.event-article .company-label {
+.website article.event-article .company-label {
     margin-left: 1em;
 }
 
-main.website article.event-article > a:hover h2,
-main.website article.event-article > a:hover h3 {
+.website article.event-article > a:hover h2,
+.website article.event-article > a:hover h3 {
     color: #930722;
 }
 
-main.website article.event-article .more > a,
-main.website article.event-article .more > a:visited,
-main.website article.event-article .more > a:active,
-main.website article.event-article .more > a:hover {
+.website article.event-article .more > a,
+.website article.event-article .more > a:visited,
+.website article.event-article .more > a:active,
+.website article.event-article .more > a:hover {
     color: #930722;
     font-weight: bold;
     text-transform: uppercase;
 }
 
-main.website article.event-article .more > img {
+.website article.event-article .more > img {
     margin-right: 3px;
     padding-bottom: 1px;
 }

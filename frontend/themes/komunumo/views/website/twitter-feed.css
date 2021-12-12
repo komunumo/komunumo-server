@@ -16,7 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#main-layout .twitter-feed {
+.website .twitter-feed {
     border-top: 2px solid #bfbfbf;
+    margin-left: 0;
     width: 300px;
 }

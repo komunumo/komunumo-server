@@ -16,12 +16,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-main.website .events-list {
+.website .events-list {
     display: flex;
     flex-wrap: wrap;
+    gap: 20px;
 }
 
-main.website ul.location-selector  {
+.website ul.location-selector  {
     display: block;
     border: none;
     margin: 0;
@@ -33,7 +34,7 @@ main.website ul.location-selector  {
     margin-inline-end: 0;
 }
 
-main.website ul.location-selector li {
+.website ul.location-selector li {
     min-height: 30px;
     border-bottom: 1px solid #bfbfbf;
     margin: 0;
@@ -41,7 +42,7 @@ main.website ul.location-selector li {
     list-style-type: none;
 }
 
-main.website ul.location-selector li a {
+.website ul.location-selector li a {
     display: block;
     width: 144px;
     min-height: 21px;
@@ -53,12 +54,12 @@ main.website ul.location-selector li a {
     text-decoration: none;
 }
 
-main.website ul.location-selector li a:hover,
-main.website ul.location-selector li a.active {
+.website ul.location-selector li a:hover,
+.website ul.location-selector li a.active {
     background-color: #f3f3f3;
 }
 
-main.website ul.location-selector li a.active {
+.website ul.location-selector li a.active {
     font-weight: bold;
     text-transform: uppercase;
 }

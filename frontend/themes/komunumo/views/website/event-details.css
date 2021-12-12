@@ -16,47 +16,47 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-main.website article.event-details .location-label,
-main.website article.event-details .agenda-label,
-main.website article.event-details .room-label,
-main.website article.event-details .level-label,
-main.website article.event-details .language-label{
+.website article.event-details .location-label,
+.website article.event-details .agenda-label,
+.website article.event-details .room-label,
+.website article.event-details .level-label,
+.website article.event-details .language-label{
     font-weight: bold;
     margin-right: 0.5em;
     text-transform: uppercase;
 }
 
-main.website article.event-details .location {
+.website article.event-details .location {
     font-weight: normal;
     margin-left: 0;
     padding-top: 10px;
     text-transform: none;
 }
 
-main.website article.event-details .agenda {
+.website article.event-details .agenda {
     padding-top: 10px;
     padding-bottom: 15px;
     vertical-align: top;
 }
 
-main.website article.event-details .agenda-label {
+.website article.event-details .agenda-label {
     vertical-align: top;
 }
 
-main.website article.event-details .agenda span {
+.website article.event-details .agenda span {
     display: inline-block;
 }
 
-main.website article.event-details .speakers {
+.website article.event-details .speakers {
     padding-top: 15px;
 }
 
-main.website article.event-details .speakerbox {
+.website article.event-details .speakerbox {
     float: right;
     padding-left: 50px;
     width: 175px;
 }
 
-main.website article.event-details hr {
+.website article.event-details hr {
     border-top: 1px solid #bfbfbf;
 }

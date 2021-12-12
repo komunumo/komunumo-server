@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-main.website .register-view {
+.website .register-view {
   display: grid;
   padding: 10% 30%;
 }

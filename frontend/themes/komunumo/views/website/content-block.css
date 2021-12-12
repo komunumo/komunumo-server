@@ -16,19 +16,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-main.website .content-block .title-column h2 {
+.website .content-block {
+    width: 100%;
+}
+
+.website .content-block .title-column h2 {
     font-size: 300%;
     margin-top: 0;
     padding-top: 0;
     width: 160px;
 }
 
-main.website .content-block .title-column {
+.website .content-block .title-column {
     border-top: 2px solid #bfbfbf;
     padding-inline-start: 8px;
 }
 
-main.website .content-block .content-column {
+.website .content-block .content-column {
     border-top: 2px solid #bfbfbf;
     padding: 6px 20px 6px 6px;
     width: 100%;

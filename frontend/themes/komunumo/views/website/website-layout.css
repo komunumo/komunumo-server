@@ -22,28 +22,27 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
-#main-layout,
-main.website {
+.website {
     font-size: 0.8rem;
     width: 100%;
 }
 
-main.website h1,
-main.website h2 {
+.website h1,
+.website h2 {
     font-family: "Trade Gothic LT W04 Bd CnNo-20", "Arial Narrow", Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
     text-transform: uppercase;
 }
 
-main.website h3,
-main.website h4,
-main.website h5,
-main.website h6 {
+.website h3,
+.website h4,
+.website h5,
+.website h6 {
     font-family: "Trade Gothic LT W04 Cn No-_18", "Arial Narrow", Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
     font-weight: normal;
     text-transform: uppercase;
 }
 
-main.website a {
+.website a {
     color: #9C0523;
     font-weight: bold;
     text-decoration: none;
@@ -70,6 +69,14 @@ main.website a {
     font-weight: bold;
     margin-left: 1em;
     text-transform: uppercase;
+}
+
+#main-layout, main {
+    width: 100%;
+}
+
+main {
+    margin-top: 0;
 }
 
 #website-footer {
