@@ -16,13 +16,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+.website .sponsor-block .sponsor-level {
+    font-size: 100%;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: underline;
+}
+
 .website .sponsor-block .sponsor-logos {
+    border-bottom: 2px solid #bfbfbf;
     display: flex;
     flex-wrap: wrap;
-    gap: 10px 20px;
+    gap: 0 20px;
 }
 
 .website .sponsor-block .sponsor-logo {
+    border-bottom: 1px solid #bfbfbf;
     cursor: pointer;
     display: table-cell;
     height: 90px;
