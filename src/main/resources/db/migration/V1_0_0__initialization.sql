@@ -167,3 +167,14 @@ CREATE TABLE sponsor_domain (
     CONSTRAINT FOREIGN KEY (sponsor_id) REFERENCES sponsor(id)
 ) DEFAULT CHARSET=utf8;
 
+CREATE TABLE news (
+    id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+
+    title VARCHAR(255) NOT NULL,
+    subtitle VARCHAR(255) NOT NULL DEFAULT '',
+    description MEDIUMTEXT NOT NULL,
+    show_from DATETIME NULL,
+    show_to DATETIME NULL,
+
+    PRIMARY KEY (id)
+) DEFAULT CHARSET=utf8;
