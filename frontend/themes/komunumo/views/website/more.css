@@ -16,39 +16,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-.website article.event-article .upcoming {
-    background-color: #930722;
-    color: #ffffff;
-    font-weight: bold;
-    margin-right: 1em;
-    padding: 3px 3px 1px 3px;
-    text-transform: uppercase;
-}
-
-.website article.event-article .location {
-    font-weight: bold;
-    margin-right: 1em;
-    text-transform: uppercase;
-}
-
-.website article.event-article h2,
-.website article.event-article h3 {
-    margin-top: 5px;
-}
-
-.website article.event-article .speaker-label,
-.website article.event-article .company-label,
-.website article.event-article .keyword-label {
-    font-weight: bold;
-    margin-right: 0.5em;
-    text-transform: uppercase;
-}
-
-.website article.event-article .company-label {
-    margin-left: 1em;
-}
-
-.website article.event-article > a:hover h2,
-.website article.event-article > a:hover h3 {
+.website .more > a,
+.website .more > a:visited,
+.website .more > a:active,
+.website .more > a:hover {
     color: #930722;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.website .more > img {
+    margin-right: 3px;
+    padding-bottom: 1px;
 }

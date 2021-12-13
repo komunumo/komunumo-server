@@ -26,12 +26,11 @@ import com.vaadin.flow.component.html.Article;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.KeywordEntity;
+import org.komunumo.ui.component.More;
 
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -114,11 +113,7 @@ public class EventArticle extends Article {
         final var description = event.getDescription();
         final var paragraphEnd = description.contains("</p>") ? description.indexOf("</p>") : description.indexOf("</P>");
         final var html = paragraphEnd > 0 ? description.substring(0, paragraphEnd + 4) : description;
-        final var more = new Paragraph(
-                new Image("/images/more.gif", "more"),
-                new Anchor(event.getCompleteEventUrl(), "more")
-        );
-        more.addClassName("more");
+        final var more = new More(event.getCompleteEventUrl());
         add(new Div(new Html(html), more));
     }
 
