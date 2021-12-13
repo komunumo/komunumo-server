@@ -83,7 +83,7 @@ public class NewsBlock extends ContentBlock {
         subscribeButton.setEnabled(false);
         subscribeButton.setDisableOnClick(true);
         subscribeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
-        emailField.addValueChangeListener((changeEvent) -> subscribeButton.setEnabled(!changeEvent.getValue().isBlank()));
+        emailField.addValueChangeListener((changeEvent) -> subscribeButton.setEnabled(!emailField.isInvalid()));
 
         final var container = new Div(
                 new H2("Stay informed about events"),
