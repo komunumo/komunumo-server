@@ -16,6 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+.website .news-block {
+    margin-top: 0;
+}
+
 .website .news-block vaadin-horizontal-layout > div:first-of-type {
     width: 50%;
 }
