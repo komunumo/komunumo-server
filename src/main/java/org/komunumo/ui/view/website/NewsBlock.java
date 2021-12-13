@@ -20,12 +20,20 @@ package org.komunumo.ui.view.website;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.textfield.EmailField;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.data.value.ValueChangeMode;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.NewsService;
 import org.komunumo.ui.component.More;
@@ -56,10 +64,34 @@ public class NewsBlock extends ContentBlock {
     }
 
     private Component createNewsletterForm() {
-        return new Div(
+        final var emailField = new EmailField();
+        emailField.setPlaceholder("Your email address");
+        emailField.setValueChangeMode(ValueChangeMode.EAGER);
+        emailField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+        final var subscribeButton = new Button("Subscribe", (clickEvent) -> {
+            final var emailAddress = emailField.getValue().trim();
+            if (!emailAddress.isBlank()) {
+                // TODO add email address to newsletter
+                UI.getCurrent().access(() -> {
+                    emailField.setValue("");
+                    Notification.show("You have been added to the newsletter. Please check your email account for verification (opt-in).");
+                });
+            }
+        });
+        subscribeButton.setEnabled(false);
+        subscribeButton.setDisableOnClick(true);
+        subscribeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+        emailField.addValueChangeListener((changeEvent) -> subscribeButton.setEnabled(!changeEvent.getValue().isBlank()));
+
+        final var container = new Div(
                 new H2("Stay informed about events"),
-                new Paragraph("Please register here with your e-mail to receive announcements for upcoming JUG Switzerland events.")
+                new Div(
+                    new Paragraph("Please register here with your e-mail to receive announcements for upcoming JUG Switzerland events."),
+                    emailField, subscribeButton
+                )
         );
+        container.addClassName("newsletter-registration");
+        return container;
     }
 
 }

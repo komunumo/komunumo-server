@@ -19,3 +19,25 @@
 .website .news-block vaadin-horizontal-layout > div:first-of-type {
     width: 50%;
 }
+
+.website .news-block .newsletter-registration h2 {
+    float: left;
+    margin-right: 20px;
+    margin-top: 0;
+    width: 120px;
+}
+
+.website .news-block .newsletter-registration > div {
+    float: left;
+    width: 220px;
+}
+
+.website .news-block .newsletter-registration > div > p,
+.website .news-block .newsletter-registration > div > vaadin-email-field,
+.website .news-block .newsletter-registration > div > vaadin-button {
+    margin: 0;
+}
+
+.website .news-block .newsletter-registration > div > vaadin-email-field {
+    width: 200px;
+}
