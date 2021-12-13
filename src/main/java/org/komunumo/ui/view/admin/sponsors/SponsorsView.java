@@ -38,9 +38,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
-
-import javax.annotation.security.RolesAllowed;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Role;
@@ -51,6 +48,7 @@ import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
 
+import javax.annotation.security.RolesAllowed;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.util.List;
@@ -82,13 +80,13 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
         final var newSponsorButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), clickEvent -> showSponsorDialog(null));
         newSponsorButton.setTitle("Add a new sponsor");
 
-        final var refreshSpeakersButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), clickEvent -> reloadGridItems());
-        refreshSpeakersButton.setTitle("Refresh the list of sponsors");
+        final var refreshSponsorsButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), clickEvent -> reloadGridItems());
+        refreshSponsorsButton.setTitle("Refresh the list of sponsors");
 
         final var downloadSponsorsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD), clickEvent -> downloadSponsors());
         downloadSponsorsButton.setTitle("Download the list of sponsors");
 
-        final var optionBar = new HorizontalLayout(filterField, newSponsorButton, refreshSpeakersButton, downloadSponsorsButton);
+        final var optionBar = new HorizontalLayout(filterField, newSponsorButton, refreshSponsorsButton, downloadSponsorsButton);
         optionBar.setPadding(true);
 
         add(optionBar, grid);
