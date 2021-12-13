@@ -19,12 +19,12 @@
 .website .sponsor-block .sponsor-level {
     font-size: 100%;
     font-weight: bold;
+    margin-top: 20px;
     text-transform: uppercase;
     text-decoration: underline;
 }
 
 .website .sponsor-block .sponsor-logos {
-    border-bottom: 2px solid #bfbfbf;
     display: flex;
     flex-wrap: wrap;
     gap: 0 20px;
