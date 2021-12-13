@@ -20,4 +20,7 @@ package org.komunumo.data.entity;
 
 import java.time.LocalDateTime;
 
-public record NewsEntity(Long id, String title, String subtitle, String description, LocalDateTime showFrom, LocalDateTime showTo) { }
+public record NewsEntity(Long id,
+                         String title, String subtitle,
+                         String teaser, String description,
+                         LocalDateTime showFrom, LocalDateTime showTo) { }

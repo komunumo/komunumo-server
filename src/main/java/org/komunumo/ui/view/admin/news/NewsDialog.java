@@ -40,6 +40,7 @@ public class NewsDialog extends EditDialog<NewsRecord> {
     public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<NewsRecord> binder) {
         final var title = new TextField("Title");
         final var subtitle = new TextField("Subtitle");
+        final var teaser = new TextArea("Teaser");
         final var description = new TextArea("Description");
         final var showFrom = new DateTimePicker("Show from");
         final var showTo = new DateTimePicker("Show to");
@@ -48,7 +49,7 @@ public class NewsDialog extends EditDialog<NewsRecord> {
         title.setValueChangeMode(EAGER);
         subtitle.setValueChangeMode(EAGER);
 
-        formLayout.add(title, subtitle, description, showFrom, showTo);
+        formLayout.add(title, subtitle, teaser, description, showFrom, showTo);
 
         binder.forField(title)
                 .withValidator(new StringLengthValidator(
@@ -59,6 +60,11 @@ public class NewsDialog extends EditDialog<NewsRecord> {
                 .withValidator(new StringLengthValidator(
                         "The subtitle is too long (max. 255 chars)", 0, 255))
                 .bind(NewsRecord::getSubtitle, NewsRecord::setSubtitle);
+
+        binder.forField(teaser)
+                .withValidator(new StringLengthValidator(
+                        "The teaser is too long (max. 1'000 chars)", 0, 1_000))
+                .bind(NewsRecord::getTeaser, NewsRecord::setTeaser);
 
         binder.forField(description)
                 .withValidator(new StringLengthValidator(
