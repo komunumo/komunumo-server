@@ -173,7 +173,7 @@ CREATE TABLE news (
     title VARCHAR(255) NOT NULL,
     subtitle VARCHAR(255) NOT NULL DEFAULT '',
     teaser MEDIUMTEXT NOT NULL,
-    description MEDIUMTEXT NOT NULL,
+    message MEDIUMTEXT NOT NULL,
     show_from DATETIME NULL,
     show_to DATETIME NULL,
 

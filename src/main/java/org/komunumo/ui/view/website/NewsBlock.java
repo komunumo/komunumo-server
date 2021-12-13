@@ -35,6 +35,7 @@ import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.entity.NewsEntity;
 import org.komunumo.data.service.NewsService;
 import org.komunumo.ui.component.More;
 
@@ -44,22 +45,23 @@ public class NewsBlock extends ContentBlock {
     public NewsBlock(@NotNull final NewsService newsService) {
         super("News");
         addClassName("news-block");
-        setContent(new HorizontalLayout(createNewsContent(newsService), createNewsletterForm()));
+
+        final var newsEntity = newsService.getLatestNews();
+        if (newsEntity == null) {
+            setContent(createNewsletterForm());
+        } else {
+            setContent(new HorizontalLayout(createNewsContent(newsEntity), createNewsletterForm()));
+        }
     }
 
-    private Component createNewsContent(@NotNull final NewsService newsService) {
+    private Component createNewsContent(@NotNull final NewsEntity newsEntity) {
         final var container = new Div();
-
-        final var news = newsService.getLatestNews();
-        if (news != null) {
-            container.add(new H2(news.title()));
-            if (!news.subtitle().isBlank()) {
-                container.add(new H3(news.subtitle()));
-            }
-            container.add(new Html("<div>%s</div>".formatted(news.description())));
-            container.add(new More("javascript:alert('The news feature is not completely implemented!');"));
+        container.add(new H2(newsEntity.title()));
+        if (!newsEntity.subtitle().isBlank()) {
+            container.add(new H3(newsEntity.subtitle()));
         }
-
+        container.add(new Html("<div>%s</div>".formatted(newsEntity.teaser())));
+        container.add(new More("javascript:alert('The news feature is not completely implemented!');"));
         return container;
     }
 

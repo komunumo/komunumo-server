@@ -22,5 +22,5 @@ import java.time.LocalDateTime;
 
 public record NewsEntity(Long id,
                          String title, String subtitle,
-                         String teaser, String description,
+                         String teaser, String message,
                          LocalDateTime showFrom, LocalDateTime showTo) { }
