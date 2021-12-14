@@ -21,11 +21,14 @@ package org.komunumo.ui.view.website.news;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Article;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -67,6 +70,12 @@ public class NewsView extends ContentBlock implements BeforeEnterObserver {
         if (idParam.isPresent()) {
             final var id = Long.parseLong(idParam.get());
             newsService.getWhenVisible(id).ifPresent(newsEntities::add);
+
+            final var newsOverview = new UnorderedList(new ListItem(new Anchor("/news", "News overview")));
+            newsOverview.addClassName("location-selector");
+            setSubMenu(newsOverview);
+        } else {
+            setSubMenu(null);
         }
 
         if (newsEntities.isEmpty()) {
