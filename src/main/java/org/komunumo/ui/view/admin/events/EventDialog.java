@@ -22,6 +22,7 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.richtexteditor.RichTextEditor;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
@@ -48,6 +49,7 @@ import org.komunumo.data.service.KeywordService;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.security.AuthenticatedUser;
+import org.komunumo.ui.component.CustomLabel;
 import org.komunumo.ui.component.DateTimePicker;
 import org.komunumo.ui.component.EditDialog;
 import org.komunumo.util.URLUtil;
@@ -110,7 +112,7 @@ public class EventDialog extends EditDialog<Event> {
         final var subtitle = new TextField("Subtitle");
         final var speaker = new MultiselectComboBox<EventSpeakerEntity>("Speaker");
         final var organizer = new MultiselectComboBox<Member>("Organizer");
-        final var description = new TextArea("Description");
+        final var description = new RichTextEditor();
         final var keyword = new MultiselectComboBox<KeywordEntity>("Keyword");
         final var agenda = new TextArea("Agenda");
         final var level = new Select<>(EventLevel.values());
@@ -175,8 +177,8 @@ public class EventDialog extends EditDialog<Event> {
             binder.validate();
         });
 
-        formLayout.add(type, title, subtitle, speaker, organizer, level, description, keyword, agenda,
-                language, location, webinarUrl, date, duration, eventUrl, published);
+        formLayout.add(type, title, subtitle, speaker, organizer, level, new CustomLabel("Description"), description,
+                keyword, agenda, language, location, webinarUrl, date, duration, eventUrl, published);
 
         binder.forField(type)
                 .withValidator(value -> !published.getValue() || value != null,
@@ -208,7 +210,7 @@ public class EventDialog extends EditDialog<Event> {
                         "Please select a level")
                 .bind(Event::getLevel, Event::setLevel);
 
-        binder.forField(description)
+        binder.forField(description.asHtml())
                 .withValidator(value -> !published.getValue() || value != null && !value.isBlank(),
                         "Please enter a description")
                 .bind(Event::getDescription, Event::setDescription);
