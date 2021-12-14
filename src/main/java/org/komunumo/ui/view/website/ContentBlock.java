@@ -39,10 +39,6 @@ public class ContentBlock extends HorizontalLayout {
         this(title, null, new Div());
     }
 
-    public ContentBlock(@NotNull final String title, @NotNull final Component content) {
-        this(title, null, content);
-    }
-
     public ContentBlock(@NotNull final String title, @Nullable final Component subMenu, @NotNull final Component content) {
         setClassName("content-block");
 
