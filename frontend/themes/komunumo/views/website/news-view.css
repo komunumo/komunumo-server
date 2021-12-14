@@ -24,6 +24,7 @@
     border-bottom: 1px solid #bfbfbf;
 }
 
+.website .news-view p.created-date,
 .website .news-view article:first-child h2 {
     margin-top: 0;
     margin-bottom: 0.5em;

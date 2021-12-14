@@ -45,6 +45,7 @@ public class NewsService {
 
     public NewsRecord newNews() {
         final var news = dsl.newRecord(NEWS);
+        news.setCreated(LocalDateTime.now());
         news.setTitle("");
         news.setSubtitle("");
         return news;
@@ -60,7 +61,7 @@ public class NewsService {
                 .from(NEWS)
                 .where(filterValue == null ? DSL.noCondition() :
                         NEWS.TITLE.like(filterValue).or(NEWS.SUBTITLE.like(filterValue)))
-                .orderBy(NEWS.ID.desc())
+                .orderBy(NEWS.CREATED.desc())
                 .offset(offset)
                 .limit(limit)
                 .fetchInto(NewsEntity.class)
@@ -85,7 +86,7 @@ public class NewsService {
         return dsl.selectFrom(NEWS)
                 .where(NEWS.SHOW_FROM.isNull().or(NEWS.SHOW_FROM.greaterOrEqual(LocalDateTime.now())))
                 .and(NEWS.SHOW_TO.isNull().or(NEWS.SHOW_TO.lessOrEqual(LocalDateTime.now())))
-                .orderBy(NEWS.ID.desc())
+                .orderBy(NEWS.CREATED.desc())
                 .limit(1)
                 .fetchOneInto(NewsEntity.class);
     }
@@ -94,7 +95,7 @@ public class NewsService {
         return dsl.selectFrom(NEWS)
                 .where(NEWS.SHOW_FROM.isNull().or(NEWS.SHOW_FROM.greaterOrEqual(LocalDateTime.now())))
                 .and(NEWS.SHOW_TO.isNull().or(NEWS.SHOW_TO.lessOrEqual(LocalDateTime.now())))
-                .orderBy(NEWS.ID.desc())
+                .orderBy(NEWS.CREATED.desc())
                 .fetchInto(NewsEntity.class);
     }
 }

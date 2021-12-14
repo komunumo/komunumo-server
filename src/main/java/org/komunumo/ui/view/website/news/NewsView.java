@@ -69,9 +69,9 @@ public class NewsView extends ContentBlock {
         final var newsItem = new Article();
         newsItem.addClassName("news-item");
 
-        final var anchor = new Anchor();
-        anchor.getElement().setAttribute("name", "news-item-%d".formatted(newsEntity.id()));
-        newsItem.add(anchor);
+        final var createdDate = new Paragraph(formatDate(newsEntity.created().toLocalDate()));
+        createdDate.addClassName("created-date");
+        newsItem.add(createdDate);
 
         newsItem.add(new H2(newsEntity.title()));
         if (!newsEntity.subtitle().isBlank()) {
