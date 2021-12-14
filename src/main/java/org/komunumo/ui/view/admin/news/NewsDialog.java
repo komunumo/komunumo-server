@@ -74,7 +74,7 @@ public class NewsDialog extends EditDialog<NewsRecord> {
         binder.forField(showFrom)
                 .withValidator(value -> value == null || showTo.isEmpty() || value.isBefore(showTo.getValue()),
                         "The show from date must be before the show to date")
-                .bind(NewsRecord::getShowFrom, NewsRecord::setShowTo);
+                .bind(NewsRecord::getShowFrom, NewsRecord::setShowFrom);
 
         binder.forField(showTo)
                 .withValidator(value -> value == null || showFrom.isEmpty() || value.isAfter(showFrom.getValue()),
