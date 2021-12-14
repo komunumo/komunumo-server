@@ -18,31 +18,32 @@
 
 package org.komunumo.ui.view.website.home;
 
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.EventService;
-import org.komunumo.data.service.NewsService;
-import org.komunumo.ui.view.website.NewsBlock;
-import org.komunumo.ui.view.website.WebsiteLayout;
+import org.komunumo.ui.view.website.ContentBlock;
+import org.komunumo.ui.view.website.events.EventPreview;
+import org.komunumo.ui.view.website.events.LocationSelector;
 
-@Route(value = "", layout = WebsiteLayout.class)
-@PageTitle("Home")
-@CssImport("./themes/komunumo/views/website/home-view.css")
-@CssImport("./themes/komunumo/views/website/events-view.css")
-@AnonymousAllowed
-public class HomeView extends Div {
+public class EventPreviewBlock extends ContentBlock {
 
-    public HomeView(@NotNull final NewsService newsService,
-                    @NotNull final EventService eventService) {
+    public EventPreviewBlock(@NotNull final EventService eventService) {
+        super("Events");
         addClassName("home-view");
-        add(
-                new NewsBlock(newsService),
-                new EventPreviewBlock(eventService)
-        );
-    }
 
+        final var events = eventService.upcomingEvents().toList();
+        setSubMenu(new LocationSelector(events.stream()
+                .map(Event::getLocation)
+                .distinct()
+                .sorted()
+                .toList()));
+
+        final var eventsList = new Div();
+        eventsList.addClassName("events-list");
+        eventService.upcomingEvents()
+                .map(EventPreview::new)
+                .forEach(eventsList::add);
+        setContent(eventsList);
+    }
 }
