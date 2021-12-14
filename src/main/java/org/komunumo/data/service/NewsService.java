@@ -18,6 +18,8 @@
 
 package org.komunumo.data.service;
 
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
@@ -81,10 +83,18 @@ public class NewsService {
 
     public NewsEntity getLatestNews() {
         return dsl.selectFrom(NEWS)
-                .where(NEWS.SHOW_FROM.isNull().or(NEWS.SHOW_FROM.lessOrEqual(LocalDateTime.now())))
-                .and(NEWS.SHOW_TO.isNull().or(NEWS.SHOW_TO.greaterOrEqual(LocalDateTime.now())))
+                .where(NEWS.SHOW_FROM.isNull().or(NEWS.SHOW_FROM.greaterOrEqual(LocalDateTime.now())))
+                .and(NEWS.SHOW_TO.isNull().or(NEWS.SHOW_TO.lessOrEqual(LocalDateTime.now())))
                 .orderBy(NEWS.ID.desc())
                 .limit(1)
                 .fetchOneInto(NewsEntity.class);
+    }
+
+    public List<NewsEntity> getVisibleNews() {
+        return dsl.selectFrom(NEWS)
+                .where(NEWS.SHOW_FROM.isNull().or(NEWS.SHOW_FROM.greaterOrEqual(LocalDateTime.now())))
+                .and(NEWS.SHOW_TO.isNull().or(NEWS.SHOW_TO.lessOrEqual(LocalDateTime.now())))
+                .orderBy(NEWS.ID.desc())
+                .fetchInto(NewsEntity.class);
     }
 }
