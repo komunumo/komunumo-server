@@ -24,6 +24,11 @@
     max-width: 372px;
 }
 
+.website .news-block a:hover h2,
+.website .news-block a:hover h3 {
+    color: #930722;
+}
+
 .website .news-block h2 {
     margin-top: 0;
     margin-bottom: 0.5em;

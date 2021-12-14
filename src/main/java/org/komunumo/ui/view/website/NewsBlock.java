@@ -24,6 +24,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
@@ -37,9 +38,6 @@ import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.NewsEntity;
 import org.komunumo.data.service.NewsService;
 import org.komunumo.ui.component.More;
-
-import static org.komunumo.util.FormatterUtil.formatDateTime;
-import static org.komunumo.util.URLUtil.createReadableUrl;
 
 @CssImport("./themes/komunumo/views/website/news-block.css")
 public class NewsBlock extends ContentBlock {
@@ -57,13 +55,15 @@ public class NewsBlock extends ContentBlock {
     }
 
     private Component createNewsContent(@NotNull final NewsEntity newsEntity) {
+        final var detailLink = "/news/%d".formatted(newsEntity.id());
+
         final var container = new Div();
-        container.add(new H2(newsEntity.title()));
+        container.add(new Anchor(detailLink, new H2(newsEntity.title())));
         if (!newsEntity.subtitle().isBlank()) {
-            container.add(new H3(newsEntity.subtitle()));
+            container.add(new Anchor(detailLink, new H3(newsEntity.subtitle())));
         }
         container.add(new Html("<div>%s</div>".formatted(newsEntity.teaser())));
-        container.add(new More("/news/%d".formatted(newsEntity.id())));
+        container.add(new More(detailLink));
         return container;
     }
 
