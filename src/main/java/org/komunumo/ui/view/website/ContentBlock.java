@@ -71,9 +71,11 @@ public class ContentBlock extends HorizontalLayout {
             titleColumn.remove(subMenuContainer);
         }
 
-        subMenuContainer = new Div(subMenu);
-        subMenuContainer.addClassName("sub-menu");
-        titleColumn.add(subMenuContainer);
+        if (subMenu != null) {
+            subMenuContainer = new Div(subMenu);
+            subMenuContainer.addClassName("sub-menu");
+            titleColumn.add(subMenuContainer);
+        }
     }
 
     public void setContent(@NotNull final Component content) {
