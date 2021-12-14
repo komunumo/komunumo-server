@@ -24,14 +24,16 @@
     border-bottom: 1px solid #bfbfbf;
 }
 
-.website .news-view p.created-date,
-.website .news-view article:first-child h2 {
+.website .news-view article:first-child p.created-date {
     margin-top: 0;
+}
+
+.website .news-view article:first-child p {
     margin-bottom: 0.5em;
 }
 
 .website .news-view h2 {
-    margin-top: 0.5em;
+    margin-top: 0;
     margin-bottom: 0.5em;
 }
 
