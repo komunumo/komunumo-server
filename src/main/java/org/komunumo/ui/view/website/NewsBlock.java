@@ -61,7 +61,7 @@ public class NewsBlock extends ContentBlock {
             container.add(new H3(newsEntity.subtitle()));
         }
         container.add(new Html("<div>%s</div>".formatted(newsEntity.teaser())));
-        container.add(new More("javascript:alert('The news feature is not completely implemented!');"));
+        container.add(new More("/news#news-item-%d".formatted(newsEntity.id())));
         return container;
     }
 
