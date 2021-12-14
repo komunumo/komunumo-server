@@ -19,8 +19,8 @@
 package org.komunumo.ui.view.admin.speakers;
 
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.richtexteditor.RichTextEditor;
 import com.vaadin.flow.component.textfield.EmailField;
-import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.EmailValidator;
@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.ui.component.EditDialog;
 import org.komunumo.ui.component.ImageUploadField;
+import org.komunumo.ui.component.CustomLabel;
 import org.komunumo.util.GravatarUtil;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
@@ -45,7 +46,7 @@ public class SpeakerDialog extends EditDialog<SpeakerRecord> {
         final var firstName = new TextField("First name");
         final var lastName = new TextField("Last name");
         final var company = new TextField("Company");
-        final var bio = new TextArea("Bio");
+        final var bio = new RichTextEditor();
         final var photo = new ImageUploadField("Photo");
         final var email = new EmailField("Email");
         final var twitter = new TextField("Twitter");
@@ -72,8 +73,8 @@ public class SpeakerDialog extends EditDialog<SpeakerRecord> {
             }
         });
 
-        formLayout.add(firstName, lastName, company, bio, photo, email, twitter,
-                linkedIn, website, address, zipCode, city, state, country);
+        formLayout.add(firstName, lastName, company, new CustomLabel("Bio"), bio, photo,
+                email, twitter, linkedIn, website, address, zipCode, city, state, country);
 
         binder.forField(firstName)
                 .withValidator(new StringLengthValidator(
@@ -90,7 +91,7 @@ public class SpeakerDialog extends EditDialog<SpeakerRecord> {
                         "The company name is too long (max. 255 chars)", 0, 255))
                 .bind(SpeakerRecord::getCompany, SpeakerRecord::setCompany);
 
-        binder.forField(bio)
+        binder.forField(bio.asHtml())
                 .withValidator(new StringLengthValidator(
                         "The bio is too long (max. 100'000 chars)", 0, 100_000))
                 .bind(SpeakerRecord::getBio, SpeakerRecord::setBio);
