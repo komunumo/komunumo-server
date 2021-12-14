@@ -24,14 +24,10 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.richtexteditor.RichTextEditor;
 import com.vaadin.flow.component.select.Select;
-import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
-
-import java.time.Year;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.EventLanguage;
@@ -63,6 +59,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Year;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -114,7 +111,7 @@ public class EventDialog extends EditDialog<Event> {
         final var organizer = new MultiselectComboBox<Member>("Organizer");
         final var description = new RichTextEditor();
         final var keyword = new MultiselectComboBox<KeywordEntity>("Keyword");
-        final var agenda = new TextArea("Agenda");
+        final var agenda = new RichTextEditor();
         final var level = new Select<>(EventLevel.values());
         final var language = new Select<>(EventLanguage.values());
         final var location = new ComboBox<String>("Location");
@@ -178,7 +175,7 @@ public class EventDialog extends EditDialog<Event> {
         });
 
         formLayout.add(type, title, subtitle, speaker, organizer, level, new CustomLabel("Description"), description,
-                keyword, agenda, language, location, webinarUrl, date, duration, eventUrl, published);
+                keyword, new CustomLabel("Agenda"), agenda, language, location, webinarUrl, date, duration, eventUrl, published);
 
         binder.forField(type)
                 .withValidator(value -> !published.getValue() || value != null,
@@ -218,7 +215,7 @@ public class EventDialog extends EditDialog<Event> {
         binder.forField(keyword)
                 .bind(this::getKeyword, this::setKeyword);
 
-        binder.forField(agenda)
+        binder.forField(agenda.asHtml())
                 .bind(Event::getAgenda, Event::setAgenda);
 
         binder.forField(language)
