@@ -18,8 +18,6 @@
 
 package org.komunumo.data.service;
 
-import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
@@ -29,6 +27,7 @@ import org.komunumo.data.entity.NewsEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -66,6 +65,14 @@ public class NewsService {
                 .limit(limit)
                 .fetchInto(NewsEntity.class)
                 .stream();
+    }
+
+    public Optional<NewsEntity> getWhenVisible(@NotNull final Long id) {
+        return dsl.selectFrom(NEWS)
+                .where(NEWS.ID.eq(id))
+                .and(NEWS.SHOW_FROM.isNull().or(NEWS.SHOW_FROM.greaterOrEqual(LocalDateTime.now())))
+                .and(NEWS.SHOW_TO.isNull().or(NEWS.SHOW_TO.lessOrEqual(LocalDateTime.now())))
+                .fetchOptionalInto(NewsEntity.class);
     }
 
     public Optional<NewsRecord> getNewsRecord(@NotNull final Long id) {

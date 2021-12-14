@@ -21,14 +21,16 @@ package org.komunumo.ui.view.website.news;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Article;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.NewsEntity;
@@ -36,30 +38,52 @@ import org.komunumo.data.service.NewsService;
 import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.WebsiteLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static org.komunumo.util.FormatterUtil.formatDate;
+
 @Route(value = "news", layout = WebsiteLayout.class)
+@RouteAlias(value = "news/:id", layout = WebsiteLayout.class)
 @PageTitle("News")
 @CssImport("./themes/komunumo/views/website/news-view.css")
 @AnonymousAllowed
-public class NewsView extends ContentBlock {
+public class NewsView extends ContentBlock implements BeforeEnterObserver {
+
+    private final NewsService newsService;
 
     public NewsView(@NotNull final NewsService newsService) {
         super("News");
+        this.newsService = newsService;
         addClassName("news-view");
+    }
 
-        final var visibleNews = newsService.getVisibleNews();
-        if (visibleNews.isEmpty()) {
+    @Override
+    public void beforeEnter(@NotNull final BeforeEnterEvent beforeEnterEvent) {
+        final var newsEntities = new ArrayList<NewsEntity>();
+
+        final var params = beforeEnterEvent.getRouteParameters();
+        final var idParam = params.get("id");
+        if (idParam.isPresent()) {
+            final var id = Long.parseLong(idParam.get());
+            newsService.getWhenVisible(id).ifPresent(newsEntities::add);
+        }
+
+        if (newsEntities.isEmpty()) {
+            newsEntities.addAll(newsService.getVisibleNews());
+        }
+
+        if (newsEntities.isEmpty()) {
             setContent(new Paragraph("No news available."));
         } else {
-            setContent(createNewsList(visibleNews));
+            setContent(createNewsList(newsEntities));
         }
     }
 
-    private Component createNewsList(@NotNull final List<NewsEntity> visibleNews) {
+    private Component createNewsList(@NotNull final List<NewsEntity> newsEntities) {
         final var newsList = new Div();
         newsList.addClassName("news-list");
-        visibleNews.stream()
+        newsEntities.stream()
                 .map(this::toNewsItem)
                 .forEach(newsList::add);
         return newsList;

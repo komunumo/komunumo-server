@@ -33,11 +33,13 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.value.ValueChangeMode;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.NewsEntity;
 import org.komunumo.data.service.NewsService;
 import org.komunumo.ui.component.More;
+
+import static org.komunumo.util.FormatterUtil.formatDateTime;
+import static org.komunumo.util.URLUtil.createReadableUrl;
 
 @CssImport("./themes/komunumo/views/website/news-block.css")
 public class NewsBlock extends ContentBlock {
@@ -61,7 +63,7 @@ public class NewsBlock extends ContentBlock {
             container.add(new H3(newsEntity.subtitle()));
         }
         container.add(new Html("<div>%s</div>".formatted(newsEntity.teaser())));
-        container.add(new More("/news#news-item-%d".formatted(newsEntity.id())));
+        container.add(new More("/news/%d".formatted(newsEntity.id())));
         return container;
     }
 
