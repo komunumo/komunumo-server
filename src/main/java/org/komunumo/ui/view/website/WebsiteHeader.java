@@ -18,6 +18,7 @@
 
 package org.komunumo.ui.view.website;
 
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Header;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.configuration.Configuration;
@@ -30,7 +31,7 @@ public class WebsiteHeader extends Header {
         setId("website-header");
 
         add(
-                new WebsiteLogo(configuration),
+                new Anchor("/", new WebsiteLogo(configuration)),
                 new WebsiteStats(statisticService)
         );
     }
