@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
+import org.komunumo.data.db.enums.EventType;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -61,6 +62,7 @@ public class StatisticService {
         final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
         final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
         return dsl.fetchCount(EVENT, EVENT.DATE.between(firstDay, lastDay)
+                .and(EVENT.TYPE.notEqual(EventType.Sponsored))
                 .and(EVENT.PUBLISHED.isTrue()));
     }
 
