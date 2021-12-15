@@ -43,6 +43,7 @@ public class WebsiteLayout extends VerticalLayout implements RouterLayout {
         addClassName("website");
 
         add(new CookieConsent());
+        add(new WebsiteMenu());
         add(new WebsiteHeader(configuration, statisticService));
 
         main = new Main();
