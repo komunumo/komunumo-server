@@ -59,7 +59,7 @@ public class NewsletterService {
         subscription.setValidationCode(validationCode);
         subscription.store();
 
-        final var link = "http://localhost:8080/newsletter/subscription/validation?email=%s&code=%s"
+        final var link = "http://localhost:8080/newsletter/subscription/validation?email=%s&code=%s"  // TODO use correct domain
                 .formatted(URLUtil.encode(emailAddress), URLUtil.encode(validationCode));
 
         final var message = new SimpleMailMessage();
