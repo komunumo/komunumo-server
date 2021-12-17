@@ -20,7 +20,6 @@ package org.komunumo.data.service;
 
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
-import org.komunumo.data.db.enums.NewsletterRegistrationStatus;
 import org.komunumo.data.db.tables.records.NewsletterRegistrationRecord;
 import org.springframework.stereotype.Service;
 
@@ -37,9 +36,7 @@ public class NewsletterService {
     }
 
     public NewsletterRegistrationRecord newRegistration() {
-        final var registration = dsl.newRecord(NEWSLETTER_REGISTRATION);
-        registration.setStatus(NewsletterRegistrationStatus.OPT_IN);
-        return registration;
+        return dsl.newRecord(NEWSLETTER_REGISTRATION);
     }
 
 }

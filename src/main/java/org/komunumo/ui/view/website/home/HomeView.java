@@ -26,6 +26,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.NewsService;
+import org.komunumo.data.service.NewsletterService;
 import org.komunumo.ui.view.website.NewsBlock;
 import org.komunumo.ui.view.website.WebsiteLayout;
 
@@ -37,10 +38,11 @@ import org.komunumo.ui.view.website.WebsiteLayout;
 public class HomeView extends Div {
 
     public HomeView(@NotNull final NewsService newsService,
+                    @NotNull final NewsletterService newsletterService,
                     @NotNull final EventService eventService) {
         addClassName("home-view");
         add(
-                new NewsBlock(newsService),
+                new NewsBlock(newsService, newsletterService),
                 new EventPreviewBlock(eventService)
         );
     }

@@ -34,23 +34,29 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.value.ValueChangeMode;
+
+import java.time.LocalDateTime;
+
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.db.enums.NewsletterRegistrationStatus;
 import org.komunumo.data.entity.NewsEntity;
 import org.komunumo.data.service.NewsService;
+import org.komunumo.data.service.NewsletterService;
 import org.komunumo.ui.component.More;
 
 @CssImport("./themes/komunumo/views/website/news-block.css")
 public class NewsBlock extends ContentBlock {
 
-    public NewsBlock(@NotNull final NewsService newsService) {
+    public NewsBlock(@NotNull final NewsService newsService,
+                     @NotNull final NewsletterService newsletterService) {
         super("News");
         addClassName("news-block");
 
         final var newsEntity = newsService.getLatestNews();
         if (newsEntity == null) {
-            setContent(createNewsletterForm());
+            setContent(createNewsletterForm(newsletterService));
         } else {
-            setContent(new HorizontalLayout(createNewsContent(newsEntity), createNewsletterForm()));
+            setContent(new HorizontalLayout(createNewsContent(newsEntity), createNewsletterForm(newsletterService)));
         }
     }
 
@@ -67,7 +73,7 @@ public class NewsBlock extends ContentBlock {
         return container;
     }
 
-    private Component createNewsletterForm() {
+    private Component createNewsletterForm(@NotNull final NewsletterService newsletterService) {
         final var emailField = new EmailField();
         emailField.setPlaceholder("Your email address");
         emailField.setValueChangeMode(ValueChangeMode.EAGER);
@@ -75,7 +81,11 @@ public class NewsBlock extends ContentBlock {
         final var subscribeButton = new Button("Subscribe", (clickEvent) -> {
             final var emailAddress = emailField.getValue().trim();
             if (!emailAddress.isBlank()) {
-                // TODO add email address to newsletter
+                final var registration = newsletterService.newRegistration();
+                registration.setEmail(emailAddress);
+                registration.setSubscriptionDate(LocalDateTime.now());
+                registration.setStatus(NewsletterRegistrationStatus.PENDING);
+                registration.store();
                 UI.getCurrent().access(() -> {
                     emailField.setValue("");
                     Notification.show("You have been added to the newsletter. Please check your email account for verification (opt-in).");
