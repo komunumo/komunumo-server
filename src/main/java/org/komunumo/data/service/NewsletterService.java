@@ -18,9 +18,13 @@
 
 package org.komunumo.data.service;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
+import org.komunumo.configuration.Configuration;
 import org.komunumo.data.db.enums.NewsletterRegistrationStatus;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -32,17 +36,34 @@ import static org.komunumo.data.db.tables.NewsletterRegistration.NEWSLETTER_REGI
 public class NewsletterService {
 
     private final DSLContext dsl;
+    private final Configuration configuration;
+    private final MailSender mailSender;
 
-    public NewsletterService(@NotNull final DSLContext dsl) {
+    public NewsletterService(@NotNull final DSLContext dsl,
+                             @NotNull final Configuration configuration,
+                             @NotNull final MailSender mailSender) {
         this.dsl = dsl;
+        this.configuration = configuration;
+        this.mailSender = mailSender;
     }
 
     public void addRegistration(@NotNull final String emailAddress) {
         final var registration = dsl.newRecord(NEWSLETTER_REGISTRATION);
+
+        final var validationCode = RandomStringUtils.randomAlphabetic(8);
+
         registration.setEmail(emailAddress);
         registration.setSubscriptionDate(LocalDateTime.now());
         registration.setStatus(NewsletterRegistrationStatus.PENDING);
+        registration.setValidationCode(validationCode);
         registration.store();
+
+        final var message = new SimpleMailMessage();
+        message.setTo(emailAddress);
+        message.setFrom(configuration.getEmail().getAddress());
+        message.setSubject("Validate your newsletter subscription");
+        message.setText("Please enter the following validation code: " + validationCode);
+        mailSender.send(message);
     }
 
 }

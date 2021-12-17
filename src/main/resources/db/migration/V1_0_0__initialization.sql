@@ -184,6 +184,7 @@ CREATE TABLE newsletter_registration (
     email VARCHAR(255) NOT NULL,
     subscription_date DATETIME NOT NULL,
     status ENUM('PENDING', 'ACTIVE') NOT NULL DEFAULT 'PENDING',
+    validation_code VARCHAR(255) NULL,
 
     PRIMARY KEY (email)
 ) DEFAULT CHARSET=utf8;
