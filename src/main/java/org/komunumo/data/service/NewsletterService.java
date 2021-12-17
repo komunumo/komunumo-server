@@ -20,8 +20,10 @@ package org.komunumo.data.service;
 
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
-import org.komunumo.data.db.tables.records.NewsletterRegistrationRecord;
+import org.komunumo.data.db.enums.NewsletterRegistrationStatus;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 import static org.komunumo.data.db.tables.NewsletterRegistration.NEWSLETTER_REGISTRATION;
 
@@ -35,8 +37,12 @@ public class NewsletterService {
         this.dsl = dsl;
     }
 
-    public NewsletterRegistrationRecord newRegistration() {
-        return dsl.newRecord(NEWSLETTER_REGISTRATION);
+    public void addRegistration(@NotNull final String emailAddress) {
+        final var registration = dsl.newRecord(NEWSLETTER_REGISTRATION);
+        registration.setEmail(emailAddress);
+        registration.setSubscriptionDate(LocalDateTime.now());
+        registration.setStatus(NewsletterRegistrationStatus.PENDING);
+        registration.store();
     }
 
 }

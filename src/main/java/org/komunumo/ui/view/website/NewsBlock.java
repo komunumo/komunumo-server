@@ -34,11 +34,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.value.ValueChangeMode;
-
-import java.time.LocalDateTime;
-
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.db.enums.NewsletterRegistrationStatus;
 import org.komunumo.data.entity.NewsEntity;
 import org.komunumo.data.service.NewsService;
 import org.komunumo.data.service.NewsletterService;
@@ -81,11 +77,7 @@ public class NewsBlock extends ContentBlock {
         final var subscribeButton = new Button("Subscribe", (clickEvent) -> {
             final var emailAddress = emailField.getValue().trim();
             if (!emailAddress.isBlank()) {
-                final var registration = newsletterService.newRegistration();
-                registration.setEmail(emailAddress);
-                registration.setSubscriptionDate(LocalDateTime.now());
-                registration.setStatus(NewsletterRegistrationStatus.PENDING);
-                registration.store();
+                newsletterService.addRegistration(emailAddress);
                 UI.getCurrent().access(() -> {
                     emailField.setValue("");
                     Notification.show("You have been added to the newsletter. Please check your email account for verification (opt-in).");
