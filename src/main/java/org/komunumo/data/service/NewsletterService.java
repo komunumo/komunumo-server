@@ -79,6 +79,14 @@ public class NewsletterService {
             subscription.setStatus(NewsletterSubscriptionStatus.ACTIVE);
             subscription.setValidationCode(null);
             subscription.store();
+
+            final var message = new SimpleMailMessage();
+            message.setTo(emailAddress);
+            message.setFrom(configuration.getEmail().getAddress());
+            message.setSubject("Newsletter subscription activated");
+            message.setText("Thank you very much for subscribing to our newsletter.");
+            mailSender.send(message);
+
             return true;
         }
         return false;
