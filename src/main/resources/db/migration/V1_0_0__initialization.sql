@@ -179,3 +179,11 @@ CREATE TABLE news (
 
     PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
+
+CREATE TABLE newsletter_registration (
+    email VARCHAR(255) NOT NULL,
+    subscription_date DATETIME NOT NULL,
+    status ENUM('OPT_IN', 'ACTIVE') NOT NULL DEFAULT 'OPT_IN',
+
+    PRIMARY KEY (email)
+) DEFAULT CHARSET=utf8;
