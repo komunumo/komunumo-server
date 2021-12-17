@@ -18,6 +18,8 @@
 
 package org.komunumo.util;
 
+import java.io.UnsupportedEncodingException;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URLEncoder;
@@ -46,4 +48,11 @@ public class URLUtil {
         throw new IllegalStateException("Utility class");
     }
 
+    public static String encode(@NotNull final String value) {
+        try {
+            return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+        } catch (@NotNull final UnsupportedEncodingException e) {
+            return "";
+        }
+    }
 }

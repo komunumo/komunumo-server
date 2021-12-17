@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.komunumo.configuration.Configuration;
 import org.komunumo.data.db.enums.NewsletterSubscriptionStatus;
+import org.komunumo.util.URLUtil;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
@@ -58,12 +59,28 @@ public class NewsletterService {
         registration.setValidationCode(validationCode);
         registration.store();
 
+        final var link = "http://localhost:8080/newsletter/subscription/validation?email=%s&code=%s"
+                .formatted(URLUtil.encode(emailAddress), URLUtil.encode(validationCode));
+
         final var message = new SimpleMailMessage();
         message.setTo(emailAddress);
         message.setFrom(configuration.getEmail().getAddress());
         message.setSubject("Validate your newsletter subscription");
-        message.setText("Please enter the following validation code: " + validationCode);
+        message.setText("Please click on the following link to validate your newsletter subscription: " + link);
         mailSender.send(message);
     }
 
+    public boolean validateSubscription(@NotNull final String emailAddress, @NotNull final String validationCode) {
+        final var subscription =  dsl.selectFrom(NEWSLETTER_SUBSCRIPTION)
+                .where(NEWSLETTER_SUBSCRIPTION.EMAIL.eq(emailAddress))
+                .and(NEWSLETTER_SUBSCRIPTION.VALIDATION_CODE.eq(validationCode))
+                .fetchOne();
+        if (subscription != null) {
+            subscription.setStatus(NewsletterSubscriptionStatus.ACTIVE);
+            subscription.setValidationCode(null);
+            subscription.store();
+            return true;
+        }
+        return false;
+    }
 }
