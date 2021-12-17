@@ -180,7 +180,7 @@ CREATE TABLE news (
     PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE newsletter_registration (
+CREATE TABLE newsletter_subscription (
     email VARCHAR(255) NOT NULL,
     subscription_date DATETIME NOT NULL,
     status ENUM('PENDING', 'ACTIVE') NOT NULL DEFAULT 'PENDING',

@@ -22,14 +22,14 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.komunumo.configuration.Configuration;
-import org.komunumo.data.db.enums.NewsletterRegistrationStatus;
+import org.komunumo.data.db.enums.NewsletterSubscriptionStatus;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
-import static org.komunumo.data.db.tables.NewsletterRegistration.NEWSLETTER_REGISTRATION;
+import static org.komunumo.data.db.tables.NewsletterSubscription.NEWSLETTER_SUBSCRIPTION;
 
 @Service
 @SuppressWarnings("ClassCanBeRecord")
@@ -48,13 +48,13 @@ public class NewsletterService {
     }
 
     public void addRegistration(@NotNull final String emailAddress) {
-        final var registration = dsl.newRecord(NEWSLETTER_REGISTRATION);
+        final var registration = dsl.newRecord(NEWSLETTER_SUBSCRIPTION);
 
         final var validationCode = RandomStringUtils.randomAlphabetic(8);
 
         registration.setEmail(emailAddress);
         registration.setSubscriptionDate(LocalDateTime.now());
-        registration.setStatus(NewsletterRegistrationStatus.PENDING);
+        registration.setStatus(NewsletterSubscriptionStatus.PENDING);
         registration.setValidationCode(validationCode);
         registration.store();
 
