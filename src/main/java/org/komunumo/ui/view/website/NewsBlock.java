@@ -77,7 +77,7 @@ public class NewsBlock extends ContentBlock {
         final var subscribeButton = new Button("Subscribe", (clickEvent) -> {
             final var emailAddress = emailField.getValue().trim();
             if (!emailAddress.isBlank()) {
-                newsletterService.addRegistration(emailAddress);
+                newsletterService.addSubscription(emailAddress);
                 UI.getCurrent().access(() -> {
                     emailField.setValue("");
                     Notification.show("You have been added to the newsletter. Please check your email account for verification (opt-in).");

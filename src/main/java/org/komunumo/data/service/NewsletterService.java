@@ -48,16 +48,16 @@ public class NewsletterService {
         this.mailSender = mailSender;
     }
 
-    public void addRegistration(@NotNull final String emailAddress) {
-        final var registration = dsl.newRecord(NEWSLETTER_SUBSCRIPTION);
+    public void addSubscription(@NotNull final String emailAddress) {
+        final var subscription = dsl.newRecord(NEWSLETTER_SUBSCRIPTION);
 
         final var validationCode = RandomStringUtils.randomAlphabetic(8);
 
-        registration.setEmail(emailAddress);
-        registration.setSubscriptionDate(LocalDateTime.now());
-        registration.setStatus(NewsletterSubscriptionStatus.PENDING);
-        registration.setValidationCode(validationCode);
-        registration.store();
+        subscription.setEmail(emailAddress);
+        subscription.setSubscriptionDate(LocalDateTime.now());
+        subscription.setStatus(NewsletterSubscriptionStatus.PENDING);
+        subscription.setValidationCode(validationCode);
+        subscription.store();
 
         final var link = "http://localhost:8080/newsletter/subscription/validation?email=%s&code=%s"
                 .formatted(URLUtil.encode(emailAddress), URLUtil.encode(validationCode));
