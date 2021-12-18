@@ -27,17 +27,17 @@ import com.vaadin.flow.router.NotFoundException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-
-import java.time.Year;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
+import org.komunumo.data.service.MemberService;
 import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.WebsiteLayout;
 import org.komunumo.util.URLUtil;
+
+import java.time.Year;
+import java.util.HashMap;
+import java.util.Map;
 
 @Route(value = "event/:location/:year/:url", layout = WebsiteLayout.class)
 @PageTitle("Events") // TODO title based on event
@@ -46,12 +46,18 @@ import org.komunumo.util.URLUtil;
 public class EventDetailView extends ContentBlock implements BeforeEnterObserver {
 
     private final EventService eventService;
+    private final EventMemberService eventMemberService;
+    private final MemberService memberService;
 
     private final Map<String, String> locationMapper = new HashMap<>();
 
-    public EventDetailView(@NotNull final EventService eventService) {
+    public EventDetailView(@NotNull final EventService eventService,
+                           @NotNull EventMemberService eventMemberService,
+                           @NotNull final MemberService memberService) {
         super("Events");
         this.eventService = eventService;
+        this.eventMemberService = eventMemberService;
+        this.memberService = memberService;
     }
 
     @Override
@@ -86,6 +92,7 @@ public class EventDetailView extends ContentBlock implements BeforeEnterObserver
         article.addDescription(event);
         article.addLevel(event);
         article.addLanguage(event);
+        article.addRegistrationForm(memberService, eventMemberService, event);
         setContent(article);
 
         final var eventsOverview = new UnorderedList(new ListItem(new Anchor("/events", "Events overview")));

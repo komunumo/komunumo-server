@@ -35,7 +35,6 @@
 
 .website article.event-details .agenda {
     padding-top: 10px;
-    padding-bottom: 15px;
     vertical-align: top;
 }
 
@@ -47,10 +46,6 @@
     display: inline-block;
 }
 
-.website article.event-details .speakers {
-    padding-top: 15px;
-}
-
 .website article.event-details .speakerbox {
     float: right;
     padding-left: 50px;
@@ -59,4 +54,5 @@
 
 .website article.event-details hr {
     border-top: 1px solid #bfbfbf;
+    margin: 15px 0 15px 0;
 }

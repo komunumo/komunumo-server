@@ -20,29 +20,17 @@ package org.komunumo.ui.view.website.events;
 
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Text;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.NotFoundException;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Locale;
 
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
-import org.komunumo.data.service.EventService;
-import org.komunumo.ui.view.website.WebsiteLayout;
-
-import java.time.Year;
-
-import org.komunumo.util.URLUtil;
+import org.komunumo.data.service.EventMemberService;
+import org.komunumo.data.service.MemberService;
 
 public class EventDetailArticle extends EventArticle {
 
@@ -117,11 +105,19 @@ public class EventDetailArticle extends EventArticle {
             languageLabel.addClassName("language-label");
             final var language = new Div(
                     languageLabel,
-                    new Span(new Text(event.getLanguage().toString()))
+                    new Span(new Text(event.getLanguage().toString().toLowerCase(Locale.getDefault())))
             );
             language.addClassName("language");
             add(language);
         }
+    }
+
+    protected void addRegistrationForm(@NotNull final MemberService memberService,
+                                       @NotNull EventMemberService eventMemberService,
+                                       @NotNull final Event event) {
+        add(new Hr());
+        add(new EventRegistrationForm(memberService, eventMemberService, event));
+        add(new Hr());
     }
 
 }
