@@ -48,6 +48,10 @@
     text-decoration: none;
 }
 
+.website vaadin-button:not([disabled]) {
+    color: #930722;
+}
+
 #website-header {
     margin-top: 0;
     width: 100%;
