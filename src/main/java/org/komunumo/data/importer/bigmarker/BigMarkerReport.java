@@ -140,6 +140,7 @@ public class BigMarkerReport {
                 if (registration.registrationDate() != null) {
                     newRegistration.setDate(registration.registrationDate().toLocalDateTime());
                 }
+                newRegistration.setSource("");
                 newRegistration.setNoShow(registration.noShow());
                 eventMemberService.store(newRegistration);
             }

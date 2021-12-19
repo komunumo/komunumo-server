@@ -118,8 +118,15 @@ public class EventRegistrationForm extends Div {
                 });
                 otherSource.addValueChangeListener(valueChangeEvent -> registerButton.setEnabled(!valueChangeEvent.getValue().isBlank()));
 
-                registerButton.addClickListener(registerButtonClickEvent ->
-                        Notification.show("The registration process will be implemented soon."));
+                registerButton.addClickListener(registerButtonClickEvent -> {
+                    final var sourceValue = source.getValue().equalsIgnoreCase("other") ?
+                            otherSource.getValue() : source.getValue();
+                    eventMemberService.registerForEvent(event, member, sourceValue);
+                    final var registrationInfo = new Paragraph("Thank you for your registration! Within the next few minutes " +
+                            "you will receive a copy of your registration and a reminder will follow shortly before the event.");
+                    registrationInfo.addClassName("registration-info");
+                    replace(registrationForm, registrationInfo);
+                });
             } else {
                 foundMessage.add("Sorry, we did not found you in our database. This event is for members only.");
             }

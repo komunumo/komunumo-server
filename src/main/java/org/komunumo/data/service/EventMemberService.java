@@ -62,13 +62,15 @@ public class EventMemberService {
     }
 
     public void registerForEvent(@NotNull final EventRecord event,
-                                 @NotNull final MemberRecord member) {
+                                 @NotNull final MemberRecord member,
+                                 @NotNull final String source) {
         final var hasRegistered = get(event.getId(), member.getId());
         if (hasRegistered.isEmpty()) {
             final var eventMember = dsl.newRecord(EVENT_MEMBER);
             eventMember.setEventId(event.getId());
             eventMember.setMemberId(member.getId());
             eventMember.setDate(LocalDateTime.now());
+            eventMember.setSource(source);
             eventMember.setNoShow(false);
             eventMember.store();
         }
