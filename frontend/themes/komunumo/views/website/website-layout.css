@@ -53,6 +53,13 @@
     text-decoration: none;
 }
 
+.website vaadin-button[focus-ring],
+.website vaadin-radio-button[focus-ring]::part(radio),
+.website vaadin-email-field[focus-ring]::part(input-field),
+.website vaadin-text-field[focus-ring]::part(input-field) {
+    box-shadow: 0 0 0 2px #930722;
+}
+
 .website vaadin-button:not([disabled]) {
     color: #930722;
 }
