@@ -20,10 +20,15 @@ package org.komunumo.data.service;
 
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
+import org.komunumo.configuration.Configuration;
 import org.komunumo.data.db.tables.records.EventMemberRecord;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.db.tables.records.MemberRecord;
+import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Member;
+import org.komunumo.util.FormatterUtil;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -36,14 +41,22 @@ import static org.jooq.impl.DSL.select;
 import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
 import static org.komunumo.data.db.tables.EventOrganizer.EVENT_ORGANIZER;
 import static org.komunumo.data.db.tables.Member.MEMBER;
+import static org.komunumo.util.FormatterUtil.formatDateTime;
 
 @Service
+@SuppressWarnings("ClassCanBeRecord")
 public class EventMemberService {
 
     private final DSLContext dsl;
+    private final Configuration configuration;
+    private final MailSender mailSender;
 
-    public EventMemberService(@NotNull final DSLContext dsl) {
+    public EventMemberService(@NotNull final DSLContext dsl,
+                              @NotNull final Configuration configuration,
+                              @NotNull final MailSender mailSender) {
         this.dsl = dsl;
+        this.configuration = configuration;
+        this.mailSender = mailSender;
     }
 
     public EventMemberRecord newRegistration() {
@@ -61,19 +74,42 @@ public class EventMemberService {
         registration.store();
     }
 
-    public void registerForEvent(@NotNull final EventRecord event,
-                                 @NotNull final MemberRecord member,
+    public void registerForEvent(@NotNull final Event event,
+                                 @NotNull final Member member,
                                  @NotNull final String source) {
         final var hasRegistered = get(event.getId(), member.getId());
+        final LocalDateTime registrationDate;
         if (hasRegistered.isEmpty()) {
+            registrationDate = LocalDateTime.now();
             final var eventMember = dsl.newRecord(EVENT_MEMBER);
             eventMember.setEventId(event.getId());
             eventMember.setMemberId(member.getId());
-            eventMember.setDate(LocalDateTime.now());
+            eventMember.setDate(registrationDate);
             eventMember.setSource(source);
             eventMember.setNoShow(false);
             eventMember.store();
+        } else {
+            registrationDate = hasRegistered.get().getDate();
         }
+
+        final var message = new SimpleMailMessage();
+        message.setTo(member.getEmail());
+        message.setFrom(configuration.getEmail().getAddress());
+        message.setSubject("%s: Event-Registration for %s"
+                .formatted(FormatterUtil.formatDate(event.getDate().toLocalDate()), member.getFullName()));
+        message.setText("""
+                You successfully registered for the following event:
+                "%s" at %s in %s
+                Details: %s%s
+                
+                Registration date: %s
+                Your name: %s
+                Source: %s
+                """.formatted(
+                        event.getTitle(), formatDateTime(event.getDate()), event.getLocation(), configuration.getWebsite().getBaseUrl(),
+                        event.getCompleteEventUrl(), formatDateTime(registrationDate), member.getFullName(), source
+        ));
+        mailSender.send(message);
     }
 
     public Stream<Member> getOrganizersForEvent(@NotNull final EventRecord event) {
