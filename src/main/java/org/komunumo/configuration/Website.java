@@ -23,6 +23,11 @@ import org.jetbrains.annotations.NotNull;
 public class Website {
 
     /**
+     * The base URL of the website. Used to generate complete links.
+     */
+    private String baseUrl = "";
+
+    /**
      * The template to access the website logo (format string supported).
      */
     private String logoUrlTemplate = null;
@@ -36,6 +41,14 @@ public class Website {
      * The maximum number for the logo URL template format string.
      */
     private int maxLogoNumber = 0;
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(@NotNull final String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
 
     public String getLogoUrlTemplate() {
         return logoUrlTemplate;
