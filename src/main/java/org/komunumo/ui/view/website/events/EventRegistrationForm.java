@@ -94,7 +94,9 @@ public class EventRegistrationForm extends Div {
             final TextField lastName;
             if (memberFound.isEmpty()) {
                 firstName = new TextField("First name");
+                firstName.setRequiredIndicatorVisible(true);
                 lastName = new TextField("Last name");
+                lastName.setRequiredIndicatorVisible(true);
                 registrationForm.add(firstName, lastName);
             } else {
                 firstName = null;
@@ -103,6 +105,7 @@ public class EventRegistrationForm extends Div {
 
             final var source = new RadioButtonGroup<String>();
             source.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
+            source.setRequiredIndicatorVisible(true);
             source.setLabel("I heard of this event through");
             source.setItems("jug.ch mailing", "jug.ch homepage", "Twitter", "mailing of another association", "a friend", "company",
                     "techup.ch", "search engine", "other");
