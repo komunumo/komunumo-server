@@ -216,7 +216,7 @@ public class JUGSImporter {
         final var counter = new AtomicInteger(0);
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
-                    "SELECT events_id, personen_id, aenderung, anmdatum, noshow FROM eventteiln");
+                    "SELECT events_id, personen_id, aenderung, anmdatum, noshow, hashtag FROM eventteiln");
             while (result.next()) {
                 final var eventId = result.getLong("events_id");
                 if (eventId == 0) {
@@ -230,8 +230,9 @@ public class JUGSImporter {
                 final var registerDate = getRegisterDate(result.getString("aenderung"), result.getString("anmdatum"));
                 final var noShow = "Online".equalsIgnoreCase(event.get().getLocation())
                         || result.getString("noshow") != null && result.getString("noshow").equals("1");
+                final var deregisterCode = result.getString("hashtag");
                 try {
-                    if (eventMemberService.registerForEvent(eventId, memberId, registerDate, noShow)) {
+                    if (eventMemberService.registerForEvent(eventId, memberId, registerDate, noShow, deregisterCode)) {
                         counter.incrementAndGet();
                     }
                 } catch (final Exception e1) {
@@ -245,7 +246,7 @@ public class JUGSImporter {
                         member.setAccountDeleted(true);
                         memberService.store(member);
                         try {
-                            if (eventMemberService.registerForEvent(eventId, memberId, registerDate, noShow)) {
+                            if (eventMemberService.registerForEvent(eventId, memberId, registerDate, noShow, deregisterCode)) {
                                 counter.incrementAndGet();
                             }
                         } catch (final Exception e2) {

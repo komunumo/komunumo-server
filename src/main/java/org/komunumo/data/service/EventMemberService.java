@@ -159,9 +159,10 @@ public class EventMemberService {
      */
     @Deprecated(forRemoval = true)
     public boolean registerForEvent(final long eventId,
-                                 final long memberId,
-                                 @NotNull final LocalDateTime registerDate,
-                                 final boolean noShow) {
+                                    final long memberId,
+                                    @NotNull final LocalDateTime registerDate,
+                                    final boolean noShow,
+                                    @NotNull final String deregisterCode) {
         final var hasRegistered = get(eventId, memberId);
         if (hasRegistered.isEmpty()) {
             final var eventMember = dsl.newRecord(EVENT_MEMBER);
@@ -169,6 +170,7 @@ public class EventMemberService {
             eventMember.setMemberId(memberId);
             eventMember.setDate(registerDate);
             eventMember.setNoShow(noShow);
+            eventMember.setDeregister(deregisterCode);
             eventMember.store();
         }
         return hasRegistered.isEmpty();

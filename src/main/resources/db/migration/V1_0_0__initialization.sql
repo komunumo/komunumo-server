@@ -82,6 +82,7 @@ CREATE TABLE event_member (
     member_id INTEGER UNSIGNED NOT NULL,
     date DATETIME NULL,
     source VARCHAR(255) NOT NULL DEFAULT '',
+    deregister VARCHAR(255) NOT NULL DEFAULT '',
     no_show BOOLEAN NOT NULL DEFAULT 0,
 
     PRIMARY KEY (event_id, member_id),
