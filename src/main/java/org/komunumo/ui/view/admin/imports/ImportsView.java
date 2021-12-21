@@ -49,6 +49,7 @@ import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.KeywordService;
 import org.komunumo.data.service.MemberService;
+import org.komunumo.data.service.NewsService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.data.service.SponsorService;
 import org.komunumo.ui.component.ResizableView;
@@ -75,6 +76,7 @@ public class ImportsView extends ResizableView {
     private final EventSpeakerService eventSpeakerService;
     private final KeywordService keywordService;
     private final EventKeywordService eventKeywordService;
+    private final NewsService newsService;
 
     public ImportsView(
             @NotNull final DSLContext dsl,
@@ -85,7 +87,8 @@ public class ImportsView extends ResizableView {
             @NotNull final SpeakerService speakerService,
             @NotNull final EventSpeakerService eventSpeakerService,
             @NotNull final KeywordService keywordService,
-            @NotNull final EventKeywordService eventKeywordService) {
+            @NotNull final EventKeywordService eventKeywordService,
+            @NotNull final NewsService newsService) {
         this.dsl = dsl;
         this.sponsorService = sponsorService;
         this.memberService = memberService;
@@ -95,6 +98,7 @@ public class ImportsView extends ResizableView {
         this.eventSpeakerService = eventSpeakerService;
         this.keywordService = keywordService;
         this.eventKeywordService = eventKeywordService;
+        this.newsService = newsService;
 
         addClassName("imports-view");
         add(
@@ -330,7 +334,7 @@ public class ImportsView extends ResizableView {
         importButton.setEnabled(!dbURL.isEmpty() && !dbUser.isEmpty() && !dbPass.isEmpty());
         importButton.addClickListener(buttonClickEvent -> {
             final var importer = new JUGSImporter(dsl, sponsorService, memberService, eventService, eventMemberService,
-                    speakerService, eventSpeakerService, keywordService, eventKeywordService);
+                    speakerService, eventSpeakerService, keywordService, eventKeywordService, newsService);
             importer.importFromJavaUserGroupSwitzerland(dbURL.getValue(), dbUser.getValue(), dbPass.getValue());
         });
 

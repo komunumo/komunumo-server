@@ -42,6 +42,7 @@ import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.KeywordService;
 import org.komunumo.data.service.MemberService;
+import org.komunumo.data.service.NewsService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.data.service.SponsorService;
 import org.komunumo.util.URLUtil;
@@ -73,6 +74,7 @@ import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
 import static org.komunumo.data.db.tables.EventUrlJug.EVENT_URL_JUG;
 import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 import static org.komunumo.data.db.tables.Member.MEMBER;
+import static org.komunumo.data.db.tables.News.NEWS;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
 
@@ -88,6 +90,7 @@ public class JUGSImporter {
     private final EventSpeakerService eventSpeakerService;
     private final KeywordService keywordService;
     private final EventKeywordService eventKeywordService;
+    private final NewsService newsService;
 
     private int hansMaerkiId;
     private int rogerSuessId;
@@ -107,7 +110,8 @@ public class JUGSImporter {
             @NotNull final SpeakerService speakerService,
             @NotNull final EventSpeakerService eventSpeakerService,
             @NotNull final KeywordService keywordService,
-            @NotNull final EventKeywordService eventKeywordService) {
+            @NotNull final EventKeywordService eventKeywordService,
+            @NotNull final NewsService newsService) {
         this.dsl = dsl;
         this.sponsorService = sponsorService;
         this.memberService = memberService;
@@ -117,6 +121,7 @@ public class JUGSImporter {
         this.eventSpeakerService = eventSpeakerService;
         this.keywordService = keywordService;
         this.eventKeywordService = eventKeywordService;
+        this.newsService = newsService;
     }
 
     private void showNotification(@NotNull final String message) {
@@ -140,6 +145,7 @@ public class JUGSImporter {
                 importKeywords(connection);
                 importSpeakers(connection);
                 importRegistrations(connection);
+                importNews(connection);
                 updateEventLevel();
                 mergeMembers();
                 mergeSpeakers();
@@ -148,6 +154,33 @@ public class JUGSImporter {
                 showNotification("Error importing data from Java User Group Switzerland: " + e.getMessage());
             }
         }).start();
+    }
+
+    private void importNews(@NotNull final Connection connection)
+            throws SQLException {
+        final var counter = new AtomicInteger(0);
+
+        try (var statement = connection.createStatement()) {
+            final var result = statement.executeQuery(
+                    "SELECT id, timestamp, start, stop, titel, untertitel, teaser, beschreibung FROM news ORDER BY id ASC");
+            while (result.next()) {
+                final var news = newsService.getNewsRecord(result.getLong("id"))
+                        .orElse(newsService.newNews());
+                if (news.getId() == null && !result.getString("titel").isBlank()) {
+                    news.set(NEWS.ID, result.getLong("id"));
+                    news.set(NEWS.CREATED, getDateTime(result.getString("timestamp")));
+                    news.set(NEWS.TITLE, result.getString("titel"));
+                    news.set(NEWS.SUBTITLE, result.getString("untertitel"));
+                    news.set(NEWS.TEASER, result.getString("teaser"));
+                    news.set(NEWS.MESSAGE, result.getString("beschreibung"));
+                    news.set(NEWS.SHOW_FROM, getDateTime(result.getString("start")));
+                    news.set(NEWS.SHOW_TO, getDateTime(result.getString("stop")));
+                    news.store();
+                    counter.incrementAndGet();
+                }
+            }
+        }
+        showNotification(counter.get() + " news imported.");
     }
 
     private void importKeywords(@NotNull final Connection connection)
@@ -657,6 +690,9 @@ public class JUGSImporter {
     }
 
     private LocalDateTime getDateTime(@NotNull final String datum) {
+        if (datum.startsWith("0000")) {
+            return null;
+        }
         try {
             return LocalDateTime.parse(datum, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
         } catch (final DateTimeParseException e1) {
