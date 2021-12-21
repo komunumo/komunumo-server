@@ -35,6 +35,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
+import org.komunumo.data.entity.Member;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.MemberService;
 
@@ -142,7 +143,7 @@ public class EventRegistrationForm extends Div {
             }
 
             registerButton.addClickListener(registerButtonClickEvent -> {
-                final var member = memberFound.get();
+                final var member = memberFound.orElse(createMember(memberService, emailAddress, firstName, lastName));
                 final var sourceValue = source.getValue().equalsIgnoreCase("other") ?
                         otherSource.getValue() : source.getValue();
                 eventMemberService.registerForEvent(event, member, sourceValue);
@@ -153,7 +154,20 @@ public class EventRegistrationForm extends Div {
             });
 
             replace(emailForm, registrationForm);
+            if (firstName != null) {
+                firstName.focus();
+            }
         });
+    }
+
+    private Member createMember(@NotNull final MemberService memberService,
+                                @NotNull final String emailAddress,
+                                @Nullable final TextField firstName,
+                                @Nullable final TextField lastName) {
+        if (firstName != null && lastName != null) {
+            return memberService.createMember(firstName.getValue(), lastName.getValue(), emailAddress);
+        }
+        return null;
     }
 
     private boolean isRegisterButtonEnabled(@Nullable final TextField firstName,

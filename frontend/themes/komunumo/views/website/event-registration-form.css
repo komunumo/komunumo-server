@@ -27,14 +27,19 @@
     text-transform: uppercase;
 }
 
-.website .event-registration-form vaadin-radio-group {
+.website .event-registration-form vaadin-text-field,
+.website .event-registration-form vaadin-radio-group,
+.website .event-registration-form .other-source {
     display: flex;
+    max-width: 225px;
+}
+
+.website .event-registration-form vaadin-radio-group {
     font-size: 0.8rem;
     padding-bottom: 0;
 }
 
 .website .event-registration-form .other-source {
-    display: flex;
     max-width: 200px;
     padding-left: 25px;
     padding-top: 0;

@@ -34,6 +34,7 @@ import static org.jooq.impl.DSL.concat;
 import static org.komunumo.data.db.tables.Member.MEMBER;
 
 @Service
+@SuppressWarnings("ClassCanBeRecord")
 public class MemberService {
 
     private final DSLContext dsl;
@@ -172,4 +173,14 @@ public class MemberService {
                 .fetchInto(Member.class)
                 .stream();
     }
+
+    public Member createMember(@NotNull final String firstName, @NotNull final String lastName, @NotNull final String emailAddress) {
+        final var member = newMember();
+        member.setFirstName(firstName);
+        member.setLastName(lastName);
+        member.setEmail(emailAddress);
+        member.store();
+        return member;
+    }
+
 }
