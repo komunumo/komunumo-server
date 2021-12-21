@@ -70,7 +70,9 @@ public class NewsView extends ContentBlock implements BeforeEnterObserver {
         if (idParam.isPresent()) {
             final var id = Long.parseLong(idParam.get());
             newsService.getWhenVisible(id).ifPresent(newsEntities::add);
-
+            if (newsEntities.isEmpty()) {
+                beforeEnterEvent.forwardTo(NewsView.class);
+            }
             final var newsOverview = new UnorderedList(new ListItem(new Anchor("/news", "News overview")));
             newsOverview.addClassName("location-selector");
             setSubMenu(newsOverview);
