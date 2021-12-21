@@ -70,8 +70,8 @@ public class NewsService {
     public Optional<NewsEntity> getWhenVisible(@NotNull final Long id) {
         return dsl.selectFrom(NEWS)
                 .where(NEWS.ID.eq(id))
-                .and(NEWS.SHOW_FROM.isNull().or(NEWS.SHOW_FROM.greaterOrEqual(LocalDateTime.now())))
-                .and(NEWS.SHOW_TO.isNull().or(NEWS.SHOW_TO.lessOrEqual(LocalDateTime.now())))
+                .and(NEWS.SHOW_FROM.isNull().or(NEWS.SHOW_FROM.lessOrEqual(LocalDateTime.now())))
+                .and(NEWS.SHOW_TO.isNull().or(NEWS.SHOW_TO.greaterOrEqual(LocalDateTime.now())))
                 .fetchOptionalInto(NewsEntity.class);
     }
 
@@ -91,8 +91,8 @@ public class NewsService {
 
     public NewsEntity getLatestNews() {
         return dsl.selectFrom(NEWS)
-                .where(NEWS.SHOW_FROM.isNull().or(NEWS.SHOW_FROM.greaterOrEqual(LocalDateTime.now())))
-                .and(NEWS.SHOW_TO.isNull().or(NEWS.SHOW_TO.lessOrEqual(LocalDateTime.now())))
+                .where(NEWS.SHOW_FROM.isNull().or(NEWS.SHOW_FROM.lessOrEqual(LocalDateTime.now())))
+                .and(NEWS.SHOW_TO.isNull().or(NEWS.SHOW_TO.greaterOrEqual(LocalDateTime.now())))
                 .orderBy(NEWS.CREATED.desc())
                 .limit(1)
                 .fetchOneInto(NewsEntity.class);
@@ -100,8 +100,8 @@ public class NewsService {
 
     public List<NewsEntity> getVisibleNews() {
         return dsl.selectFrom(NEWS)
-                .where(NEWS.SHOW_FROM.isNull().or(NEWS.SHOW_FROM.greaterOrEqual(LocalDateTime.now())))
-                .and(NEWS.SHOW_TO.isNull().or(NEWS.SHOW_TO.lessOrEqual(LocalDateTime.now())))
+                .where(NEWS.SHOW_FROM.isNull().or(NEWS.SHOW_FROM.lessOrEqual(LocalDateTime.now())))
+                .and(NEWS.SHOW_TO.isNull().or(NEWS.SHOW_TO.greaterOrEqual(LocalDateTime.now())))
                 .orderBy(NEWS.CREATED.desc())
                 .fetchInto(NewsEntity.class);
     }
