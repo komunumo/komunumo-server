@@ -33,6 +33,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.MemberService;
@@ -72,7 +73,8 @@ public class EventRegistrationForm extends Div {
 
         verifyButton.addClickListener(verifyButtonClickEvent -> {
             final var registrationForm = new Div();
-            final var memberFound = memberService.getByEmail(emailField.getValue().trim());
+            final var emailAddress = emailField.getValue().trim();
+            final var memberFound = memberService.getByEmail(emailAddress);
 
             final var foundMessage = new Paragraph();
             foundMessage.addClassName("found-message");
@@ -80,56 +82,88 @@ public class EventRegistrationForm extends Div {
 
             if (memberFound.isPresent()) {
                 final var member = memberFound.get();
-                foundMessage.add(new Text("Yes! We found you in our database, %s.".formatted(member.getFullName())), new Html("<br/>"));
-                foundMessage.add(new Text("Please complete your registration by sending off this form. Thank you very much!"));
-
-                final var source = new RadioButtonGroup<String>();
-                source.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
-                source.setLabel("I heard of this event through");
-                source.setItems("jug.ch mailing", "jug.ch homepage", "Twitter", "mailing of another association", "a friend", "company",
-                        "techup.ch", "search engine", "other");
-                registrationForm.add(source);
-
-                final var otherSource = new TextField();
-                otherSource.addClassName("other-source");
-                otherSource.addThemeVariants(TextFieldVariant.LUMO_SMALL);
-                otherSource.setEnabled(source.getValue() != null && source.getValue().equalsIgnoreCase("other"));
-                otherSource.setValueChangeMode(ValueChangeMode.EAGER);
-                registrationForm.add(otherSource);
-
-                final var registerButton = new Button("Register");
-                registerButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
-                registerButton.setEnabled(false);
-                registerButton.setDisableOnClick(true);
-                registrationForm.add(registerButton);
-
-                source.addValueChangeListener(valueChangeEvent -> {
-                    registerButton.setEnabled(
-                            valueChangeEvent.getValue() != null && (!valueChangeEvent.getValue().equalsIgnoreCase("other") ||
-                            (valueChangeEvent.getValue().equalsIgnoreCase("other") && !otherSource.getValue().isBlank())));
-                    if (valueChangeEvent.getValue() != null && valueChangeEvent.getValue().equalsIgnoreCase("other")) {
-                        otherSource.setEnabled(true);
-                        otherSource.focus();
-                    } else {
-                        otherSource.setEnabled(false);
-                    }
-                });
-                otherSource.addValueChangeListener(valueChangeEvent -> registerButton.setEnabled(!valueChangeEvent.getValue().isBlank()));
-
-                registerButton.addClickListener(registerButtonClickEvent -> {
-                    final var sourceValue = source.getValue().equalsIgnoreCase("other") ?
-                            otherSource.getValue() : source.getValue();
-                    eventMemberService.registerForEvent(event, member, sourceValue);
-                    final var registrationInfo = new Paragraph("Thank you for your registration! Within the next few minutes " +
-                            "you will receive a copy of your registration and a reminder will follow shortly before the event.");
-                    registrationInfo.addClassName("registration-info");
-                    replace(registrationForm, registrationInfo);
-                });
+                foundMessage.add("Yes! We found you in our database, %s.".formatted(member.getFullName()));
             } else {
-                foundMessage.add("Sorry, we did not found you in our database. This event is for members only.");
+                foundMessage.add("Sorry, we did not found you in our database.");
             }
+            foundMessage.add(new Html("<br/>"));
+            foundMessage.add(new Text("Please complete your registration by sending off this form. Thank you very much!"));
+
+            final TextField firstName;
+            final TextField lastName;
+            if (memberFound.isEmpty()) {
+                firstName = new TextField("First name");
+                lastName = new TextField("Last name");
+                registrationForm.add(firstName, lastName);
+            } else {
+                firstName = null;
+                lastName = null;
+            }
+
+            final var source = new RadioButtonGroup<String>();
+            source.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
+            source.setLabel("I heard of this event through");
+            source.setItems("jug.ch mailing", "jug.ch homepage", "Twitter", "mailing of another association", "a friend", "company",
+                    "techup.ch", "search engine", "other");
+            registrationForm.add(source);
+
+            final var otherSource = new TextField();
+            otherSource.addClassName("other-source");
+            otherSource.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+            otherSource.setEnabled(source.getValue() != null && source.getValue().equalsIgnoreCase("other"));
+            otherSource.setValueChangeMode(ValueChangeMode.EAGER);
+            registrationForm.add(otherSource);
+
+            final var registerButton = new Button("Register");
+            registerButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+            registerButton.setEnabled(false);
+            registerButton.setDisableOnClick(true);
+            registrationForm.add(registerButton);
+
+            source.addValueChangeListener(valueChangeEvent -> {
+                registerButton.setEnabled(isRegisterButtonEnabled(firstName, lastName, source, otherSource));
+                if (valueChangeEvent.getValue() != null && valueChangeEvent.getValue().equalsIgnoreCase("other")) {
+                    otherSource.setEnabled(true);
+                    otherSource.focus();
+                } else {
+                    otherSource.setEnabled(false);
+                }
+            });
+            otherSource.addValueChangeListener(valueChangeEvent -> registerButton.setEnabled(
+                    isRegisterButtonEnabled(firstName, lastName, source, otherSource)));
+
+            if (memberFound.isEmpty()) {
+                firstName.setValueChangeMode(ValueChangeMode.EAGER);
+                firstName.addValueChangeListener(valueChangeEvent -> registerButton.setEnabled(
+                        isRegisterButtonEnabled(firstName, lastName, source, otherSource)));
+                lastName.setValueChangeMode(ValueChangeMode.EAGER);
+                lastName.addValueChangeListener(valueChangeEvent -> registerButton.setEnabled(
+                        isRegisterButtonEnabled(firstName, lastName, source, otherSource)));
+            }
+
+            registerButton.addClickListener(registerButtonClickEvent -> {
+                final var member = memberFound.get();
+                final var sourceValue = source.getValue().equalsIgnoreCase("other") ?
+                        otherSource.getValue() : source.getValue();
+                eventMemberService.registerForEvent(event, member, sourceValue);
+                final var registrationInfo = new Paragraph("Thank you for your registration! Within the next few minutes " +
+                        "you will receive a copy of your registration and a reminder will follow shortly before the event.");
+                registrationInfo.addClassName("registration-info");
+                replace(registrationForm, registrationInfo);
+            });
 
             replace(emailForm, registrationForm);
         });
+    }
+
+    private boolean isRegisterButtonEnabled(@Nullable final TextField firstName,
+                                            @Nullable final TextField lastName,
+                                            @NotNull final RadioButtonGroup<String> source,
+                                            @NotNull final TextField otherSource) {
+        final var checkFirstName = firstName == null || !firstName.getValue().trim().isBlank();
+        final var checkLastName = lastName == null || !lastName.getValue().trim().isBlank();
+        final var checkOtherSource = source.getValue() != null && (!source.getValue().equalsIgnoreCase("other") ||
+                (source.getValue().equalsIgnoreCase("other") && !otherSource.getValue().isBlank()));
+        return checkFirstName && checkLastName && checkOtherSource;
     }
 }

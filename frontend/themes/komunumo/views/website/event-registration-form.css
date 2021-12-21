@@ -30,7 +30,6 @@
 .website .event-registration-form vaadin-radio-group {
     display: flex;
     font-size: 0.8rem;
-    padding-top: 0;
     padding-bottom: 0;
 }
 
