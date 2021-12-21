@@ -27,6 +27,9 @@ import com.vaadin.flow.router.NotFoundException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
@@ -43,7 +46,7 @@ import java.util.Map;
 @PageTitle("Events") // TODO title based on event
 @CssImport("./themes/komunumo/views/website/event-details.css")
 @AnonymousAllowed
-public class EventDetailView extends ContentBlock implements BeforeEnterObserver {
+public class EventDetailView extends ContentBlock implements BeforeEnterObserver{
 
     private final EventService eventService;
     private final EventMemberService eventMemberService;
@@ -52,7 +55,7 @@ public class EventDetailView extends ContentBlock implements BeforeEnterObserver
     private final Map<String, String> locationMapper = new HashMap<>();
 
     public EventDetailView(@NotNull final EventService eventService,
-                           @NotNull EventMemberService eventMemberService,
+                           @NotNull final EventMemberService eventMemberService,
                            @NotNull final MemberService memberService) {
         super("Events");
         this.eventService = eventService;
@@ -67,6 +70,9 @@ public class EventDetailView extends ContentBlock implements BeforeEnterObserver
         final var year = params.getInteger("year").orElseThrow(NotFoundException::new);
         final var url = params.get("url").orElseThrow(NotFoundException::new);
         final var previewCode = getPreviewCode(beforeEnterEvent);
+
+        final var queryParams = beforeEnterEvent.getLocation().getQueryParameters();
+        final var deregisterCode = queryParams.getParameters().getOrDefault("deregister", List.of("")).get(0).trim();
 
         final var event = eventService.getByEventUrl(mapLocation(location), Year.of(year), url)
                 .orElseThrow(NotFoundException::new);
@@ -92,7 +98,7 @@ public class EventDetailView extends ContentBlock implements BeforeEnterObserver
         article.addDescription(event);
         article.addLevel(event);
         article.addLanguage(event);
-        article.addRegistrationForm(memberService, eventMemberService, event);
+        article.addRegistrationForm(memberService, eventMemberService, event, deregisterCode);
         setContent(article);
 
         final var eventsOverview = new UnorderedList(new ListItem(new Anchor("/events", "Events overview")));

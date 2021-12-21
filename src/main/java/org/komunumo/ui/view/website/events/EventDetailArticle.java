@@ -114,9 +114,13 @@ public class EventDetailArticle extends EventArticle {
 
     protected void addRegistrationForm(@NotNull final MemberService memberService,
                                        @NotNull EventMemberService eventMemberService,
-                                       @NotNull final Event event) {
+                                       @NotNull final Event event, String deregisterCode) {
         add(new Hr());
-        add(new EventRegistrationForm(memberService, eventMemberService, event));
+        if (deregisterCode.isBlank()) {
+            add(new EventRegistrationForm(memberService, eventMemberService, event));
+        } else {
+            add(new EventDeregistrationForm(eventMemberService, event, deregisterCode));
+        }
         add(new Hr());
     }
 

@@ -18,6 +18,7 @@
 
 package org.komunumo.data.service;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.komunumo.configuration.Configuration;
@@ -27,6 +28,7 @@ import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Member;
 import org.komunumo.util.FormatterUtil;
+import org.komunumo.util.URLUtil;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
@@ -77,19 +79,20 @@ public class EventMemberService {
     public void registerForEvent(@NotNull final Event event,
                                  @NotNull final Member member,
                                  @NotNull final String source) {
+        final EventMemberRecord registration;
+
         final var hasRegistered = get(event.getId(), member.getId());
-        final LocalDateTime registrationDate;
         if (hasRegistered.isEmpty()) {
-            registrationDate = LocalDateTime.now();
-            final var eventMember = dsl.newRecord(EVENT_MEMBER);
-            eventMember.setEventId(event.getId());
-            eventMember.setMemberId(member.getId());
-            eventMember.setDate(registrationDate);
-            eventMember.setSource(source);
-            eventMember.setNoShow(false);
-            eventMember.store();
+            registration = dsl.newRecord(EVENT_MEMBER);
+            registration.setEventId(event.getId());
+            registration.setMemberId(member.getId());
+            registration.setDate(LocalDateTime.now());
+            registration.setSource(source);
+            registration.setDeregister(RandomStringUtils.randomAlphanumeric(16));
+            registration.setNoShow(false);
+            registration.store();
         } else {
-            registrationDate = hasRegistered.get().getDate();
+            registration = hasRegistered.get();
         }
 
         final var message = new SimpleMailMessage();
@@ -101,13 +104,17 @@ public class EventMemberService {
                 You successfully registered for the following event:
                 "%s" at %s in %s
                 Details: %s%s
-                
+                                
                 Registration date: %s
                 Your name: %s
                 Source: %s
+                
+                To deregister from this event, please click on the following link:
+                %s%s?deregister=%s
                 """.formatted(
                         event.getTitle(), formatDateTime(event.getDate()), event.getLocation(), configuration.getWebsite().getBaseUrl(),
-                        event.getCompleteEventUrl(), formatDateTime(registrationDate), member.getFullName(), source
+                        event.getCompleteEventUrl(), formatDateTime(registration.getDate()), member.getFullName(), source,
+                        configuration.getWebsite().getBaseUrl(), event.getCompleteEventUrl(), URLUtil.encode(registration.getDeregister())
         ));
         mailSender.send(message);
     }
@@ -176,16 +183,25 @@ public class EventMemberService {
         return hasRegistered.isEmpty();
     }
 
-    public void unregisterFromEvent(@NotNull final EventRecord event,
-                                    @NotNull final MemberRecord member) {
-        dsl.delete(EVENT_MEMBER)
-                .where(EVENT_MEMBER.EVENT_ID.eq(event.getId()))
-                .and(EVENT_MEMBER.MEMBER_ID.eq(member.getId()))
-                .execute();
+    public boolean deregister(@NotNull final String deregisterCode) {
+        final var registration = dsl.selectFrom(EVENT_MEMBER)
+                .where(EVENT_MEMBER.DEREGISTER.eq(deregisterCode))
+                .fetchOneInto(EventMemberRecord.class);
+
+        if (registration != null) {
+            return registration.delete() > 0;
+        }
+
+        return false;
     }
 
     public int count() {
         return dsl.fetchCount(EVENT_MEMBER);
     }
 
+    public EventMemberRecord getRegistration(@NotNull final String deregisterCode) {
+        return dsl.selectFrom(EVENT_MEMBER)
+                .where(EVENT_MEMBER.DEREGISTER.eq(deregisterCode))
+                .fetchOne();
+    }
 }
