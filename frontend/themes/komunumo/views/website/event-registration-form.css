@@ -44,3 +44,9 @@
     padding-left: 25px;
     padding-top: 0;
 }
+
+.website .event-registration-form vaadin-checkbox {
+    display: flex;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}

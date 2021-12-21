@@ -21,6 +21,7 @@ import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
@@ -38,6 +39,7 @@ import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Member;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.MemberService;
+import org.komunumo.data.service.NewsletterService;
 
 import static org.komunumo.util.FormatterUtil.formatDate;
 
@@ -46,6 +48,7 @@ public class EventRegistrationForm extends Div {
 
     public EventRegistrationForm(@NotNull final MemberService memberService,
                                  @NotNull final EventMemberService eventMemberService,
+                                 @NotNull final NewsletterService newsletterService,
                                  @NotNull final Event event) {
         addClassName("event-registration-form");
 
@@ -118,6 +121,9 @@ public class EventRegistrationForm extends Div {
             otherSource.setValueChangeMode(ValueChangeMode.EAGER);
             registrationForm.add(otherSource);
 
+            final var newsletter = new Checkbox("Yes, I want to be notified about new events");
+            registrationForm.add(newsletter);
+
             final var registerButton = new Button("Register");
             registerButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
             registerButton.setEnabled(false);
@@ -150,6 +156,9 @@ public class EventRegistrationForm extends Div {
                 final var sourceValue = source.getValue().equalsIgnoreCase("other") ?
                         otherSource.getValue() : source.getValue();
                 eventMemberService.registerForEvent(event, member, sourceValue);
+                if (newsletter.getValue()) {
+                    newsletterService.addSubscription(emailAddress);
+                }
                 final var registrationInfo = new Paragraph("Thank you for your registration! Within the next few minutes " +
                         "you will receive a copy of your registration and a reminder will follow shortly before the event.");
                 registrationInfo.addClassName("registration-info");

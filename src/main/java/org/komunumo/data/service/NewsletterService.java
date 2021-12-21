@@ -18,11 +18,14 @@
 
 package org.komunumo.data.service;
 
+import java.util.Optional;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.komunumo.configuration.Configuration;
 import org.komunumo.data.db.enums.NewsletterSubscriptionStatus;
+import org.komunumo.data.db.tables.records.NewsletterSubscriptionRecord;
 import org.komunumo.util.URLUtil;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
@@ -48,26 +51,34 @@ public class NewsletterService {
         this.mailSender = mailSender;
     }
 
+    public Optional<NewsletterSubscriptionRecord> getSubscription(@NotNull final String emailAddress) {
+        return dsl.selectFrom(NEWSLETTER_SUBSCRIPTION)
+                .where(NEWSLETTER_SUBSCRIPTION.EMAIL.eq(emailAddress))
+                .fetchOptional();
+    }
+
     public void addSubscription(@NotNull final String emailAddress) {
-        final var subscription = dsl.newRecord(NEWSLETTER_SUBSCRIPTION);
+        if (getSubscription(emailAddress).isEmpty()) {
+            final var subscription = dsl.newRecord(NEWSLETTER_SUBSCRIPTION);
 
-        final var validationCode = RandomStringUtils.randomAlphabetic(8);
+            final var validationCode = RandomStringUtils.randomAlphabetic(8);
 
-        subscription.setEmail(emailAddress);
-        subscription.setSubscriptionDate(LocalDateTime.now());
-        subscription.setStatus(NewsletterSubscriptionStatus.PENDING);
-        subscription.setValidationCode(validationCode);
-        subscription.store();
+            subscription.setEmail(emailAddress);
+            subscription.setSubscriptionDate(LocalDateTime.now());
+            subscription.setStatus(NewsletterSubscriptionStatus.PENDING);
+            subscription.setValidationCode(validationCode);
+            subscription.store();
 
-        final var link = "http://localhost:8080/newsletter/subscription/validation?email=%s&code=%s"  // TODO use correct domain
-                .formatted(URLUtil.encode(emailAddress), URLUtil.encode(validationCode));
+            final var link = "%s/newsletter/subscription/validation?email=%s&code=%s"
+                    .formatted(configuration.getWebsite().getBaseUrl(), URLUtil.encode(emailAddress), URLUtil.encode(validationCode));
 
-        final var message = new SimpleMailMessage();
-        message.setTo(emailAddress);
-        message.setFrom(configuration.getEmail().getAddress());
-        message.setSubject("Validate your newsletter subscription");
-        message.setText("Please click on the following link to validate your newsletter subscription: " + link);
-        mailSender.send(message);
+            final var message = new SimpleMailMessage();
+            message.setTo(emailAddress);
+            message.setFrom(configuration.getEmail().getAddress());
+            message.setSubject("Validate your newsletter subscription");
+            message.setText("Please click on the following link to validate your newsletter subscription: " + link);
+            mailSender.send(message);
+        }
     }
 
     public boolean validateSubscription(@NotNull final String emailAddress, @NotNull final String validationCode) {
