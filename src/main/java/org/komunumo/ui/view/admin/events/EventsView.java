@@ -41,9 +41,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
-
-import javax.annotation.security.RolesAllowed;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
@@ -51,7 +48,7 @@ import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.entity.KeywordEntity;
 import org.komunumo.data.entity.Role;
 import org.komunumo.data.service.EventKeywordService;
-import org.komunumo.data.service.RegistrationService;
+import org.komunumo.data.service.EventOrganizerService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.KeywordService;
@@ -63,6 +60,7 @@ import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
 
+import javax.annotation.security.RolesAllowed;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.net.URLEncoder;
@@ -84,8 +82,8 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
     private final EventService eventService;
     private final SpeakerService speakerService;
     private final EventSpeakerService eventSpeakerService;
+    private final EventOrganizerService eventOrganizerService;
     private final MemberService memberService;
-    private final RegistrationService registrationService;
     private final KeywordService keywordService;
     private final EventKeywordService eventKeywordService;
 
@@ -96,16 +94,16 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
                       @NotNull final EventService eventService,
                       @NotNull final SpeakerService speakerService,
                       @NotNull final EventSpeakerService eventSpeakerService,
+                      @NotNull final EventOrganizerService eventOrganizerService,
                       @NotNull final MemberService memberService,
-                      @NotNull final RegistrationService registrationService,
                       @NotNull final KeywordService keywordService,
                       @NotNull final EventKeywordService eventKeywordService) {
         this.authenticatedUser = authenticatedUser;
         this.eventService = eventService;
         this.speakerService = speakerService;
         this.eventSpeakerService = eventSpeakerService;
+        this.eventOrganizerService = eventOrganizerService;
         this.memberService = memberService;
-        this.registrationService = registrationService;
         this.keywordService = keywordService;
         this.eventKeywordService = eventKeywordService;
 
@@ -244,7 +242,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
         new EventDialog(event.getId() != null ? "Edit Event" : "New Event",
                 authenticatedUser, eventService,
                 speakerService, eventSpeakerService,
-                memberService, registrationService,
+                eventOrganizerService, memberService,
                 keywordService, eventKeywordService)
                 .open(event, this::reloadGridItems);
     }

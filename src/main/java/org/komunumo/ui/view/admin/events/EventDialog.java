@@ -38,7 +38,7 @@ import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.entity.KeywordEntity;
 import org.komunumo.data.entity.Member;
 import org.komunumo.data.service.EventKeywordService;
-import org.komunumo.data.service.RegistrationService;
+import org.komunumo.data.service.EventOrganizerService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.KeywordService;
@@ -72,8 +72,8 @@ public class EventDialog extends EditDialog<Event> {
     private final EventService eventService;
     private final SpeakerService speakerService;
     private final EventSpeakerService eventSpeakerService;
+    private final EventOrganizerService eventOrganizerService;
     private final MemberService memberService;
-    private final RegistrationService registrationService;
     private final KeywordService keywordService;
     private final EventKeywordService eventKeywordService;
 
@@ -87,8 +87,8 @@ public class EventDialog extends EditDialog<Event> {
                        @NotNull final EventService eventService,
                        @NotNull final SpeakerService speakerService,
                        @NotNull final EventSpeakerService eventSpeakerService,
+                       @NotNull final EventOrganizerService eventOrganizerService,
                        @NotNull final MemberService memberService,
-                       @NotNull final RegistrationService registrationService,
                        @NotNull final KeywordService keywordService,
                        @NotNull final EventKeywordService eventKeywordService) {
         super(title);
@@ -96,8 +96,8 @@ public class EventDialog extends EditDialog<Event> {
         this.eventService = eventService;
         this.speakerService = speakerService;
         this.eventSpeakerService = eventSpeakerService;
+        this.eventOrganizerService = eventOrganizerService;
         this.memberService = memberService;
-        this.registrationService = registrationService;
         this.keywordService = keywordService;
         this.eventKeywordService = eventKeywordService;
     }
@@ -324,7 +324,7 @@ public class EventDialog extends EditDialog<Event> {
     @Override
     public void open(@NotNull final Event event, @Nullable final Callback afterSave) {
         speakers = Set.copyOf(event.getSpeakers());
-        organizers = registrationService.getOrganizersForEvent(event)
+        organizers = eventOrganizerService.getOrganizersForEvent(event)
                 .collect(Collectors.toSet());
         final var organizer = authenticatedUser.get();
         if (organizers.isEmpty() && event.getId() == null && organizer.isPresent()) {
@@ -339,7 +339,7 @@ public class EventDialog extends EditDialog<Event> {
                 },
                 () -> {
                     eventSpeakerService.setEventSpeakers(event, speakers);
-                    registrationService.setEventOrganizers(event, organizers);
+                    eventOrganizerService.setEventOrganizers(event, organizers);
                     eventKeywordService.setEventKeywords(event, keywords);
                     if (afterSave != null) {
                         afterSave.execute();

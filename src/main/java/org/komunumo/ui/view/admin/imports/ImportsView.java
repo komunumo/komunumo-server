@@ -44,6 +44,7 @@ import org.komunumo.data.importer.clubdesk.ClubDeskFile;
 import org.komunumo.data.importer.clubdesk.ClubDeskMember;
 import org.komunumo.data.importer.jugs.JUGSImporter;
 import org.komunumo.data.service.EventKeywordService;
+import org.komunumo.data.service.EventOrganizerService;
 import org.komunumo.data.service.RegistrationService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
@@ -74,6 +75,7 @@ public class ImportsView extends ResizableView {
     private final RegistrationService registrationService;
     private final SpeakerService speakerService;
     private final EventSpeakerService eventSpeakerService;
+    private final EventOrganizerService eventOrganizerService;
     private final KeywordService keywordService;
     private final EventKeywordService eventKeywordService;
     private final NewsService newsService;
@@ -86,6 +88,7 @@ public class ImportsView extends ResizableView {
             @NotNull final RegistrationService registrationService,
             @NotNull final SpeakerService speakerService,
             @NotNull final EventSpeakerService eventSpeakerService,
+            @NotNull final EventOrganizerService eventOrganizerService,
             @NotNull final KeywordService keywordService,
             @NotNull final EventKeywordService eventKeywordService,
             @NotNull final NewsService newsService) {
@@ -96,6 +99,7 @@ public class ImportsView extends ResizableView {
         this.registrationService = registrationService;
         this.speakerService = speakerService;
         this.eventSpeakerService = eventSpeakerService;
+        this.eventOrganizerService = eventOrganizerService;
         this.keywordService = keywordService;
         this.eventKeywordService = eventKeywordService;
         this.newsService = newsService;
@@ -334,7 +338,7 @@ public class ImportsView extends ResizableView {
         importButton.setEnabled(!dbURL.isEmpty() && !dbUser.isEmpty() && !dbPass.isEmpty());
         importButton.addClickListener(buttonClickEvent -> {
             final var importer = new JUGSImporter(dsl, sponsorService, memberService, eventService, registrationService,
-                    speakerService, eventSpeakerService, keywordService, eventKeywordService, newsService);
+                    speakerService, eventSpeakerService, eventOrganizerService, keywordService, eventKeywordService, newsService);
             importer.importFromJavaUserGroupSwitzerland(dbURL.getValue(), dbUser.getValue(), dbPass.getValue());
         });
 

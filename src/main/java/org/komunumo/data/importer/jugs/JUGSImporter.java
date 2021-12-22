@@ -37,6 +37,7 @@ import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.service.EventKeywordService;
+import org.komunumo.data.service.EventOrganizerService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.KeywordService;
@@ -88,6 +89,7 @@ public class JUGSImporter {
     private final RegistrationService registrationService;
     private final SpeakerService speakerService;
     private final EventSpeakerService eventSpeakerService;
+    private final EventOrganizerService eventOrganizerService;
     private final KeywordService keywordService;
     private final EventKeywordService eventKeywordService;
     private final NewsService newsService;
@@ -109,6 +111,7 @@ public class JUGSImporter {
             @NotNull final RegistrationService registrationService,
             @NotNull final SpeakerService speakerService,
             @NotNull final EventSpeakerService eventSpeakerService,
+            @NotNull final EventOrganizerService eventOrganizerService,
             @NotNull final KeywordService keywordService,
             @NotNull final EventKeywordService eventKeywordService,
             @NotNull final NewsService newsService) {
@@ -119,6 +122,7 @@ public class JUGSImporter {
         this.registrationService = registrationService;
         this.speakerService = speakerService;
         this.eventSpeakerService = eventSpeakerService;
+        this.eventOrganizerService = eventOrganizerService;
         this.keywordService = keywordService;
         this.eventKeywordService = eventKeywordService;
         this.newsService = newsService;
@@ -605,7 +609,7 @@ public class JUGSImporter {
                     .map(Optional::get)
                     .collect(Collectors.toSet());
             if (!organizers.isEmpty()) {
-                registrationService.setEventOrganizers(event, organizers);
+                eventOrganizerService.setEventOrganizers(event, organizers);
             }
         }
     }
