@@ -63,3 +63,13 @@
 .website .news-block .newsletter-registration > div > vaadin-email-field {
     width: 100%;
 }
+
+.website .news-block .newsletter-registration div#newsletter-message {
+    clear: both;
+    width: 100%;
+}
+
+.website .news-block .newsletter-registration div#newsletter-message p {
+    color: #930722;
+    font-weight: bold;
+}

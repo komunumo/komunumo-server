@@ -29,7 +29,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
@@ -74,13 +73,17 @@ public class NewsBlock extends ContentBlock {
         emailField.setPlaceholder("Your email address");
         emailField.setValueChangeMode(ValueChangeMode.EAGER);
         emailField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+
+        final var message = new Div();
+        message.setId("newsletter-message");
+
         final var subscribeButton = new Button("Subscribe", (clickEvent) -> {
             final var emailAddress = emailField.getValue().trim();
             if (!emailAddress.isBlank()) {
                 subscriptionService.addSubscription(emailAddress);
                 UI.getCurrent().access(() -> {
                     emailField.setValue("");
-                    Notification.show("You have been added to the newsletter. Please check your email account for verification (opt-in).");
+                    message.add(new Paragraph("You have been added to the newsletter. Please check your email account for verification (opt-in)."));
                 });
             }
         });
@@ -94,7 +97,8 @@ public class NewsBlock extends ContentBlock {
                 new Div(
                     new Paragraph("Please register here with your e-mail to receive announcements for upcoming JUG Switzerland events."),
                     emailField, subscribeButton
-                )
+                ),
+                message
         );
         container.addClassName("newsletter-registration");
         return container;
