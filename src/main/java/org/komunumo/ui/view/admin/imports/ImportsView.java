@@ -44,7 +44,7 @@ import org.komunumo.data.importer.clubdesk.ClubDeskFile;
 import org.komunumo.data.importer.clubdesk.ClubDeskMember;
 import org.komunumo.data.importer.jugs.JUGSImporter;
 import org.komunumo.data.service.EventKeywordService;
-import org.komunumo.data.service.EventMemberService;
+import org.komunumo.data.service.RegistrationService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.KeywordService;
@@ -71,7 +71,7 @@ public class ImportsView extends ResizableView {
     private final SponsorService sponsorService;
     private final MemberService memberService;
     private final EventService eventService;
-    private final EventMemberService eventMemberService;
+    private final RegistrationService registrationService;
     private final SpeakerService speakerService;
     private final EventSpeakerService eventSpeakerService;
     private final KeywordService keywordService;
@@ -83,7 +83,7 @@ public class ImportsView extends ResizableView {
             @NotNull final SponsorService sponsorService,
             @NotNull final MemberService memberService,
             @NotNull final EventService eventService,
-            @NotNull final EventMemberService eventMemberService,
+            @NotNull final RegistrationService registrationService,
             @NotNull final SpeakerService speakerService,
             @NotNull final EventSpeakerService eventSpeakerService,
             @NotNull final KeywordService keywordService,
@@ -93,7 +93,7 @@ public class ImportsView extends ResizableView {
         this.sponsorService = sponsorService;
         this.memberService = memberService;
         this.eventService = eventService;
-        this.eventMemberService = eventMemberService;
+        this.registrationService = registrationService;
         this.speakerService = speakerService;
         this.eventSpeakerService = eventSpeakerService;
         this.keywordService = keywordService;
@@ -156,7 +156,7 @@ public class ImportsView extends ResizableView {
                 importButton.addClickListener(buttonClickEvent -> {
                     try {
                         cancelButton.setEnabled(false);
-                        report.importRegistrations(eventService, eventMemberService, memberService);
+                        report.importRegistrations(eventService, registrationService, memberService);
                         importButton.getElement().removeFromParent();
                         cancelButton.getElement().removeFromParent();
                         grid.getElement().removeFromParent();
@@ -204,7 +204,7 @@ public class ImportsView extends ResizableView {
                 final var registrations = report.getRegistrations();
 
                 try {
-                    report.importRegistrations(eventService, eventMemberService, memberService);
+                    report.importRegistrations(eventService, registrationService, memberService);
                     Notification.show(String.format("Successfully imported %d registrations from excel file '%s'.",
                             registrations.size(), succeededEvent.getFileName()));
                 } catch (final NoSuchElementException e) {
@@ -333,7 +333,7 @@ public class ImportsView extends ResizableView {
         importButton.setDisableOnClick(true);
         importButton.setEnabled(!dbURL.isEmpty() && !dbUser.isEmpty() && !dbPass.isEmpty());
         importButton.addClickListener(buttonClickEvent -> {
-            final var importer = new JUGSImporter(dsl, sponsorService, memberService, eventService, eventMemberService,
+            final var importer = new JUGSImporter(dsl, sponsorService, memberService, eventService, registrationService,
                     speakerService, eventSpeakerService, keywordService, eventKeywordService, newsService);
             importer.importFromJavaUserGroupSwitzerland(dbURL.getValue(), dbUser.getValue(), dbPass.getValue());
         });

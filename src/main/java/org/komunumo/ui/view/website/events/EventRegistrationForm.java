@@ -37,7 +37,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Member;
-import org.komunumo.data.service.EventMemberService;
+import org.komunumo.data.service.RegistrationService;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.SubscriptionService;
 
@@ -47,7 +47,7 @@ import static org.komunumo.util.FormatterUtil.formatDate;
 public class EventRegistrationForm extends Div {
 
     public EventRegistrationForm(@NotNull final MemberService memberService,
-                                 @NotNull final EventMemberService eventMemberService,
+                                 @NotNull final RegistrationService registrationService,
                                  @NotNull final SubscriptionService subscriptionService,
                                  @NotNull final Event event) {
         addClassName("event-registration-form");
@@ -155,7 +155,7 @@ public class EventRegistrationForm extends Div {
                 final var member = memberFound.orElse(createMember(memberService, emailAddress, firstName, lastName));
                 final var sourceValue = source.getValue().equalsIgnoreCase("other") ?
                         otherSource.getValue() : source.getValue();
-                eventMemberService.registerForEvent(event, member, sourceValue);
+                registrationService.registerForEvent(event, member, sourceValue);
                 if (newsletter.getValue()) {
                     subscriptionService.addSubscription(emailAddress);
                 }

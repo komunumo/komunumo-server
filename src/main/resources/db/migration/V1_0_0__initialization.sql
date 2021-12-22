@@ -77,7 +77,7 @@ CREATE TABLE member (
 CREATE INDEX member_names ON member (last_name, first_name);
 CREATE INDEX member_email ON member (email);
 
-CREATE TABLE event_member (
+CREATE TABLE registration (
     event_id INTEGER UNSIGNED NOT NULL,
     member_id INTEGER UNSIGNED NOT NULL,
     date DATETIME NULL,

@@ -18,14 +18,13 @@
 
 package org.komunumo.data.service;
 
-import java.time.LocalDate;
-
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.enums.EventType;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Year;
 import java.util.Collection;
@@ -34,8 +33,8 @@ import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
 import static org.jooq.impl.DSL.month;
 import static org.komunumo.data.db.tables.Event.EVENT;
-import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
 import static org.komunumo.data.db.tables.Member.MEMBER;
+import static org.komunumo.data.db.tables.Registration.REGISTRATION;
 
 @Service
 public class StatisticService {
@@ -69,23 +68,23 @@ public class StatisticService {
     public int countAttendeesByYear(@NotNull final Year year, @NotNull final NoShows noShows) {
         final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
         final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
-        return dsl.fetchCount(EVENT_MEMBER,
-                EVENT_MEMBER.DATE.between(firstDay, lastDay)
+        return dsl.fetchCount(REGISTRATION,
+                REGISTRATION.DATE.between(firstDay, lastDay)
                         .and(noShows == NoShows.INCLUDE
                                 ? DSL.noCondition()
-                                : EVENT_MEMBER.NO_SHOW.eq(noShows == NoShows.ONLY)));
+                                : REGISTRATION.NO_SHOW.eq(noShows == NoShows.ONLY)));
     }
 
     public int countUniqueAttendeesByYear(@NotNull final Year year, @NotNull final NoShows noShows) {
         final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
         final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
         return dsl.selectCount()
-                .from(EVENT_MEMBER)
-                .where(EVENT_MEMBER.DATE.between(firstDay, lastDay)
+                .from(REGISTRATION)
+                .where(REGISTRATION.DATE.between(firstDay, lastDay)
                         .and(noShows == NoShows.INCLUDE
                                 ? DSL.noCondition()
-                                : EVENT_MEMBER.NO_SHOW.eq(noShows == NoShows.ONLY)))
-                .groupBy(EVENT_MEMBER.MEMBER_ID)
+                                : REGISTRATION.NO_SHOW.eq(noShows == NoShows.ONLY)))
+                .groupBy(REGISTRATION.MEMBER_ID)
                 .execute();
     }
 
@@ -107,10 +106,10 @@ public class StatisticService {
                         DSL.count().filterWhere(month(EVENT.DATE).eq(10)).as("October"),
                         DSL.count().filterWhere(month(EVENT.DATE).eq(11)).as("November"),
                         DSL.count().filterWhere(month(EVENT.DATE).eq(12)).as("December"))
-                .from(EVENT_MEMBER)
-                .leftJoin(EVENT).on(EVENT_MEMBER.EVENT_ID.eq(EVENT.ID))
+                .from(REGISTRATION)
+                .leftJoin(EVENT).on(REGISTRATION.EVENT_ID.eq(EVENT.ID))
                 .where(EVENT.DATE.greaterOrEqual(firstDay).and(EVENT.DATE.lessOrEqual(lastDay)))
-                        .and(EVENT_MEMBER.NO_SHOW.isFalse())
+                        .and(REGISTRATION.NO_SHOW.isFalse())
                 .groupBy(EVENT.LOCATION)
                 .orderBy(EVENT.LOCATION)
                 .fetchInto(StatisticService.MonthlyVisitors.class);

@@ -39,10 +39,10 @@ import static org.jooq.impl.DSL.concat;
 import static org.jooq.impl.DSL.condition;
 import static org.komunumo.data.db.tables.Event.EVENT;
 import static org.komunumo.data.db.tables.EventKeyword.EVENT_KEYWORD;
-import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
 import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
 import static org.komunumo.data.db.tables.EventUrlJug.EVENT_URL_JUG;
 import static org.komunumo.data.db.tables.Keyword.KEYWORD;
+import static org.komunumo.data.db.tables.Registration.REGISTRATION;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
 @Service
@@ -196,7 +196,7 @@ public class EventService {
     }
 
     private void addAttendeeCount(@NotNull final Event event) {
-        final var attendeeCount = dsl.fetchCount(EVENT_MEMBER, EVENT_MEMBER.EVENT_ID.eq(event.getId()).and(EVENT_MEMBER.NO_SHOW.isFalse()));
+        final var attendeeCount = dsl.fetchCount(REGISTRATION, REGISTRATION.EVENT_ID.eq(event.getId()).and(REGISTRATION.NO_SHOW.isFalse()));
         event.setAttendeeCount(attendeeCount);
     }
 

@@ -51,7 +51,7 @@ import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.entity.KeywordEntity;
 import org.komunumo.data.entity.Role;
 import org.komunumo.data.service.EventKeywordService;
-import org.komunumo.data.service.EventMemberService;
+import org.komunumo.data.service.RegistrationService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.KeywordService;
@@ -85,7 +85,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
     private final SpeakerService speakerService;
     private final EventSpeakerService eventSpeakerService;
     private final MemberService memberService;
-    private final EventMemberService eventMemberService;
+    private final RegistrationService registrationService;
     private final KeywordService keywordService;
     private final EventKeywordService eventKeywordService;
 
@@ -97,7 +97,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
                       @NotNull final SpeakerService speakerService,
                       @NotNull final EventSpeakerService eventSpeakerService,
                       @NotNull final MemberService memberService,
-                      @NotNull final EventMemberService eventMemberService,
+                      @NotNull final RegistrationService registrationService,
                       @NotNull final KeywordService keywordService,
                       @NotNull final EventKeywordService eventKeywordService) {
         this.authenticatedUser = authenticatedUser;
@@ -105,7 +105,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
         this.speakerService = speakerService;
         this.eventSpeakerService = eventSpeakerService;
         this.memberService = memberService;
-        this.eventMemberService = eventMemberService;
+        this.registrationService = registrationService;
         this.keywordService = keywordService;
         this.eventKeywordService = eventKeywordService;
 
@@ -244,7 +244,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
         new EventDialog(event.getId() != null ? "Edit Event" : "New Event",
                 authenticatedUser, eventService,
                 speakerService, eventSpeakerService,
-                memberService, eventMemberService,
+                memberService, registrationService,
                 keywordService, eventKeywordService)
                 .open(event, this::reloadGridItems);
     }

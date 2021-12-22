@@ -37,12 +37,12 @@ import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.service.EventKeywordService;
-import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.KeywordService;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.NewsService;
+import org.komunumo.data.service.RegistrationService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.data.service.SponsorService;
 import org.komunumo.util.URLUtil;
@@ -68,13 +68,13 @@ import java.util.stream.Stream;
 
 import static org.komunumo.data.db.tables.Event.EVENT;
 import static org.komunumo.data.db.tables.EventKeyword.EVENT_KEYWORD;
-import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
 import static org.komunumo.data.db.tables.EventOrganizer.EVENT_ORGANIZER;
 import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
 import static org.komunumo.data.db.tables.EventUrlJug.EVENT_URL_JUG;
 import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 import static org.komunumo.data.db.tables.Member.MEMBER;
 import static org.komunumo.data.db.tables.News.NEWS;
+import static org.komunumo.data.db.tables.Registration.REGISTRATION;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
 
@@ -85,7 +85,7 @@ public class JUGSImporter {
     private final SponsorService sponsorService;
     private final MemberService memberService;
     private final EventService eventService;
-    private final EventMemberService eventMemberService;
+    private final RegistrationService registrationService;
     private final SpeakerService speakerService;
     private final EventSpeakerService eventSpeakerService;
     private final KeywordService keywordService;
@@ -106,7 +106,7 @@ public class JUGSImporter {
             @NotNull final SponsorService sponsorService,
             @NotNull final MemberService memberService,
             @NotNull final EventService eventService,
-            @NotNull final EventMemberService eventMemberService,
+            @NotNull final RegistrationService registrationService,
             @NotNull final SpeakerService speakerService,
             @NotNull final EventSpeakerService eventSpeakerService,
             @NotNull final KeywordService keywordService,
@@ -116,7 +116,7 @@ public class JUGSImporter {
         this.sponsorService = sponsorService;
         this.memberService = memberService;
         this.eventService = eventService;
-        this.eventMemberService = eventMemberService;
+        this.registrationService = registrationService;
         this.speakerService = speakerService;
         this.eventSpeakerService = eventSpeakerService;
         this.keywordService = keywordService;
@@ -265,7 +265,7 @@ public class JUGSImporter {
                         || result.getString("noshow") != null && result.getString("noshow").equals("1");
                 final var deregisterCode = result.getString("hashtag");
                 try {
-                    if (eventMemberService.registerForEvent(eventId, memberId, registerDate, noShow, deregisterCode)) {
+                    if (registrationService.registerForEvent(eventId, memberId, registerDate, noShow, deregisterCode)) {
                         counter.incrementAndGet();
                     }
                 } catch (final Exception e1) {
@@ -279,7 +279,7 @@ public class JUGSImporter {
                         member.setAccountDeleted(true);
                         memberService.store(member);
                         try {
-                            if (eventMemberService.registerForEvent(eventId, memberId, registerDate, noShow, deregisterCode)) {
+                            if (registrationService.registerForEvent(eventId, memberId, registerDate, noShow, deregisterCode)) {
                                 counter.incrementAndGet();
                             }
                         } catch (final Exception e2) {
@@ -497,7 +497,7 @@ public class JUGSImporter {
                     }
 
                     eventService.store(event);
-                    addOrganizers(memberService, eventMemberService, event, result.getString("verantwortung"));
+                    addOrganizers(memberService, registrationService, event, result.getString("verantwortung"));
                     counter.incrementAndGet();
 
                     if (result.getString("urldatei") != null && !result.getString("urldatei").isBlank()) {
@@ -513,7 +513,7 @@ public class JUGSImporter {
     }
 
     private void addOrganizers(@NotNull final MemberService memberService,
-                               @NotNull final EventMemberService eventMemberService,
+                               @NotNull final RegistrationService registrationService,
                                @NotNull final Event event,
                                @Nullable final String verantwortung) {
         if (verantwortung != null && !verantwortung.isBlank()) {
@@ -605,7 +605,7 @@ public class JUGSImporter {
                     .map(Optional::get)
                     .collect(Collectors.toSet());
             if (!organizers.isEmpty()) {
-                eventMemberService.setEventOrganizers(event, organizers);
+                registrationService.setEventOrganizers(event, organizers);
             }
         }
     }
@@ -773,15 +773,15 @@ public class JUGSImporter {
                 .where(EVENT_ORGANIZER.MEMBER_ID.eq(member2.getId()))
                 .execute();
 
-        dsl.selectFrom(EVENT_MEMBER)
-                .where(EVENT_MEMBER.MEMBER_ID.eq(member2.getId()))
+        dsl.selectFrom(REGISTRATION)
+                .where(REGISTRATION.MEMBER_ID.eq(member2.getId()))
                 .forEach(record ->
-                        dsl.insertInto(EVENT_MEMBER, EVENT_MEMBER.EVENT_ID, EVENT_MEMBER.MEMBER_ID, EVENT_MEMBER.DATE, EVENT_MEMBER.NO_SHOW)
+                        dsl.insertInto(REGISTRATION, REGISTRATION.EVENT_ID, REGISTRATION.MEMBER_ID, REGISTRATION.DATE, REGISTRATION.NO_SHOW)
                                 .values(record.getEventId(), member1.getId(), record.getDate(), record.getNoShow())
                                 .onDuplicateKeyIgnore()
                                 .execute());
-        dsl.deleteFrom(EVENT_MEMBER)
-                .where(EVENT_MEMBER.MEMBER_ID.eq(member2.getId()))
+        dsl.deleteFrom(REGISTRATION)
+                .where(REGISTRATION.MEMBER_ID.eq(member2.getId()))
                 .execute();
 
         Stream.of(MEMBER.FIRST_NAME, MEMBER.LAST_NAME, MEMBER.COMPANY, MEMBER.EMAIL, MEMBER.ADDRESS, MEMBER.ZIP_CODE,

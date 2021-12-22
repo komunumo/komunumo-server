@@ -31,7 +31,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.service.EventMemberService;
+import org.komunumo.data.service.RegistrationService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.SubscriptionService;
@@ -50,19 +50,19 @@ import java.util.Map;
 public class EventDetailView extends ContentBlock implements BeforeEnterObserver{
 
     private final EventService eventService;
-    private final EventMemberService eventMemberService;
+    private final RegistrationService registrationService;
     private final SubscriptionService subscriptionService;
     private final MemberService memberService;
 
     private final Map<String, String> locationMapper = new HashMap<>();
 
     public EventDetailView(@NotNull final EventService eventService,
-                           @NotNull final EventMemberService eventMemberService,
+                           @NotNull final RegistrationService registrationService,
                            @NotNull final SubscriptionService subscriptionService,
                            @NotNull final MemberService memberService) {
         super("Events");
         this.eventService = eventService;
-        this.eventMemberService = eventMemberService;
+        this.registrationService = registrationService;
         this.subscriptionService = subscriptionService;
         this.memberService = memberService;
     }
@@ -102,7 +102,7 @@ public class EventDetailView extends ContentBlock implements BeforeEnterObserver
         article.addDescription(event);
         article.addLevel(event);
         article.addLanguage(event);
-        article.addRegistrationForm(memberService, eventMemberService, subscriptionService, event, deregisterCode);
+        article.addRegistrationForm(memberService, registrationService, subscriptionService, event, deregisterCode);
         setContent(article);
 
         final var eventsOverview = new UnorderedList(new ListItem(new Anchor("/events", "Events overview")));

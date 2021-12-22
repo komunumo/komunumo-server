@@ -17,32 +17,22 @@
  */
 package org.komunumo.ui.view.website.events;
 
-import com.vaadin.flow.component.Html;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
-import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
-import com.vaadin.flow.component.textfield.EmailField;
-import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.textfield.TextFieldVariant;
-import com.vaadin.flow.data.value.ValueChangeMode;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
-import org.komunumo.data.service.EventMemberService;
-import org.komunumo.data.service.MemberService;
+import org.komunumo.data.service.RegistrationService;
 
 import static org.komunumo.util.FormatterUtil.formatDate;
 
 @CssImport("./themes/komunumo/views/website/event-deregistration-form.css")
 public class EventDeregistrationForm extends Div {
 
-    public EventDeregistrationForm(@NotNull final EventMemberService eventMemberService,
+    public EventDeregistrationForm(@NotNull final RegistrationService registrationService,
                                    @NotNull final Event event,
                                    @NotNull final String deregisterCode) {
         addClassName("event-deregistration-form");
@@ -50,7 +40,7 @@ public class EventDeregistrationForm extends Div {
         final var eventTitle = new Span(event.getTitle());
         eventTitle.addClassName("event-title");
 
-        final var registration = eventMemberService.getRegistration(deregisterCode);
+        final var registration = registrationService.getRegistration(deregisterCode);
         if (registration != null) {
             final var deregisterButton = new Button("Deregister");
             deregisterButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
@@ -66,7 +56,7 @@ public class EventDeregistrationForm extends Div {
 
             deregisterButton.addClickListener(clickEvent -> {
                 final var message = new Div();
-                if (eventMemberService.deregister(deregisterCode)) {
+                if (registrationService.deregister(deregisterCode)) {
                     final var success = new Paragraph("You successfully deregistered from this event.");
                     success.addClassName("success");
                     message.add(success);

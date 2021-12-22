@@ -24,7 +24,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Member;
-import org.komunumo.data.service.EventMemberService;
+import org.komunumo.data.service.RegistrationService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.MemberService;
 
@@ -123,18 +123,18 @@ public class BigMarkerReport {
     }
 
     public void importRegistrations(@NotNull final EventService eventService,
-                                    @NotNull final EventMemberService eventMemberService,
+                                    @NotNull final RegistrationService registrationService,
                                     @NotNull final MemberService memberService) {
         final var event = eventService.getByWebinarUrl(webinarUrl).orElseThrow(() ->
                 new NoSuchElementException(String.format("No event found with webinar URL: %s", webinarUrl)));
         for (final var registration : getRegistrations()) {
             final var member = getOrCreateMember(memberService, registration);
-            final var existingRegistration = eventMemberService.get(event.getId(), member.getId());
+            final var existingRegistration = registrationService.get(event.getId(), member.getId());
             if (existingRegistration.isPresent()) {
                 existingRegistration.get().setNoShow(registration.noShow());
-                eventMemberService.store(existingRegistration.get());
+                registrationService.store(existingRegistration.get());
             } else {
-                final var newRegistration = eventMemberService.newRegistration();
+                final var newRegistration = registrationService.newRegistration();
                 newRegistration.setEventId(event.getId());
                 newRegistration.setMemberId(member.getId());
                 if (registration.registrationDate() != null) {
@@ -142,7 +142,7 @@ public class BigMarkerReport {
                 }
                 newRegistration.setSource("");
                 newRegistration.setNoShow(registration.noShow());
-                eventMemberService.store(newRegistration);
+                registrationService.store(newRegistration);
             }
         }
     }

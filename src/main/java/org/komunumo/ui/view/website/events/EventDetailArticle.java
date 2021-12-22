@@ -29,7 +29,7 @@ import java.util.Locale;
 
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
-import org.komunumo.data.service.EventMemberService;
+import org.komunumo.data.service.RegistrationService;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.SubscriptionService;
 
@@ -114,14 +114,14 @@ public class EventDetailArticle extends EventArticle {
     }
 
     protected void addRegistrationForm(@NotNull final MemberService memberService,
-                                       @NotNull final EventMemberService eventMemberService,
+                                       @NotNull final RegistrationService registrationService,
                                        @NotNull final SubscriptionService subscriptionService,
                                        @NotNull final Event event, String deregisterCode) {
         add(new Hr());
         if (deregisterCode.isBlank()) {
-            add(new EventRegistrationForm(memberService, eventMemberService, subscriptionService, event));
+            add(new EventRegistrationForm(memberService, registrationService, subscriptionService, event));
         } else {
-            add(new EventDeregistrationForm(eventMemberService, event, deregisterCode));
+            add(new EventDeregistrationForm(registrationService, event, deregisterCode));
         }
         add(new Hr());
     }

@@ -22,9 +22,9 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.komunumo.configuration.Configuration;
-import org.komunumo.data.db.tables.records.EventMemberRecord;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.db.tables.records.MemberRecord;
+import org.komunumo.data.db.tables.records.RegistrationRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Member;
 import org.komunumo.util.FormatterUtil;
@@ -40,50 +40,50 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.jooq.impl.DSL.select;
-import static org.komunumo.data.db.tables.EventMember.EVENT_MEMBER;
 import static org.komunumo.data.db.tables.EventOrganizer.EVENT_ORGANIZER;
 import static org.komunumo.data.db.tables.Member.MEMBER;
+import static org.komunumo.data.db.tables.Registration.REGISTRATION;
 import static org.komunumo.util.FormatterUtil.formatDateTime;
 
 @Service
 @SuppressWarnings("ClassCanBeRecord")
-public class EventMemberService {
+public class RegistrationService {
 
     private final DSLContext dsl;
     private final Configuration configuration;
     private final MailSender mailSender;
 
-    public EventMemberService(@NotNull final DSLContext dsl,
-                              @NotNull final Configuration configuration,
-                              @NotNull final MailSender mailSender) {
+    public RegistrationService(@NotNull final DSLContext dsl,
+                               @NotNull final Configuration configuration,
+                               @NotNull final MailSender mailSender) {
         this.dsl = dsl;
         this.configuration = configuration;
         this.mailSender = mailSender;
     }
 
-    public EventMemberRecord newRegistration() {
-        return dsl.newRecord(EVENT_MEMBER);
+    public RegistrationRecord newRegistration() {
+        return dsl.newRecord(REGISTRATION);
     }
 
-    public Optional<EventMemberRecord> get(@NotNull final Long eventId,
+    public Optional<RegistrationRecord> get(@NotNull final Long eventId,
                                            @NotNull final Long memberId) {
-        return dsl.fetchOptional(EVENT_MEMBER,
-                EVENT_MEMBER.EVENT_ID.eq(eventId)
-                        .and(EVENT_MEMBER.MEMBER_ID.eq(memberId)));
+        return dsl.fetchOptional(REGISTRATION,
+                REGISTRATION.EVENT_ID.eq(eventId)
+                        .and(REGISTRATION.MEMBER_ID.eq(memberId)));
     }
 
-    public void store(@NotNull final EventMemberRecord registration) {
+    public void store(@NotNull final RegistrationRecord registration) {
         registration.store();
     }
 
     public void registerForEvent(@NotNull final Event event,
                                  @NotNull final Member member,
                                  @NotNull final String source) {
-        final EventMemberRecord registration;
+        final RegistrationRecord registration;
 
         final var hasRegistered = get(event.getId(), member.getId());
         if (hasRegistered.isEmpty()) {
-            registration = dsl.newRecord(EVENT_MEMBER);
+            registration = dsl.newRecord(REGISTRATION);
             registration.setEventId(event.getId());
             registration.setMemberId(member.getId());
             registration.setDate(LocalDateTime.now());
@@ -172,7 +172,7 @@ public class EventMemberService {
                                     @NotNull final String deregisterCode) {
         final var hasRegistered = get(eventId, memberId);
         if (hasRegistered.isEmpty()) {
-            final var eventMember = dsl.newRecord(EVENT_MEMBER);
+            final var eventMember = dsl.newRecord(REGISTRATION);
             eventMember.setEventId(eventId);
             eventMember.setMemberId(memberId);
             eventMember.setDate(registerDate);
@@ -184,9 +184,9 @@ public class EventMemberService {
     }
 
     public boolean deregister(@NotNull final String deregisterCode) {
-        final var registration = dsl.selectFrom(EVENT_MEMBER)
-                .where(EVENT_MEMBER.DEREGISTER.eq(deregisterCode))
-                .fetchOneInto(EventMemberRecord.class);
+        final var registration = dsl.selectFrom(REGISTRATION)
+                .where(REGISTRATION.DEREGISTER.eq(deregisterCode))
+                .fetchOneInto(RegistrationRecord.class);
 
         if (registration != null) {
             return registration.delete() > 0;
@@ -196,12 +196,12 @@ public class EventMemberService {
     }
 
     public int count() {
-        return dsl.fetchCount(EVENT_MEMBER);
+        return dsl.fetchCount(REGISTRATION);
     }
 
-    public EventMemberRecord getRegistration(@NotNull final String deregisterCode) {
-        return dsl.selectFrom(EVENT_MEMBER)
-                .where(EVENT_MEMBER.DEREGISTER.eq(deregisterCode))
+    public RegistrationRecord getRegistration(@NotNull final String deregisterCode) {
+        return dsl.selectFrom(REGISTRATION)
+                .where(REGISTRATION.DEREGISTER.eq(deregisterCode))
                 .fetchOne();
     }
 }
