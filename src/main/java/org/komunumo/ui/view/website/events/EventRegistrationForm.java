@@ -17,6 +17,7 @@
  */
 package org.komunumo.ui.view.website.events;
 
+import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
@@ -72,6 +73,11 @@ public class EventRegistrationForm extends Div {
                 new Span("» on %s in %s:".formatted(formatDate(event.getDate().toLocalDate()), event.getLocation()))));
         emailForm.add(new HorizontalLayout(emailField, verifyButton));
 
+        if (event.getMembersOnly()) {
+            final var membersOnlyInfo = new Paragraph("This event is only for members. You must be a member to attend this event.");
+            membersOnlyInfo.addClassName("members-only-info");
+            emailForm.add(membersOnlyInfo);
+        }
 
         add(emailForm);
 
@@ -84,90 +90,98 @@ public class EventRegistrationForm extends Div {
             foundMessage.addClassName("found-message");
             registrationForm.add(foundMessage);
 
-            if (memberFound.isPresent()) {
-                final var member = memberFound.get();
-                foundMessage.add("Yes! We found you in our database, %s.".formatted(member.getFullName()));
+            Focusable<?> focusField = null;
+
+            final var isMember = memberFound.isPresent() && memberFound.get().isMembershipActive();
+            if (!isMember && event.getMembersOnly()) {
+                foundMessage.add("Sorry, this event is only for members. You must become a member to attend this event.");
             } else {
-                foundMessage.add("Sorry, we did not found you in our database.");
-            }
-            foundMessage.add(new Html("<br/>"));
-            foundMessage.add(new Text("Please complete your registration by sending off this form. Thank you very much!"));
-
-            final TextField firstName;
-            final TextField lastName;
-            if (memberFound.isEmpty()) {
-                firstName = new TextField("First name");
-                firstName.setRequiredIndicatorVisible(true);
-                lastName = new TextField("Last name");
-                lastName.setRequiredIndicatorVisible(true);
-                registrationForm.add(firstName, lastName);
-            } else {
-                firstName = null;
-                lastName = null;
-            }
-
-            final var source = new RadioButtonGroup<String>();
-            source.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
-            source.setRequiredIndicatorVisible(true);
-            source.setLabel("I heard of this event through");
-            source.setItems("jug.ch mailing", "jug.ch homepage", "Twitter", "mailing of another association", "a friend", "company",
-                    "techup.ch", "search engine", "other");
-            registrationForm.add(source);
-
-            final var otherSource = new TextField();
-            otherSource.addClassName("other-source");
-            otherSource.addThemeVariants(TextFieldVariant.LUMO_SMALL);
-            otherSource.setEnabled(source.getValue() != null && source.getValue().equalsIgnoreCase("other"));
-            otherSource.setValueChangeMode(ValueChangeMode.EAGER);
-            registrationForm.add(otherSource);
-
-            final var newsletter = new Checkbox("Yes, I want to be notified about new events");
-            registrationForm.add(newsletter);
-
-            final var registerButton = new Button("Register");
-            registerButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
-            registerButton.setEnabled(false);
-            registerButton.setDisableOnClick(true);
-            registrationForm.add(registerButton);
-
-            source.addValueChangeListener(valueChangeEvent -> {
-                registerButton.setEnabled(isRegisterButtonEnabled(firstName, lastName, source, otherSource));
-                if (valueChangeEvent.getValue() != null && valueChangeEvent.getValue().equalsIgnoreCase("other")) {
-                    otherSource.setEnabled(true);
-                    otherSource.focus();
+                if (memberFound.isPresent()) {
+                    final var member = memberFound.get();
+                    foundMessage.add("Yes! We found you in our database, %s.".formatted(member.getFullName()));
                 } else {
-                    otherSource.setEnabled(false);
+                    foundMessage.add("Sorry, we did not found you in our database.");
                 }
-            });
-            otherSource.addValueChangeListener(valueChangeEvent -> registerButton.setEnabled(
-                    isRegisterButtonEnabled(firstName, lastName, source, otherSource)));
+                foundMessage.add(new Html("<br/>"));
+                foundMessage.add(new Text("Please complete your registration by sending off this form. Thank you very much!"));
 
-            if (memberFound.isEmpty()) {
-                firstName.setValueChangeMode(ValueChangeMode.EAGER);
-                firstName.addValueChangeListener(valueChangeEvent -> registerButton.setEnabled(
+                final TextField firstName;
+                final TextField lastName;
+                if (memberFound.isEmpty()) {
+                    firstName = new TextField("First name");
+                    firstName.setRequiredIndicatorVisible(true);
+                    lastName = new TextField("Last name");
+                    lastName.setRequiredIndicatorVisible(true);
+                    registrationForm.add(firstName, lastName);
+                    focusField = firstName;
+                } else {
+                    firstName = null;
+                    lastName = null;
+                }
+
+                final var source = new RadioButtonGroup<String>();
+                source.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
+                source.setRequiredIndicatorVisible(true);
+                source.setLabel("I heard of this event through");
+                source.setItems("jug.ch mailing", "jug.ch homepage", "Twitter", "mailing of another association", "a friend", "company",
+                        "techup.ch", "search engine", "other");
+                registrationForm.add(source);
+
+                final var otherSource = new TextField();
+                otherSource.addClassName("other-source");
+                otherSource.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+                otherSource.setEnabled(source.getValue() != null && source.getValue().equalsIgnoreCase("other"));
+                otherSource.setValueChangeMode(ValueChangeMode.EAGER);
+                registrationForm.add(otherSource);
+
+                final var newsletter = new Checkbox("Yes, I want to be notified about new events");
+                registrationForm.add(newsletter);
+
+                final var registerButton = new Button("Register");
+                registerButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+                registerButton.setEnabled(false);
+                registerButton.setDisableOnClick(true);
+                registrationForm.add(registerButton);
+
+                source.addValueChangeListener(valueChangeEvent -> {
+                    registerButton.setEnabled(isRegisterButtonEnabled(firstName, lastName, source, otherSource));
+                    if (valueChangeEvent.getValue() != null && valueChangeEvent.getValue().equalsIgnoreCase("other")) {
+                        otherSource.setEnabled(true);
+                        otherSource.focus();
+                    } else {
+                        otherSource.setEnabled(false);
+                    }
+                });
+                otherSource.addValueChangeListener(valueChangeEvent -> registerButton.setEnabled(
                         isRegisterButtonEnabled(firstName, lastName, source, otherSource)));
-                lastName.setValueChangeMode(ValueChangeMode.EAGER);
-                lastName.addValueChangeListener(valueChangeEvent -> registerButton.setEnabled(
-                        isRegisterButtonEnabled(firstName, lastName, source, otherSource)));
+
+                if (memberFound.isEmpty()) {
+                    firstName.setValueChangeMode(ValueChangeMode.EAGER);
+                    firstName.addValueChangeListener(valueChangeEvent -> registerButton.setEnabled(
+                            isRegisterButtonEnabled(firstName, lastName, source, otherSource)));
+                    lastName.setValueChangeMode(ValueChangeMode.EAGER);
+                    lastName.addValueChangeListener(valueChangeEvent -> registerButton.setEnabled(
+                            isRegisterButtonEnabled(firstName, lastName, source, otherSource)));
+                }
+
+                registerButton.addClickListener(registerButtonClickEvent -> {
+                    final var member = memberFound.orElse(createMember(memberService, emailAddress, firstName, lastName));
+                    final var sourceValue = source.getValue().equalsIgnoreCase("other") ?
+                            otherSource.getValue() : source.getValue();
+                    registrationService.registerForEvent(event, member, sourceValue);
+                    if (newsletter.getValue()) {
+                        subscriptionService.addSubscription(emailAddress);
+                    }
+                    final var registrationInfo = new Paragraph("Thank you for your registration! Within the next few minutes " +
+                            "you will receive a copy of your registration and a reminder will follow shortly before the event.");
+                    registrationInfo.addClassName("registration-info");
+                    replace(registrationForm, registrationInfo);
+                });
             }
-
-            registerButton.addClickListener(registerButtonClickEvent -> {
-                final var member = memberFound.orElse(createMember(memberService, emailAddress, firstName, lastName));
-                final var sourceValue = source.getValue().equalsIgnoreCase("other") ?
-                        otherSource.getValue() : source.getValue();
-                registrationService.registerForEvent(event, member, sourceValue);
-                if (newsletter.getValue()) {
-                    subscriptionService.addSubscription(emailAddress);
-                }
-                final var registrationInfo = new Paragraph("Thank you for your registration! Within the next few minutes " +
-                        "you will receive a copy of your registration and a reminder will follow shortly before the event.");
-                registrationInfo.addClassName("registration-info");
-                replace(registrationForm, registrationInfo);
-            });
 
             replace(emailForm, registrationForm);
-            if (firstName != null) {
-                firstName.focus();
+            if (focusField != null) {
+                focusField.focus();
             }
         });
     }

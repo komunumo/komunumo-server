@@ -20,6 +20,7 @@
     font-weight: bold;
 }
 
+.website .event-registration-form .members-only-info,
 .website .event-registration-form .found-message,
 .website .event-registration-form .registration-info {
     color: #930722;
