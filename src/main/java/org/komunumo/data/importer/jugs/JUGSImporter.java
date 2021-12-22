@@ -487,6 +487,7 @@ public class JUGSImporter {
                     event.set(EVENT.AGENDA, getEmptyForNull(result.getString("agenda")));
                     event.set(EVENT.DESCRIPTION, getEmptyForNull(result.getString("abstract")));
                     event.set(EVENT.EVENT_URL, URLUtil.createReadableUrl(getEmptyForNull(result.getString("titel"))));
+                    event.set(EVENT.MEMBERS_ONLY, result.getString("anm_formular").equalsIgnoreCase("anmeldeformular_membersonly.inc.php"));
                     event.set(EVENT.PUBLISHED, result.getString("sichtbar").equalsIgnoreCase("ja"));
 
                     final var eventTitle = getEmptyForNull(result.getString("titel")).toLowerCase(Locale.getDefault());
