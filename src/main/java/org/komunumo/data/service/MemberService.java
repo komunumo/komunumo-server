@@ -200,14 +200,13 @@ public class MemberService {
         message.setSubject("Confirm your email address");
         message.setText("""
                     This is the first time you used the email address %s with the %s.
-                    Please click on the following link to confirm your email address:
-                    %s/activate?email=%s&code=%s
+                    Please click on the following link to validate your email address:
+                    %s/member/validate?email=%s&code=%s
                     """.formatted(
                 emailAddress, configuration.getClient().getName(),
                 configuration.getWebsite().getBaseUrl(), URLUtil.encode(emailAddress), URLUtil.encode(activationCode)
         ));
         mailSender.send(message);
-
 
         return member;
     }

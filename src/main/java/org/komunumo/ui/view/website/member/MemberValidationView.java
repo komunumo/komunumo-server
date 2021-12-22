@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.ui.view.website.login;
+package org.komunumo.ui.view.website.member;
 
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
@@ -36,16 +36,16 @@ import org.komunumo.ui.view.website.home.HomeView;
 import org.springframework.security.authentication.BadCredentialsException;
 
 @AnonymousAllowed
-@PageTitle("Activation")
-@Route(value = "activate", layout = WebsiteLayout.class)
-@CssImport("./themes/komunumo/views/website/activation-view.css")
-public class ActivationView extends ContentBlock implements BeforeEnterObserver {
+@PageTitle("Validation")
+@Route(value = "member/validate", layout = WebsiteLayout.class)
+@CssImport("./themes/komunumo/views/website/member-validation-view.css")
+public class MemberValidationView extends ContentBlock implements BeforeEnterObserver {
 
     private final SecurityService securityService;
 
-    public ActivationView(@NotNull final SecurityService securityService) {
+    public MemberValidationView(@NotNull final SecurityService securityService) {
         super("Member");
-        addClassName("activation-view");
+        addClassName("member-validation-view");
         this.securityService = securityService;
     }
 
@@ -58,13 +58,13 @@ public class ActivationView extends ContentBlock implements BeforeEnterObserver 
             final var email = params.get("email").get(0);
             final var code = params.get("code").get(0);
             securityService.activate(email, code);
-            message = new Paragraph("Your email address was successfully confirmed.");
+            message = new Paragraph("Your email address was successfully validated.");
             message.addClassName("successful");
         } catch (final BadCredentialsException e) {
-            message = new Paragraph("The link was invalid. Please check your email for a valid confirmation link.");
+            message = new Paragraph("The link was invalid. Please check your email for a working validation link.");
             message.addClassName("failed");
         }
 
-        setContent(new Div(new H2("Email address validation"), message, new RouterLink("Back to home page", HomeView.class)));
+        setContent(new Div(new H2("Validation"), message, new RouterLink("Back to home page", HomeView.class)));
     }
 }
