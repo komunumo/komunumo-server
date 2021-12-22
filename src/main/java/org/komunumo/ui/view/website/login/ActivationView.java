@@ -16,12 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.ui.view.login;
+package org.komunumo.ui.view.website.login;
 
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Composite;
-import com.vaadin.flow.component.Text;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -30,40 +30,41 @@ import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.security.SecurityService;
+import org.komunumo.ui.view.website.ContentBlock;
+import org.komunumo.ui.view.website.WebsiteLayout;
+import org.komunumo.ui.view.website.home.HomeView;
 import org.springframework.security.authentication.BadCredentialsException;
 
-@Route("activate")
-@PageTitle("Activation")
 @AnonymousAllowed
-public class ActivationView extends Composite<Component> implements BeforeEnterObserver {
+@PageTitle("Activation")
+@Route(value = "activate", layout = WebsiteLayout.class)
+@CssImport("./themes/komunumo/views/website/activation-view.css")
+public class ActivationView extends ContentBlock implements BeforeEnterObserver {
 
     private final SecurityService securityService;
 
-    private VerticalLayout layout;
-
     public ActivationView(@NotNull final SecurityService securityService) {
+        super("Member");
+        addClassName("activation-view");
         this.securityService = securityService;
     }
 
     @Override
-    protected VerticalLayout initContent() {
-        layout = new VerticalLayout();
-        return layout;
-    }
-
-    @Override
     public void beforeEnter(@NotNull final BeforeEnterEvent event) {
+        Paragraph message;
+
         try {
             final var params = event.getLocation().getQueryParameters().getParameters();
             final var email = params.get("email").get(0);
             final var code = params.get("code").get(0);
             securityService.activate(email, code);
-            layout.add(
-                    new Text("Account activated."),
-                    new RouterLink("Login", LoginView.class)
-            );
+            message = new Paragraph("Your email address was successfully confirmed.");
+            message.addClassName("successful");
         } catch (final BadCredentialsException e) {
-            layout.add(new Text("Invalid link."));
+            message = new Paragraph("The link was invalid. Please check your email for a valid confirmation link.");
+            message.addClassName("failed");
         }
+
+        setContent(new Div(new H2("Email address validation"), message, new RouterLink("Back to home page", HomeView.class)));
     }
 }

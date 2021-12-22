@@ -23,7 +23,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
+import org.komunumo.configuration.Configuration;
 import org.komunumo.data.entity.Member;
+import org.komunumo.util.URLUtil;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -38,9 +42,15 @@ import static org.komunumo.data.db.tables.Member.MEMBER;
 public class MemberService {
 
     private final DSLContext dsl;
+    private final Configuration configuration;
+    private final MailSender mailSender;
 
-    public MemberService(@NotNull final DSLContext dsl) {
+    public MemberService(@NotNull final DSLContext dsl,
+                         @NotNull final Configuration configuration,
+                         @NotNull final MailSender mailSender) {
         this.dsl = dsl;
+        this.configuration = configuration;
+        this.mailSender = mailSender;
     }
 
     public Member newMember() {
@@ -175,11 +185,30 @@ public class MemberService {
     }
 
     public Member createMember(@NotNull final String firstName, @NotNull final String lastName, @NotNull final String emailAddress) {
+        final var activationCode = RandomStringUtils.randomAlphanumeric(16);
+
         final var member = newMember();
         member.setFirstName(firstName);
         member.setLastName(lastName);
         member.setEmail(emailAddress);
+        member.setActivationCode(activationCode);
         member.store();
+
+        final var message = new SimpleMailMessage();
+        message.setTo(emailAddress);
+        message.setFrom(configuration.getEmail().getAddress());
+        message.setSubject("Confirm your email address");
+        message.setText("""
+                    This is the first time you used the email address %s with the %s.
+                    Please click on the following link to confirm your email address:
+                    %s/activate?email=%s&code=%s
+                    """.formatted(
+                emailAddress, configuration.getClient().getName(),
+                configuration.getWebsite().getBaseUrl(), URLUtil.encode(emailAddress), URLUtil.encode(activationCode)
+        ));
+        mailSender.send(message);
+
+
         return member;
     }
 
