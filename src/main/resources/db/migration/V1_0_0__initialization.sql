@@ -29,6 +29,7 @@ CREATE TABLE event (
     webinar_url VARCHAR(255) NOT NULL DEFAULT '',
     date DATETIME NULL,
     duration TIME NULL,
+    members_only BOOLEAN NOT NULL DEFAULT 0,
     published BOOLEAN NOT NULL DEFAULT 0,
     event_url VARCHAR(255) NOT NULL DEFAULT '',
 
