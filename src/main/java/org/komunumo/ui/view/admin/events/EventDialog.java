@@ -119,6 +119,7 @@ public class EventDialog extends EditDialog<Event> {
         final var date = new DateTimePicker("Date & Time");
         final var duration = new TimePicker("Duration");
         final var eventUrl = new TextField("Event URL");
+        final var membersOnly = new Checkbox("Members only");
         final var published = new Checkbox("Published");
 
         type.setLabel("Type");
@@ -175,7 +176,8 @@ public class EventDialog extends EditDialog<Event> {
         });
 
         formLayout.add(type, title, subtitle, speaker, organizer, level, new CustomLabel("Description"), description,
-                keyword, new CustomLabel("Agenda"), agenda, language, location, webinarUrl, date, duration, eventUrl, published);
+                keyword, new CustomLabel("Agenda"), agenda, language, location, webinarUrl, date, duration, eventUrl,
+                membersOnly, published);
 
         binder.forField(type)
                 .withValidator(value -> !published.getValue() || value != null,
@@ -248,6 +250,9 @@ public class EventDialog extends EditDialog<Event> {
                 .withValidator(value -> !published.getValue() || value != null && !value.isBlank(),
                         "Please enter a valid event URL")
                 .bind(Event::getEventUrl, Event::setEventUrl);
+
+        binder.forField(membersOnly)
+                .bind(Event::getMembersOnly, Event::setMembersOnly);
 
         binder.forField(published)
                 .bind(Event::getPublished, Event::setPublished);
