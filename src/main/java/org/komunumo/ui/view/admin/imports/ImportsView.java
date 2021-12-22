@@ -37,6 +37,7 @@ import com.vaadin.flow.router.Route;
 import elemental.json.Json;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
+import org.komunumo.ApplicationServiceInitListener;
 import org.komunumo.data.entity.Role;
 import org.komunumo.data.importer.bigmarker.BigMarkerRegistration;
 import org.komunumo.data.importer.bigmarker.BigMarkerReport;
@@ -45,6 +46,7 @@ import org.komunumo.data.importer.clubdesk.ClubDeskMember;
 import org.komunumo.data.importer.jugs.JUGSImporter;
 import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventOrganizerService;
+import org.komunumo.data.service.RedirectService;
 import org.komunumo.data.service.RegistrationService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
@@ -79,6 +81,8 @@ public class ImportsView extends ResizableView {
     private final KeywordService keywordService;
     private final EventKeywordService eventKeywordService;
     private final NewsService newsService;
+    private final RedirectService redirectService;
+    private final ApplicationServiceInitListener applicationServiceInitListener;
 
     public ImportsView(
             @NotNull final DSLContext dsl,
@@ -91,7 +95,9 @@ public class ImportsView extends ResizableView {
             @NotNull final EventOrganizerService eventOrganizerService,
             @NotNull final KeywordService keywordService,
             @NotNull final EventKeywordService eventKeywordService,
-            @NotNull final NewsService newsService) {
+            @NotNull final NewsService newsService,
+            @NotNull final RedirectService redirectService,
+            @NotNull final ApplicationServiceInitListener applicationServiceInitListener) {
         this.dsl = dsl;
         this.sponsorService = sponsorService;
         this.memberService = memberService;
@@ -103,6 +109,8 @@ public class ImportsView extends ResizableView {
         this.keywordService = keywordService;
         this.eventKeywordService = eventKeywordService;
         this.newsService = newsService;
+        this.redirectService = redirectService;
+        this.applicationServiceInitListener = applicationServiceInitListener;
 
         addClassName("imports-view");
         add(
@@ -337,8 +345,9 @@ public class ImportsView extends ResizableView {
         importButton.setDisableOnClick(true);
         importButton.setEnabled(!dbURL.isEmpty() && !dbUser.isEmpty() && !dbPass.isEmpty());
         importButton.addClickListener(buttonClickEvent -> {
-            final var importer = new JUGSImporter(dsl, sponsorService, memberService, eventService, registrationService,
-                    speakerService, eventSpeakerService, eventOrganizerService, keywordService, eventKeywordService, newsService);
+            final var importer = new JUGSImporter(dsl, sponsorService, memberService, eventService, registrationService, speakerService,
+                    eventSpeakerService, eventOrganizerService, keywordService, eventKeywordService, newsService, redirectService,
+                    applicationServiceInitListener);
             importer.importFromJavaUserGroupSwitzerland(dbURL.getValue(), dbUser.getValue(), dbPass.getValue());
         });
 

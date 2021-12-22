@@ -20,26 +20,24 @@ package org.komunumo;
 
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.service.RedirectService;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.service.EventService;
-import org.springframework.stereotype.Component;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class ApplicationServiceInitListener implements VaadinServiceInitListener {
 
-    private final EventService eventService;
-    private final Map<String, Long> eventRedirectUrls = new HashMap<>();
+    private final RedirectService redirectService;
+    private final Map<String, String> redirects = new HashMap<>();
 
-    public ApplicationServiceInitListener(@NotNull final EventService eventService) {
-        this.eventService = eventService;
-        eventService.getEventRedirectUrls().forEach(record -> eventRedirectUrls.put(record.getUrlJug(), record.getEventId()));
+    public ApplicationServiceInitListener(@NotNull final RedirectService redirectService) {
+        this.redirectService = redirectService;
+        reloadRedirects();
     }
 
     @Override
@@ -47,17 +45,19 @@ public class ApplicationServiceInitListener implements VaadinServiceInitListener
         serviceInitEvent.addRequestHandler((session, request, response) -> {
             if (request instanceof HttpServletRequest httpServletRequest) {
                 final var uri = httpServletRequest.getRequestURI();
-                if (eventRedirectUrls.containsKey(uri) && response instanceof HttpServletResponse httpServletResponse) {
-                    final var event = eventService.get(eventRedirectUrls.get(uri));
-                    if (event.isPresent()) {
-                        httpServletResponse.setHeader("Location", event.get().getCompleteEventUrl());
-                        httpServletResponse.setStatus(301);
-                        return true;
-                    }
+                if (redirects.containsKey(uri) && response instanceof HttpServletResponse httpServletResponse) {
+                    httpServletResponse.setHeader("Location", redirects.get(uri));
+                    httpServletResponse.setStatus(301);
+                    return true;
                 }
             }
             return false;
         });
+    }
+
+    public void reloadRedirects() {
+        redirects.clear();
+        redirectService.getAllRedirects().forEach(record -> redirects.put(record.getOldUrl(), record.getNewUrl()));
     }
 
 }

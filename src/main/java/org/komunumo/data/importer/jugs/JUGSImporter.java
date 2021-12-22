@@ -28,6 +28,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.Record3;
 import org.jooq.impl.DSL;
+import org.komunumo.ApplicationServiceInitListener;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
 import org.komunumo.data.db.enums.EventType;
@@ -43,6 +44,7 @@ import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.KeywordService;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.NewsService;
+import org.komunumo.data.service.RedirectService;
 import org.komunumo.data.service.RegistrationService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.data.service.SponsorService;
@@ -71,7 +73,6 @@ import static org.komunumo.data.db.tables.Event.EVENT;
 import static org.komunumo.data.db.tables.EventKeyword.EVENT_KEYWORD;
 import static org.komunumo.data.db.tables.EventOrganizer.EVENT_ORGANIZER;
 import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
-import static org.komunumo.data.db.tables.EventUrlJug.EVENT_URL_JUG;
 import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 import static org.komunumo.data.db.tables.Member.MEMBER;
 import static org.komunumo.data.db.tables.News.NEWS;
@@ -93,6 +94,8 @@ public class JUGSImporter {
     private final KeywordService keywordService;
     private final EventKeywordService eventKeywordService;
     private final NewsService newsService;
+    private final RedirectService redirectService;
+    private final ApplicationServiceInitListener applicationServiceInitListener;
 
     private int hansMaerkiId;
     private int rogerSuessId;
@@ -114,7 +117,9 @@ public class JUGSImporter {
             @NotNull final EventOrganizerService eventOrganizerService,
             @NotNull final KeywordService keywordService,
             @NotNull final EventKeywordService eventKeywordService,
-            @NotNull final NewsService newsService) {
+            @NotNull final NewsService newsService,
+            @NotNull final RedirectService redirectService,
+            @NotNull final ApplicationServiceInitListener applicationServiceInitListener) {
         this.dsl = dsl;
         this.sponsorService = sponsorService;
         this.memberService = memberService;
@@ -126,6 +131,8 @@ public class JUGSImporter {
         this.keywordService = keywordService;
         this.eventKeywordService = eventKeywordService;
         this.newsService = newsService;
+        this.redirectService = redirectService;
+        this.applicationServiceInitListener = applicationServiceInitListener;
     }
 
     private void showNotification(@NotNull final String message) {
@@ -501,24 +508,20 @@ public class JUGSImporter {
                     }
 
                     eventService.store(event);
-                    addOrganizers(memberService, registrationService, event, result.getString("verantwortung"));
+                    addOrganizers(event, result.getString("verantwortung"));
                     counter.incrementAndGet();
 
                     if (result.getString("urldatei") != null && !result.getString("urldatei").isBlank()) {
-                        dsl.insertInto(EVENT_URL_JUG, EVENT_URL_JUG.URL_JUG, EVENT_URL_JUG.EVENT_ID)
-                                .values(result.getString("urldatei"), result.getLong("id"))
-                                .onDuplicateKeyIgnore()
-                                .execute();
+                        redirectService.addRedirect(result.getString("urldatei"), event.getCompleteEventUrl());
                     }
                 }
             }
         }
+        applicationServiceInitListener.reloadRedirects();
         showNotification(counter.get() + " new events imported.");
     }
 
-    private void addOrganizers(@NotNull final MemberService memberService,
-                               @NotNull final RegistrationService registrationService,
-                               @NotNull final Event event,
+    private void addOrganizers(@NotNull final Event event,
                                @Nullable final String verantwortung) {
         if (verantwortung != null && !verantwortung.isBlank()) {
             final List<Integer> organizerIds = new ArrayList<>();

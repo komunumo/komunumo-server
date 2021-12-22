@@ -37,12 +37,11 @@ CREATE TABLE event (
 
 CREATE INDEX event_date ON event (date);
 
-CREATE TABLE event_url_jug (
-    url_jug VARCHAR(255) NOT NULL,
-    event_id INTEGER UNSIGNED NOT NULL,
+CREATE TABLE redirect (
+    old_url VARCHAR(255) NOT NULL,
+    new_url VARCHAR(255) NOT NULL,
 
-    PRIMARY KEY (url_jug),
-    CONSTRAINT FOREIGN KEY (event_id) REFERENCES event(id)
+    PRIMARY KEY (old_url)
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE member (

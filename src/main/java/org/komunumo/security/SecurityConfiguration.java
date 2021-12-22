@@ -19,11 +19,8 @@
 package org.komunumo.security;
 
 import com.vaadin.flow.spring.security.VaadinWebSecurityConfigurerAdapter;
-
-import java.security.SecureRandom;
-
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.service.EventService;
+import org.komunumo.data.service.RedirectService;
 import org.komunumo.ui.view.login.LoginView;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +30,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.security.SecureRandom;
+
 @EnableWebSecurity
 @Configuration
 public class SecurityConfiguration extends VaadinWebSecurityConfigurerAdapter {
@@ -40,10 +39,10 @@ public class SecurityConfiguration extends VaadinWebSecurityConfigurerAdapter {
     public static final String LOGIN_URL = "login";
     public static final String LOGOUT_URL = "/";
 
-    private final EventService eventService;
+    private final RedirectService redirectService;
 
-    public SecurityConfiguration(@NotNull final EventService eventService) {
-        this.eventService = eventService;
+    public SecurityConfiguration(@NotNull final RedirectService redirectService) {
+        this.redirectService = redirectService;
     }
 
     @Bean
@@ -83,6 +82,6 @@ public class SecurityConfiguration extends VaadinWebSecurityConfigurerAdapter {
                 // (development mode) H2 debugging console
                 "/h2-console/**");
 
-        eventService.getEventRedirectUrls().forEach(record -> web.ignoring().antMatchers(record.getUrlJug()));
+        redirectService.getAllRedirects().forEach(record -> web.ignoring().antMatchers(record.getOldUrl()));
     }
 }
