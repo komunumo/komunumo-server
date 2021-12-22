@@ -56,3 +56,12 @@
     border-top: 1px solid #bfbfbf;
     margin: 15px 0 15px 0;
 }
+
+.website article.event-details h4 {
+    margin-top: 16px;
+    margin-bottom: 10px;
+}
+
+.website article.event-details dl {
+    max-width: 555px;
+}

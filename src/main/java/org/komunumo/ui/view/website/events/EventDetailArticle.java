@@ -20,7 +20,9 @@ package org.komunumo.ui.view.website.events;
 
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.html.DescriptionList;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
@@ -125,8 +127,19 @@ public class EventDetailArticle extends EventArticle {
             } else {
                 add(new EventDeregistrationForm(registrationService, event, deregisterCode));
             }
-            add(new Hr());
         }
+    }
+
+    protected void addLevelInfo() {
+        final var levelInfo = new DescriptionList();
+        levelInfo.add(new DescriptionList.Term("Beginner"));
+        levelInfo.add(new DescriptionList.Description("The presented topic is new to the audience or only little and superficial experience exists. This talk will mainly cover basic aspects of the topic and not go into much detail."));
+        levelInfo.add(new DescriptionList.Term("Intermediate"));
+        levelInfo.add(new DescriptionList.Description("The presented topic is known to the audience, serious practical experience is expected. This talk might cover some basic aspects of the topic, but will as well go into depth and details."));
+        levelInfo.add(new DescriptionList.Term("Advanced"));
+        levelInfo.add(new DescriptionList.Description("The presented topic is well-known to the audience, serious practical experience and a deep understanding are required. This talk will not cover basics of the topic, but will go into depth, might discuss details, compare different approaches, and so on."));
+
+        add(new Hr(), new H4("Levels"), levelInfo);
     }
 
 }

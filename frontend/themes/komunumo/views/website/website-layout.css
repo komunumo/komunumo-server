@@ -34,6 +34,7 @@
 
 .website h1,
 .website h2 {
+    color: #333333;
     font-family: "Trade Gothic LT W04 Bd CnNo-20", "Arial Narrow", Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
     text-transform: uppercase;
 }
@@ -42,15 +43,30 @@
 .website h4,
 .website h5,
 .website h6 {
+    color: #333333;
     font-family: "Trade Gothic LT W04 Cn No-_18", "Arial Narrow", Trebuchet MS, Tahoma, Arial, Helvetica, sans-serif;
     font-weight: normal;
     text-transform: uppercase;
+}
+
+.website h4 {
+    font-size: 200%;
 }
 
 .website a {
     color: #9C0523;
     font-weight: bold;
     text-decoration: none;
+}
+
+.website dt {
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.website dd {
+    margin-left: 0;
+    margin-bottom: 10px;
 }
 
 .website vaadin-button[focus-ring],

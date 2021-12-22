@@ -103,6 +103,7 @@ public class EventDetailView extends ContentBlock implements BeforeEnterObserver
         article.addLevel(event);
         article.addLanguage(event);
         article.addRegistrationForm(memberService, registrationService, subscriptionService, event, deregisterCode);
+        article.addLevelInfo();
         setContent(article);
 
         final var eventsOverview = new UnorderedList(new ListItem(new Anchor("/events", "Events overview")));
