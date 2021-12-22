@@ -25,6 +25,7 @@ import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 
+import java.time.LocalDateTime;
 import java.util.Locale;
 
 import org.jetbrains.annotations.NotNull;
@@ -117,13 +118,15 @@ public class EventDetailArticle extends EventArticle {
                                        @NotNull final RegistrationService registrationService,
                                        @NotNull final SubscriptionService subscriptionService,
                                        @NotNull final Event event, String deregisterCode) {
-        add(new Hr());
-        if (deregisterCode.isBlank()) {
-            add(new EventRegistrationForm(memberService, registrationService, subscriptionService, event));
-        } else {
-            add(new EventDeregistrationForm(registrationService, event, deregisterCode));
+        if (event.getDate().isAfter(LocalDateTime.now())) {
+            add(new Hr());
+            if (deregisterCode.isBlank()) {
+                add(new EventRegistrationForm(memberService, registrationService, subscriptionService, event));
+            } else {
+                add(new EventDeregistrationForm(registrationService, event, deregisterCode));
+            }
+            add(new Hr());
         }
-        add(new Hr());
     }
 
 }
