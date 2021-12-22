@@ -21,7 +21,7 @@ package org.komunumo.ui.view.website.newsletter;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
@@ -34,10 +34,9 @@ import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.service.SubscriptionService;
 import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.WebsiteLayout;
+import org.komunumo.ui.view.website.home.HomeView;
 
 import java.util.List;
-
-import org.komunumo.ui.view.website.home.HomeView;
 
 @Route(value = "newsletter/subscription/validation", layout = WebsiteLayout.class)
 @PageTitle("Newsletter Subscription Validation")
@@ -65,7 +64,7 @@ public class NewsletterSubscriptionValidationView extends ContentBlock implement
         final var validationOkay = subscriptionService.validateSubscription(emailAddress, validationCode);
 
         final var content = new Div();
-        content.add(new H3("Newsletter Subscription Validation"));
+        content.add(new H2("Newsletter Subscription Validation"));
         content.add(new Html(
                 validationOkay ? "<p class=\"successful\">You successfully subscribed to our newsletter.</p>" :
                         "<p class=\"failed\">Your subscription was not successful.<br/>Check the link in the email you received shortly.</p>"
