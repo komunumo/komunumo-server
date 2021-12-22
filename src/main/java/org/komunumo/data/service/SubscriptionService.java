@@ -75,7 +75,7 @@ public class SubscriptionService {
             message.setTo(emailAddress);
             message.setFrom(configuration.getEmail().getAddress());
             message.setSubject("Validate your newsletter subscription");
-            message.setText("Please click on the following link to validate your newsletter subscription: " + link);
+            message.setText("Please click on the following link to validate your newsletter subscription:\n" + link);
             mailSender.send(message);
         }
     }
