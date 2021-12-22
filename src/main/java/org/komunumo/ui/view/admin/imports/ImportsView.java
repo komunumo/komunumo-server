@@ -121,7 +121,7 @@ public class ImportsView extends ResizableView {
         upload.addSucceededListener(succeededEvent -> {
             try {
                 final var report = new BigMarkerReport(buffer.getInputStream());
-                final var registrations = report.getRegistrations();
+                final var registrations = report.getBigMarkerRegistrations();
 
                 final var grid = new Grid<BigMarkerRegistration>();
                 grid.addColumn(BigMarkerRegistration::firstName)
@@ -201,7 +201,7 @@ public class ImportsView extends ResizableView {
         upload.addSucceededListener(succeededEvent -> {
             try {
                 final var report = new BigMarkerReport(buffer.getInputStream(succeededEvent.getFileName()));
-                final var registrations = report.getRegistrations();
+                final var registrations = report.getBigMarkerRegistrations();
 
                 try {
                     report.importRegistrations(eventService, registrationService, memberService);

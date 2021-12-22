@@ -18,6 +18,7 @@
 
 package org.komunumo.data.importer.bigmarker;
 
+import java.time.LocalDateTime;
 import java.util.Locale;
 
 import org.apache.poi.ss.usermodel.Workbook;
@@ -50,7 +51,7 @@ public class BigMarkerReport {
 
     private final String webinarUrl;
 
-    private List<BigMarkerRegistration> registrations = null;
+    private List<BigMarkerRegistration> bigMarkerRegistrations = null;
 
     public BigMarkerReport(@NotNull final InputStream inputStream) throws IOException {
         this.workbook = new XSSFWorkbook(inputStream);
@@ -59,9 +60,9 @@ public class BigMarkerReport {
         webinarUrl = findCell(summary, "URL").orElseThrow().getStringCellValue();
     }
 
-    public synchronized List<BigMarkerRegistration> getRegistrations() {
-        if (registrations != null) {
-            return registrations;
+    public synchronized List<BigMarkerRegistration> getBigMarkerRegistrations() {
+        if (bigMarkerRegistrations != null) {
+            return bigMarkerRegistrations;
         }
 
         final var sheet = workbook.getSheet("registered list");
@@ -93,8 +94,8 @@ public class BigMarkerReport {
             final var attendee = new BigMarkerRegistration(firstName, lastName, email, registrationDate, unsubscribed, attendedLive, membership);
             attendees.add(attendee);
         }
-        registrations = Collections.unmodifiableList(attendees);
-        return registrations;
+        bigMarkerRegistrations = Collections.unmodifiableList(attendees);
+        return bigMarkerRegistrations;
     }
 
     private Member getOrCreateMember(@NotNull final MemberService memberService,
@@ -127,22 +128,17 @@ public class BigMarkerReport {
                                     @NotNull final MemberService memberService) {
         final var event = eventService.getByWebinarUrl(webinarUrl).orElseThrow(() ->
                 new NoSuchElementException(String.format("No event found with webinar URL: %s", webinarUrl)));
-        for (final var registration : getRegistrations()) {
-            final var member = getOrCreateMember(memberService, registration);
+        for (final var bigMarkerRegistration : getBigMarkerRegistrations()) {
+            final var noShow = bigMarkerRegistration.noShow();
+            final var member = getOrCreateMember(memberService, bigMarkerRegistration);
             final var existingRegistration = registrationService.get(event.getId(), member.getId());
             if (existingRegistration.isPresent()) {
-                existingRegistration.get().setNoShow(registration.noShow());
-                registrationService.store(existingRegistration.get());
+                final var registration = existingRegistration.get();
+                registrationService.updateNoShow(registration, noShow);
             } else {
-                final var newRegistration = registrationService.newRegistration();
-                newRegistration.setEventId(event.getId());
-                newRegistration.setMemberId(member.getId());
-                if (registration.registrationDate() != null) {
-                    newRegistration.setDate(registration.registrationDate().toLocalDateTime());
-                }
-                newRegistration.setSource("");
-                newRegistration.setNoShow(registration.noShow());
-                registrationService.store(newRegistration);
+                final var date = bigMarkerRegistration.registrationDate() != null ?
+                        bigMarkerRegistration.registrationDate().toLocalDateTime() : LocalDateTime.now();
+                registrationService.registerForEvent(event, member, date, "BigMarker", noShow, false);
             }
         }
     }

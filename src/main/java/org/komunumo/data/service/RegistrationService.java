@@ -27,6 +27,7 @@ import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.db.tables.records.RegistrationRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Member;
+import org.komunumo.data.entity.Registration;
 import org.komunumo.util.FormatterUtil;
 import org.komunumo.util.URLUtil;
 import org.springframework.mail.MailSender;
@@ -61,24 +62,26 @@ public class RegistrationService {
         this.mailSender = mailSender;
     }
 
-    public RegistrationRecord newRegistration() {
-        return dsl.newRecord(REGISTRATION);
-    }
-
-    public Optional<RegistrationRecord> get(@NotNull final Long eventId,
-                                           @NotNull final Long memberId) {
-        return dsl.fetchOptional(REGISTRATION,
-                REGISTRATION.EVENT_ID.eq(eventId)
-                        .and(REGISTRATION.MEMBER_ID.eq(memberId)));
-    }
-
-    public void store(@NotNull final RegistrationRecord registration) {
-        registration.store();
+    public Optional<Registration> get(@NotNull final Long eventId,
+                                      @NotNull final Long memberId) {
+        return dsl.selectFrom(REGISTRATION)
+                .where(REGISTRATION.EVENT_ID.eq(eventId))
+                .and(REGISTRATION.MEMBER_ID.eq(memberId))
+                .fetchOptionalInto(Registration.class);
     }
 
     public void registerForEvent(@NotNull final Event event,
                                  @NotNull final Member member,
                                  @NotNull final String source) {
+        registerForEvent(event, member, LocalDateTime.now(), source, false, true);
+    }
+
+    public void registerForEvent(@NotNull final Event event,
+                                 @NotNull final Member member,
+                                 @NotNull final LocalDateTime date,
+                                 @NotNull final String source,
+                                 final boolean noShow,
+                                 final boolean sendConfirmationMail) {
         final RegistrationRecord registration;
 
         final var hasRegistered = get(event.getId(), member.getId());
@@ -86,37 +89,61 @@ public class RegistrationService {
             registration = dsl.newRecord(REGISTRATION);
             registration.setEventId(event.getId());
             registration.setMemberId(member.getId());
-            registration.setDate(LocalDateTime.now());
+            registration.setDate(date);
             registration.setSource(source);
             registration.setDeregister(RandomStringUtils.randomAlphanumeric(16));
-            registration.setNoShow(false);
+            registration.setNoShow(noShow);
             registration.store();
         } else {
             registration = hasRegistered.get();
         }
 
-        final var message = new SimpleMailMessage();
-        message.setTo(member.getEmail());
-        message.setFrom(configuration.getEmail().getAddress());
-        message.setSubject("%s: Event-Registration for %s"
-                .formatted(FormatterUtil.formatDate(event.getDate().toLocalDate()), member.getFullName()));
-        message.setText("""
-                You successfully registered for the following event:
-                "%s" at %s in %s
-                Details: %s%s
-                                
-                Registration date: %s
-                Your name: %s
-                Source: %s
-                
-                To deregister from this event, please click on the following link:
-                %s%s?deregister=%s
-                """.formatted(
-                        event.getTitle(), formatDateTime(event.getDate()), event.getLocation(), configuration.getWebsite().getBaseUrl(),
-                        event.getCompleteEventUrl(), formatDateTime(registration.getDate()), member.getFullName(), source,
-                        configuration.getWebsite().getBaseUrl(), event.getCompleteEventUrl(), URLUtil.encode(registration.getDeregister())
-        ));
-        mailSender.send(message);
+        if (sendConfirmationMail) {
+            final var message = new SimpleMailMessage();
+            message.setTo(member.getEmail());
+            message.setFrom(configuration.getEmail().getAddress());
+            message.setSubject("%s: Event-Registration for %s"
+                    .formatted(FormatterUtil.formatDate(event.getDate().toLocalDate()), member.getFullName()));
+            message.setText("""
+                    You successfully registered for the following event:
+                    "%s" at %s in %s
+                    Details: %s%s
+                                    
+                    Registration date: %s
+                    Your name: %s
+                    Source: %s
+                                    
+                    To deregister from this event, please click on the following link:
+                    %s%s?deregister=%s
+                    """.formatted(
+                    event.getTitle(), formatDateTime(event.getDate()), event.getLocation(), configuration.getWebsite().getBaseUrl(),
+                    event.getCompleteEventUrl(), formatDateTime(registration.getDate()), member.getFullName(), source,
+                    configuration.getWebsite().getBaseUrl(), event.getCompleteEventUrl(), URLUtil.encode(registration.getDeregister())
+            ));
+            mailSender.send(message);
+        }
+    }
+
+    /**
+     * @deprecated remove after migration of JUG.CH to Komunumo has finished
+     */
+    @Deprecated(forRemoval = true)
+    public boolean registerForEvent(final long eventId,
+                                    final long memberId,
+                                    @NotNull final LocalDateTime registerDate,
+                                    final boolean noShow,
+                                    @NotNull final String deregisterCode) {
+        final var hasRegistered = get(eventId, memberId);
+        if (hasRegistered.isEmpty()) {
+            final var eventMember = dsl.newRecord(REGISTRATION);
+            eventMember.setEventId(eventId);
+            eventMember.setMemberId(memberId);
+            eventMember.setDate(registerDate);
+            eventMember.setNoShow(noShow);
+            eventMember.setDeregister(deregisterCode);
+            eventMember.store();
+        }
+        return hasRegistered.isEmpty();
     }
 
     public Stream<Member> getOrganizersForEvent(@NotNull final EventRecord event) {
@@ -161,37 +188,11 @@ public class RegistrationService {
                 .execute();
     }
 
-    /**
-     * @deprecated remove after migration of JUG.CH to Komunumo has finished
-     */
-    @Deprecated(forRemoval = true)
-    public boolean registerForEvent(final long eventId,
-                                    final long memberId,
-                                    @NotNull final LocalDateTime registerDate,
-                                    final boolean noShow,
-                                    @NotNull final String deregisterCode) {
-        final var hasRegistered = get(eventId, memberId);
-        if (hasRegistered.isEmpty()) {
-            final var eventMember = dsl.newRecord(REGISTRATION);
-            eventMember.setEventId(eventId);
-            eventMember.setMemberId(memberId);
-            eventMember.setDate(registerDate);
-            eventMember.setNoShow(noShow);
-            eventMember.setDeregister(deregisterCode);
-            eventMember.store();
-        }
-        return hasRegistered.isEmpty();
-    }
-
     public boolean deregister(@NotNull final String deregisterCode) {
-        final var registration = dsl.selectFrom(REGISTRATION)
-                .where(REGISTRATION.DEREGISTER.eq(deregisterCode))
-                .fetchOneInto(RegistrationRecord.class);
-
+        final var registration = getRegistration(deregisterCode);
         if (registration != null) {
             return registration.delete() > 0;
         }
-
         return false;
     }
 
@@ -199,9 +200,14 @@ public class RegistrationService {
         return dsl.fetchCount(REGISTRATION);
     }
 
-    public RegistrationRecord getRegistration(@NotNull final String deregisterCode) {
+    public Registration getRegistration(@NotNull final String deregisterCode) {
         return dsl.selectFrom(REGISTRATION)
                 .where(REGISTRATION.DEREGISTER.eq(deregisterCode))
-                .fetchOne();
+                .fetchOneInto(Registration.class);
+    }
+
+    public void updateNoShow(@NotNull final Registration registration, final boolean noShow) {
+        registration.setNoShow(noShow);
+        registration.store();
     }
 }
