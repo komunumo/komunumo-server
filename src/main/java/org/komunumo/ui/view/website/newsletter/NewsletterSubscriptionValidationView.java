@@ -22,7 +22,6 @@ import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
@@ -32,7 +31,7 @@ import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.komunumo.data.service.NewsletterService;
+import org.komunumo.data.service.SubscriptionService;
 import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.WebsiteLayout;
 
@@ -46,11 +45,11 @@ import org.komunumo.ui.view.website.home.HomeView;
 @AnonymousAllowed
 public class NewsletterSubscriptionValidationView extends ContentBlock implements HasUrlParameter<String> {
 
-    private final NewsletterService newsletterService;
+    private final SubscriptionService subscriptionService;
 
-    public NewsletterSubscriptionValidationView(@NotNull final NewsletterService newsletterService) {
+    public NewsletterSubscriptionValidationView(@NotNull final SubscriptionService subscriptionService) {
         super("News");
-        this.newsletterService = newsletterService;
+        this.subscriptionService = subscriptionService;
         addClassName("newsletter-subscription-validation");
     }
 
@@ -63,7 +62,7 @@ public class NewsletterSubscriptionValidationView extends ContentBlock implement
         final var emailAddress = parameters.getOrDefault("email", List.of("")).get(0);
         final var validationCode = parameters.getOrDefault("code", List.of("")).get(0);
 
-        final var validationOkay = newsletterService.validateSubscription(emailAddress, validationCode);
+        final var validationOkay = subscriptionService.validateSubscription(emailAddress, validationCode);
 
         final var content = new Div();
         content.add(new H3("Newsletter Subscription Validation"));

@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.MemberService;
-import org.komunumo.data.service.NewsletterService;
+import org.komunumo.data.service.SubscriptionService;
 
 public class EventDetailArticle extends EventArticle {
 
@@ -115,11 +115,11 @@ public class EventDetailArticle extends EventArticle {
 
     protected void addRegistrationForm(@NotNull final MemberService memberService,
                                        @NotNull final EventMemberService eventMemberService,
-                                       @NotNull final NewsletterService newsletterService,
+                                       @NotNull final SubscriptionService subscriptionService,
                                        @NotNull final Event event, String deregisterCode) {
         add(new Hr());
         if (deregisterCode.isBlank()) {
-            add(new EventRegistrationForm(memberService, eventMemberService, newsletterService, event));
+            add(new EventRegistrationForm(memberService, eventMemberService, subscriptionService, event));
         } else {
             add(new EventDeregistrationForm(eventMemberService, event, deregisterCode));
         }

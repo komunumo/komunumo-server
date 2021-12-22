@@ -37,22 +37,22 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.NewsEntity;
 import org.komunumo.data.service.NewsService;
-import org.komunumo.data.service.NewsletterService;
+import org.komunumo.data.service.SubscriptionService;
 import org.komunumo.ui.component.More;
 
 @CssImport("./themes/komunumo/views/website/news-block.css")
 public class NewsBlock extends ContentBlock {
 
     public NewsBlock(@NotNull final NewsService newsService,
-                     @NotNull final NewsletterService newsletterService) {
+                     @NotNull final SubscriptionService subscriptionService) {
         super("News");
         addClassName("news-block");
 
         final var newsEntity = newsService.getLatestNews();
         if (newsEntity == null) {
-            setContent(createNewsletterForm(newsletterService));
+            setContent(createNewsletterForm(subscriptionService));
         } else {
-            setContent(new HorizontalLayout(createNewsContent(newsEntity), createNewsletterForm(newsletterService)));
+            setContent(new HorizontalLayout(createNewsContent(newsEntity), createNewsletterForm(subscriptionService)));
         }
     }
 
@@ -69,7 +69,7 @@ public class NewsBlock extends ContentBlock {
         return container;
     }
 
-    private Component createNewsletterForm(@NotNull final NewsletterService newsletterService) {
+    private Component createNewsletterForm(@NotNull final SubscriptionService subscriptionService) {
         final var emailField = new EmailField();
         emailField.setPlaceholder("Your email address");
         emailField.setValueChangeMode(ValueChangeMode.EAGER);
@@ -77,7 +77,7 @@ public class NewsBlock extends ContentBlock {
         final var subscribeButton = new Button("Subscribe", (clickEvent) -> {
             final var emailAddress = emailField.getValue().trim();
             if (!emailAddress.isBlank()) {
-                newsletterService.addSubscription(emailAddress);
+                subscriptionService.addSubscription(emailAddress);
                 UI.getCurrent().access(() -> {
                     emailField.setValue("");
                     Notification.show("You have been added to the newsletter. Please check your email account for verification (opt-in).");

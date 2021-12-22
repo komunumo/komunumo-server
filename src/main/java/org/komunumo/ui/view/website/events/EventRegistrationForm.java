@@ -39,7 +39,7 @@ import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Member;
 import org.komunumo.data.service.EventMemberService;
 import org.komunumo.data.service.MemberService;
-import org.komunumo.data.service.NewsletterService;
+import org.komunumo.data.service.SubscriptionService;
 
 import static org.komunumo.util.FormatterUtil.formatDate;
 
@@ -48,7 +48,7 @@ public class EventRegistrationForm extends Div {
 
     public EventRegistrationForm(@NotNull final MemberService memberService,
                                  @NotNull final EventMemberService eventMemberService,
-                                 @NotNull final NewsletterService newsletterService,
+                                 @NotNull final SubscriptionService subscriptionService,
                                  @NotNull final Event event) {
         addClassName("event-registration-form");
 
@@ -157,7 +157,7 @@ public class EventRegistrationForm extends Div {
                         otherSource.getValue() : source.getValue();
                 eventMemberService.registerForEvent(event, member, sourceValue);
                 if (newsletter.getValue()) {
-                    newsletterService.addSubscription(emailAddress);
+                    subscriptionService.addSubscription(emailAddress);
                 }
                 final var registrationInfo = new Paragraph("Thank you for your registration! Within the next few minutes " +
                         "you will receive a copy of your registration and a reminder will follow shortly before the event.");
