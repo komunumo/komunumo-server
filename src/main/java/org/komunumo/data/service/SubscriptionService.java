@@ -60,7 +60,7 @@ public class SubscriptionService {
         if (getSubscription(emailAddress).isEmpty()) {
             final var subscription = dsl.newRecord(SUBSCRIPTION);
 
-            final var validationCode = RandomStringUtils.randomAlphabetic(8);
+            final var validationCode = RandomStringUtils.randomAlphabetic(16);
 
             subscription.setEmail(emailAddress);
             subscription.setSubscriptionDate(LocalDateTime.now());
