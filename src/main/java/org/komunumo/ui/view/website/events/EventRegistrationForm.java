@@ -25,6 +25,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -52,6 +53,7 @@ public class EventRegistrationForm extends Div {
                                  @NotNull final SubscriptionService subscriptionService,
                                  @NotNull final Event event) {
         addClassName("event-registration-form");
+        add(new H4("Register"));
 
         if (event.getAttendeeLimit() > 0 && event.getAttendeeCount() >= event.getAttendeeLimit()) {
             final var fullyBooked = new Paragraph("Sorry, this event is fully booked.");
