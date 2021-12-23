@@ -168,13 +168,19 @@ public class EventRegistrationForm extends Div {
                     final var member = memberFound.orElse(createMember(memberService, emailAddress, firstName, lastName));
                     final var sourceValue = source.getValue().equalsIgnoreCase("other") ?
                             otherSource.getValue() : source.getValue();
-                    registrationService.registerForEvent(event, member, sourceValue);
+                    final var registrationResult = registrationService.registerForEvent(event, member, sourceValue);
+                    final var registrationInfo = switch (registrationResult) {
+                        case SUCCESS -> new Paragraph("Thank you for your registration! Within the next few minutes " +
+                                        "you will receive a copy of your registration and a reminder will follow shortly before the event.");
+                        case EXISTING -> new Paragraph("You have already registered before! Within the next few minutes " +
+                                        "you will receive a copy of your registration and a reminder will follow shortly before the event.");
+                        case FULL -> new Paragraph("Sorry, the last place was just snatched from right under your nose! " +
+                                        "Unfortunately, this event is now fully booked.");
+                    };
+                    registrationInfo.addClassName("registration-info");
                     if (newsletter.getValue()) {
                         subscriptionService.addSubscription(emailAddress);
                     }
-                    final var registrationInfo = new Paragraph("Thank you for your registration! Within the next few minutes " +
-                            "you will receive a copy of your registration and a reminder will follow shortly before the event.");
-                    registrationInfo.addClassName("registration-info");
                     replace(registrationForm, registrationInfo);
                 });
             }

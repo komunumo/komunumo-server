@@ -26,6 +26,7 @@ import org.komunumo.data.db.tables.records.RegistrationRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Member;
 import org.komunumo.data.entity.Registration;
+import org.komunumo.data.entity.RegistrationResult;
 import org.komunumo.util.FormatterUtil;
 import org.komunumo.util.URLUtil;
 import org.springframework.mail.MailSender;
@@ -62,22 +63,26 @@ public class RegistrationService {
                 .fetchOptionalInto(Registration.class);
     }
 
-    public void registerForEvent(@NotNull final Event event,
-                                 @NotNull final Member member,
-                                 @NotNull final String source) {
-        registerForEvent(event, member, LocalDateTime.now(), source, false, true);
+    public RegistrationResult registerForEvent(@NotNull final Event event,
+                                               @NotNull final Member member,
+                                               @NotNull final String source) {
+        return registerForEvent(event, member, LocalDateTime.now(), source, false, true);
     }
 
-    public void registerForEvent(@NotNull final Event event,
-                                 @NotNull final Member member,
-                                 @NotNull final LocalDateTime date,
-                                 @NotNull final String source,
-                                 final boolean noShow,
-                                 final boolean sendConfirmationMail) {
+    public synchronized RegistrationResult registerForEvent(@NotNull final Event event,
+                                                            @NotNull final Member member,
+                                                            @NotNull final LocalDateTime date,
+                                                            @NotNull final String source,
+                                                            final boolean noShow,
+                                                            final boolean sendConfirmationMail) {
         final RegistrationRecord registration;
 
         final var hasRegistered = get(event.getId(), member.getId());
         if (hasRegistered.isEmpty()) {
+            final var attendeeCount = dsl.fetchCount(REGISTRATION, REGISTRATION.EVENT_ID.eq(event.getId()));
+            if (attendeeCount >= event.getAttendeeLimit()) {
+                return RegistrationResult.FULL;
+            }
             registration = dsl.newRecord(REGISTRATION);
             registration.setEventId(event.getId());
             registration.setMemberId(member.getId());
@@ -114,6 +119,7 @@ public class RegistrationService {
             ));
             mailSender.send(message);
         }
+        return hasRegistered.isPresent() ? RegistrationResult.EXISTING : RegistrationResult.SUCCESS;
     }
 
     /**
