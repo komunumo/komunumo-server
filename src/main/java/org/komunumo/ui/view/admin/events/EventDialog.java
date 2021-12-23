@@ -24,6 +24,7 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.richtexteditor.RichTextEditor;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.binder.Binder;
@@ -119,6 +120,7 @@ public class EventDialog extends EditDialog<Event> {
         final var date = new DateTimePicker("Date & Time");
         final var duration = new TimePicker("Duration");
         final var eventUrl = new TextField("Event URL");
+        final var attendeeLimit = new IntegerField("Attendee limit (0 = no limit)");
         final var membersOnly = new Checkbox("Members only");
         final var published = new Checkbox("Published");
 
@@ -162,6 +164,10 @@ public class EventDialog extends EditDialog<Event> {
         duration.setMaxTime(LocalTime.of(3, 0));
         eventUrl.setValueChangeMode(EAGER);
         updateEventUrlPrefix(location, date, eventUrl);
+        attendeeLimit.setMin(0);
+        attendeeLimit.setMax(500);
+        attendeeLimit.setStep(10);
+        attendeeLimit.setHasControls(true);
         published.addValueChangeListener(changeEvent -> {
             final var value = changeEvent.getValue();
             speaker.setRequiredIndicatorVisible(value);
@@ -177,7 +183,7 @@ public class EventDialog extends EditDialog<Event> {
 
         formLayout.add(type, title, subtitle, speaker, organizer, level, new CustomLabel("Description"), description,
                 keyword, new CustomLabel("Agenda"), agenda, language, location, webinarUrl, date, duration, eventUrl,
-                membersOnly, published);
+                attendeeLimit, membersOnly, published);
 
         binder.forField(type)
                 .withValidator(value -> !published.getValue() || value != null,
@@ -250,6 +256,9 @@ public class EventDialog extends EditDialog<Event> {
                 .withValidator(value -> !published.getValue() || value != null && !value.isBlank(),
                         "Please enter a valid event URL")
                 .bind(Event::getEventUrl, Event::setEventUrl);
+
+        binder.forField(attendeeLimit)
+                .bind(Event::getAttendeeLimit, Event::setAttendeeLimit);
 
         binder.forField(membersOnly)
                 .bind(Event::getMembersOnly, Event::setMembersOnly);

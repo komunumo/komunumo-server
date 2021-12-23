@@ -74,6 +74,7 @@ public class EventService {
         event.setSpeakers(List.of());
         event.setKeywords(List.of());
         event.setAttendeeCount(0);
+        event.setAttendeeLimit(0);
         event.setEventUrl("");
         return event;
     }
