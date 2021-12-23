@@ -46,13 +46,16 @@ public class RegistrationService {
     private final DSLContext dsl;
     private final Configuration configuration;
     private final MailSender mailSender;
+    private final EventOrganizerService eventOrganizerService;
 
     public RegistrationService(@NotNull final DSLContext dsl,
                                @NotNull final Configuration configuration,
-                               @NotNull final MailSender mailSender) {
+                               @NotNull final MailSender mailSender,
+                               @NotNull final EventOrganizerService eventOrganizerService) {
         this.dsl = dsl;
         this.configuration = configuration;
         this.mailSender = mailSender;
+        this.eventOrganizerService = eventOrganizerService;
     }
 
     public Optional<Registration> get(@NotNull final Long eventId,
@@ -84,6 +87,25 @@ public class RegistrationService {
                 final var attendeeCount = dsl.fetchCount(REGISTRATION, REGISTRATION.EVENT_ID.eq(event.getId()));
                 if (attendeeCount >= attendeeLimit) {
                     return RegistrationResult.FULL;
+                }
+                if (attendeeCount + 1 >= (int) Math.round(attendeeLimit * 0.8)) {
+                    final var percent = ((attendeeCount + 1) * 100) / (attendeeLimit);
+                    final var emailAddresses = eventOrganizerService.getOrganizersForEvent(event)
+                            .map(Member::getEmail)
+                            .toArray(String[]::new);
+                    final var message = new SimpleMailMessage();
+                    message.setTo(emailAddresses);
+                    message.setFrom(configuration.getEmail().getAddress());
+                    message.setSubject("Reached %d %% of attendee limit".formatted(percent));
+                    message.setText("""
+                    Event: "%s" at %s in %s
+                    Attendee limit: %d
+                    Attendee count: %d
+                    """.formatted(
+                            event.getTitle(), formatDateTime(event.getDate()), event.getLocation(),
+                            attendeeLimit, attendeeCount + 1
+                    ));
+                    mailSender.send(message);
                 }
             }
             registration = dsl.newRecord(REGISTRATION);
