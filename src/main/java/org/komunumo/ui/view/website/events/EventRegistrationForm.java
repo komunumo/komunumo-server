@@ -53,6 +53,13 @@ public class EventRegistrationForm extends Div {
                                  @NotNull final Event event) {
         addClassName("event-registration-form");
 
+        if (event.getAttendeeLimit() > 0 && event.getAttendeeCount() >= event.getAttendeeLimit()) {
+            final var fullyBooked = new Paragraph("Sorry, this event is fully booked.");
+            fullyBooked.addClassName("fully-booked");
+            add(fullyBooked);
+            return;
+        }
+
         final var emailField = new EmailField();
         emailField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
         emailField.setPlaceholder("Your email address");
