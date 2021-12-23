@@ -79,9 +79,12 @@ public class RegistrationService {
 
         final var hasRegistered = get(event.getId(), member.getId());
         if (hasRegistered.isEmpty()) {
-            final var attendeeCount = dsl.fetchCount(REGISTRATION, REGISTRATION.EVENT_ID.eq(event.getId()));
-            if (attendeeCount >= event.getAttendeeLimit()) {
-                return RegistrationResult.FULL;
+            final var attendeeLimit = event.getAttendeeLimit();
+            if (attendeeLimit > 0) {
+                final var attendeeCount = dsl.fetchCount(REGISTRATION, REGISTRATION.EVENT_ID.eq(event.getId()));
+                if (attendeeCount >= attendeeLimit) {
+                    return RegistrationResult.FULL;
+                }
             }
             registration = dsl.newRecord(REGISTRATION);
             registration.setEventId(event.getId());
