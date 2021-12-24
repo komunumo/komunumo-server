@@ -30,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import org.komunumo.configuration.Configuration;
 import org.komunumo.data.service.SponsorService;
 import org.komunumo.data.service.StatisticService;
+import org.komunumo.security.AuthenticatedUser;
 
 @CssImport(value = "./themes/komunumo/views/website/website-layout.css")
 public class WebsiteLayout extends VerticalLayout implements RouterLayout {
@@ -37,13 +38,14 @@ public class WebsiteLayout extends VerticalLayout implements RouterLayout {
     private final Main main;
     private final TwitterFeed twitterFeed;
 
-    public WebsiteLayout(@NotNull final Configuration configuration,
+    public WebsiteLayout(@NotNull final AuthenticatedUser authenticatedUser,
+                         @NotNull final Configuration configuration,
                          @NotNull final StatisticService statisticService,
                          @NotNull final SponsorService sponsorService) {
         addClassName("website");
 
         add(new CookieConsent());
-        add(new WebsiteMenu());
+        add(new WebsiteMenu(authenticatedUser));
         add(new WebsiteHeader(configuration, statisticService));
 
         main = new Main();

@@ -21,18 +21,24 @@ package org.komunumo.ui.view.website;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Nav;
 import com.vaadin.flow.router.RouterLink;
+import org.jetbrains.annotations.NotNull;
+import org.komunumo.security.AuthenticatedUser;
+import org.komunumo.ui.view.admin.dashboard.DashboardView;
 import org.komunumo.ui.view.website.events.EventsView;
 import org.komunumo.ui.view.website.home.HomeView;
 
 @CssImport("./themes/komunumo/views/website/website-menu.css")
 public class WebsiteMenu extends Nav {
 
-    public WebsiteMenu() {
+    public WebsiteMenu(@NotNull final AuthenticatedUser authenticatedUser) {
         super();
         addClassName("main-menu");
 
         add(new RouterLink("Home", HomeView.class));
         add(new RouterLink("Events", EventsView.class));
+        if (authenticatedUser.get().isPresent() && authenticatedUser.get().get().getAdmin()) {
+            add(new RouterLink("Admin", DashboardView.class));
+        }
     }
 
 }
