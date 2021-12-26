@@ -115,6 +115,8 @@ public class EventDialog extends EditDialog<Event> {
         final var agenda = new RichTextEditor();
         final var level = new Select<>(EventLevel.values());
         final var language = new Select<>(EventLanguage.values());
+        final var room = new TextField("Room");
+        final var travelInstructions = new TextField("Travel instructions");
         final var location = new ComboBox<String>("Location");
         final var webinarUrl = new TextField("Webinar URL");
         final var date = new DateTimePicker("Date & Time");
@@ -156,6 +158,8 @@ public class EventDialog extends EditDialog<Event> {
             updateEventUrlPrefix(location, date, eventUrl);
             binder.validate();
         });
+        room.setValueChangeMode(EAGER);
+        travelInstructions.setValueChangeMode(EAGER);
         webinarUrl.setValueChangeMode(EAGER);
         date.setMin(LocalDateTime.now());
         date.addValueChangeListener(changeEvent -> updateEventUrlPrefix(location, date, eventUrl));
@@ -175,6 +179,7 @@ public class EventDialog extends EditDialog<Event> {
             description.setRequiredIndicatorVisible(value);
             language.setRequiredIndicatorVisible(value);
             location.setRequiredIndicatorVisible(value);
+            room.setRequiredIndicatorVisible(value);
             date.setRequiredIndicatorVisible(value);
             duration.setRequiredIndicatorVisible(value);
             eventUrl.setRequiredIndicatorVisible(value);
@@ -182,8 +187,8 @@ public class EventDialog extends EditDialog<Event> {
         });
 
         formLayout.add(type, title, subtitle, speaker, organizer, level, new CustomLabel("Description"), description,
-                keyword, new CustomLabel("Agenda"), agenda, language, location, webinarUrl, date, duration, eventUrl,
-                attendeeLimit, membersOnly, published);
+                keyword, new CustomLabel("Agenda"), agenda, language, location, room, travelInstructions, webinarUrl,
+                date, duration, eventUrl, attendeeLimit, membersOnly, published);
 
         binder.forField(type)
                 .withValidator(value -> !published.getValue() || value != null,
@@ -235,6 +240,16 @@ public class EventDialog extends EditDialog<Event> {
                 .withValidator(value -> !published.getValue() || value != null,
                         "Please select a location")
                 .bind(Event::getLocation, Event::setLocation);
+
+        binder.forField(room)
+                .withValidator(value -> !published.getValue() || !"Online".equalsIgnoreCase(location.getValue()) || !value.isBlank(),
+                        "Please enter a room")
+                .bind(Event::getRoom, Event::setRoom);
+
+        binder.forField(travelInstructions)
+                .withValidator(value -> value.isBlank() || validateUrl(value),
+                        "Please enter a valid URL")
+                .bind(Event::getTravelInstructions, Event::setTravelInstructions);
 
         binder.forField(webinarUrl)
                 .withValidator(value -> !published.getValue() || !"Online".equalsIgnoreCase(location.getValue()) || validateUrl(value),

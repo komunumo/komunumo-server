@@ -29,6 +29,22 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class URLUtilTest {
 
     @Test
+    @SuppressWarnings("HttpUrlsUsage")
+    void extractLink() {
+        assertEquals("http://komunumo.org", URLUtil.extractLink("Go to http://komunumo.org and try it out!"));
+        assertEquals("https://komunumo.org", URLUtil.extractLink("Go to https://komunumo.org and try it out!"));
+        assertEquals("http://komunumo.org/", URLUtil.extractLink("Go to http://komunumo.org/ and try it out!"));
+        assertEquals("https://komunumo.org/", URLUtil.extractLink("Go to https://komunumo.org/ and try it out!"));
+        assertEquals("https://komunumo.org/test", URLUtil.extractLink("Go to https://komunumo.org/test and try it out!"));
+        assertEquals("https://komunumo.org/test/", URLUtil.extractLink("Go to https://komunumo.org/test/ and try it out!"));
+        assertEquals("https://komunumo.org/test.html", URLUtil.extractLink("Go to https://komunumo.org/test.html and try it out!"));
+        assertEquals("https://komunumo.org/test.php", URLUtil.extractLink("Go to https://komunumo.org/test.php and try it out!"));
+        assertEquals("https://komunumo.org/test.pdf", URLUtil.extractLink("Go to https://komunumo.org/test.pdf and try it out!"));
+        assertEquals("https://komunumo.org/test.pdf", URLUtil.extractLink("Go to \"https://komunumo.org/test.pdf\" and try it out!"));
+        assertEquals("https://komunumo.org/test.pdf", URLUtil.extractLink("Go to 'https://komunumo.org/test.pdf' and try it out!"));
+    }
+
+    @Test
     void createReadableUrl() {
         assertEquals("hans-im-glueck", URLUtil.createReadableUrl("Hans im Glück"));
         assertEquals("i-have_a-reallyamazingidea", URLUtil.createReadableUrl("I have_a-really\\Amazing§§Idea"));

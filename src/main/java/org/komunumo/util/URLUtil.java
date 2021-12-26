@@ -18,15 +18,29 @@
 
 package org.komunumo.util;
 
-import java.io.UnsupportedEncodingException;
-
 import org.jetbrains.annotations.NotNull;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 public class URLUtil {
+
+    private static final Pattern urlPattern = Pattern.compile(
+            "(?:^|)((ht|f)tp(s?)://|www\\.)"
+                    + "(([\\w\\-]+\\.)+?([\\w\\-.~]+/?)*"
+                    + "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]*$~@!:/{};]*)",
+            Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+
+    public static String extractLink(@NotNull final String text) {
+        final var matcher = urlPattern.matcher(text);
+        if (matcher.find()) {
+            return matcher.group();
+        }
+        return "";
+    }
 
     public static String createReadableUrl(@NotNull final String text) {
         return URLEncoder.encode(

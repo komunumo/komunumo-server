@@ -20,6 +20,7 @@ package org.komunumo.ui.view.website.events;
 
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.DescriptionList;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H4;
@@ -66,15 +67,29 @@ public class EventDetailArticle extends EventArticle {
         add(location);
     }
 
-    protected void addRoom(@NotNull final Event event) { // TODO there is no room property on the event
-        final var roomLabel = new Span(new Text("Room:"));
-        roomLabel.addClassName("room-label");
-        final var room = new Div(
-                roomLabel,
-                new Html("<span>%s</span>".formatted("Testikowski"))
-        );
-        room.addClassName("room");
-        add(room);
+    protected void addRoom(@NotNull final Event event) {
+        if (!event.getRoom().isBlank() || !event.getTravelInstructions().isBlank()) {
+            final var room = new Div();
+            room.addClassName("room");
+
+            final var roomLabel = new Span(new Text("Room:"));
+            roomLabel.addClassName("room-label");
+            room.add(roomLabel);
+
+            if (!event.getRoom().isBlank()) {
+                room.add(new Span(event.getRoom()));
+            }
+
+            if (!event.getRoom().isBlank() && !event.getTravelInstructions().isBlank()) {
+                room.add(new Text(", "));
+            }
+
+            if (!event.getTravelInstructions().isBlank()) {
+                room.add(new Anchor(event.getTravelInstructions(), "Travel instructions"));
+            }
+
+            add(room);
+        }
     }
 
     protected void addAgenda(@NotNull final Event event) {

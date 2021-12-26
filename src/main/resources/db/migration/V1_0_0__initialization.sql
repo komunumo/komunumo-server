@@ -26,6 +26,8 @@ CREATE TABLE event (
     level ENUM('All', 'Beginner', 'Intermediate', 'Advanced') NULL,
     language ENUM('DE', 'EN') NULL,
     location VARCHAR(255) NULL DEFAULT '',
+    room varchar(255) NOT NULL DEFAULT '',
+    travel_instructions varchar(255) NOT NULL DEFAULT '',
     webinar_url VARCHAR(255) NOT NULL DEFAULT '',
     date DATETIME NULL,
     duration TIME NULL,
