@@ -21,18 +21,30 @@ package org.komunumo;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.component.page.Push;
+import com.vaadin.flow.server.AppShellSettings;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
+import org.jetbrains.annotations.NotNull;
 
-/**
- * Use the @PWA annotation make the application installable on phones, tablets
- * and some desktop browsers.
- */
 @SuppressWarnings("unused")
 @Push
 @Theme(value = "komunumo")
-@PWA(name = "Komunumo", shortName = "Komunumo", offlineResources = {"images/logo.png"})
+@PWA(name = "Komunumo", shortName = "Komunumo", iconPath = "")
 @NpmPackage(value = "lumo-css-framework", version = "^4.0.10")
 @NpmPackage(value = "line-awesome", version = "1.3.0")
 public class AppShell implements AppShellConfigurator {
+
+    @Override
+    public void configurePage(@NotNull final AppShellSettings settings) {
+        AppShellConfigurator.super.configurePage(settings);
+        final var pathInfo = settings.getRequest().getPathInfo();
+        if (pathInfo.startsWith("admin") || pathInfo.startsWith("/admin")) {
+            settings.addFavIcon("icon", "https://komunumo.org/images/favicon/favicon.ico", "16x16");
+            settings.addLink("shortcut icon", "https://komunumo.org/images/favicon/favicon.ico");
+        } else {
+            settings.addFavIcon("icon", "https://static.jug.ch/images/favicon.ico", "16x16");
+            settings.addLink("shortcut icon", "https://static.jug.ch/images/favicon.ico");
+        }
+    }
+
 }
