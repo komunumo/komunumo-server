@@ -22,6 +22,7 @@ import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.cookieconsent.CookieConsent;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -33,7 +34,7 @@ import org.komunumo.data.service.StatisticService;
 import org.komunumo.security.AuthenticatedUser;
 
 @CssImport(value = "./themes/komunumo/views/website/website-layout.css")
-public class WebsiteLayout extends VerticalLayout implements RouterLayout {
+public class WebsiteLayout extends Div implements RouterLayout {
 
     private final Main main;
     private final TwitterFeed twitterFeed;
@@ -42,11 +43,15 @@ public class WebsiteLayout extends VerticalLayout implements RouterLayout {
                          @NotNull final Configuration configuration,
                          @NotNull final StatisticService statisticService,
                          @NotNull final SponsorService sponsorService) {
-        addClassName("website");
+        addClassName("website-container");
 
-        add(new CookieConsent());
-        add(new WebsiteMenu(authenticatedUser));
-        add(new WebsiteHeader(configuration, statisticService));
+        final var website = new VerticalLayout();
+        website.addClassName("website");
+        add(website);
+
+        website.add(new CookieConsent());
+        website.add(new WebsiteMenu(authenticatedUser));
+        website.add(new WebsiteHeader(configuration, statisticService));
 
         main = new Main();
 
@@ -58,8 +63,8 @@ public class WebsiteLayout extends VerticalLayout implements RouterLayout {
                         new SponsorBlock(sponsorService)),
                 twitterFeed);
         mainLayout.setId("main-layout");
-        add(mainLayout);
-        add(new WebsiteFooter(configuration));
+        website.add(mainLayout);
+        website.add(new WebsiteFooter(configuration));
 
         final var page = UI.getCurrent().getPage();
         page.retrieveExtendedClientDetails(extendedClientDetails -> pageResized(extendedClientDetails.getBodyClientWidth()));
