@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
+@SuppressWarnings("ClassCanBeRecord")
 public class AuthenticatedUser {
 
     private final MemberService memberService;
