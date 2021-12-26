@@ -19,7 +19,13 @@
 .website .events-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    margin-bottom: -24px;
+    overflow: hidden;
+}
+
+.website .events-list .event-article {
+    border-bottom: 2px solid #bfbfbf;
+    padding: 8px 20px 8px 0;
 }
 
 .website ul.location-selector  {
