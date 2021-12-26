@@ -29,7 +29,7 @@ public class More extends Paragraph {
 
     public More(@NotNull final String url) {
         super(
-                new Image("/images/more.gif", "more"),
+                new Image("https://static.jug.ch/images/more.gif", "more"),
                 new Anchor(url, "more")
         );
         addClassName("more");
