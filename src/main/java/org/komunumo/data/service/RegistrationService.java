@@ -181,6 +181,10 @@ public class RegistrationService {
         return dsl.fetchCount(REGISTRATION);
     }
 
+    public int count(final long eventId) {
+        return dsl.fetchCount(REGISTRATION, REGISTRATION.EVENT_ID.eq(eventId));
+    }
+
     public Registration getRegistration(@NotNull final String deregisterCode) {
         return dsl.selectFrom(REGISTRATION)
                 .where(REGISTRATION.DEREGISTER.eq(deregisterCode))

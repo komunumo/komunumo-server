@@ -22,9 +22,15 @@
 
 .website .event-registration-form .members-only-info,
 .website .event-registration-form .fully-booked,
+.website .event-registration-form .last-seat,
 .website .event-registration-form .found-message,
 .website .event-registration-form .registration-info {
     color: #930722;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.website .event-registration-form .seat-message {
     font-weight: bold;
     text-transform: uppercase;
 }

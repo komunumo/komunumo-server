@@ -81,6 +81,19 @@ public class EventRegistrationForm extends Div {
                 new Span("I want to register for the event «"), eventTitle,
                 new Span("» on %s in %s:".formatted(formatDate(event.getDate().toLocalDate()), event.getLocation()))));
         emailForm.add(new HorizontalLayout(emailField, verifyButton));
+        if (event.getAttendeeLimit() > 0) {
+            final var freeSeats = event.getAttendeeLimit() - registrationService.count(event.getId());
+            if (freeSeats == 1) {
+                final var seatMessage = new Paragraph("There is only one free seat left!");
+                seatMessage.addClassName("seat-message");
+                seatMessage.addClassName("last-seat");
+                emailForm.add(seatMessage);
+            } else {
+                final var seatMessage = new Paragraph("There are %s %d free seats left!".formatted(freeSeats <= 10 ? "only" : "", freeSeats));
+                seatMessage.addClassName("seat-message");
+                emailForm.add(seatMessage);
+            }
+        }
 
         if (event.getMembersOnly()) {
             final var membersOnlyInfo = new Paragraph("This event is only for members. You must be a member to attend this event.");
