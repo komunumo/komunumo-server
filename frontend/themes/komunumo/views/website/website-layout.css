@@ -28,6 +28,9 @@
 }
 
 .website {
+    background-image: url("https://static.jug.ch/images/backgroundleft.jpg"), url("https://static.jug.ch/images/backgroundright.jpg");
+    background-position: top left, top right;
+    background-repeat: no-repeat;
     font-size: 0.8rem;
     width: 100%;
 }
