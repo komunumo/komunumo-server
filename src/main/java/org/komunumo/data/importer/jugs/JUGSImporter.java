@@ -488,7 +488,7 @@ public class JUGSImporter {
                     event.set(EVENT.SUBTITLE, getEmptyForNull(result.getString("untertitel")));
                     event.set(EVENT.AGENDA, getEmptyForNull(result.getString("agenda")));
                     event.set(EVENT.DESCRIPTION, getEmptyForNull(result.getString("abstract")));
-                    event.set(EVENT.EVENT_URL, URLUtil.createReadableUrl(getEmptyForNull(result.getString("titel"))));
+                    event.set(EVENT.EVENT_URL, generateEventUrl(getEmptyForNull(result.getString("titel")), getEmptyForNull(result.getString("urldatei"))));
                     event.set(EVENT.MEMBERS_ONLY, result.getString("anm_formular").equalsIgnoreCase("anmeldeformular_membersonly.inc.php"));
                     event.set(EVENT.PUBLISHED, result.getString("sichtbar").equalsIgnoreCase("ja"));
 
@@ -522,6 +522,17 @@ public class JUGSImporter {
         }
         applicationServiceInitListener.reloadRedirects();
         showNotification(counter.get() + " new events imported.");
+    }
+
+    private String generateEventUrl(@NotNull final String titel, @NotNull final String urldatei) {
+        if (!urldatei.isBlank()) {
+            final var lastIndex = urldatei.lastIndexOf("/");
+            final var url = urldatei.substring(lastIndex + 1).replaceAll("\\.html", "").trim();
+            if (!url.isBlank()) {
+                return url;
+            }
+        }
+        return URLUtil.createReadableUrl(getEmptyForNull(titel));
     }
 
     private void addOrganizers(@NotNull final Event event,
