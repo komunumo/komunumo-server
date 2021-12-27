@@ -114,7 +114,7 @@ public class EventArticle extends Article {
         final var paragraphEnd = description.contains("</p>") ? description.indexOf("</p>") : description.indexOf("</P>");
         final var html = paragraphEnd > 0 ? description.substring(0, paragraphEnd + 4) : description;
         final var more = new More(event.getCompleteEventUrl());
-        add(new Div(new Html(html), more));
+        add(new Div(new Html("<div>%s</div>".formatted(html)), more));
     }
 
     protected void addDescription(@NotNull final Event event) {
