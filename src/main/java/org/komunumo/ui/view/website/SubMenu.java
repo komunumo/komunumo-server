@@ -18,41 +18,14 @@
 
 package org.komunumo.ui.view.website;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Nav;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.komunumo.util.URLUtil;
-
-import java.util.List;
 
 @CssImport("./themes/komunumo/views/website/sub-menu.css")
 public class SubMenu extends Nav {
 
     public SubMenu() {
         addClassName("sub-menu");
-    }
-
-    public SubMenu(@NotNull final Component... components) {
-        this();
-        add(components);
-    }
-
-    public SubMenu(@NotNull final List<String> locations, @Nullable final String actualLocation, final boolean onlyLocations) {
-        this();
-
-        if (!onlyLocations) {
-            add(new SubMenuItem("/events", "upcoming", true));
-            add(new SubMenuItem("/events", "all locations", actualLocation == null));
-        }
-
-        locations.stream()
-                .map(location -> {
-                    final var url = URLUtil.createReadableUrl(location);
-                    return new SubMenuItem("/events/".concat(url), location, url.equals(actualLocation));
-                })
-                .forEach(this::add);
     }
 
 }

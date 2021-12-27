@@ -18,13 +18,19 @@
 
 package org.komunumo.ui.view.website.home;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
+
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.EventService;
 import org.komunumo.ui.view.website.ContentBlock;
-import org.komunumo.ui.view.website.events.EventPreview;
 import org.komunumo.ui.view.website.SubMenu;
+import org.komunumo.ui.view.website.SubMenuItem;
+import org.komunumo.ui.view.website.events.EventPreview;
+import org.komunumo.util.URLUtil;
 
 public class EventPreviewBlock extends ContentBlock {
 
@@ -33,17 +39,28 @@ public class EventPreviewBlock extends ContentBlock {
         addClassName("home-view");
 
         final var events = eventService.upcomingEvents().toList();
-        setSubMenu(new SubMenu(events.stream()
+        final var eventsList = new Div();
+        eventsList.addClassName("events-list");
+        events.stream()
+                .map(EventPreview::new)
+                .forEach(eventsList::add);
+
+        setSubMenu(createLocationSelector(events));
+        setContent(eventsList);
+    }
+
+    private Component createLocationSelector(List<Event> events) {
+        final var locationSelector = new SubMenu();
+        events.stream()
                 .map(Event::getLocation)
                 .distinct()
                 .sorted()
-                .toList(), null, true));
-
-        final var eventsList = new Div();
-        eventsList.addClassName("events-list");
-        eventService.upcomingEvents()
-                .map(EventPreview::new)
-                .forEach(eventsList::add);
-        setContent(eventsList);
+                .map(location -> {
+                    final var url = URLUtil.createReadableUrl(location);
+                    return new SubMenuItem("/events/".concat(url), location);
+                })
+                .forEach(locationSelector::add);
+        return locationSelector;
     }
+
 }
