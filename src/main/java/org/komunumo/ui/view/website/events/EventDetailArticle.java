@@ -48,10 +48,10 @@ public class EventDetailArticle extends EventArticle {
         final var div = new Div();
         div.addClassName("speakerbox");
         for (final var speaker : event.getSpeakers()) {
-            div.add(new Div(
-                    new Image(speaker.photo(), speaker.fullName()),
-                    new Html("<div>%s</div>".formatted(speaker.bio()))
-            ));
+            if (!speaker.photo().isBlank()) {
+                div.add(new Image(speaker.photo(), speaker.fullName()));
+            }
+            div.add(new Html("<div>%s</div>".formatted(speaker.bio())));
         }
         add(div);
     }
