@@ -20,6 +20,18 @@ package org.komunumo.data.importer.jugs;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+
+import java.net.http.HttpRequest;
+
+import java.net.http.HttpResponse;
+
+import java.util.Arrays;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
@@ -37,6 +49,7 @@ import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
+import org.komunumo.data.entity.FaqEntity;
 import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventOrganizerService;
 import org.komunumo.data.service.EventService;
@@ -103,6 +116,7 @@ public class JUGSImporter {
 
     private int memberMergeCount = 0;
     private int speakerMergeCount = 0;
+    private long faqImportCount = 0L;
 
     private UI ui = null;
 
@@ -149,22 +163,52 @@ public class JUGSImporter {
                 showNotification("Importing data from Java User Group Switzerland in the background...");
                 final var connection = DriverManager.getConnection(dbURL, dbUser, dbPass);
                 connection.setReadOnly(true);
-                importSponsors(connection);
-                importMembers(connection);
-                addMissingMembers();
-                importEvents(connection);
-                importKeywords(connection);
-                importSpeakers(connection);
-                importRegistrations(connection);
-                importNews(connection);
-                updateEventLevel();
-                mergeMembers();
-                mergeSpeakers();
+//                importSponsors(connection);
+//                importMembers(connection);
+//                addMissingMembers();
+//                importEvents(connection);
+//                importKeywords(connection);
+//                importSpeakers(connection);
+//                importRegistrations(connection);
+//                importNews(connection);
+                importFaq();
+//                updateEventLevel();
+//                mergeMembers();
+//                mergeSpeakers();
                 showNotification("Importing data from Java User Group Switzerland successfully finished.");
-            } catch (final SQLException e) {
+            } catch (final SQLException | IOException | InterruptedException e) {
                 showNotification("Error importing data from Java User Group Switzerland: " + e.getMessage());
             }
         }).start();
+    }
+
+    private void importFaq() throws IOException, InterruptedException {
+        final var client = HttpClient.newHttpClient();
+        final var request = HttpRequest.newBuilder()
+                .uri(URI.create("https://www.jug.ch/faq.php"))
+                .GET()
+                .build();
+        final var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Arrays.stream(stripFaqContainer(response.body()))
+                .map(String::trim)
+                .filter(html -> !html.isBlank())
+                .map(this::toFaqEntry)
+                .forEach(System.out::println);
+    }
+
+    private FaqEntity toFaqEntry(@NotNull final String html) {
+        final var questionBeginIndex = html.indexOf("<h3>") + 4;
+        final var questionEndIndex = html.indexOf("</h3>", questionBeginIndex);
+        final var question = html.substring(questionBeginIndex, questionEndIndex).trim();
+        final var answerBeginIndex = html.indexOf("</h3>") + 5;
+        final var answer = html.substring(answerBeginIndex).trim();
+        return new FaqEntity(++faqImportCount, question, answer);
+    }
+
+    private String[] stripFaqContainer(@NotNull final String html) {
+        final var beginIndex = html.indexOf("<h3>");
+        final var endIndex = html.indexOf("</div>", beginIndex);
+        return html.substring(beginIndex, endIndex).split(Pattern.quote("<hr class=\"eventtitelBreit\" />"));
     }
 
     private void importNews(@NotNull final Connection connection)
