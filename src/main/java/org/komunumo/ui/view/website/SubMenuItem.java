@@ -19,12 +19,14 @@
 package org.komunumo.ui.view.website;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.ListItem;
+import org.jetbrains.annotations.NotNull;
 
-public class SubMenuItem extends ListItem {
+public class SubMenuItem extends Anchor {
 
-    public SubMenuItem(Component... components) {
-        super(components);
+    public SubMenuItem(@NotNull final String href, @NotNull final String text) {
+        super(href, text);
     }
 
 }

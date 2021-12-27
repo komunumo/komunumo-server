@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-.website ul.sub-menu  {
+.website nav.sub-menu  {
     display: block;
     border: none;
     margin: 0;
@@ -28,32 +28,25 @@
     margin-inline-end: 0;
 }
 
-.website ul.sub-menu li {
-    min-height: 30px;
+.website nav.sub-menu a {
     border-bottom: 1px solid #bfbfbf;
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
-}
-
-.website ul.sub-menu li a {
+    color: #333333;
     display: block;
-    width: 144px;
-    min-height: 21px;
-    margin: 0;
-    padding: 9px 8px 0 8px;
     font-size: 100%;
     font-weight: normal;
-    color: #333333;
+    margin: 0;
+    min-height: 25px;
+    padding: 9px 8px 0 8px;
     text-decoration: none;
+    width: 144px;
 }
 
-.website ul.sub-menu li a:hover,
-.website ul.sub-menu li a.active {
+.website nav.sub-menu a:hover,
+.website nav.sub-menu a.active {
     background-color: #f3f3f3;
 }
 
-.website ul.sub-menu li a.active {
+.website nav.sub-menu a.active {
     font-weight: bold;
     text-transform: uppercase;
 }
