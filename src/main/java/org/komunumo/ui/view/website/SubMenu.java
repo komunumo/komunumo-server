@@ -18,8 +18,10 @@
 
 package org.komunumo.ui.view.website;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Nav;
+import org.jetbrains.annotations.NotNull;
 
 @CssImport("./themes/komunumo/views/website/sub-menu.css")
 public class SubMenu extends Nav {
@@ -28,4 +30,8 @@ public class SubMenu extends Nav {
         addClassName("sub-menu");
     }
 
+    public SubMenu(@NotNull final Component... components) {
+        this();
+        add(components);
+    }
 }

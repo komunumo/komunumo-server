@@ -36,6 +36,8 @@ import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.SubscriptionService;
 import org.komunumo.ui.view.website.ContentBlock;
+import org.komunumo.ui.view.website.SubMenu;
+import org.komunumo.ui.view.website.SubMenuItem;
 import org.komunumo.ui.view.website.WebsiteLayout;
 import org.komunumo.util.URLUtil;
 
@@ -105,10 +107,7 @@ public class EventDetailView extends ContentBlock implements BeforeEnterObserver
         article.addRegistrationForm(memberService, registrationService, subscriptionService, event, deregisterCode);
         article.addLevelInfo();
         setContent(article);
-
-        final var eventsOverview = new UnorderedList(new ListItem(new Anchor("/events", "Events overview")));
-        eventsOverview.addClassName("location-selector");
-        setSubMenu(eventsOverview);
+        setSubMenu(new SubMenu(new SubMenuItem("/events", "Events overview")));
     }
 
     private String mapLocation(@NotNull final String location) {
