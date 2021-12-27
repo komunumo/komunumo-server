@@ -64,7 +64,7 @@ public class EventsView extends ContentBlock implements BeforeEnterObserver {
                 .distinct()
                 .sorted()
                 .toList();
-        final var locationSelector = new SubMenu(eventLocations, location.orElse(null));
+        final var locationSelector = new SubMenu(eventLocations, location.orElse(null), false);
 
         final var eventsList = new Div();
         eventsList.addClassName("events-list");

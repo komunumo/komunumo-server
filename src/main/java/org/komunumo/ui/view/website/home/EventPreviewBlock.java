@@ -37,7 +37,7 @@ public class EventPreviewBlock extends ContentBlock {
                 .map(Event::getLocation)
                 .distinct()
                 .sorted()
-                .toList()));
+                .toList(), null, true));
 
         final var eventsList = new Div();
         eventsList.addClassName("events-list");

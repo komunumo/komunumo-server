@@ -18,6 +18,7 @@
 
 package org.komunumo.ui.view.website;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Nav;
 import org.jetbrains.annotations.NotNull;
@@ -29,43 +30,29 @@ import java.util.List;
 @CssImport("./themes/komunumo/views/website/sub-menu.css")
 public class SubMenu extends Nav {
 
-    private final String actualLocation;
-
-    public SubMenu(@NotNull final List<String> locations) {
-        this(locations, null, true);
+    public SubMenu() {
+        addClassName("sub-menu");
     }
 
-    public SubMenu(@NotNull final List<String> locations, @Nullable final String actualLocation) {
-        this(locations, actualLocation, false);
+    public SubMenu(@NotNull final Component... components) {
+        this();
+        add(components);
     }
 
     public SubMenu(@NotNull final List<String> locations, @Nullable final String actualLocation, final boolean onlyLocations) {
-        this.actualLocation = actualLocation;
-        addClassName("sub-menu");
+        this();
 
         if (!onlyLocations) {
-            final var upcoming = new SubMenuItem("/events", "upcoming");
-            upcoming.addClassName("active");
-            add(upcoming);
-
-            final var allCities = new SubMenuItem("/events", "all locations");
-            if (actualLocation == null) {
-                allCities.addClassName("active");
-            }
-            add(allCities);
+            add(new SubMenuItem("/events", "upcoming", true));
+            add(new SubMenuItem("/events", "all locations", actualLocation == null));
         }
 
         locations.stream()
-                .map(this::toListItem)
+                .map(location -> {
+                    final var url = URLUtil.createReadableUrl(location);
+                    return new SubMenuItem("/events/".concat(url), location, url.equals(actualLocation));
+                })
                 .forEach(this::add);
     }
 
-    private SubMenuItem toListItem(@NotNull final String location) {
-        final var url = URLUtil.createReadableUrl(location);
-        final var item = new SubMenuItem("/events/".concat(url), location);
-        if (actualLocation != null && actualLocation.equals(url)) {
-            item.addClassName("active");
-        }
-        return item;
-    }
 }

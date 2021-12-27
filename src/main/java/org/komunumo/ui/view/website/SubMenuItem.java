@@ -26,7 +26,14 @@ import org.jetbrains.annotations.NotNull;
 public class SubMenuItem extends Anchor {
 
     public SubMenuItem(@NotNull final String href, @NotNull final String text) {
+        this(href, text, false);
+    }
+
+    public SubMenuItem(@NotNull final String href, @NotNull final String text, final boolean active) {
         super(href, text);
+        if (active) {
+            addClassName("active");
+        }
     }
 
 }
