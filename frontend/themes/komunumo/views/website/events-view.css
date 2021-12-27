@@ -16,6 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+.website .events-view nav.sub-menu a.past-events {
+    margin-top: 30px;
+}
+
 .website .events-list {
     display: flex;
     flex-wrap: wrap;

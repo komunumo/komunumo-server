@@ -30,26 +30,26 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.EventService;
 import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.SubMenu;
 import org.komunumo.ui.view.website.SubMenuItem;
 import org.komunumo.ui.view.website.WebsiteLayout;
-import org.komunumo.util.URLUtil;
 
+import java.time.Year;
+import java.util.Comparator;
 import java.util.List;
 
-@Route(value = "events", layout = WebsiteLayout.class)
-@RouteAlias(value = "events/:location", layout = WebsiteLayout.class)
-@PageTitle("Events")
+@Route(value = "events/past", layout = WebsiteLayout.class)
+@RouteAlias(value = "events/past/:year", layout = WebsiteLayout.class)
+@PageTitle("Past Events")
 @CssImport("./themes/komunumo/views/website/events-view.css")
 @AnonymousAllowed
-public class EventsView extends ContentBlock implements BeforeEnterObserver {
+public class PastEventsView extends ContentBlock implements BeforeEnterObserver {
 
     private final EventService eventService;
 
-    public EventsView(@NotNull final EventService eventService) {
+    public PastEventsView(@NotNull final EventService eventService) {
         super("Events");
 
         this.eventService = eventService;
@@ -62,35 +62,35 @@ public class EventsView extends ContentBlock implements BeforeEnterObserver {
     @Override
     public void beforeEnter(@NotNull final BeforeEnterEvent beforeEnterEvent) {
         final var params = beforeEnterEvent.getRouteParameters();
-        final var location = params.get("location");
-        final var events = eventService.upcomingEvents().toList();
-        final var locationSelector = createLocationSelector(events, location.orElse(null));
+        final var year = params.get("year");
+        final var selectedYear = year.isPresent() ? Year.parse(year.get()) : Year.now();
+        final var years = eventService.getYearsWithPastEvents();
+        final var events = eventService.pastEvents(selectedYear).toList();
+
+        final var locationSelector = createLocationSelector(years, selectedYear);
+
         final var eventsList = new Div();
         eventsList.addClassName("events-list");
         events.stream()
-                .filter(event -> location.isEmpty() || URLUtil.createReadableUrl(event.getLocation()).equals(location.get()))
                 .map(EventPreview::new)
                 .forEach(eventsList::add);
         setSubMenu(locationSelector);
         setContent(eventsList);
     }
 
-    private Component createLocationSelector(List<Event> events, @Nullable final String actualLocation) {
+    private Component createLocationSelector(List<Year> years, @Nullable final Year selectedYear) {
         final var locationSelector = new SubMenu();
-        locationSelector.add(new SubMenuItem("/events", "upcoming", true));
-        locationSelector.add(new SubMenuItem("/events", "all locations", actualLocation == null));
-        events.stream()
-                .map(Event::getLocation)
-                .distinct()
-                .sorted()
-                .map(location -> {
-                    final var url = URLUtil.createReadableUrl(location);
-                    return new SubMenuItem("/events/".concat(url), location, url.equals(actualLocation));
-                })
-                .forEach(locationSelector::add);
-        final var pastEvents = new SubMenuItem("/events/past", "Past Events");
+        locationSelector.add(new SubMenuItem("/events", "upcoming"));
+
+        final var pastEvents = new SubMenuItem("/events/past", "Past Events", true);
         pastEvents.addClassName("past-events");
         locationSelector.add(pastEvents);
+
+        years.stream()
+                .distinct()
+                .sorted(Comparator.reverseOrder())
+                .map(year -> new SubMenuItem("/events/past/%s".formatted(year), year.toString(), year.equals(selectedYear)))
+                .forEach(locationSelector::add);
         return locationSelector;
     }
 

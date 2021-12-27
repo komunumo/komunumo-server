@@ -21,6 +21,7 @@ package org.komunumo.data.service;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
+import org.jooq.Record1;
 import org.jooq.impl.DSL;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
@@ -31,7 +32,6 @@ import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.jooq.impl.DSL.concat;
@@ -167,6 +167,16 @@ public class EventService {
                 .map(this::addAdditionalData);
     }
 
+    public Stream<Event> pastEvents(@NotNull final Year year) {
+        return dsl.selectFrom(EVENT)
+                .where(condition(EVENT.PUBLISHED)
+                        .and(DSL.year(EVENT.DATE).eq(year.getValue())))
+                .orderBy(EVENT.DATE.desc())
+                .fetchInto(Event.class)
+                .stream()
+                .map(this::addAdditionalData);
+    }
+
     private Event addAdditionalData(@NotNull final Event event) {
         addSpeakers(event);
         addKeywords(event);
@@ -200,11 +210,24 @@ public class EventService {
         event.setAttendeeCount(attendeeCount);
     }
 
-    public Set<String> getAllLocations() {
+    public List<String> getAllLocations() {
         return dsl.selectDistinct(EVENT.LOCATION)
                 .from(EVENT)
                 .orderBy(EVENT.LOCATION)
-                .fetchSet(EVENT.LOCATION);
+                .stream()
+                .map(Record1::value1)
+                .toList();
+    }
+
+    public List<Year> getYearsWithPastEvents() {
+        return dsl.selectDistinct(DSL.year(EVENT.DATE).as("year"))
+                .from(EVENT)
+                .where(condition(EVENT.PUBLISHED)
+                        .and(EVENT.DATE.lessOrEqual(LocalDateTime.now())))
+                .orderBy(1)
+                .stream()
+                .map(record -> Year.of(record.value1()))
+                .toList();
     }
 
 }
