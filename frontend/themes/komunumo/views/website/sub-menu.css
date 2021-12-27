@@ -1,0 +1,59 @@
+/*
+ * Komunumo - Open Source Community Manager
+ * Copyright (C) Marcus Fihlon and the individual contributors to Komunumo.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.website ul.sub-menu  {
+    display: block;
+    border: none;
+    margin: 0;
+    padding: 0;
+
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+}
+
+.website ul.sub-menu li {
+    min-height: 30px;
+    border-bottom: 1px solid #bfbfbf;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.website ul.sub-menu li a {
+    display: block;
+    width: 144px;
+    min-height: 21px;
+    margin: 0;
+    padding: 9px 8px 0 8px;
+    font-size: 100%;
+    font-weight: normal;
+    color: #333333;
+    text-decoration: none;
+}
+
+.website ul.sub-menu li a:hover,
+.website ul.sub-menu li a.active {
+    background-color: #f3f3f3;
+}
+
+.website ul.sub-menu li a.active {
+    font-weight: bold;
+    text-transform: uppercase;
+}

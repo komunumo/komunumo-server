@@ -16,8 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.ui.view.website.events;
+package org.komunumo.ui.view.website;
 
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.ListItem;
@@ -28,22 +29,23 @@ import org.komunumo.util.URLUtil;
 
 import java.util.List;
 
-public class LocationSelector extends Div {
+@CssImport("./themes/komunumo/views/website/sub-menu.css")
+public class SubMenu extends Div {
 
     private final String actualLocation;
 
-    public LocationSelector(@NotNull final List<String> locations) {
+    public SubMenu(@NotNull final List<String> locations) {
         this(locations, null, true);
     }
 
-    public LocationSelector(@NotNull final List<String> locations, @Nullable final String actualLocation) {
+    public SubMenu(@NotNull final List<String> locations, @Nullable final String actualLocation) {
         this(locations, actualLocation, false);
     }
 
-    public LocationSelector(@NotNull final List<String> locations, @Nullable final String actualLocation, final boolean onlyLocations) {
+    public SubMenu(@NotNull final List<String> locations, @Nullable final String actualLocation, final boolean onlyLocations) {
         this.actualLocation = actualLocation;
         final var list = new UnorderedList();
-        list.addClassName("location-selector");
+        list.addClassName("sub-menu");
 
         if (!onlyLocations) {
             final var upcoming = new Anchor("/events", "upcoming");
@@ -70,6 +72,6 @@ public class LocationSelector extends Div {
         if (actualLocation != null && actualLocation.equals(url)) {
             link.addClassName("active");
         }
-        return new ListItem(link);
+        return new SubMenuItem(link);
     }
 }

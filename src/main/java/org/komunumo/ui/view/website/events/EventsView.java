@@ -31,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.EventService;
 import org.komunumo.ui.view.website.ContentBlock;
+import org.komunumo.ui.view.website.SubMenu;
 import org.komunumo.ui.view.website.WebsiteLayout;
 import org.komunumo.util.URLUtil;
 
@@ -63,7 +64,7 @@ public class EventsView extends ContentBlock implements BeforeEnterObserver {
                 .distinct()
                 .sorted()
                 .toList();
-        final var locationSelector = new LocationSelector(eventLocations, location.orElse(null));
+        final var locationSelector = new SubMenu(eventLocations, location.orElse(null));
 
         final var eventsList = new Div();
         eventsList.addClassName("events-list");

@@ -24,7 +24,7 @@ import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.EventService;
 import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.events.EventPreview;
-import org.komunumo.ui.view.website.events.LocationSelector;
+import org.komunumo.ui.view.website.SubMenu;
 
 public class EventPreviewBlock extends ContentBlock {
 
@@ -33,7 +33,7 @@ public class EventPreviewBlock extends ContentBlock {
         addClassName("home-view");
 
         final var events = eventService.upcomingEvents().toList();
-        setSubMenu(new LocationSelector(events.stream()
+        setSubMenu(new SubMenu(events.stream()
                 .map(Event::getLocation)
                 .distinct()
                 .sorted()
