@@ -516,7 +516,7 @@ public class JUGSImporter {
         } else if (image.startsWith("https://")) {
             return image;
         } else {
-            return "https://jug.ch/images/speaker/" + image;
+            return "https://static.jug.ch/images/speakers/" + image;
         }
     }
 
