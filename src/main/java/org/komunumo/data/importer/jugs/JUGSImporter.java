@@ -20,18 +20,6 @@ package org.komunumo.data.importer.jugs;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-
-import java.net.http.HttpRequest;
-
-import java.net.http.HttpResponse;
-
-import java.util.Arrays;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
@@ -45,15 +33,16 @@ import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
 import org.komunumo.data.db.enums.EventType;
 import org.komunumo.data.db.enums.SponsorLevel;
+import org.komunumo.data.db.tables.records.FaqRecord;
 import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
-import org.komunumo.data.entity.FaqEntity;
 import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventOrganizerService;
 import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
+import org.komunumo.data.service.FaqService;
 import org.komunumo.data.service.KeywordService;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.NewsService;
@@ -63,6 +52,11 @@ import org.komunumo.data.service.SpeakerService;
 import org.komunumo.data.service.SponsorService;
 import org.komunumo.util.URLUtil;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -74,11 +68,13 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -106,6 +102,7 @@ public class JUGSImporter {
     private final EventOrganizerService eventOrganizerService;
     private final KeywordService keywordService;
     private final EventKeywordService eventKeywordService;
+    private final FaqService faqService;
     private final NewsService newsService;
     private final RedirectService redirectService;
     private final ApplicationServiceInitListener applicationServiceInitListener;
@@ -131,6 +128,7 @@ public class JUGSImporter {
             @NotNull final EventOrganizerService eventOrganizerService,
             @NotNull final KeywordService keywordService,
             @NotNull final EventKeywordService eventKeywordService,
+            @NotNull final FaqService faqService,
             @NotNull final NewsService newsService,
             @NotNull final RedirectService redirectService,
             @NotNull final ApplicationServiceInitListener applicationServiceInitListener) {
@@ -144,6 +142,7 @@ public class JUGSImporter {
         this.eventOrganizerService = eventOrganizerService;
         this.keywordService = keywordService;
         this.eventKeywordService = eventKeywordService;
+        this.faqService = faqService;
         this.newsService = newsService;
         this.redirectService = redirectService;
         this.applicationServiceInitListener = applicationServiceInitListener;
@@ -163,18 +162,18 @@ public class JUGSImporter {
                 showNotification("Importing data from Java User Group Switzerland in the background...");
                 final var connection = DriverManager.getConnection(dbURL, dbUser, dbPass);
                 connection.setReadOnly(true);
-//                importSponsors(connection);
-//                importMembers(connection);
-//                addMissingMembers();
-//                importEvents(connection);
-//                importKeywords(connection);
-//                importSpeakers(connection);
-//                importRegistrations(connection);
-//                importNews(connection);
+                importSponsors(connection);
+                importMembers(connection);
+                addMissingMembers();
+                importEvents(connection);
+                importKeywords(connection);
+                importSpeakers(connection);
+                importRegistrations(connection);
+                importNews(connection);
                 importFaq();
-//                updateEventLevel();
-//                mergeMembers();
-//                mergeSpeakers();
+                updateEventLevel();
+                mergeMembers();
+                mergeSpeakers();
                 showNotification("Importing data from Java User Group Switzerland successfully finished.");
             } catch (final SQLException | IOException | InterruptedException e) {
                 showNotification("Error importing data from Java User Group Switzerland: " + e.getMessage());
@@ -192,17 +191,27 @@ public class JUGSImporter {
         Arrays.stream(stripFaqContainer(response.body()))
                 .map(String::trim)
                 .filter(html -> !html.isBlank())
-                .map(this::toFaqEntry)
-                .forEach(System.out::println);
+                .map(this::toFaqRecord)
+                .filter(this::notExistingFaqEntry)
+                .forEach(FaqRecord::store);
+        showNotification(faqImportCount + " FAQ entries imported.");
     }
 
-    private FaqEntity toFaqEntry(@NotNull final String html) {
+    private boolean notExistingFaqEntry(@NotNull final FaqRecord faqRecord) {
+        return faqService.getEntry(faqRecord.getId()).isEmpty();
+    }
+
+    private FaqRecord toFaqRecord(@NotNull final String html) {
         final var questionBeginIndex = html.indexOf("<h3>") + 4;
         final var questionEndIndex = html.indexOf("</h3>", questionBeginIndex);
         final var question = html.substring(questionBeginIndex, questionEndIndex).trim();
         final var answerBeginIndex = html.indexOf("</h3>") + 5;
         final var answer = html.substring(answerBeginIndex).trim();
-        return new FaqEntity(++faqImportCount, question, answer);
+        final var faqRecord = faqService.newRecord();
+        faqRecord.setId(++faqImportCount);
+        faqRecord.setQuestion(question);
+        faqRecord.setAnswer(answer);
+        return faqRecord;
     }
 
     private String[] stripFaqContainer(@NotNull final String html) {
