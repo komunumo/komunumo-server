@@ -17,64 +17,59 @@
  */
 
 .analytics-board {
-  background-color: var(--lumo-contrast-10pct);
-  box-sizing: border-box;
-  display: block;
-  font-size: var(--lumo-font-size-m);
-  height: 100%;
-  overflow: auto;
-  padding: var(--lumo-space-m) var(--lumo-space-l);
+    background-color: var(--lumo-contrast-10pct);
+    box-sizing: border-box;
+    display: block;
+    font-size: var(--lumo-font-size-m);
+    height: 100%;
+    overflow: auto;
+    padding: var(--lumo-space-m) var(--lumo-space-l);
 }
 
 .analytics-board vaadin-board {
-  margin: 0 auto;
-  max-width: 1024px;
+    margin: 0 auto;
+    max-width: 1024px;
 }
 
-/* Wrapper */
 .analytics-board .wrapper {
-  display: flex;
-  padding: var(--lumo-space-s);
+    display: flex;
+    padding: var(--lumo-space-s);
 }
 
-/* Card */
 .analytics-board .card {
-  align-items: baseline;
-  background-color: var(--lumo-base-color);
-  border-radius: var(--lumo-border-radius);
-  box-shadow: var(--lumo-box-shadow-xs);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  width: 100%;
+    align-items: baseline;
+    background-color: var(--lumo-base-color);
+    border-radius: var(--lumo-border-radius);
+    box-shadow: var(--lumo-box-shadow-xs);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: 100%;
 }
 
 .analytics-board .card h2 {
-  margin-bottom: 0;
-  margin-top: var(--lumo-space-m);
+    margin-bottom: 0;
+    margin-top: var(--lumo-space-m);
 }
 
 .analytics-board .card h3 {
-  margin-bottom: var(--lumo-space-xs);
-  margin-left: var(--lumo-space-m);
-  margin-top: var(--lumo-space-m);
+    margin-bottom: var(--lumo-space-xs);
+    margin-left: var(--lumo-space-m);
+    margin-top: var(--lumo-space-m);
 }
 
 .analytics-board .card .badge-title {
     font-weight: bold;
 }
 
-/* Spacing */
 .analytics-board .space-m {
-  padding: var(--lumo-space-m);
+    padding: var(--lumo-space-m);
 }
 
-/* Charts */
 .analytics-board vaadin-chart {
-  padding-top: var(--lumo-space-s);
+    padding-top: var(--lumo-space-s);
 }
 
-/* Grid */
 .analytics-board vaadin-grid {
-  height: 300px;
+    height: 300px;
 }
