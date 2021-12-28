@@ -1,0 +1,80 @@
+/*
+ * Komunumo - Open Source Community Manager
+ * Copyright (C) Marcus Fihlon and the individual contributors to Komunumo.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.analytics-board {
+  background-color: var(--lumo-contrast-10pct);
+  box-sizing: border-box;
+  display: block;
+  font-size: var(--lumo-font-size-m);
+  height: 100%;
+  overflow: auto;
+  padding: var(--lumo-space-m) var(--lumo-space-l);
+}
+
+.analytics-board vaadin-board {
+  margin: 0 auto;
+  max-width: 1024px;
+}
+
+/* Wrapper */
+.analytics-board .wrapper {
+  display: flex;
+  padding: var(--lumo-space-s);
+}
+
+/* Card */
+.analytics-board .card {
+  align-items: baseline;
+  background-color: var(--lumo-base-color);
+  border-radius: var(--lumo-border-radius);
+  box-shadow: var(--lumo-box-shadow-xs);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: 100%;
+}
+
+.analytics-board .card h2 {
+  margin-bottom: 0;
+  margin-top: var(--lumo-space-m);
+}
+
+.analytics-board .card h3 {
+  margin-bottom: var(--lumo-space-xs);
+  margin-left: var(--lumo-space-m);
+  margin-top: var(--lumo-space-m);
+}
+
+.analytics-board .card .badge-title {
+    font-weight: bold;
+}
+
+/* Spacing */
+.analytics-board .space-m {
+  padding: var(--lumo-space-m);
+}
+
+/* Charts */
+.analytics-board vaadin-chart {
+  padding-top: var(--lumo-space-s);
+}
+
+/* Grid */
+.analytics-board vaadin-grid {
+  height: 300px;
+}
