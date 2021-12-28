@@ -792,7 +792,7 @@ public class JUGSImporter {
                     sponsorRecord.set(SPONSOR.NAME, result.getString("firma"));
                     sponsorRecord.set(SPONSOR.LEVEL, getSponsorLevel(result.getString("sponsortyp")));
                     sponsorRecord.set(SPONSOR.WEBSITE, result.getString("url").replaceFirst("^http://", "https://"));
-                    sponsorRecord.set(SPONSOR.LOGO, "https://jug.ch/images/sponsors/" + result.getString("logo"));
+                    sponsorRecord.set(SPONSOR.LOGO, "https://static.jug.ch/images/sponsors/" + result.getString("logo"));
                     sponsorService.store(sponsorRecord);
                     if (!sponsorRecord.getWebsite().isBlank()) {
                         final var domain = URLUtil.getDomainFromUrl(sponsorRecord.getWebsite());
