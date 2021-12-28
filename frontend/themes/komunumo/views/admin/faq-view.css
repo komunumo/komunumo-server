@@ -16,6 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.data.entity;
-
-public record FaqEntity(Long id, String question, String answer) { }
+.faq-view {
+    height: 100%;
+}

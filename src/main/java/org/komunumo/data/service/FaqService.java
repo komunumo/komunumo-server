@@ -19,15 +19,19 @@
 package org.komunumo.data.service;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.FaqRecord;
-import org.komunumo.data.entity.FaqEntity;
+import org.komunumo.data.entity.KeywordListEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static org.komunumo.data.db.tables.EventKeyword.EVENT_KEYWORD;
 import static org.komunumo.data.db.tables.Faq.FAQ;
+import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 
 @Service
 @SuppressWarnings("ClassCanBeRecord")
@@ -43,17 +47,28 @@ public class FaqService {
         return dsl.newRecord(FAQ);
     }
 
-    public Stream<FaqEntity> getAllEntries() {
+    public Stream<FaqRecord> getAllEntries() {
         return dsl.selectFrom(FAQ)
                 .orderBy(FAQ.ID.asc())
-                .fetchInto(FaqEntity.class)
+                .fetch()
                 .stream();
     }
 
-    public Optional<FaqEntity> getEntry(@NotNull final Long id) {
+    public Optional<FaqRecord> getEntry(@NotNull final Long id) {
         return dsl.selectFrom(FAQ)
                 .where(FAQ.ID.eq(id))
-                .fetchOptionalInto(FaqEntity.class);
+                .fetchOptional();
+    }
+
+    public Stream<FaqRecord> find(final int offset, final int limit, @Nullable final String filter) {
+        final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
+        return dsl.selectFrom(FAQ)
+                .where(filterValue == null ? DSL.noCondition() :
+                        FAQ.QUESTION.like(filterValue).or(FAQ.ANSWER.like(filterValue)))
+                .orderBy(FAQ.ID.desc())
+                .offset(offset)
+                .limit(limit)
+                .stream();
     }
 
 }
