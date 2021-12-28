@@ -17,7 +17,6 @@
  */
 
 .analytics-board {
-    background-color: var(--lumo-contrast-10pct);
     box-sizing: border-box;
     display: block;
     font-size: var(--lumo-font-size-m);

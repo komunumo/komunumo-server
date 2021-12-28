@@ -18,6 +18,8 @@
 
 package org.komunumo.data.service;
 
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -115,14 +117,14 @@ public class StatisticService {
                 .fetchInto(StatisticService.MonthlyVisitors.class);
     }
 
-    public Year[] getYears() {
+    public List<Year> getYears() {
         return dsl.selectDistinct(DSL.year(EVENT.DATE).as("year"))
                 .from(EVENT)
                 .where(EVENT.DATE.isNotNull())
                 .orderBy(DSL.field("year").desc())
                 .stream()
                 .map(record -> Year.of((Integer) record.getValue("year")))
-                .toArray(Year[]::new);
+                .toList();
     }
 
     public enum NoShows {

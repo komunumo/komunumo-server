@@ -20,9 +20,15 @@ package org.komunumo.ui.view.admin.dashboard;
 
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+
+import java.util.Comparator;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Role;
 import org.komunumo.data.service.StatisticService;
@@ -40,7 +46,33 @@ public class DashboardView extends Div {
 
     public DashboardView(@NotNull final StatisticService statisticService) {
         addClassName("dashboard-view");
-        add(new AnalyticsBoard(statisticService, Year.now()));
+
+        final var years = statisticService.getYears();
+        final var minYear = years.stream().min(Comparator.naturalOrder()).orElse(Year.now());
+        final var maxYear = years.stream().max(Comparator.naturalOrder()).orElse(Year.now());
+
+        final var actualYear = Year.now();
+        final var selectedYear = actualYear.isAfter(maxYear) ? maxYear : actualYear;
+
+        final var title = new H3("Analytics");
+        title.addClassName("title");
+
+        final var yearSelector = new IntegerField();
+        yearSelector.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+        yearSelector.addClassName("year-selector");
+        yearSelector.setStep(1);
+        yearSelector.setHasControls(true);
+        yearSelector.setMin(minYear.getValue());
+        yearSelector.setMax(maxYear.getValue());
+        yearSelector.setValue(selectedYear.getValue());
+
+        final var analyticsContainer = new Div(new AnalyticsBoard(statisticService, selectedYear));
+        yearSelector.addValueChangeListener(valueChangeEvent -> {
+            analyticsContainer.removeAll();
+            analyticsContainer.add(new AnalyticsBoard(statisticService, Year.of(valueChangeEvent.getValue())));
+        });
+
+        add(title, new Div(yearSelector), analyticsContainer);
     }
 
 }

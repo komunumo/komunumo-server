@@ -17,5 +17,16 @@
  */
 
 .dashboard-view {
-  height: 100%;
+    background-color: var(--lumo-contrast-10pct);
+    height: 100%;
+}
+
+.dashboard-view h3.title {
+    margin-top: 0;
+    padding-top: 1.5em;
+    text-align: center;
+}
+
+.dashboard-view > div:first-of-type {
+    text-align: center;
 }
