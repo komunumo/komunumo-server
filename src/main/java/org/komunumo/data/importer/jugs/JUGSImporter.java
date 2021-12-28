@@ -28,6 +28,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.Record3;
 import org.jooq.impl.DSL;
+import org.jsoup.Jsoup;
 import org.komunumo.ApplicationServiceInitListener;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
@@ -537,8 +538,8 @@ public class JUGSImporter {
                     event.set(EVENT.WEBINAR_URL, getEmptyForNull(result.getString("url_webinar")));
                     event.set(EVENT.DATE, getDateTime(result.getString("datum"), result.getString("startzeit")));
                     event.set(EVENT.DURATION, getDuration(result.getString("startzeit"), result.getString("zeitende")));
-                    event.set(EVENT.TITLE, getEmptyForNull(result.getString("titel")));
-                    event.set(EVENT.SUBTITLE, getEmptyForNull(result.getString("untertitel")));
+                    event.set(EVENT.TITLE, getPlainText(getEmptyForNull(result.getString("titel"))));
+                    event.set(EVENT.SUBTITLE, getPlainText(getEmptyForNull(result.getString("untertitel"))));
                     event.set(EVENT.AGENDA, getEmptyForNull(result.getString("agenda")));
                     event.set(EVENT.DESCRIPTION, getEmptyForNull(result.getString("abstract")));
                     event.set(EVENT.EVENT_URL, generateEventUrl(getEmptyForNull(result.getString("titel")), getEmptyForNull(result.getString("urldatei"))));
@@ -575,6 +576,10 @@ public class JUGSImporter {
         }
         applicationServiceInitListener.reloadRedirects();
         showNotification(counter.get() + " new events imported.");
+    }
+
+    private String getPlainText(@NotNull final String html) {
+        return Jsoup.parse(html).text();
     }
 
     private String generateEventUrl(@NotNull final String titel, @NotNull final String urldatei) {
