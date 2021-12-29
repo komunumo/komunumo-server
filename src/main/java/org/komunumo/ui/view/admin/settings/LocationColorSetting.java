@@ -61,7 +61,7 @@ public class LocationColorSetting extends ResizableView {
         grid = createGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
-        filterField.setTitle("Filter keywords");
+        filterField.setTitle("Filter location");
 
         final var newKeywordButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), clickEvent -> showLocationColorDialog(null));
         newKeywordButton.setTitle("Add a new location color setting");
