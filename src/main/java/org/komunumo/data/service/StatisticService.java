@@ -20,6 +20,8 @@ package org.komunumo.data.service;
 
 import java.util.List;
 
+import java.util.Map;
+
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -39,12 +41,16 @@ import static org.komunumo.data.db.tables.Member.MEMBER;
 import static org.komunumo.data.db.tables.Registration.REGISTRATION;
 
 @Service
+@SuppressWarnings("ClassCanBeRecord")
 public class StatisticService {
 
     private final DSLContext dsl;
+    private final LocationColorService locationColorService;
 
-    public StatisticService(@NotNull final DSLContext dsl) {
+    public StatisticService(@NotNull final DSLContext dsl,
+                            @NotNull final LocationColorService locationColorService) {
         this.dsl = dsl;
+        this.locationColorService = locationColorService;
     }
 
     public int countMembersByYear(@NotNull final Year year) {
@@ -125,6 +131,10 @@ public class StatisticService {
                 .stream()
                 .map(record -> Year.of((Integer) record.getValue("year")))
                 .toList();
+    }
+
+    public Map<String, String> getLocationColorMap() {
+        return locationColorService.getAllColors();
     }
 
     public enum NoShows {

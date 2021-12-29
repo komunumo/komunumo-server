@@ -20,6 +20,9 @@ package org.komunumo.data.importer.jugs;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
+
+import java.util.Random;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
@@ -45,6 +48,7 @@ import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.FaqService;
 import org.komunumo.data.service.KeywordService;
+import org.komunumo.data.service.LocationColorService;
 import org.komunumo.data.service.MemberService;
 import org.komunumo.data.service.NewsService;
 import org.komunumo.data.service.RedirectService;
@@ -105,6 +109,7 @@ public class JUGSImporter {
     private final EventKeywordService eventKeywordService;
     private final FaqService faqService;
     private final NewsService newsService;
+    private final LocationColorService locationColorService;
     private final RedirectService redirectService;
     private final ApplicationServiceInitListener applicationServiceInitListener;
 
@@ -131,6 +136,7 @@ public class JUGSImporter {
             @NotNull final EventKeywordService eventKeywordService,
             @NotNull final FaqService faqService,
             @NotNull final NewsService newsService,
+            @NotNull final LocationColorService locationColorService,
             @NotNull final RedirectService redirectService,
             @NotNull final ApplicationServiceInitListener applicationServiceInitListener) {
         this.dsl = dsl;
@@ -145,6 +151,7 @@ public class JUGSImporter {
         this.eventKeywordService = eventKeywordService;
         this.faqService = faqService;
         this.newsService = newsService;
+        this.locationColorService = locationColorService;
         this.redirectService = redirectService;
         this.applicationServiceInitListener = applicationServiceInitListener;
     }
@@ -175,11 +182,27 @@ public class JUGSImporter {
                 updateEventLevel();
                 mergeMembers();
                 mergeSpeakers();
+                addLocationColors();
                 showNotification("Importing data from Java User Group Switzerland successfully finished.");
             } catch (final SQLException | IOException | InterruptedException e) {
                 showNotification("Error importing data from Java User Group Switzerland: " + e.getMessage());
             }
         }).start();
+    }
+
+    private void addLocationColors() {
+        final var existingColors = locationColorService.getAllColors();
+        final var random = new Random();
+        eventService.getAllLocations().forEach(location -> {
+            if (!existingColors.containsKey(location)) {
+                final var nextInt = random.nextInt(0xffffff + 1);
+                final var colorCode = String.format("#%06x", nextInt);
+                final var record = locationColorService.newRecord();
+                record.setLocation(location);
+                record.setColor(colorCode);
+                record.store();
+            }
+        });
     }
 
     private void importFaq() throws IOException, InterruptedException {

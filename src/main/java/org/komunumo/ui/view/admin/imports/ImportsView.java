@@ -47,6 +47,7 @@ import org.komunumo.data.importer.jugs.JUGSImporter;
 import org.komunumo.data.service.EventKeywordService;
 import org.komunumo.data.service.EventOrganizerService;
 import org.komunumo.data.service.FaqService;
+import org.komunumo.data.service.LocationColorService;
 import org.komunumo.data.service.RedirectService;
 import org.komunumo.data.service.RegistrationService;
 import org.komunumo.data.service.EventService;
@@ -83,6 +84,7 @@ public class ImportsView extends ResizableView {
     private final EventKeywordService eventKeywordService;
     private final FaqService faqService;
     private final NewsService newsService;
+    private final LocationColorService locationColorService;
     private final RedirectService redirectService;
     private final ApplicationServiceInitListener applicationServiceInitListener;
 
@@ -99,6 +101,7 @@ public class ImportsView extends ResizableView {
             @NotNull final EventKeywordService eventKeywordService,
             @NotNull final FaqService faqService,
             @NotNull final NewsService newsService,
+            @NotNull final LocationColorService locationColorService,
             @NotNull final RedirectService redirectService,
             @NotNull final ApplicationServiceInitListener applicationServiceInitListener) {
         this.dsl = dsl;
@@ -113,6 +116,7 @@ public class ImportsView extends ResizableView {
         this.eventKeywordService = eventKeywordService;
         this.faqService = faqService;
         this.newsService = newsService;
+        this.locationColorService = locationColorService;
         this.redirectService = redirectService;
         this.applicationServiceInitListener = applicationServiceInitListener;
 
@@ -350,8 +354,8 @@ public class ImportsView extends ResizableView {
         importButton.setEnabled(!dbURL.isEmpty() && !dbUser.isEmpty() && !dbPass.isEmpty());
         importButton.addClickListener(buttonClickEvent -> {
             final var importer = new JUGSImporter(dsl, sponsorService, memberService, eventService, registrationService, speakerService,
-                    eventSpeakerService, eventOrganizerService, keywordService, eventKeywordService, faqService, newsService, redirectService,
-                    applicationServiceInitListener);
+                    eventSpeakerService, eventOrganizerService, keywordService, eventKeywordService, faqService, newsService,
+                    locationColorService, redirectService, applicationServiceInitListener);
             importer.importFromJavaUserGroupSwitzerland(dbURL.getValue(), dbUser.getValue(), dbPass.getValue());
         });
 

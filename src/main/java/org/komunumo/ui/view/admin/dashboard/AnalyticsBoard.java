@@ -24,21 +24,20 @@ import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.Crosshair;
 import com.vaadin.flow.component.charts.model.ListSeries;
+import com.vaadin.flow.component.charts.model.PlotOptionsColumn;
 import com.vaadin.flow.component.charts.model.Tooltip;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
+import com.vaadin.flow.component.charts.model.style.SolidColor;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
-
-import java.time.Year;
-import javax.annotation.security.RolesAllowed;
-
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.entity.Role;
 import org.komunumo.data.service.StatisticService;
 import org.komunumo.util.FormatterUtil;
+
+import java.time.Year;
 
 @CssImport(value = "./themes/komunumo/views/admin/analytics-board.css")
 public class AnalyticsBoard extends Div {
@@ -93,15 +92,25 @@ public class AnalyticsBoard extends Div {
         numberOfEvents.setText(FormatterUtil.formatNumber(events));
         noShowRate.setText(FormatterUtil.formatNumber(registrations == 0 ? 0 : noShows * 100L / registrations) + "%");
 
+        final var locationColorMap = statisticService.getLocationColorMap();
+
         // First chart
         final var configuration = monthlyVisitors.getConfiguration();
         statisticService.calculateMonthlyVisitorsByYear(year).stream()
-                .map(data -> new ListSeries(data.getLocation(),
-                        data.getJanuary(), data.getFebruary(), data.getMarch(),
-                        data.getApril(), data.getMay(), data.getJune(),
-                        data.getJuly(), data.getAugust(), data.getSeptember(),
-                        data.getOctober(), data.getNovember(), data.getDecember()))
-                .forEach(configuration::addSeries);
+                .map(data -> {
+                    final var series = new ListSeries(data.getLocation(),
+                            data.getJanuary(), data.getFebruary(), data.getMarch(),
+                            data.getApril(), data.getMay(), data.getJune(),
+                            data.getJuly(), data.getAugust(), data.getSeptember(),
+                            data.getOctober(), data.getNovember(), data.getDecember());
+                    final var colorCode = locationColorMap.get(data.getLocation());
+                    if (colorCode != null) {
+                        final var options = new PlotOptionsColumn();
+                        options.setColor(new SolidColor(colorCode));
+                        series.setPlotOptions(options);
+                    }
+                    return series;
+                }).forEach(configuration::addSeries);
 
         final var x = new XAxis();
         x.setCrosshair(new Crosshair());

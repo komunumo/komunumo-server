@@ -47,6 +47,7 @@ import org.komunumo.ui.view.admin.imports.ImportsView;
 import org.komunumo.ui.view.admin.keywords.KeywordsView;
 import org.komunumo.ui.view.admin.members.MembersView;
 import org.komunumo.ui.view.admin.news.NewsView;
+import org.komunumo.ui.view.admin.settings.SettingsView;
 import org.komunumo.ui.view.admin.speakers.SpeakersView;
 import org.komunumo.ui.view.admin.sponsors.SponsorsView;
 import org.komunumo.ui.view.login.ChangePasswordView;
@@ -151,7 +152,8 @@ public class AdminLayout extends AppLayout {
         views.add(new AdminMenuItem("News", NewsView.class, false));
         views.add(new AdminMenuItem("Speakers", SpeakersView.class, false));
         views.add(new AdminMenuItem("Sponsors", SponsorsView.class, false));
-        views.add(new AdminMenuItem("Imports", ImportsView.class, true));
+        views.add(new AdminMenuItem("Settings", SettingsView.class, true));
+        views.add(new AdminMenuItem("Imports", ImportsView.class, false));
 
         final var tabs = new ArrayList<Tab>();
         views.forEach(adminMenuItem -> {

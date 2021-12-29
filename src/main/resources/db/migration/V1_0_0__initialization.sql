@@ -48,6 +48,13 @@ CREATE TABLE redirect (
     PRIMARY KEY (old_url)
 ) DEFAULT CHARSET=utf8;
 
+CREATE TABLE location_color (
+    location VARCHAR(255) NOT NULL,
+    color VARCHAR(7) NOT NULL,
+
+    PRIMARY KEY (location)
+) DEFAULT CHARSET=utf8;
+
 CREATE TABLE member (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 
