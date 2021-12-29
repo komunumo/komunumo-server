@@ -25,6 +25,7 @@ import com.vaadin.flow.data.validator.RegexpValidator;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.komunumo.Callback;
 import org.komunumo.data.db.tables.records.LocationColorRecord;
 import org.komunumo.ui.component.EditDialog;
 

@@ -25,6 +25,7 @@ import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.ApplicationServiceInitListener;
+import org.komunumo.Callback;
 import org.komunumo.data.db.tables.records.RedirectRecord;
 import org.komunumo.ui.component.EditDialog;
 

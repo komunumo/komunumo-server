@@ -28,6 +28,7 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.komunumo.Callback;
 import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.data.service.SponsorService;

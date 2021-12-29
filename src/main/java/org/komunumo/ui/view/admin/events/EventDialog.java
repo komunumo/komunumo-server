@@ -31,6 +31,7 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.komunumo.Callback;
 import org.komunumo.data.db.enums.EventLanguage;
 import org.komunumo.data.db.enums.EventLevel;
 import org.komunumo.data.db.enums.EventType;
