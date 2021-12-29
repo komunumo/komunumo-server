@@ -67,10 +67,10 @@ public class LocationColorSetting extends ResizableView {
         newKeywordButton.setTitle("Add a new location color setting");
 
         final var refreshKeywordsButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), clickEvent -> reloadGridItems());
-        refreshKeywordsButton.setTitle("Refresh the list of keywords");
+        refreshKeywordsButton.setTitle("Refresh the list of location colors");
 
         final var downloadKeywordsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD), clickEvent -> downloadLocationColors());
-        downloadKeywordsButton.setTitle("Download the list of keywords");
+        downloadKeywordsButton.setTitle("Download the list of location colors");
 
         final var optionBar = new HorizontalLayout(filterField, newKeywordButton, refreshKeywordsButton, downloadKeywordsButton);
         optionBar.setPadding(true);
