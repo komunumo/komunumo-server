@@ -30,8 +30,10 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.ApplicationServiceInitListener;
 import org.komunumo.data.entity.Role;
 import org.komunumo.data.service.LocationColorService;
+import org.komunumo.data.service.RedirectService;
 import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
 
@@ -50,12 +52,19 @@ public class SettingsView extends ResizableView implements BeforeEnterObserver {
     private final static String ANCHOR_PREFIX = "admin/settings/";
 
     private final LocationColorService locationColorService;
+    private final RedirectService redirectService;
+    private final ApplicationServiceInitListener applicationServiceInitListener;
+
     private final List<Tab> settingTabs;
     private final Div content;
     private final Tabs tabs;
 
-    public SettingsView(@NotNull final LocationColorService locationColorService) {
+    public SettingsView(@NotNull final LocationColorService locationColorService,
+                        @NotNull final RedirectService redirectService,
+                        @NotNull final ApplicationServiceInitListener applicationServiceInitListener) {
         this.locationColorService = locationColorService;
+        this.redirectService = redirectService;
+        this.applicationServiceInitListener = applicationServiceInitListener;
         addClassNames("settings-view", "flex", "flex-col", "h-full");
         settingTabs = new ArrayList<>();
 
@@ -65,6 +74,10 @@ public class SettingsView extends ResizableView implements BeforeEnterObserver {
         final var locationColors = new Tab(new Anchor(ANCHOR_PREFIX + "location-colors", "Location colors"));
         locationColors.setId("location-colors");
         settingTabs.add(locationColors);
+
+        final var redirects = new Tab(new Anchor(ANCHOR_PREFIX + "redirects", "Redirects"));
+        redirects.setId("redirects");
+        settingTabs.add(redirects);
 
         tabs = new Tabs(settingTabs.toArray(new Tab[0]));
 
@@ -90,9 +103,9 @@ public class SettingsView extends ResizableView implements BeforeEnterObserver {
     private void setContent(@NotNull final Tab tab) {
         content.removeAll();
         final var tabId = tab.getId().orElse("");
-        @SuppressWarnings("SwitchStatementWithTooFewBranches") // more settings coming soon
         final var tabContent = switch (tabId) {
             case "location-colors" -> new LocationColorSetting(locationColorService);
+            case "redirects" -> new RedirectSetting(redirectService, applicationServiceInitListener);
             default -> new Paragraph("This setting has not been implemented yet!");
         };
         content.add(tabContent);

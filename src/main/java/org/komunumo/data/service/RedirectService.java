@@ -19,12 +19,16 @@
 package org.komunumo.data.service;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
+import org.komunumo.data.db.tables.records.LocationColorRecord;
 import org.komunumo.data.db.tables.records.RedirectRecord;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Stream;
 
+import static org.komunumo.data.db.tables.LocationColor.LOCATION_COLOR;
 import static org.komunumo.data.db.tables.Redirect.REDIRECT;
 
 @Service
@@ -37,6 +41,10 @@ public class RedirectService {
         this.dsl = dsl;
     }
 
+    public RedirectRecord newRedirect() {
+        return dsl.newRecord(REDIRECT);
+    }
+
     public @NotNull Stream<RedirectRecord> getAllRedirects() {
         return dsl.selectFrom(REDIRECT).stream();
     }
@@ -46,6 +54,17 @@ public class RedirectService {
                 .values(oldUrl, newUrl)
                 .onDuplicateKeyIgnore()
                 .execute();
+    }
+
+    public Stream<RedirectRecord> find(final int offset, final int limit, @Nullable final String filter) {
+        final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
+        return dsl.selectFrom(REDIRECT)
+                .where(filterValue == null ? DSL.noCondition() :
+                        REDIRECT.OLD_URL.like(filterValue).or(REDIRECT.NEW_URL.like(filterValue)))
+                .orderBy(REDIRECT.OLD_URL)
+                .offset(offset)
+                .limit(limit)
+                .stream();
     }
 
 }
