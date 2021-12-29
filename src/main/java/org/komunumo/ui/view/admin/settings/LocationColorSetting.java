@@ -63,16 +63,16 @@ public class LocationColorSetting extends ResizableView {
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter location");
 
-        final var newKeywordButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), clickEvent -> showLocationColorDialog(null));
-        newKeywordButton.setTitle("Add a new location color setting");
+        final var newLocationColorButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), clickEvent -> showLocationColorDialog(null));
+        newLocationColorButton.setTitle("Add a new location color setting");
 
-        final var refreshKeywordsButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), clickEvent -> reloadGridItems());
-        refreshKeywordsButton.setTitle("Refresh the list of location colors");
+        final var refreshLocationColorsButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), clickEvent -> reloadGridItems());
+        refreshLocationColorsButton.setTitle("Refresh the list of location colors");
 
-        final var downloadKeywordsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD), clickEvent -> downloadLocationColors());
-        downloadKeywordsButton.setTitle("Download the list of location colors");
+        final var downloadLocationColorsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD), clickEvent -> downloadLocationColors());
+        downloadLocationColorsButton.setTitle("Download the list of location colors");
 
-        final var optionBar = new HorizontalLayout(filterField, newKeywordButton, refreshKeywordsButton, downloadKeywordsButton);
+        final var optionBar = new HorizontalLayout(filterField, newLocationColorButton, refreshLocationColorsButton, downloadLocationColorsButton);
         optionBar.setPadding(true);
 
         add(optionBar, grid);
@@ -117,7 +117,7 @@ public class LocationColorSetting extends ResizableView {
     }
 
     private void showLocationColorDialog(@Nullable final LocationColorRecord locationColorRecord) {
-        final var dialog = new LocationColorDialog(locationColorRecord != null ? "Edit Keyword" : "New Keyword");
+        final var dialog = new LocationColorDialog(locationColorRecord != null ? "Edit Location Color" : "New Location Color");
         dialog.open(locationColorRecord != null ? locationColorRecord : locationColorService.newRecord(), this::reloadGridItems);
     }
 
