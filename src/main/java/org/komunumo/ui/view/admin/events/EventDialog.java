@@ -52,11 +52,6 @@ import org.komunumo.ui.component.EditDialog;
 import org.komunumo.util.URLUtil;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -65,7 +60,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
-import static java.time.temporal.ChronoUnit.SECONDS;
 
 public class EventDialog extends EditDialog<Event> {
 
@@ -247,12 +241,12 @@ public class EventDialog extends EditDialog<Event> {
                 .bind(Event::getRoom, Event::setRoom);
 
         binder.forField(travelInstructions)
-                .withValidator(value -> value.isBlank() || validateUrl(value),
+                .withValidator(value -> value.isBlank() || URLUtil.isValid(value),
                         "Please enter a valid URL")
                 .bind(Event::getTravelInstructions, Event::setTravelInstructions);
 
         binder.forField(webinarUrl)
-                .withValidator(value -> !published.getValue() || !"Online".equalsIgnoreCase(location.getValue()) || validateUrl(value),
+                .withValidator(value -> !published.getValue() || !"Online".equalsIgnoreCase(location.getValue()) || URLUtil.isValid(value),
                         "Please enter a valid URL")
                 .bind(Event::getWebinarUrl, Event::setWebinarUrl);
 
@@ -298,28 +292,6 @@ public class EventDialog extends EditDialog<Event> {
         final var locationText = locationValue == null || locationValue.isBlank() ? "{location}" : URLUtil.createReadableUrl(locationValue);
         final var year = dateValue == null ? "{year}" : Year.from(dateValue).toString();
         eventUrl.setPrefixComponent(new Span("%s/%s/".formatted(locationText, year)));
-    }
-
-    private boolean validateUrl(@Nullable final String url) {
-        if (url != null && !url.isBlank()) {
-            try {
-                final var request = HttpRequest.newBuilder(new URI(url))
-                        .GET()
-                        .timeout(Duration.of(5, SECONDS))
-                        .build();
-                final var client = HttpClient.newBuilder()
-                        .followRedirects(HttpClient.Redirect.ALWAYS)
-                        .build();
-                final var response = client.send(request,
-                        HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-                if (response.statusCode() == 200) {
-                    return true;
-                }
-            } catch (final Exception e) {
-                return false;
-            }
-        }
-        return false;
     }
 
     private boolean isPastEvent(@NotNull final DateTimePicker date) {

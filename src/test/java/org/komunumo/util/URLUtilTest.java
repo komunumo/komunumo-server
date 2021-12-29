@@ -18,13 +18,11 @@
 
 package org.komunumo.util;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class URLUtilTest {
 
@@ -65,5 +63,27 @@ class URLUtilTest {
         assertEquals("komunumo.org", URLUtil.getDomainFromUrl("https://komunumo.org/subdir/"));
         assertEquals("komunumo.org", URLUtil.getDomainFromUrl("https://komunumo.org/subdir/index.html"));
         assertEquals("", URLUtil.getDomainFromUrl(""));
+    }
+
+    @Test
+    @SuppressWarnings("HttpUrlsUsage")
+    void isValid() {
+        assertFalse(URLUtil.isValid(null));
+        assertFalse(URLUtil.isValid(""));
+        assertFalse(URLUtil.isValid("   "));
+        assertFalse(URLUtil.isValid("test"));
+        assertFalse(URLUtil.isValid("http://non-existing.domain/"));
+        assertFalse(URLUtil.isValid("komunumo.org"));
+        assertFalse(URLUtil.isValid("www.komunumo.org"));
+        assertFalse(URLUtil.isValid("http://"));
+        assertFalse(URLUtil.isValid("https://"));
+        assertTrue(URLUtil.isValid("http://komunumo.org"));
+        assertTrue(URLUtil.isValid("http://komunumo.org/"));
+        assertTrue(URLUtil.isValid("http://www.komunumo.org"));
+        assertTrue(URLUtil.isValid("http://www.komunumo.org/"));
+        assertTrue(URLUtil.isValid("https://komunumo.org"));
+        assertTrue(URLUtil.isValid("https://komunumo.org/"));
+        assertTrue(URLUtil.isValid("https://www.komunumo.org"));
+        assertTrue(URLUtil.isValid("https://www.komunumo.org/"));
     }
 }

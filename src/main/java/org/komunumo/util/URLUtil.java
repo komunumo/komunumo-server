@@ -18,6 +18,12 @@
 
 package org.komunumo.util;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.io.UnsupportedEncodingException;
@@ -25,6 +31,10 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.regex.Pattern;
+
+import org.jetbrains.annotations.Nullable;
+
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 public class URLUtil {
 
@@ -58,10 +68,6 @@ public class URLUtil {
         return url.replaceAll(".+//|www.|/.+|/$", "");
     }
 
-    public URLUtil() {
-        throw new IllegalStateException("Utility class");
-    }
-
     public static String encode(@NotNull final String value) {
         try {
             return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
@@ -69,4 +75,31 @@ public class URLUtil {
             return "";
         }
     }
+
+    public static boolean isValid(@Nullable final String url) {
+        if (url != null && !url.isBlank()) {
+            try {
+                final var request = HttpRequest.newBuilder(new URI(url))
+                        .GET()
+                        .timeout(Duration.of(5, SECONDS))
+                        .build();
+                final var client = HttpClient.newBuilder()
+                        .followRedirects(HttpClient.Redirect.ALWAYS)
+                        .build();
+                final var response = client.send(request,
+                        HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+                if (response.statusCode() == 200) {
+                    return true;
+                }
+            } catch (final Exception e) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public URLUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
 }
