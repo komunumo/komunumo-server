@@ -183,11 +183,18 @@ public class JUGSImporter {
                 mergeMembers();
                 mergeSpeakers();
                 addLocationColors();
+                addRedirects();
                 showNotification("Importing data from Java User Group Switzerland successfully finished.");
             } catch (final SQLException | IOException | InterruptedException e) {
                 showNotification("Error importing data from Java User Group Switzerland: " + e.getMessage());
             }
         }).start();
+    }
+
+    private void addRedirects() {
+        redirectService.addRedirect("/exec", "/admin");
+        redirectService.addRedirect("/exec/", "/admin");
+        applicationServiceInitListener.reloadRedirects();
     }
 
     private void addLocationColors() {
