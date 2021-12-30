@@ -180,7 +180,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
 
         grid.addColumn(new ComponentRenderer<>(event -> {
                     final var button = new EnhancedButton(Integer.toString(event.getAttendeeCount()),
-                            clickEvent -> new RegistrationsDialog(registrationService, event).open()
+                            clickEvent -> new RegistrationsDialog(registrationService, event, this::reloadGridItems).open()
                     );
                     button.setTitle("Manage registrations for this event");
                     return button;

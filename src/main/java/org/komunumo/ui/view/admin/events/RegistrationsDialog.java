@@ -34,7 +34,12 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
+
+import java.time.LocalDateTime;
+
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.komunumo.Callback;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.RegistrationListEntity;
 import org.komunumo.data.service.RegistrationService;
@@ -44,7 +49,6 @@ import org.komunumo.ui.component.FilterField;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
-import java.time.LocalDateTime;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -53,14 +57,17 @@ public class RegistrationsDialog extends EnhancedDialog {
 
     private final RegistrationService registrationService;
     private final Event event;
+    private final Callback afterChangeCallback;
     private final TextField filterField;
     private final Grid<RegistrationListEntity> grid;
 
     public RegistrationsDialog(@NotNull final RegistrationService registrationService,
-                               @NotNull final Event event) {
+                               @NotNull final Event event,
+                               @Nullable final Callback afterChangeCallback) {
         super("Event registrations for \"%s\"".formatted(event.getTitle()));
         this.registrationService = registrationService;
         this.event = event;
+        this.afterChangeCallback = afterChangeCallback;
 
         setWidth("800px");
         setHeight("600px");
@@ -135,6 +142,9 @@ public class RegistrationsDialog extends EnhancedDialog {
                 "Deregister", dialogEvent -> {
             registrationService.deregister(event.getId(), registrationListEntity.memberId());
             reloadGridItems();
+            if (afterChangeCallback != null) {
+                afterChangeCallback.execute();
+            }
             dialogEvent.getSource().close();
         },
                 "Cancel", dialogEvent -> dialogEvent.getSource().close()
