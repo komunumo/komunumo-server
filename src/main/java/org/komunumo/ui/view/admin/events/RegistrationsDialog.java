@@ -201,7 +201,7 @@ public class RegistrationsDialog extends EnhancedDialog {
                 this::getRegistrationsForReport,
                 PrintPreviewReport.Format.PDF);
         final StreamRegistration registration = VaadinSession.getCurrent().getResourceRegistry().registerResource(resource);
-        UI.getCurrent().getPage().setLocation(registration.getResourceUri());
+          UI.getCurrent().getPage().open(registration.getResourceUri().toString());
     }
 
     private List<RegistrationListEntityWrapper> getRegistrationsForReport() {
