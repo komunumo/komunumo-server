@@ -213,15 +213,17 @@ public class RegistrationService {
 
     public Stream<RegistrationListEntity> find(final long eventId, final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
-        return dsl.select(MEMBER.ID, MEMBER.FIRST_NAME, MEMBER.LAST_NAME, MEMBER.EMAIL,
+        return dsl.select(MEMBER.ID, MEMBER.FIRST_NAME, MEMBER.LAST_NAME, MEMBER.COMPANY, MEMBER.EMAIL, MEMBER.CITY,
                         REGISTRATION.DATE, REGISTRATION.SOURCE, REGISTRATION.NO_SHOW)
                 .from(REGISTRATION)
                 .join(MEMBER).on(REGISTRATION.MEMBER_ID.eq(MEMBER.ID))
-                .where(REGISTRATION.EVENT_ID.eq(eventId).and(filterValue == null ? DSL.noCondition() :
-                        MEMBER.FIRST_NAME.like(filterValue)
-                                .or(MEMBER.LAST_NAME.like(filterValue))
-                                .or(MEMBER.EMAIL.like(filterValue))
-                                .or(REGISTRATION.SOURCE.like(filterValue))))
+                .where(REGISTRATION.EVENT_ID.eq(eventId)
+                        .and(MEMBER.ACCOUNT_DELETED.isFalse())
+                        .and(filterValue == null ? DSL.noCondition() :
+                                MEMBER.FIRST_NAME.like(filterValue)
+                                        .or(MEMBER.LAST_NAME.like(filterValue))
+                                        .or(MEMBER.EMAIL.like(filterValue))
+                                        .or(REGISTRATION.SOURCE.like(filterValue))))
                 .orderBy(MEMBER.FIRST_NAME, MEMBER.LAST_NAME)
                 .offset(offset)
                 .limit(limit)

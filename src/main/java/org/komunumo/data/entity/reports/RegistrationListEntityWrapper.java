@@ -16,15 +16,38 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.data.entity;
+package org.komunumo.data.entity.reports;
 
-import java.time.LocalDateTime;
+import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.entity.RegistrationListEntity;
 
-public record RegistrationListEntity(long memberId, String firstName, String lastName, String company, String email, String city,
-                                     LocalDateTime date, String source, boolean noShow) {
+@SuppressWarnings("unused") // used by jasper reports
+public class RegistrationListEntityWrapper {
 
-    public String fullName() {
-        return String.format("%s %s", firstName(), lastName()).trim();
+    private final String attendee;
+    private final String company;
+    private final String city;
+
+    public RegistrationListEntityWrapper(@NotNull final RegistrationListEntity entity) {
+        this.attendee = entity.fullName();
+        this.company = entity.company();
+        this.city = entity.city();
+    }
+
+    public String getAttendee() {
+        return attendee;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getPresent() {
+        return "[   ]";
     }
 
 }

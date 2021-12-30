@@ -40,15 +40,18 @@ import org.jetbrains.annotations.Nullable;
 import org.komunumo.Callback;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.RegistrationListEntity;
+import org.komunumo.data.entity.reports.RegistrationListEntityWrapper;
 import org.komunumo.data.service.RegistrationService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.EnhancedDialog;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.util.FormatterUtil;
+import org.vaadin.reports.PrintPreviewReport;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -88,7 +91,11 @@ public class RegistrationsDialog extends EnhancedDialog {
         final var downloadRegistrationsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD), clickEvent -> downloadRegistrations());
         downloadRegistrationsButton.setTitle("Download the list of registrations");
 
-        final var optionBar = new HorizontalLayout(filterField, newRegistrationButton, refreshRegistrationsButton, downloadRegistrationsButton);
+        final var printRegistrationsButton = new EnhancedButton(new Icon(VaadinIcon.PRINT), clickEvent -> printRegistrations());
+        printRegistrationsButton.setTitle("Print the list of registrations (generates a PDF)");
+
+        final var optionBar = new HorizontalLayout(filterField, newRegistrationButton, refreshRegistrationsButton,
+                downloadRegistrationsButton, printRegistrationsButton);
         optionBar.setPadding(true);
 
         addToContent(optionBar, grid);
@@ -184,6 +191,23 @@ public class RegistrationsDialog extends EnhancedDialog {
         });
         final StreamRegistration registration = VaadinSession.getCurrent().getResourceRegistry().registerResource(resource);
         UI.getCurrent().getPage().setLocation(registration.getResourceUri());
+    }
+
+    private void printRegistrations() {
+        final var report = new PrintPreviewReport<>(RegistrationListEntityWrapper.class, "attendee", "company", "city", "present");
+        report.setItems(getRegistrationsForReport());
+        final var resource = report.getStreamResource(
+                "registrations.pdf",
+                this::getRegistrationsForReport,
+                PrintPreviewReport.Format.PDF);
+        final StreamRegistration registration = VaadinSession.getCurrent().getResourceRegistry().registerResource(resource);
+        UI.getCurrent().getPage().setLocation(registration.getResourceUri());
+    }
+
+    private List<RegistrationListEntityWrapper> getRegistrationsForReport() {
+        return grid.getGenericDataView().getItems()
+                .map(RegistrationListEntityWrapper::new)
+                .toList();
     }
 
 }
