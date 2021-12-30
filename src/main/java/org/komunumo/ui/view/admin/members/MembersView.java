@@ -173,9 +173,12 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
 
         // is active sponsor member
         if (!member.getEmail().isBlank()) {
-            final var emailDomain = member.getEmail().split("@", 2)[1];
-            if (sponsorDomains.contains(emailDomain)) {
-                return "sponsored";
+            final var emailParts = member.getEmail().split("@", 2);
+            if (emailParts.length == 2) {
+                final var emailDomain = emailParts[1];
+                if (sponsorDomains.contains(emailDomain)) {
+                    return "sponsored";
+                }
             }
         }
 
