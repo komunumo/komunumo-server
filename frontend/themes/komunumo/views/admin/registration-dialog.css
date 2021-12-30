@@ -16,26 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.ui.component;
+.registration-dialog vaadin-icon[icon="vaadin:close-circle-o"] {
+    color: var(--lumo-error-text-color);
+}
 
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.button.Button;
-import org.jetbrains.annotations.NotNull;
-
-public class EnhancedButton extends Button {
-
-    public EnhancedButton(@NotNull final String text, @NotNull final ComponentEventListener<ClickEvent<Button>> clickListener) {
-        super(text, clickListener);
-    }
-
-    public EnhancedButton(@NotNull final Component icon, @NotNull final ComponentEventListener<ClickEvent<Button>> clickListener) {
-        super(icon, clickListener);
-    }
-
-    public void setTitle(@NotNull final String title) {
-        getElement().setAttribute("title", title);
-    }
-
+.registration-dialog vaadin-icon[icon="vaadin:check-circle-o"] {
+    color: var(--lumo-success-text-color);
 }

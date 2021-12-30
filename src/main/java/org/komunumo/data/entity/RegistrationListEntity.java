@@ -16,26 +16,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.ui.component;
+package org.komunumo.data.entity;
 
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.button.Button;
-import org.jetbrains.annotations.NotNull;
+import java.time.LocalDateTime;
 
-public class EnhancedButton extends Button {
+public record RegistrationListEntity(long memberId, String firstName, String lastName, String email,
+                                     LocalDateTime date, String source, boolean noShow) {
 
-    public EnhancedButton(@NotNull final String text, @NotNull final ComponentEventListener<ClickEvent<Button>> clickListener) {
-        super(text, clickListener);
-    }
-
-    public EnhancedButton(@NotNull final Component icon, @NotNull final ComponentEventListener<ClickEvent<Button>> clickListener) {
-        super(icon, clickListener);
-    }
-
-    public void setTitle(@NotNull final String title) {
-        getElement().setAttribute("title", title);
+    public String fullName() {
+        return String.format("%s %s", firstName(), lastName()).trim();
     }
 
 }

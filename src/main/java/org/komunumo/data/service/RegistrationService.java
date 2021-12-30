@@ -20,12 +20,16 @@ package org.komunumo.data.service;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
+import org.jooq.impl.UpdatableRecordImpl;
 import org.komunumo.configuration.Configuration;
 import org.komunumo.data.db.tables.records.RegistrationRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Member;
 import org.komunumo.data.entity.Registration;
+import org.komunumo.data.entity.RegistrationListEntity;
 import org.komunumo.data.entity.RegistrationResult;
 import org.komunumo.util.FormatterUtil;
 import org.komunumo.util.URLUtil;
@@ -35,7 +39,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.stream.Stream;
 
+import static org.komunumo.data.db.tables.Member.MEMBER;
 import static org.komunumo.data.db.tables.Registration.REGISTRATION;
 import static org.komunumo.util.FormatterUtil.formatDateTime;
 
@@ -177,6 +183,10 @@ public class RegistrationService {
         return false;
     }
 
+    public void deregister(final long eventId, final long memberId) {
+        get(eventId, memberId).ifPresent(Registration::delete);
+    }
+
     public int count() {
         return dsl.fetchCount(REGISTRATION);
     }
@@ -195,4 +205,23 @@ public class RegistrationService {
         registration.setNoShow(noShow);
         registration.store();
     }
+
+    public Stream<RegistrationListEntity> find(final long eventId, final int offset, final int limit, @Nullable final String filter) {
+        final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
+        return dsl.select(MEMBER.ID, MEMBER.FIRST_NAME, MEMBER.LAST_NAME, MEMBER.EMAIL,
+                        REGISTRATION.DATE, REGISTRATION.SOURCE, REGISTRATION.NO_SHOW)
+                .from(REGISTRATION)
+                .join(MEMBER).on(REGISTRATION.MEMBER_ID.eq(MEMBER.ID))
+                .where(REGISTRATION.EVENT_ID.eq(eventId).and(filterValue == null ? DSL.noCondition() :
+                        MEMBER.FIRST_NAME.like(filterValue)
+                                .or(MEMBER.LAST_NAME.like(filterValue))
+                                .or(MEMBER.EMAIL.like(filterValue))
+                                .or(REGISTRATION.SOURCE.like(filterValue))))
+                .orderBy(MEMBER.FIRST_NAME, MEMBER.LAST_NAME)
+                .offset(offset)
+                .limit(limit)
+                .fetchInto(RegistrationListEntity.class)
+                .stream();
+    }
+
 }

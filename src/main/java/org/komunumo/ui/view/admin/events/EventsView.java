@@ -53,6 +53,7 @@ import org.komunumo.data.service.EventService;
 import org.komunumo.data.service.EventSpeakerService;
 import org.komunumo.data.service.KeywordService;
 import org.komunumo.data.service.MemberService;
+import org.komunumo.data.service.RegistrationService;
 import org.komunumo.data.service.SpeakerService;
 import org.komunumo.security.AuthenticatedUser;
 import org.komunumo.ui.component.EnhancedButton;
@@ -86,6 +87,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
     private final MemberService memberService;
     private final KeywordService keywordService;
     private final EventKeywordService eventKeywordService;
+    private final RegistrationService registrationService;
 
     private final TextField filterField;
     private final Grid<Event> grid;
@@ -97,7 +99,8 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
                       @NotNull final EventOrganizerService eventOrganizerService,
                       @NotNull final MemberService memberService,
                       @NotNull final KeywordService keywordService,
-                      @NotNull final EventKeywordService eventKeywordService) {
+                      @NotNull final EventKeywordService eventKeywordService,
+                      @NotNull final RegistrationService registrationService) {
         this.authenticatedUser = authenticatedUser;
         this.eventService = eventService;
         this.speakerService = speakerService;
@@ -106,6 +109,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
         this.memberService = memberService;
         this.keywordService = keywordService;
         this.eventKeywordService = eventKeywordService;
+        this.registrationService = registrationService;
 
         addClassNames("events-view", "flex", "flex-col", "h-full");
 
@@ -174,7 +178,13 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
                 .withProperty("location", Event::getLocation);
         grid.addColumn(dateRenderer).setHeader("Date & Location").setAutoWidth(true).setFlexGrow(0).setKey("dateLocation");
 
-        grid.addColumn(Event::getAttendeeCount)
+        grid.addColumn(new ComponentRenderer<>(event -> {
+                    final var button = new EnhancedButton(Integer.toString(event.getAttendeeCount()),
+                            clickEvent -> new RegistrationsDialog(registrationService, event).open()
+                    );
+                    button.setTitle("Manage registrations for this event");
+                    return button;
+                }))
                 .setHeader("Attendees")
                 .setAutoWidth(true)
                 .setTextAlign(ColumnTextAlign.CENTER)
@@ -196,7 +206,6 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
             deleteButton.setTitle("Delete this event");
             deleteButton.setEnabled(!event.getPublished() && event.getAttendeeCount() == 0);
             return new HorizontalLayout(editButton, copyButton, deleteButton);
-
         }))
             .setHeader("Actions")
             .setAutoWidth(true)
