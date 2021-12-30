@@ -87,7 +87,7 @@ public class RegistrationsDialog extends EnhancedDialog {
         final var optionBar = new HorizontalLayout(filterField, refreshRegistrationsButton, downloadRegistrationsButton);
         optionBar.setPadding(true);
 
-        add(optionBar, grid);
+        addToContent(optionBar, grid);
         reloadGridItems();
         filterField.focus();
     }

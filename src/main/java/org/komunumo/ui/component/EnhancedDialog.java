@@ -31,6 +31,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.theme.lumo.Lumo;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @CssImport("./themes/komunumo/views/admin/komunumo-dialog.css")
 public class EnhancedDialog extends Dialog {
@@ -77,17 +78,17 @@ public class EnhancedDialog extends Dialog {
 
         final var header = new Header(dialogTitle, minimise, maximise, close);
         header.getElement().getThemeList().add(Lumo.DARK);
-        add(header);
+        super.add(header);
 
         // Content
         content = new VerticalLayout();
         content.addClassName("dialog-content");
         content.setAlignItems(FlexComponent.Alignment.STRETCH);
-        add(content);
+        super.add(content);
 
         // Footer
         footer = new Footer();
-        add(footer);
+        super.add(footer);
 
         // Button theming
         for (final var button : new Button[] {minimise, maximise, close }) {
@@ -136,6 +137,15 @@ public class EnhancedDialog extends Dialog {
         }
         isFullScreen = !isFullScreen;
         isDocked = false;
+    }
+
+    /**
+     * @deprecated Use {@link #addToContent(Component...)} or {@link #addToFooter(Component...)} instead!
+     */
+    @Override
+    @Deprecated(since = "1.0")
+    public void add(@Nullable final Component... components) {
+        throw new UnsupportedOperationException("Use \"addToContent(Component...)\" or \"addToFooter(Component...)\" instead");
     }
 
     public void addToContent(@NotNull final Component... components) {
