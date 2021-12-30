@@ -18,18 +18,20 @@
 
 package org.komunumo.data.service;
 
+import java.util.List;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
-import org.jooq.impl.UpdatableRecordImpl;
 import org.komunumo.configuration.Configuration;
 import org.komunumo.data.db.tables.records.RegistrationRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Member;
 import org.komunumo.data.entity.Registration;
 import org.komunumo.data.entity.RegistrationListEntity;
+import org.komunumo.data.entity.RegistrationMemberEntity;
 import org.komunumo.data.entity.RegistrationResult;
 import org.komunumo.util.FormatterUtil;
 import org.komunumo.util.URLUtil;
@@ -53,15 +55,18 @@ public class RegistrationService {
     private final Configuration configuration;
     private final MailSender mailSender;
     private final EventOrganizerService eventOrganizerService;
+    private final MemberService memberService;
 
     public RegistrationService(@NotNull final DSLContext dsl,
                                @NotNull final Configuration configuration,
                                @NotNull final MailSender mailSender,
-                               @NotNull final EventOrganizerService eventOrganizerService) {
+                               @NotNull final EventOrganizerService eventOrganizerService,
+                               @NotNull final MemberService memberService) {
         this.dsl = dsl;
         this.configuration = configuration;
         this.mailSender = mailSender;
         this.eventOrganizerService = eventOrganizerService;
+        this.memberService = memberService;
     }
 
     public Optional<Registration> get(@NotNull final Long eventId,
@@ -224,4 +229,18 @@ public class RegistrationService {
                 .stream();
     }
 
+    public List<RegistrationMemberEntity> getUnregisteredMembers(final long eventId) {
+        return dsl.select(MEMBER.ID, MEMBER.FIRST_NAME, MEMBER.LAST_NAME, MEMBER.EMAIL)
+                .from(MEMBER)
+                .leftJoin(REGISTRATION).on(MEMBER.ID.eq(REGISTRATION.MEMBER_ID)
+                        .and(REGISTRATION.EVENT_ID.eq(eventId)))
+                .where(MEMBER.ACCOUNT_DELETED.isFalse()
+                        .and(REGISTRATION.DATE.isNull()))
+                .orderBy(MEMBER.FIRST_NAME, MEMBER.LAST_NAME)
+                .fetchInto(RegistrationMemberEntity.class);
+    }
+
+    public Optional<Member> toMember(@NotNull final RegistrationMemberEntity registrationMemberEntity) {
+        return memberService.get(registrationMemberEntity.memberId());
+    }
 }

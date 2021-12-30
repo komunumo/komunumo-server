@@ -78,13 +78,17 @@ public class RegistrationsDialog extends EnhancedDialog {
         filterField.addValueChangeListener(valueChangeEvent -> reloadGridItems());
         filterField.setTitle("Filter registrations");
 
+        final var newRegistrationButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), clickEvent -> showRegisterDialog());
+        newRegistrationButton.setTitle("Add a new registration");
+        newRegistrationButton.setEnabled(event.getDate() != null && event.getDate().isAfter(LocalDateTime.now()));
+
         final var refreshRegistrationsButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), clickEvent -> reloadGridItems());
         refreshRegistrationsButton.setTitle("Refresh the list of registrations");
 
         final var downloadRegistrationsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD), clickEvent -> downloadRegistrations());
         downloadRegistrationsButton.setTitle("Download the list of registrations");
 
-        final var optionBar = new HorizontalLayout(filterField, refreshRegistrationsButton, downloadRegistrationsButton);
+        final var optionBar = new HorizontalLayout(filterField, newRegistrationButton, refreshRegistrationsButton, downloadRegistrationsButton);
         optionBar.setPadding(true);
 
         addToContent(optionBar, grid);
@@ -136,6 +140,15 @@ public class RegistrationsDialog extends EnhancedDialog {
     private void reloadGridItems() {
         grid.setItems(query -> registrationService.find(event.getId(), query.getOffset(), query.getLimit(), filterField.getValue()));
         grid.recalculateColumnWidths();
+    }
+
+    private void showRegisterDialog() {
+        new AddRegistrationDialog(registrationService, event, () -> {
+            reloadGridItems();
+            if (afterChangeCallback != null) {
+                afterChangeCallback.execute();
+            }
+        }).open();
     }
 
     private void deregister(@NotNull final RegistrationListEntity registrationListEntity) {
