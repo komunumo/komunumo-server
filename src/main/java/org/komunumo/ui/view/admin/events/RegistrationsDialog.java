@@ -108,12 +108,14 @@ public class RegistrationsDialog extends EnhancedDialog {
         grid.addColumn(RegistrationListEntity::source)
                 .setHeader("Source").setAutoWidth(true).setFlexGrow(0);
 
-        grid.addColumn(new ComponentRenderer<>(registrationListEntity ->
-                        new Icon(registrationListEntity.noShow() ? VaadinIcon.CLOSE_CIRCLE_O : VaadinIcon.CHECK_CIRCLE_O)))
-                .setHeader("No show")
-                .setTextAlign(ColumnTextAlign.CENTER)
-                .setAutoWidth(true)
-                .setFlexGrow(0);
+        if (event.getDate().isBefore(LocalDateTime.now())) {
+            grid.addColumn(new ComponentRenderer<>(registrationListEntity ->
+                            new Icon(registrationListEntity.noShow() ? VaadinIcon.CLOSE_CIRCLE_O : VaadinIcon.CHECK_CIRCLE_O)))
+                    .setHeader("No show")
+                    .setTextAlign(ColumnTextAlign.CENTER)
+                    .setAutoWidth(true)
+                    .setFlexGrow(0);
+        }
 
         grid.addColumn(new ComponentRenderer<>(registrationListEntity -> {
                     final var deregisterButton = new EnhancedButton(new Icon(VaadinIcon.TRASH), clickEvent -> deregister(registrationListEntity));
