@@ -20,7 +20,7 @@ package org.komunumo.data.entity;
 
 import java.time.LocalDateTime;
 
-public record RegistrationListEntity(long memberId, String firstName, String lastName, String company, String email, String city,
+public record RegistrationListEntity(long memberId, String firstName, String lastName, String email, String city,
                                      LocalDateTime date, String source, boolean noShow) {
 
     public String fullName() {

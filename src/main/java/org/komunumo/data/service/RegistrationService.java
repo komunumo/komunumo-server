@@ -18,8 +18,6 @@
 
 package org.komunumo.data.service;
 
-import java.util.List;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,6 +38,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -213,7 +212,7 @@ public class RegistrationService {
 
     public Stream<RegistrationListEntity> find(final long eventId, final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
-        return dsl.select(MEMBER.ID, MEMBER.FIRST_NAME, MEMBER.LAST_NAME, MEMBER.COMPANY, MEMBER.EMAIL, MEMBER.CITY,
+        return dsl.select(MEMBER.ID, MEMBER.FIRST_NAME, MEMBER.LAST_NAME, MEMBER.EMAIL, MEMBER.CITY,
                         REGISTRATION.DATE, REGISTRATION.SOURCE, REGISTRATION.NO_SHOW)
                 .from(REGISTRATION)
                 .join(MEMBER).on(REGISTRATION.MEMBER_ID.eq(MEMBER.ID))

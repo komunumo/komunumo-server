@@ -25,12 +25,10 @@ import org.komunumo.data.entity.RegistrationListEntity;
 public class RegistrationListEntityWrapper {
 
     private final String attendee;
-    private final String company;
     private final String city;
 
     public RegistrationListEntityWrapper(@NotNull final RegistrationListEntity entity) {
         this.attendee = entity.fullName();
-        this.company = entity.company();
         this.city = entity.city();
     }
 
@@ -38,15 +36,11 @@ public class RegistrationListEntityWrapper {
         return attendee;
     }
 
-    public String getCompany() {
-        return company;
-    }
-
     public String getCity() {
         return city;
     }
 
-    public String getPresent() {
+    public String getCheck() {
         return "[   ]";
     }
 

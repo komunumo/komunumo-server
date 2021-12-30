@@ -194,9 +194,12 @@ public class RegistrationsDialog extends EnhancedDialog {
     }
 
     private void printRegistrations() {
-        final var report = new PrintPreviewReport<>(RegistrationListEntityWrapper.class, "attendee", "company", "city", "present");
-        report.getReportBuilder().setTitle(event.getTitle());
-//        report.setItems(getRegistrationsForReport());
+        final var report = new PrintPreviewReport<>(RegistrationListEntityWrapper.class, "attendee", "city", "check");
+        report.getReportBuilder()
+                .setTitle(event.getTitle())
+                .setDetailHeight(30)
+                .setColumnsPerPage(2, 10)
+                .getColumn(2).setWidth(15);
         final var resource = report.getStreamResource(
                 "registrations.pdf",
                 this::getRegistrationsForReport,
