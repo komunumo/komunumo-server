@@ -31,12 +31,10 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
-
-import java.time.LocalDateTime;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.Callback;
@@ -46,9 +44,11 @@ import org.komunumo.data.service.RegistrationService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.EnhancedDialog;
 import org.komunumo.ui.component.FilterField;
+import org.komunumo.util.FormatterUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
+import java.time.LocalDateTime;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -106,7 +106,7 @@ public class RegistrationsDialog extends EnhancedDialog {
                         new Anchor("mailto:" + registrationListEntity.email(), registrationListEntity.fullName())))
                 .setHeader("Attendee").setAutoWidth(true).setFlexGrow(0);
 
-        grid.addColumn(RegistrationListEntity::date)
+        grid.addColumn(new LocalDateTimeRenderer<>(RegistrationListEntity::date, FormatterUtil.dateTimeFormatter()))
                 .setHeader("Registration date").setAutoWidth(true).setFlexGrow(0);
 
         grid.addColumn(RegistrationListEntity::source)

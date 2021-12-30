@@ -44,12 +44,20 @@ public class FormatterUtil {
         return formatter;
     }
 
+    public static DateTimeFormatter dateFormatter() {
+        return DateTimeFormatter.ofPattern(DATE_PATTERN);
+    }
+
+    public static DateTimeFormatter dateTimeFormatter() {
+        return DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
+    }
+
     public static String formatDate(@Nullable final LocalDate date) {
-        return date != null ? date.format(DateTimeFormatter.ofPattern(DATE_PATTERN)) : "";
+        return date != null ? date.format(dateFormatter()) : "";
     }
 
     public static String formatDateTime(@Nullable final LocalDateTime dateTime) {
-        return dateTime != null ? dateTime.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN)) : "";
+        return dateTime != null ? dateTime.format(dateTimeFormatter()) : "";
     }
 
     public static String formatNumber(final long number) {
