@@ -195,7 +195,8 @@ public class RegistrationsDialog extends EnhancedDialog {
 
     private void printRegistrations() {
         final var report = new PrintPreviewReport<>(RegistrationListEntityWrapper.class, "attendee", "company", "city", "present");
-        report.setItems(getRegistrationsForReport());
+        report.getReportBuilder().setTitle(event.getTitle());
+//        report.setItems(getRegistrationsForReport());
         final var resource = report.getStreamResource(
                 "registrations.pdf",
                 this::getRegistrationsForReport,
