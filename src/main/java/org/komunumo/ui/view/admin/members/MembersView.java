@@ -219,6 +219,7 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
 
     private void reloadGridItems() {
         grid.setItems(query -> memberService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.recalculateColumnWidths();
     }
 
     private void downloadMembers() {
