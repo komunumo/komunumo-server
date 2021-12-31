@@ -198,6 +198,7 @@ public class RegistrationsDialog extends EnhancedDialog {
         final var report = new PrintPreviewReport<>(RegistrationListEntityWrapper.class, "attendee", "city", "check");
         report.getReportBuilder()
                 .setTitle("%s: %s".formatted(FormatterUtil.formatDate(event.getDate().toLocalDate()), event.getTitle()))
+                .setSubtitle("%d registrations".formatted(reportData.size()))
                 .setDetailHeight(30)
                 .setColumnsPerPage(2, 10)
                 .getColumn(2).setWidth(15);
