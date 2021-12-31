@@ -1,0 +1,16 @@
+name: Greetings
+
+on: [pull_request, issues]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+    - uses: actions/first-interaction@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        issue-message: 'You successfully created a first issue for Komunumo. Thank you very much, we will take a look as soon as possible!'
+        pr-message: 'Wow, thank you very much for your first contribution to Komunumo! We will check it out as soon as possible.'
