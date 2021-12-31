@@ -99,12 +99,12 @@ public class AnalyticsBoard extends Div {
         final var configuration = monthlyVisitors.getConfiguration();
         databaseService.calculateMonthlyVisitorsByYear(year).stream()
                 .map(data -> {
-                    final var series = new ListSeries(data.getLocation(),
-                            data.getJanuary(), data.getFebruary(), data.getMarch(),
-                            data.getApril(), data.getMay(), data.getJune(),
-                            data.getJuly(), data.getAugust(), data.getSeptember(),
-                            data.getOctober(), data.getNovember(), data.getDecember());
-                    final var colorCode = locationColorMap.get(data.getLocation());
+                    final var series = new ListSeries(data.location(),
+                            data.january(), data.february(), data.march(),
+                            data.april(), data.may(), data.june(),
+                            data.july(), data.august(), data.september(),
+                            data.october(), data.november(), data.december());
+                    final var colorCode = locationColorMap.get(data.location());
                     if (colorCode != null) {
                         final var options = new PlotOptionsColumn();
                         options.setColor(new SolidColor(colorCode));
