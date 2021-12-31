@@ -24,7 +24,6 @@ import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Member;
 import org.komunumo.data.service.getter.DSLContextGetter;
-import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,8 +33,7 @@ import static org.jooq.impl.DSL.select;
 import static org.komunumo.data.db.tables.EventOrganizer.EVENT_ORGANIZER;
 import static org.komunumo.data.db.tables.Member.MEMBER;
 
-@Service
-public interface EventOrganizerService extends DSLContextGetter {
+interface EventOrganizerService extends DSLContextGetter {
 
     default Stream<Member> getOrganizersForEvent(@NotNull final EventRecord event) {
         return dsl()

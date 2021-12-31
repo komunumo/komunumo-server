@@ -31,7 +31,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
-import org.komunumo.data.service.EventService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.SubMenu;
 import org.komunumo.ui.view.website.SubMenuItem;
@@ -47,12 +47,12 @@ import java.util.List;
 @AnonymousAllowed
 public class EventsView extends ContentBlock implements BeforeEnterObserver {
 
-    private final EventService eventService;
+    private final DatabaseService databaseService;
 
-    public EventsView(@NotNull final EventService eventService) {
+    public EventsView(@NotNull final DatabaseService databaseService) {
         super("Events");
 
-        this.eventService = eventService;
+        this.databaseService = databaseService;
         addClassName("events-view");
 
         final var upcomingTitle = new H1("Upcoming");
@@ -63,7 +63,7 @@ public class EventsView extends ContentBlock implements BeforeEnterObserver {
     public void beforeEnter(@NotNull final BeforeEnterEvent beforeEnterEvent) {
         final var params = beforeEnterEvent.getRouteParameters();
         final var location = params.get("location");
-        final var events = eventService.upcomingEvents().toList();
+        final var events = databaseService.upcomingEvents().toList();
         final var locationSelector = createLocationSelector(events, location.orElse(null));
         final var eventsList = new Div();
         eventsList.addClassName("events-list");

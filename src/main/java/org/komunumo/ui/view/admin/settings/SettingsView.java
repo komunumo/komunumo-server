@@ -32,8 +32,7 @@ import com.vaadin.flow.router.RouteAlias;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.ApplicationServiceInitListener;
 import org.komunumo.data.entity.Role;
-import org.komunumo.data.service.LocationColorService;
-import org.komunumo.data.service.RedirectService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
 
@@ -51,19 +50,16 @@ public class SettingsView extends ResizableView implements BeforeEnterObserver {
 
     private final static String ANCHOR_PREFIX = "admin/settings/";
 
-    private final LocationColorService locationColorService;
-    private final RedirectService redirectService;
+    private final DatabaseService databaseService;
     private final ApplicationServiceInitListener applicationServiceInitListener;
 
     private final List<Tab> settingTabs;
     private final Div content;
     private final Tabs tabs;
 
-    public SettingsView(@NotNull final LocationColorService locationColorService,
-                        @NotNull final RedirectService redirectService,
+    public SettingsView(@NotNull final DatabaseService databaseService,
                         @NotNull final ApplicationServiceInitListener applicationServiceInitListener) {
-        this.locationColorService = locationColorService;
-        this.redirectService = redirectService;
+        this.databaseService = databaseService;
         this.applicationServiceInitListener = applicationServiceInitListener;
         addClassNames("settings-view", "flex", "flex-col", "h-full");
         settingTabs = new ArrayList<>();
@@ -104,8 +100,8 @@ public class SettingsView extends ResizableView implements BeforeEnterObserver {
         content.removeAll();
         final var tabId = tab.getId().orElse("");
         final var tabContent = switch (tabId) {
-            case "location-colors" -> new LocationColorSetting(locationColorService);
-            case "redirects" -> new RedirectSetting(redirectService, applicationServiceInitListener);
+            case "location-colors" -> new LocationColorSetting(databaseService);
+            case "redirects" -> new RedirectSetting(databaseService, applicationServiceInitListener);
             default -> new Paragraph("This setting has not been implemented yet!");
         };
         content.add(tabContent);

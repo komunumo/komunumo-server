@@ -18,7 +18,6 @@
 
 package org.komunumo.data.entity;
 
-import org.apache.commons.codec.digest.Crypt;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.util.URLUtil;

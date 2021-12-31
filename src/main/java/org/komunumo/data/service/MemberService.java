@@ -28,7 +28,6 @@ import org.komunumo.data.service.getter.DSLContextGetter;
 import org.komunumo.data.service.getter.MailSenderGetter;
 import org.komunumo.util.URLUtil;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -37,8 +36,7 @@ import java.util.stream.Stream;
 import static org.jooq.impl.DSL.concat;
 import static org.komunumo.data.db.tables.Member.MEMBER;
 
-@Service
-public interface MemberService extends ConfigurationGetter, DSLContextGetter, MailSenderGetter {
+interface MemberService extends ConfigurationGetter, DSLContextGetter, MailSenderGetter {
 
     default Member newMember() {
         final var member = dsl().newRecord(MEMBER)

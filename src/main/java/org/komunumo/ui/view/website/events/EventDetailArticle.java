@@ -27,15 +27,12 @@ import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
+import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.entity.Event;
+import org.komunumo.data.service.DatabaseService;
 
 import java.time.LocalDateTime;
 import java.util.Locale;
-
-import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.entity.Event;
-import org.komunumo.data.service.RegistrationService;
-import org.komunumo.data.service.MemberService;
-import org.komunumo.data.service.SubscriptionService;
 
 public class EventDetailArticle extends EventArticle {
 
@@ -131,16 +128,14 @@ public class EventDetailArticle extends EventArticle {
         }
     }
 
-    protected void addRegistrationForm(@NotNull final MemberService memberService,
-                                       @NotNull final RegistrationService registrationService,
-                                       @NotNull final SubscriptionService subscriptionService,
+    protected void addRegistrationForm(@NotNull final DatabaseService databaseService,
                                        @NotNull final Event event, String deregisterCode) {
         if (event.getDate().isAfter(LocalDateTime.now())) {
             add(new Hr());
             if (deregisterCode.isBlank()) {
-                add(new EventRegistrationForm(memberService, registrationService, subscriptionService, event));
+                add(new EventRegistrationForm(databaseService, event));
             } else {
-                add(new EventDeregistrationForm(registrationService, event, deregisterCode));
+                add(new EventDeregistrationForm(databaseService, event, deregisterCode));
             }
         }
     }

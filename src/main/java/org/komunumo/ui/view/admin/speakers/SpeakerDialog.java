@@ -27,9 +27,9 @@ import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
+import org.komunumo.ui.component.CustomLabel;
 import org.komunumo.ui.component.EditDialog;
 import org.komunumo.ui.component.ImageUploadField;
-import org.komunumo.ui.component.CustomLabel;
 import org.komunumo.util.GravatarUtil;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;

@@ -24,7 +24,6 @@ import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.KeywordEntity;
 import org.komunumo.data.service.getter.DSLContextGetter;
-import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,8 +33,7 @@ import static org.jooq.impl.DSL.select;
 import static org.komunumo.data.db.tables.EventKeyword.EVENT_KEYWORD;
 import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 
-@Service
-public interface EventKeywordService extends DSLContextGetter {
+interface EventKeywordService extends DSLContextGetter {
 
     /**
      * @deprecated remove after migration of JUG.CH to Komunumo has finished

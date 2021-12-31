@@ -44,19 +44,7 @@ import org.komunumo.data.importer.bigmarker.BigMarkerReport;
 import org.komunumo.data.importer.clubdesk.ClubDeskFile;
 import org.komunumo.data.importer.clubdesk.ClubDeskMember;
 import org.komunumo.data.importer.jugs.JUGSImporter;
-import org.komunumo.data.service.EventKeywordService;
-import org.komunumo.data.service.EventOrganizerService;
-import org.komunumo.data.service.FaqService;
-import org.komunumo.data.service.LocationColorService;
-import org.komunumo.data.service.RedirectService;
-import org.komunumo.data.service.RegistrationService;
-import org.komunumo.data.service.EventService;
-import org.komunumo.data.service.EventSpeakerService;
-import org.komunumo.data.service.KeywordService;
-import org.komunumo.data.service.MemberService;
-import org.komunumo.data.service.NewsService;
-import org.komunumo.data.service.SpeakerService;
-import org.komunumo.data.service.SponsorService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
 
@@ -72,52 +60,16 @@ import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 @RolesAllowed(Role.Type.ADMIN)
 public class ImportsView extends ResizableView {
 
-    private final DSLContext dsl;
-    private final SponsorService sponsorService;
-    private final MemberService memberService;
-    private final EventService eventService;
-    private final RegistrationService registrationService;
-    private final SpeakerService speakerService;
-    private final EventSpeakerService eventSpeakerService;
-    private final EventOrganizerService eventOrganizerService;
-    private final KeywordService keywordService;
-    private final EventKeywordService eventKeywordService;
-    private final FaqService faqService;
-    private final NewsService newsService;
-    private final LocationColorService locationColorService;
-    private final RedirectService redirectService;
+    private final DSLContext dsl; // TODO Should not be used here
+    private final DatabaseService databaseService;
     private final ApplicationServiceInitListener applicationServiceInitListener;
 
     public ImportsView(
             @NotNull final DSLContext dsl,
-            @NotNull final SponsorService sponsorService,
-            @NotNull final MemberService memberService,
-            @NotNull final EventService eventService,
-            @NotNull final RegistrationService registrationService,
-            @NotNull final SpeakerService speakerService,
-            @NotNull final EventSpeakerService eventSpeakerService,
-            @NotNull final EventOrganizerService eventOrganizerService,
-            @NotNull final KeywordService keywordService,
-            @NotNull final EventKeywordService eventKeywordService,
-            @NotNull final FaqService faqService,
-            @NotNull final NewsService newsService,
-            @NotNull final LocationColorService locationColorService,
-            @NotNull final RedirectService redirectService,
+            @NotNull final DatabaseService databaseService,
             @NotNull final ApplicationServiceInitListener applicationServiceInitListener) {
         this.dsl = dsl;
-        this.sponsorService = sponsorService;
-        this.memberService = memberService;
-        this.eventService = eventService;
-        this.registrationService = registrationService;
-        this.speakerService = speakerService;
-        this.eventSpeakerService = eventSpeakerService;
-        this.eventOrganizerService = eventOrganizerService;
-        this.keywordService = keywordService;
-        this.eventKeywordService = eventKeywordService;
-        this.faqService = faqService;
-        this.newsService = newsService;
-        this.locationColorService = locationColorService;
-        this.redirectService = redirectService;
+        this.databaseService = databaseService;
         this.applicationServiceInitListener = applicationServiceInitListener;
 
         addClassName("imports-view");
@@ -176,7 +128,7 @@ public class ImportsView extends ResizableView {
                 importButton.addClickListener(buttonClickEvent -> {
                     try {
                         cancelButton.setEnabled(false);
-                        report.importRegistrations(eventService, registrationService, memberService);
+                        report.importRegistrations(databaseService);
                         importButton.getElement().removeFromParent();
                         cancelButton.getElement().removeFromParent();
                         grid.getElement().removeFromParent();
@@ -224,7 +176,7 @@ public class ImportsView extends ResizableView {
                 final var registrations = report.getBigMarkerRegistrations();
 
                 try {
-                    report.importRegistrations(eventService, registrationService, memberService);
+                    report.importRegistrations(databaseService);
                     Notification.show(String.format("Successfully imported %d registrations from excel file '%s'.",
                             registrations.size(), succeededEvent.getFileName()));
                 } catch (final NoSuchElementException e) {
@@ -294,7 +246,7 @@ public class ImportsView extends ResizableView {
                 importButton.addClickListener(buttonClickEvent -> {
                     try {
                         cancelButton.setEnabled(false);
-                        clubDeskFile.importMembers(memberService);
+                        clubDeskFile.importMembers(databaseService);
                         importButton.getElement().removeFromParent();
                         cancelButton.getElement().removeFromParent();
                         grid.getElement().removeFromParent();
@@ -353,9 +305,7 @@ public class ImportsView extends ResizableView {
         importButton.setDisableOnClick(true);
         importButton.setEnabled(!dbURL.isEmpty() && !dbUser.isEmpty() && !dbPass.isEmpty());
         importButton.addClickListener(buttonClickEvent -> {
-            final var importer = new JUGSImporter(dsl, sponsorService, memberService, eventService, registrationService, speakerService,
-                    eventSpeakerService, eventOrganizerService, keywordService, eventKeywordService, faqService, newsService,
-                    locationColorService, redirectService, applicationServiceInitListener);
+            final var importer = new JUGSImporter(dsl, databaseService, applicationServiceInitListener);
             importer.importFromJavaUserGroupSwitzerland(dbURL.getValue(), dbUser.getValue(), dbPass.getValue());
         });
 

@@ -22,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.service.getter.DSLContextGetter;
-import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -32,8 +31,7 @@ import static org.jooq.impl.DSL.select;
 import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
-@Service
-public interface EventSpeakerService extends DSLContextGetter {
+interface EventSpeakerService extends DSLContextGetter {
 
     default Stream<EventSpeakerEntity> getSpeakersForEvent(@NotNull final Event event) {
         return dsl()

@@ -21,9 +21,7 @@ package org.komunumo.ui.view.website;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Header;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.configuration.Configuration;
 import org.komunumo.data.service.DatabaseService;
-import org.komunumo.data.service.StatisticService;
 
 public class WebsiteHeader extends Header {
 

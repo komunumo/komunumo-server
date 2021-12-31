@@ -26,7 +26,6 @@ import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.entity.KeywordEntity;
 import org.komunumo.data.service.getter.DSLContextGetter;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.Year;
@@ -43,8 +42,7 @@ import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 import static org.komunumo.data.db.tables.Registration.REGISTRATION;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
-@Service
-public interface EventService extends DSLContextGetter, EventKeywordService, EventSpeakerService, EventOrganizerService {
+interface EventService extends DSLContextGetter, EventKeywordService, EventSpeakerService, EventOrganizerService {
 
     default Event newEvent() {
         final var event = dsl().newRecord(EVENT)

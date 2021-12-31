@@ -25,7 +25,6 @@ import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.entity.SpeakerListEntity;
 import org.komunumo.data.service.getter.DSLContextGetter;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -34,8 +33,7 @@ import static org.jooq.impl.DSL.concat;
 import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
-@Service
-public interface SpeakerService extends DSLContextGetter {
+interface SpeakerService extends DSLContextGetter {
 
     default SpeakerRecord newSpeaker() {
         final var speaker = dsl().newRecord(SPEAKER);

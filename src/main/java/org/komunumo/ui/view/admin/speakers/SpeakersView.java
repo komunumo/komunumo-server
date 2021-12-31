@@ -39,20 +39,18 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
-
-import javax.annotation.security.RolesAllowed;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Role;
 import org.komunumo.data.entity.SpeakerListEntity;
-import org.komunumo.data.service.SpeakerService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
 import org.komunumo.util.FormatterUtil;
 
+import javax.annotation.security.RolesAllowed;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.net.URLEncoder;
@@ -67,12 +65,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @RolesAllowed(Role.Type.ADMIN)
 public class SpeakersView extends ResizableView implements HasUrlParameter<String> {
 
-    private final SpeakerService speakerService;
+    private final DatabaseService databaseService;
     private final TextField filterField;
     private final Grid<SpeakerListEntity> grid;
 
-    public SpeakersView(@NotNull final SpeakerService speakerService) {
-        this.speakerService = speakerService;
+    public SpeakersView(@NotNull final DatabaseService databaseService) {
+        this.databaseService = databaseService;
 
         addClassNames("speakers-view", "flex", "flex-col", "h-full");
 
@@ -156,8 +154,8 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
     }
 
     private void showSpeakerDialog(@Nullable final SpeakerListEntity speakerListEntity) {
-        final var speakerRecord = speakerListEntity == null || speakerListEntity.id() == null ? speakerService.newSpeaker() :
-                speakerService.getSpeakerRecord(speakerListEntity.id()).orElse(speakerService.newSpeaker());
+        final var speakerRecord = speakerListEntity == null || speakerListEntity.id() == null ? databaseService.newSpeaker() :
+                databaseService.getSpeakerRecord(speakerListEntity.id()).orElse(databaseService.newSpeaker());
         final var dialog = new SpeakerDialog(speakerRecord.getId() != null ? "Edit Speaker" : "New Speaker");
         dialog.open(speakerRecord, this::reloadGridItems);
     }
@@ -166,7 +164,7 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
         new ConfirmDialog("Confirm deletion",
                 String.format("Are you sure you want to permanently delete the speaker \"%s\"?", speakerListEntity.fullName()),
                 "Delete", dialogEvent -> {
-            speakerService.deleteSpeaker(speakerListEntity.id());
+            databaseService.deleteSpeaker(speakerListEntity.id());
             reloadGridItems();
             dialogEvent.getSource().close();
         },
@@ -175,7 +173,7 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> speakerService.findSpeakers(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> databaseService.findSpeakers(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
     private void downloadSpeakers() {

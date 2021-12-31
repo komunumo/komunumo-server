@@ -25,14 +25,14 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
-import org.komunumo.data.service.RegistrationService;
+import org.komunumo.data.service.DatabaseService;
 
 import static org.komunumo.util.FormatterUtil.formatDate;
 
 @CssImport("./themes/komunumo/views/website/event-deregistration-form.css")
 public class EventDeregistrationForm extends Div {
 
-    public EventDeregistrationForm(@NotNull final RegistrationService registrationService,
+    public EventDeregistrationForm(@NotNull final DatabaseService databaseService,
                                    @NotNull final Event event,
                                    @NotNull final String deregisterCode) {
         addClassName("event-deregistration-form");
@@ -40,7 +40,7 @@ public class EventDeregistrationForm extends Div {
         final var eventTitle = new Span(event.getTitle());
         eventTitle.addClassName("event-title");
 
-        final var registration = registrationService.getRegistration(deregisterCode);
+        final var registration = databaseService.getRegistration(deregisterCode);
         if (registration != null) {
             final var deregisterButton = new Button("Deregister");
             deregisterButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
@@ -56,7 +56,7 @@ public class EventDeregistrationForm extends Div {
 
             deregisterButton.addClickListener(clickEvent -> {
                 final var message = new Div();
-                if (registrationService.deregisterFromEvent(deregisterCode)) {
+                if (databaseService.deregisterFromEvent(deregisterCode)) {
                     final var success = new Paragraph("You successfully deregistered from this event.");
                     success.addClassName("success");
                     message.add(success);

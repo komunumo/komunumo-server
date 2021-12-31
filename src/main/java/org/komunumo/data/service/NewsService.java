@@ -24,7 +24,6 @@ import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.NewsRecord;
 import org.komunumo.data.entity.NewsEntity;
 import org.komunumo.data.service.getter.DSLContextGetter;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,8 +32,7 @@ import java.util.stream.Stream;
 
 import static org.komunumo.data.db.tables.News.NEWS;
 
-@Service
-public interface NewsService extends DSLContextGetter {
+interface NewsService extends DSLContextGetter {
 
     default NewsRecord newNews() {
         final var news = dsl().newRecord(NEWS);

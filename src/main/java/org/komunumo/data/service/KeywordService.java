@@ -25,7 +25,6 @@ import org.komunumo.data.db.tables.records.KeywordRecord;
 import org.komunumo.data.entity.KeywordEntity;
 import org.komunumo.data.entity.KeywordListEntity;
 import org.komunumo.data.service.getter.DSLContextGetter;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -33,8 +32,7 @@ import java.util.stream.Stream;
 import static org.komunumo.data.db.tables.EventKeyword.EVENT_KEYWORD;
 import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 
-@Service
-public interface KeywordService extends DSLContextGetter {
+interface KeywordService extends DSLContextGetter {
 
     default KeywordRecord newKeyword() {
         return dsl().newRecord(KEYWORD);

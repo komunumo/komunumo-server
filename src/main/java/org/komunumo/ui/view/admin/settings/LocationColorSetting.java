@@ -36,7 +36,7 @@ import com.vaadin.flow.server.VaadinSession;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.tables.records.LocationColorRecord;
-import org.komunumo.data.service.LocationColorService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
@@ -49,12 +49,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @CssImport(value = "./themes/komunumo/views/admin/location-color-setting.css")
 public class LocationColorSetting extends ResizableView {
 
-    private final LocationColorService locationColorService;
+    private final DatabaseService databaseService;
     private final TextField filterField;
     private final Grid<LocationColorRecord> grid;
 
-    public LocationColorSetting(@NotNull final LocationColorService locationColorService) {
-        this.locationColorService = locationColorService;
+    public LocationColorSetting(@NotNull final DatabaseService databaseService) {
+        this.databaseService = databaseService;
 
         addClassNames("location-color-setting", "flex", "flex-col", "h-full");
 
@@ -118,7 +118,7 @@ public class LocationColorSetting extends ResizableView {
 
     private void showLocationColorDialog(@Nullable final LocationColorRecord locationColorRecord) {
         final var dialog = new LocationColorDialog(locationColorRecord != null ? "Edit Location Color" : "New Location Color");
-        dialog.open(locationColorRecord != null ? locationColorRecord : locationColorService.newLocationColorRecord(), this::reloadGridItems);
+        dialog.open(locationColorRecord != null ? locationColorRecord : databaseService.newLocationColorRecord(), this::reloadGridItems);
     }
 
     private void deleteLocationColor(@NotNull final LocationColorRecord locationColorRecord) {
@@ -134,7 +134,7 @@ public class LocationColorSetting extends ResizableView {
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> locationColorService.findLocationColors(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> databaseService.findLocationColors(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
     private void downloadLocationColors() {

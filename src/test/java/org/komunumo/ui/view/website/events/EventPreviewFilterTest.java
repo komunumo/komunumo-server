@@ -18,18 +18,17 @@
 
 package org.komunumo.ui.view.website.events;
 
-import java.io.IOException;
-import java.time.Year;
-import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.komunumo.data.entity.Event;
+import org.komunumo.data.service.DatabaseService;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-
 import javax.servlet.http.HttpServletResponse;
-
-import org.junit.jupiter.api.Test;
-import org.komunumo.data.entity.Event;
-import org.komunumo.data.service.EventService;
+import java.io.IOException;
+import java.time.Year;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -48,8 +47,8 @@ public class EventPreviewFilterTest {
         final var event = mock(Event.class);
         when(event.getPublished()).thenReturn(false);
 
-        final var eventServiceMock = mock(EventService.class);
-        when(eventServiceMock.getEventByUrl(anyString(), any(Year.class), anyString())).thenReturn(Optional.of(event));
+        final var databaseServiceMock = mock(DatabaseService.class);
+        when(databaseServiceMock.getEventByUrl(anyString(), any(Year.class), anyString())).thenReturn(Optional.of(event));
 
         final var request = mock(HttpServletRequest.class);
         when(request.getParameter(eq("preview"))).thenReturn("12345678");
@@ -58,7 +57,7 @@ public class EventPreviewFilterTest {
         final var response = mock(HttpServletResponse.class);
         final var chain = mock(FilterChain.class);
 
-        final var filter = new EventPreviewFilter(eventServiceMock);
+        final var filter = new EventPreviewFilter(databaseServiceMock);
         filter.doFilter(request, response, chain);
 
         verify(response, never()).setStatus(anyInt());
@@ -72,8 +71,8 @@ public class EventPreviewFilterTest {
         when(event.getPublished()).thenReturn(true);
         when(event.getCompleteEventUrl()).thenReturn("/event/online/2269/test-event");
 
-        final var eventServiceMock = mock(EventService.class);
-        when(eventServiceMock.getEventByUrl(anyString(), any(Year.class), anyString())).thenReturn(Optional.of(event));
+        final var databaseServiceMock = mock(DatabaseService.class);
+        when(databaseServiceMock.getEventByUrl(anyString(), any(Year.class), anyString())).thenReturn(Optional.of(event));
 
         final var request = mock(HttpServletRequest.class);
         when(request.getParameter(eq("preview"))).thenReturn("12345678");
@@ -82,7 +81,7 @@ public class EventPreviewFilterTest {
         final var response = mock(HttpServletResponse.class);
         final var chain = mock(FilterChain.class);
 
-        final var filter = new EventPreviewFilter(eventServiceMock);
+        final var filter = new EventPreviewFilter(databaseServiceMock);
         filter.doFilter(request, response, chain);
 
         verify(response, times(1)).setStatus(anyInt());

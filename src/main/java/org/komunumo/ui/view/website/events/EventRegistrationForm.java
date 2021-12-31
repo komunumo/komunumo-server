@@ -39,18 +39,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Member;
-import org.komunumo.data.service.RegistrationService;
-import org.komunumo.data.service.MemberService;
-import org.komunumo.data.service.SubscriptionService;
+import org.komunumo.data.service.DatabaseService;
 
 import static org.komunumo.util.FormatterUtil.formatDate;
 
 @CssImport("./themes/komunumo/views/website/event-registration-form.css")
 public class EventRegistrationForm extends Div {
 
-    public EventRegistrationForm(@NotNull final MemberService memberService,
-                                 @NotNull final RegistrationService registrationService,
-                                 @NotNull final SubscriptionService subscriptionService,
+    public EventRegistrationForm(@NotNull final DatabaseService databaseService,
                                  @NotNull final Event event) {
         addClassName("event-registration-form");
         add(new H4("Register"));
@@ -82,7 +78,7 @@ public class EventRegistrationForm extends Div {
                 new Span("» on %s in %s:".formatted(formatDate(event.getDate().toLocalDate()), event.getLocation()))));
         emailForm.add(new HorizontalLayout(emailField, verifyButton));
         if (event.getAttendeeLimit() > 0) {
-            final var freeSeats = event.getAttendeeLimit() - registrationService.countRegistrations(event.getId());
+            final var freeSeats = event.getAttendeeLimit() - databaseService.countRegistrations(event.getId());
             if (freeSeats == 1) {
                 final var seatMessage = new Paragraph("There is only one free seat left!");
                 seatMessage.addClassName("seat-message");
@@ -106,7 +102,7 @@ public class EventRegistrationForm extends Div {
         verifyButton.addClickListener(verifyButtonClickEvent -> {
             final var registrationForm = new Div();
             final var emailAddress = emailField.getValue().trim();
-            final var memberFound = memberService.getMemberByEmail(emailAddress);
+            final var memberFound = databaseService.getMemberByEmail(emailAddress);
 
             final var foundMessage = new Paragraph();
             foundMessage.addClassName("found-message");
@@ -187,10 +183,10 @@ public class EventRegistrationForm extends Div {
                 }
 
                 registerButton.addClickListener(registerButtonClickEvent -> {
-                    final var member = memberFound.orElse(createMember(memberService, emailAddress, firstName, lastName));
+                    final var member = memberFound.orElse(createMember(databaseService, emailAddress, firstName, lastName));
                     final var sourceValue = source.getValue().equalsIgnoreCase("other") ?
                             otherSource.getValue() : source.getValue();
-                    final var registrationResult = registrationService.registerForEvent(event, member, sourceValue);
+                    final var registrationResult = databaseService.registerForEvent(event, member, sourceValue);
                     final var registrationInfo = switch (registrationResult) {
                         case SUCCESS -> new Paragraph("Thank you for your registration! Within the next few minutes " +
                                         "you will receive a copy of your registration and a reminder will follow shortly before the event.");
@@ -201,7 +197,7 @@ public class EventRegistrationForm extends Div {
                     };
                     registrationInfo.addClassName("registration-info");
                     if (newsletter.getValue()) {
-                        subscriptionService.addSubscription(emailAddress);
+                        databaseService.addSubscription(emailAddress);
                     }
                     replace(registrationForm, registrationInfo);
                 });
@@ -214,12 +210,12 @@ public class EventRegistrationForm extends Div {
         });
     }
 
-    private Member createMember(@NotNull final MemberService memberService,
+    private Member createMember(@NotNull final DatabaseService databaseService,
                                 @NotNull final String emailAddress,
                                 @Nullable final TextField firstName,
                                 @Nullable final TextField lastName) {
         if (firstName != null && lastName != null) {
-            return memberService.createMember(firstName.getValue(), lastName.getValue(), emailAddress);
+            return databaseService.createMember(firstName.getValue(), lastName.getValue(), emailAddress);
         }
         return null;
     }

@@ -40,16 +40,11 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
-
-import java.time.LocalDate;
-import java.util.Set;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Member;
 import org.komunumo.data.entity.Role;
-import org.komunumo.data.service.MemberService;
-import org.komunumo.data.service.SponsorService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
@@ -58,7 +53,9 @@ import org.komunumo.ui.view.admin.AdminLayout;
 import javax.annotation.security.RolesAllowed;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.komunumo.util.FormatterUtil.formatDate;
@@ -71,15 +68,12 @@ import static org.komunumo.util.FormatterUtil.formatDateTime;
 @RolesAllowed(Role.Type.ADMIN)
 public class MembersView extends ResizableView implements HasUrlParameter<String> {
 
-    private final MemberService memberService;
-    private final SponsorService sponsorService;
+    private final DatabaseService databaseService;
     private final TextField filterField;
     private final Grid<Member> grid;
 
-    public MembersView(@NotNull final MemberService memberService,
-                       @NotNull final SponsorService sponsorService) {
-        this.memberService = memberService;
-        this.sponsorService = sponsorService;
+    public MembersView(@NotNull final DatabaseService databaseService) {
+        this.databaseService = databaseService;
 
         addClassNames("members-view", "flex", "flex-col", "h-full");
 
@@ -116,7 +110,7 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
     }
 
     private Grid<Member> createGrid() {
-        final var sponsorDomains = sponsorService.getActiveSponsorDomains();
+        final var sponsorDomains = databaseService.getActiveSponsorDomains();
 
         final var grid = new Grid<Member>();
         grid.setSelectionMode(Grid.SelectionMode.NONE);
@@ -200,7 +194,7 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
     }
 
     private void newMember() {
-        showMemberDialog(memberService.newMember());
+        showMemberDialog(databaseService.newMember());
     }
 
     private void showMemberDialog(@NotNull final Member member) {
@@ -212,7 +206,7 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         new ConfirmDialog("Confirm deletion",
                 String.format("Are you sure you want to permanently delete the member \"%s\"?", member.getFullName()),
                 "Delete", dialogEvent -> {
-            memberService.deleteMember(member);
+            databaseService.deleteMember(member);
             reloadGridItems();
             dialogEvent.getSource().close();
         },
@@ -221,7 +215,7 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> memberService.findMembers(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> databaseService.findMembers(query.getOffset(), query.getLimit(), filterField.getValue()));
         grid.recalculateColumnWidths();
     }
 

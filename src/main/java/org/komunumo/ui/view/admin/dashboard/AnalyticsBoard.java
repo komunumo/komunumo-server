@@ -34,8 +34,8 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.entity.NoShows;
 import org.komunumo.data.service.DatabaseService;
-import org.komunumo.data.service.StatisticService;
 import org.komunumo.util.FormatterUtil;
 
 import java.time.Year;
@@ -86,9 +86,9 @@ public class AnalyticsBoard extends Div {
 
     private void populateCharts(@NotNull final Year year) {
         // Top row widgets
-        final var registrations = databaseService.countAttendeesByYear(year, StatisticService.NoShows.INCLUDE);
+        final var registrations = databaseService.countAttendeesByYear(year, NoShows.INCLUDE);
         final var events = databaseService.countEventsByYear(year);
-        final var noShows = databaseService.countAttendeesByYear(year, StatisticService.NoShows.ONLY);
+        final var noShows = databaseService.countAttendeesByYear(year, NoShows.ONLY);
         numberOfRegistrations.setText(FormatterUtil.formatNumber(registrations));
         numberOfEvents.setText(FormatterUtil.formatNumber(events));
         noShowRate.setText(FormatterUtil.formatNumber(registrations == 0 ? 0 : noShows * 100L / registrations) + "%");

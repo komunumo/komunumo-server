@@ -23,34 +23,32 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
-
-import java.util.Set;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.Callback;
 import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.db.tables.records.SponsorRecord;
-import org.komunumo.data.service.SponsorService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.component.DatePicker;
 import org.komunumo.ui.component.EditDialog;
 import org.komunumo.ui.component.ImageUploadField;
 import org.komunumo.ui.component.TagField;
 
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
 public class SponsorDialog extends EditDialog<SponsorRecord> {
 
-    private final SponsorService sponsorService;
+    private final DatabaseService databaseService;
 
     private String domainCSV;
 
-    public SponsorDialog(@NotNull final String title, @NotNull final SponsorService sponsorService) {
+    public SponsorDialog(@NotNull final String title, @NotNull final DatabaseService databaseService) {
         super(title);
-        this.sponsorService = sponsorService;
+        this.databaseService = databaseService;
     }
 
     @Override
@@ -108,12 +106,12 @@ public class SponsorDialog extends EditDialog<SponsorRecord> {
 
     @Override
     public void open(@NotNull final SponsorRecord sponsorRecord, @Nullable final Callback afterSave) {
-        final var domainList = sponsorService.getSponsorDomains(sponsorRecord);
+        final var domainList = databaseService.getSponsorDomains(sponsorRecord);
         domainCSV = domainList.isEmpty() ? "" : domainList.stream()
                 .sorted().collect(Collectors.joining(","));
         super.open(sponsorRecord,
                 () -> {
-                    sponsorService.setSponsorDomains(sponsorRecord,
+                    databaseService.setSponsorDomains(sponsorRecord,
                             domainCSV.isBlank() ? Set.of() : Arrays.stream(domainCSV.split(","))
                                     .collect(Collectors.toUnmodifiableSet()));
                     if (afterSave != null) {

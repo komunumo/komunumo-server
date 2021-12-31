@@ -24,9 +24,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.service.EventService;
-import org.komunumo.data.service.NewsService;
-import org.komunumo.data.service.SubscriptionService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.view.website.NewsBlock;
 import org.komunumo.ui.view.website.WebsiteLayout;
 
@@ -37,13 +35,11 @@ import org.komunumo.ui.view.website.WebsiteLayout;
 @AnonymousAllowed
 public class HomeView extends Div {
 
-    public HomeView(@NotNull final NewsService newsService,
-                    @NotNull final SubscriptionService subscriptionService,
-                    @NotNull final EventService eventService) {
+    public HomeView(@NotNull final DatabaseService databaseService) {
         addClassName("home-view");
         add(
-                new NewsBlock(newsService, subscriptionService),
-                new EventPreviewBlock(eventService)
+                new NewsBlock(databaseService),
+                new EventPreviewBlock(databaseService)
         );
     }
 

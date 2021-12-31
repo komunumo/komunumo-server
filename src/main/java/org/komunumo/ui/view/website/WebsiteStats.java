@@ -22,7 +22,8 @@ import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.service.StatisticService;
+import org.komunumo.data.entity.NoShows;
+import org.komunumo.data.service.DatabaseService;
 
 import java.time.Year;
 import java.util.Random;
@@ -34,11 +35,11 @@ import static org.komunumo.util.FormatterUtil.formatNumber;
 public class WebsiteStats extends Div {
 
     private final Random random;
-    private final StatisticService statisticService;
+    private final DatabaseService databaseService;
 
-    public WebsiteStats(@NotNull final StatisticService statisticService) {
+    public WebsiteStats(@NotNull final DatabaseService databaseService) {
         this.random = new Random();
-        this.statisticService = statisticService;
+        this.databaseService = databaseService;
 
         final var stats = getRandomStats();
         final var number = new Span(new Text(formatNumber(stats.number())));
@@ -67,43 +68,43 @@ public class WebsiteStats extends Div {
 
     private Stats getAttendeesActualYear() {
         final var year = Year.now();
-        final var number = statisticService.countAttendeesByYear(year, StatisticService.NoShows.INCLUDE);
+        final var number = databaseService.countAttendeesByYear(year, NoShows.INCLUDE);
         final var text = String.format("attendees have registered for our events so far in %s.", year);
         return new Stats(number, text);
     }
 
     private Stats getUniqueAttendeesActualYear() {
         final var year = Year.now();
-        final var number = statisticService.countUniqueAttendeesByYear(year, StatisticService.NoShows.INCLUDE);
+        final var number = databaseService.countUniqueAttendeesByYear(year, NoShows.INCLUDE);
         final var text = String.format("unique attendees have registered for our events so far in %s.", year);
         return new Stats(number, text);
     }
 
     private Stats getAttendeesLastYear() {
         final var year = Year.now().minusYears(1);
-        final var number = statisticService.countAttendeesByYear(year, StatisticService.NoShows.INCLUDE);
+        final var number = databaseService.countAttendeesByYear(year, NoShows.INCLUDE);
         final var text = String.format("attendees registered for our events during %s.", year);
         return new Stats(number, text);
     }
 
     private Stats getUniqueAttendeesLastYear() {
         final var year = Year.now().minusYears(1);
-        final var number = statisticService.countUniqueAttendeesByYear(year, StatisticService.NoShows.INCLUDE);
+        final var number = databaseService.countUniqueAttendeesByYear(year, NoShows.INCLUDE);
         final var text = String.format("unique attendees have registered for our events in %s.", year);
         return new Stats(number, text);
     }
 
     private Stats getMemberCountLastYear() {
         final var year = Year.now().minusYears(1);
-        final var number = statisticService.countMembersByYear(year);
+        final var number = databaseService.countMembersByYear(year);
         final var text = String.format("members had joined JUG Switzerland at the end of %s.", year);
         return new Stats(number, text);
     }
 
     private Stats getMembersJoinedLastYear() {
         final var year = Year.now().minusYears(1);
-        final var membersNow = statisticService.countMembersByYear(year);
-        final var membersBefore = statisticService.countMembersByYear(year.minusYears(1));
+        final var membersNow = databaseService.countMembersByYear(year);
+        final var membersBefore = databaseService.countMembersByYear(year.minusYears(1));
         final var number = membersNow - membersBefore;
         final var text = String.format("new members joined JUG Switzerland during %s.", year);
         return new Stats(number, text);
@@ -113,21 +114,21 @@ public class WebsiteStats extends Div {
         final var year = Year.now();
         final var firstDay = year.atMonth(JANUARY).atDay(1);
         final var lastDay = year.atMonth(DECEMBER).atEndOfMonth();
-        final var number = statisticService.countNewMembers(firstDay, lastDay);
+        final var number = databaseService.countNewMembers(firstDay, lastDay);
         final var text = String.format("new members joined JUG Switzerland in %s so far.", year);
         return new Stats(number, text);
     }
 
     private Stats getEventCountLastYear() {
         final var year = Year.now().minusYears(1);
-        final var number = statisticService.countEventsByYear(year);
+        final var number = databaseService.countEventsByYear(year);
         final var text = String.format("events were organized by JUG Switzerland during %s.", year);
         return new Stats(number, text);
     }
 
     private Stats getEventCountThisYear() {
         final var year = Year.now();
-        final var number = statisticService.countEventsByYear(year);
+        final var number = databaseService.countEventsByYear(year);
         final var text = String.format("events were organized by JUG Switzerland in %s so far.", year);
         return new Stats(number, text);
     }

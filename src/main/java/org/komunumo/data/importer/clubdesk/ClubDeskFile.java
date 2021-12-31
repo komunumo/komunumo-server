@@ -22,7 +22,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.service.MemberService;
+import org.komunumo.data.service.DatabaseService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -90,10 +90,10 @@ public class ClubDeskFile {
         return members;
     }
 
-    public void importMembers(@NotNull final MemberService memberService) {
+    public void importMembers(@NotNull final DatabaseService databaseService) {
         for (final var clubDeskMember : getMembers()) {
             final var email = clubDeskMember.email();
-            final var member = memberService.getMemberByEmail(email).orElse(memberService.newMember());
+            final var member = databaseService.getMemberByEmail(email).orElse(databaseService.newMember());
             member.setMembershipBegin(clubDeskMember.membershipBeginDate());
             member.setMembershipEnd(clubDeskMember.membershipEndDate());
             member.setMembershipId(clubDeskMember.membershipId());

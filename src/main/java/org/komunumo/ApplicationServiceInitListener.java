@@ -21,7 +21,7 @@ package org.komunumo;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.service.RedirectService;
+import org.komunumo.data.service.DatabaseService;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,11 +32,11 @@ import java.util.Map;
 @Component
 public class ApplicationServiceInitListener implements VaadinServiceInitListener {
 
-    private final RedirectService redirectService;
+    private final DatabaseService databaseService;
     private final Map<String, String> redirects = new HashMap<>();
 
-    public ApplicationServiceInitListener(@NotNull final RedirectService redirectService) {
-        this.redirectService = redirectService;
+    public ApplicationServiceInitListener(@NotNull final DatabaseService databaseService) {
+        this.databaseService = databaseService;
         reloadRedirects();
     }
 
@@ -57,7 +57,7 @@ public class ApplicationServiceInitListener implements VaadinServiceInitListener
 
     public void reloadRedirects() {
         redirects.clear();
-        redirectService.getAllRedirects().forEach(record -> redirects.put(record.getOldUrl(), record.getNewUrl()));
+        databaseService.getAllRedirects().forEach(record -> redirects.put(record.getOldUrl(), record.getNewUrl()));
     }
 
 }

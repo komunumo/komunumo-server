@@ -20,7 +20,7 @@ package org.komunumo.security;
 
 import com.vaadin.flow.spring.security.VaadinWebSecurityConfigurerAdapter;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.service.RedirectService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.view.login.LoginView;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,10 +39,10 @@ public class SecurityConfiguration extends VaadinWebSecurityConfigurerAdapter {
     public static final String LOGIN_URL = "login";
     public static final String LOGOUT_URL = "/";
 
-    private final RedirectService redirectService;
+    private final DatabaseService databaseService;
 
-    public SecurityConfiguration(@NotNull final RedirectService redirectService) {
-        this.redirectService = redirectService;
+    public SecurityConfiguration(@NotNull final DatabaseService databaseService) {
+        this.databaseService = databaseService;
     }
 
     @Bean
@@ -82,6 +82,6 @@ public class SecurityConfiguration extends VaadinWebSecurityConfigurerAdapter {
                 // (development mode) H2 debugging console
                 "/h2-console/**");
 
-        redirectService.getAllRedirects().forEach(record -> web.ignoring().antMatchers(record.getOldUrl()));
+        databaseService.getAllRedirects().forEach(record -> web.ignoring().antMatchers(record.getOldUrl()));
     }
 }

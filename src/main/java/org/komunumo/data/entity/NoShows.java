@@ -16,22 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.ui.view.website;
+package org.komunumo.data.entity;
 
-import com.vaadin.flow.component.html.Anchor;
-import org.jetbrains.annotations.NotNull;
-
-public class SubMenuItem extends Anchor {
-
-    public SubMenuItem(@NotNull final String href, @NotNull final String text) {
-        this(href, text, false);
-    }
-
-    public SubMenuItem(@NotNull final String href, @NotNull final String text, final boolean active) {
-        super(href, text);
-        if (active) {
-            addClassName("active");
-        }
-    }
-
+public enum NoShows {
+    INCLUDE, EXCLUDE, ONLY
 }

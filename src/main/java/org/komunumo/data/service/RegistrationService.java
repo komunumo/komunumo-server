@@ -35,7 +35,6 @@ import org.komunumo.data.service.getter.MailSenderGetter;
 import org.komunumo.util.FormatterUtil;
 import org.komunumo.util.URLUtil;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,8 +45,7 @@ import static org.komunumo.data.db.tables.Member.MEMBER;
 import static org.komunumo.data.db.tables.Registration.REGISTRATION;
 import static org.komunumo.util.FormatterUtil.formatDateTime;
 
-@Service
-public interface RegistrationService extends ConfigurationGetter, DSLContextGetter, MailSenderGetter, EventOrganizerService {
+interface RegistrationService extends ConfigurationGetter, DSLContextGetter, MailSenderGetter, EventOrganizerService {
 
     default Optional<Registration> getRegistration(@NotNull final Long eventId,
                                                   @NotNull final Long memberId) {

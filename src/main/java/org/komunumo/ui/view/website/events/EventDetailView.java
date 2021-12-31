@@ -24,14 +24,8 @@ import com.vaadin.flow.router.NotFoundException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-
-import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.service.RegistrationService;
-import org.komunumo.data.service.EventService;
-import org.komunumo.data.service.MemberService;
-import org.komunumo.data.service.SubscriptionService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.SubMenu;
 import org.komunumo.ui.view.website.SubMenuItem;
@@ -40,6 +34,7 @@ import org.komunumo.util.URLUtil;
 
 import java.time.Year;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Route(value = "event/:location/:year/:url", layout = WebsiteLayout.class)
@@ -48,22 +43,13 @@ import java.util.Map;
 @AnonymousAllowed
 public class EventDetailView extends ContentBlock implements BeforeEnterObserver{
 
-    private final EventService eventService;
-    private final RegistrationService registrationService;
-    private final SubscriptionService subscriptionService;
-    private final MemberService memberService;
+    private final DatabaseService databaseService;
 
     private final Map<String, String> locationMapper = new HashMap<>();
 
-    public EventDetailView(@NotNull final EventService eventService,
-                           @NotNull final RegistrationService registrationService,
-                           @NotNull final SubscriptionService subscriptionService,
-                           @NotNull final MemberService memberService) {
+    public EventDetailView(@NotNull final DatabaseService databaseService) {
         super("Events");
-        this.eventService = eventService;
-        this.registrationService = registrationService;
-        this.subscriptionService = subscriptionService;
-        this.memberService = memberService;
+        this.databaseService = databaseService;
     }
 
     @Override
@@ -77,7 +63,7 @@ public class EventDetailView extends ContentBlock implements BeforeEnterObserver
         final var queryParams = beforeEnterEvent.getLocation().getQueryParameters();
         final var deregisterCode = queryParams.getParameters().getOrDefault("deregister", List.of("")).get(0).trim();
 
-        final var event = eventService.getEventByUrl(mapLocation(location), Year.of(year), url)
+        final var event = databaseService.getEventByUrl(mapLocation(location), Year.of(year), url)
                 .orElseThrow(NotFoundException::new);
 
         if (!previewCode.isBlank() && event.getPublished()) {
@@ -101,7 +87,7 @@ public class EventDetailView extends ContentBlock implements BeforeEnterObserver
         article.addDescription(event);
         article.addLevel(event);
         article.addLanguage(event);
-        article.addRegistrationForm(memberService, registrationService, subscriptionService, event, deregisterCode);
+        article.addRegistrationForm(databaseService, event, deregisterCode);
         article.addLevelInfo();
         setContent(article);
         setSubMenu(new SubMenu(new SubMenuItem("/events", "Events overview")));
@@ -109,7 +95,7 @@ public class EventDetailView extends ContentBlock implements BeforeEnterObserver
 
     private String mapLocation(@NotNull final String location) {
         if (!locationMapper.containsKey(location)) {
-            eventService.getAllEventLocations()
+            databaseService.getAllEventLocations()
                     .forEach(value -> locationMapper.put(URLUtil.createReadableUrl(value), value));
         }
         return locationMapper.getOrDefault(location, location);

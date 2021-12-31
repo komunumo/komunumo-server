@@ -22,7 +22,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinServletRequest;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Member;
-import org.komunumo.data.service.MemberService;
+import org.komunumo.data.service.DatabaseService;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,10 +35,10 @@ import java.util.Optional;
 @SuppressWarnings("ClassCanBeRecord")
 public class AuthenticatedUser {
 
-    private final MemberService memberService;
+    private final DatabaseService databaseService;
 
-    public AuthenticatedUser(@NotNull final MemberService memberService) {
-        this.memberService = memberService;
+    public AuthenticatedUser(@NotNull final DatabaseService databaseService) {
+        this.databaseService = databaseService;
     }
 
     private Optional<Authentication> getAuthentication() {
@@ -48,7 +48,7 @@ public class AuthenticatedUser {
     }
 
     public Optional<Member> get() {
-        return getAuthentication().flatMap(authentication -> memberService.getMemberByEmail(authentication.getName()));
+        return getAuthentication().flatMap(authentication -> databaseService.getMemberByEmail(authentication.getName()));
     }
 
     public void logout() {

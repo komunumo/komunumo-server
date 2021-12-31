@@ -20,25 +20,24 @@ package org.komunumo.ui.view.website.home;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
-
-import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
-import org.komunumo.data.service.EventService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.SubMenu;
 import org.komunumo.ui.view.website.SubMenuItem;
 import org.komunumo.ui.view.website.events.EventPreview;
 import org.komunumo.util.URLUtil;
 
+import java.util.List;
+
 public class EventPreviewBlock extends ContentBlock {
 
-    public EventPreviewBlock(@NotNull final EventService eventService) {
+    public EventPreviewBlock(@NotNull final DatabaseService databaseService) {
         super("Events");
         addClassName("home-view");
 
-        final var events = eventService.upcomingEvents().toList();
+        final var events = databaseService.upcomingEvents().toList();
         final var eventsList = new Div();
         eventsList.addClassName("events-list");
         events.stream()

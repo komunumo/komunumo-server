@@ -37,7 +37,7 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.NewsEntity;
-import org.komunumo.data.service.NewsService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.WebsiteLayout;
 
@@ -53,11 +53,11 @@ import static org.komunumo.util.FormatterUtil.formatDate;
 @AnonymousAllowed
 public class NewsView extends ContentBlock implements BeforeEnterObserver {
 
-    private final NewsService newsService;
+    private final DatabaseService databaseService;
 
-    public NewsView(@NotNull final NewsService newsService) {
+    public NewsView(@NotNull final DatabaseService databaseService) {
         super("News");
-        this.newsService = newsService;
+        this.databaseService = databaseService;
         addClassName("news-view");
     }
 
@@ -69,7 +69,7 @@ public class NewsView extends ContentBlock implements BeforeEnterObserver {
         final var idParam = params.get("id");
         if (idParam.isPresent()) {
             final var id = Long.parseLong(idParam.get());
-            newsService.getNewsWhenVisible(id).ifPresent(newsEntities::add);
+            databaseService.getNewsWhenVisible(id).ifPresent(newsEntities::add);
             if (newsEntities.isEmpty()) {
                 beforeEnterEvent.forwardTo(NewsView.class);
             }
@@ -81,7 +81,7 @@ public class NewsView extends ContentBlock implements BeforeEnterObserver {
         }
 
         if (newsEntities.isEmpty()) {
-            newsEntities.addAll(newsService.getAllVisibleNews());
+            newsEntities.addAll(databaseService.getAllVisibleNews());
         }
 
         if (newsEntities.isEmpty()) {

@@ -27,15 +27,13 @@ import org.komunumo.data.service.getter.DSLContextGetter;
 import org.komunumo.data.service.getter.MailSenderGetter;
 import org.komunumo.util.URLUtil;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.komunumo.data.db.tables.Subscription.SUBSCRIPTION;
 
-@Service
-public interface SubscriptionService extends ConfigurationGetter, DSLContextGetter, MailSenderGetter {
+interface SubscriptionService extends ConfigurationGetter, DSLContextGetter, MailSenderGetter {
 
     default Optional<SubscriptionRecord> getSubscription(@NotNull final String emailAddress) {
         return dsl().selectFrom(SUBSCRIPTION)

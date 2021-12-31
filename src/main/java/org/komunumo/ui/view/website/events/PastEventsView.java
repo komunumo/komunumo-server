@@ -30,7 +30,7 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.komunumo.data.service.EventService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.SubMenu;
 import org.komunumo.ui.view.website.SubMenuItem;
@@ -47,12 +47,12 @@ import java.util.List;
 @AnonymousAllowed
 public class PastEventsView extends ContentBlock implements BeforeEnterObserver {
 
-    private final EventService eventService;
+    private final DatabaseService databaseService;
 
-    public PastEventsView(@NotNull final EventService eventService) {
+    public PastEventsView(@NotNull final DatabaseService databaseService) {
         super("Events");
 
-        this.eventService = eventService;
+        this.databaseService = databaseService;
         addClassName("events-view");
 
         final var upcomingTitle = new H1("Upcoming");
@@ -64,8 +64,8 @@ public class PastEventsView extends ContentBlock implements BeforeEnterObserver 
         final var params = beforeEnterEvent.getRouteParameters();
         final var year = params.get("year");
         final var selectedYear = year.isPresent() ? Year.parse(year.get()) : Year.now();
-        final var years = eventService.getYearsWithPastEvents();
-        final var events = eventService.pastEvents(selectedYear).toList();
+        final var years = databaseService.getYearsWithPastEvents();
+        final var events = databaseService.pastEvents(selectedYear).toList();
 
         final var locationSelector = createLocationSelector(years, selectedYear);
 

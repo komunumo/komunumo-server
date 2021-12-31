@@ -31,7 +31,7 @@ import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.komunumo.data.service.SubscriptionService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.WebsiteLayout;
 import org.komunumo.ui.view.website.home.HomeView;
@@ -44,11 +44,11 @@ import java.util.List;
 @AnonymousAllowed
 public class NewsletterSubscriptionValidationView extends ContentBlock implements HasUrlParameter<String> {
 
-    private final SubscriptionService subscriptionService;
+    private final DatabaseService databaseService;
 
-    public NewsletterSubscriptionValidationView(@NotNull final SubscriptionService subscriptionService) {
+    public NewsletterSubscriptionValidationView(@NotNull final DatabaseService databaseService) {
         super("News");
-        this.subscriptionService = subscriptionService;
+        this.databaseService = databaseService;
         addClassName("newsletter-subscription-validation");
     }
 
@@ -61,7 +61,7 @@ public class NewsletterSubscriptionValidationView extends ContentBlock implement
         final var emailAddress = parameters.getOrDefault("email", List.of("")).get(0);
         final var validationCode = parameters.getOrDefault("code", List.of("")).get(0);
 
-        final var validationOkay = subscriptionService.validateSubscription(emailAddress, validationCode);
+        final var validationOkay = databaseService.validateSubscription(emailAddress, validationCode);
 
         final var content = new Div();
         content.add(new H2("Newsletter Subscription Validation"));

@@ -36,7 +36,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.ApplicationServiceInitListener;
 import org.komunumo.data.db.tables.records.RedirectRecord;
-import org.komunumo.data.service.RedirectService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
@@ -49,15 +49,15 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @CssImport(value = "./themes/komunumo/views/admin/redirect-setting.css")
 public class RedirectSetting extends ResizableView {
 
-    private final RedirectService redirectService;
+    private final DatabaseService databaseService;
     private final ApplicationServiceInitListener applicationServiceInitListener;
 
     private final TextField filterField;
     private final Grid<RedirectRecord> grid;
 
-    public RedirectSetting(@NotNull final RedirectService redirectService,
+    public RedirectSetting(@NotNull final DatabaseService databaseService,
                            @NotNull final ApplicationServiceInitListener applicationServiceInitListener) {
-        this.redirectService = redirectService;
+        this.databaseService = databaseService;
         this.applicationServiceInitListener = applicationServiceInitListener;
 
         addClassNames("redirect-setting", "flex", "flex-col", "h-full");
@@ -113,7 +113,7 @@ public class RedirectSetting extends ResizableView {
 
     private void showEditDialog(@Nullable final RedirectRecord redirectRecord) {
         final var dialog = new RedirectDialog(redirectRecord != null ? "Edit Redirect" : "New Redirect", applicationServiceInitListener);
-        dialog.open(redirectRecord != null ? redirectRecord : redirectService.newRedirect(), this::reloadGridItems);
+        dialog.open(redirectRecord != null ? redirectRecord : databaseService.newRedirect(), this::reloadGridItems);
     }
 
     private void deleteRedirect(@NotNull final RedirectRecord redirectRecord) {
@@ -131,7 +131,7 @@ public class RedirectSetting extends ResizableView {
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> redirectService.findRedirect(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> databaseService.findRedirect(query.getOffset(), query.getLimit(), filterField.getValue()));
         grid.recalculateColumnWidths();
     }
 

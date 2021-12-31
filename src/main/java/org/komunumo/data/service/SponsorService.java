@@ -27,7 +27,6 @@ import org.komunumo.data.db.tables.records.SponsorDomainRecord;
 import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.data.entity.SponsorEntity;
 import org.komunumo.data.service.getter.DSLContextGetter;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -38,8 +37,7 @@ import java.util.stream.Stream;
 import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
 import static org.komunumo.data.db.tables.SponsorDomain.SPONSOR_DOMAIN;
 
-@Service
-public interface SponsorService extends DSLContextGetter {
+interface SponsorService extends DSLContextGetter {
 
     default SponsorRecord newSponsor() {
         final var sponsor = dsl().newRecord(SPONSOR);

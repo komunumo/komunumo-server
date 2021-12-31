@@ -27,32 +27,32 @@ import com.vaadin.flow.component.html.Image;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.entity.SponsorEntity;
-import org.komunumo.data.service.SponsorService;
+import org.komunumo.data.service.DatabaseService;
 
 import java.util.Locale;
 
 @CssImport("./themes/komunumo/views/website/sponsor-block.css")
 public class SponsorBlock extends ContentBlock {
 
-    public SponsorBlock(@NotNull SponsorService sponsorService) {
+    public SponsorBlock(@NotNull DatabaseService databaseService) {
         super("Sponsors");
         addClassName("sponsor-block");
-        setContent(createSponsorComponent(sponsorService));
+        setContent(createSponsorComponent(databaseService));
     }
 
-    private Component createSponsorComponent(@NotNull final SponsorService sponsorService) {
-        return new Div(createSponsorComponent(sponsorService, SponsorLevel.Platinum),
-                createSponsorComponent(sponsorService, SponsorLevel.Gold),
-                createSponsorComponent(sponsorService, SponsorLevel.Silver));
+    private Component createSponsorComponent(@NotNull final DatabaseService databaseService) {
+        return new Div(createSponsorComponent(databaseService, SponsorLevel.Platinum),
+                createSponsorComponent(databaseService, SponsorLevel.Gold),
+                createSponsorComponent(databaseService, SponsorLevel.Silver));
     }
 
-    private Component createSponsorComponent(@NotNull final SponsorService sponsorService, @NotNull final SponsorLevel sponsorLevel) {
+    private Component createSponsorComponent(@NotNull final DatabaseService databaseService, @NotNull final SponsorLevel sponsorLevel) {
         final var levelTitle = new H3("%s sponsor".formatted(sponsorLevel.getLiteral()));
         levelTitle.addClassName("sponsor-level");
 
         final var sponsorLogos = new Div();
         sponsorLogos.addClassName("sponsor-logos");
-        sponsorService.getActiveSponsors(sponsorLevel).map(SponsorBlock::toLogo).forEach(sponsorLogos::add);
+        databaseService.getActiveSponsors(sponsorLevel).map(SponsorBlock::toLogo).forEach(sponsorLogos::add);
 
         final var sponsorComponent = new Div(levelTitle, sponsorLogos);
         sponsorComponent.addClassName("sponsor-level-%s".formatted(sponsorLevel.getLiteral().toLowerCase(Locale.getDefault())));

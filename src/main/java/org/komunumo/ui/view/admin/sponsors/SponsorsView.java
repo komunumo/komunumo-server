@@ -42,7 +42,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Role;
 import org.komunumo.data.entity.SponsorEntity;
-import org.komunumo.data.service.SponsorService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
@@ -63,12 +63,12 @@ import static org.komunumo.util.FormatterUtil.formatDate;
 @RolesAllowed(Role.Type.ADMIN)
 public class SponsorsView extends ResizableView implements HasUrlParameter<String> {
 
-    private final SponsorService sponsorService;
+    private final DatabaseService databaseService;
     private final TextField filterField;
     private final Grid<SponsorEntity> grid;
 
-    public SponsorsView(@NotNull final SponsorService sponsorService) {
-        this.sponsorService = sponsorService;
+    public SponsorsView(@NotNull final DatabaseService databaseService) {
+        this.databaseService = databaseService;
 
         addClassNames("sponsors-view", "flex", "flex-col", "h-full");
 
@@ -156,9 +156,9 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
     }
 
     private void showSponsorDialog(@Nullable final SponsorEntity sponsorEntity) {
-        final var sponsorRecord = sponsorEntity == null || sponsorEntity.id() == null ? sponsorService.newSponsor() :
-                sponsorService.getSponsorRecord(sponsorEntity.id()).orElse(sponsorService.newSponsor());
-        final var dialog = new SponsorDialog(sponsorRecord.getId() != null ? "Edit Sponsor" : "New Sponsor", sponsorService);
+        final var sponsorRecord = sponsorEntity == null || sponsorEntity.id() == null ? databaseService.newSponsor() :
+                databaseService.getSponsorRecord(sponsorEntity.id()).orElse(databaseService.newSponsor());
+        final var dialog = new SponsorDialog(sponsorRecord.getId() != null ? "Edit Sponsor" : "New Sponsor", databaseService);
         dialog.open(sponsorRecord, this::reloadGridItems);
     }
 
@@ -166,7 +166,7 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
         new ConfirmDialog("Confirm deletion",
                 String.format("Are you sure you want to permanently delete the sponsor \"%s\"?", sponsorEntity.name()),
                 "Delete", dialogEvent -> {
-            sponsorService.deleteSponsor(sponsorEntity.id());
+            databaseService.deleteSponsor(sponsorEntity.id());
             reloadGridItems();
             dialogEvent.getSource().close();
         },
@@ -175,7 +175,7 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> sponsorService.findSponsors(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> databaseService.findSponsors(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
     private void downloadSponsors() {

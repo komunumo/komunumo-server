@@ -30,7 +30,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.FaqRecord;
-import org.komunumo.data.service.FaqService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.WebsiteLayout;
 
@@ -40,13 +40,13 @@ import org.komunumo.ui.view.website.WebsiteLayout;
 @AnonymousAllowed
 public class FaqView extends ContentBlock {
 
-    public FaqView(@NotNull final FaqService faqService) {
+    public FaqView(@NotNull final DatabaseService databaseService) {
         super("FAQ");
         addClassName("faq-view");
 
         final var content = new Div();
         content.add(new H2("Frequently asked questions"));
-        faqService.getAllFaqRecords()
+        databaseService.getAllFaqRecords()
                 .map(this::toArticle)
                 .forEach(content::add);
         setContent(content);

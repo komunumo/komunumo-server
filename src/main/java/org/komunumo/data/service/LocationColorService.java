@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.LocationColorRecord;
 import org.komunumo.data.service.getter.DSLContextGetter;
-import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,8 +30,7 @@ import java.util.stream.Stream;
 
 import static org.komunumo.data.db.tables.LocationColor.LOCATION_COLOR;
 
-@Service
-public interface LocationColorService extends DSLContextGetter {
+interface LocationColorService extends DSLContextGetter {
 
     default @NotNull LocationColorRecord newLocationColorRecord() {
         return dsl().newRecord(LOCATION_COLOR);

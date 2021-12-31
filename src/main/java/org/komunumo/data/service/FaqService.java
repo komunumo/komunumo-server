@@ -23,15 +23,13 @@ import org.jetbrains.annotations.Nullable;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.FaqRecord;
 import org.komunumo.data.service.getter.DSLContextGetter;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.komunumo.data.db.tables.Faq.FAQ;
 
-@Service
-public interface FaqService extends DSLContextGetter {
+interface FaqService extends DSLContextGetter {
 
     default @NotNull FaqRecord newFaqRecord() {
         return dsl().newRecord(FAQ);

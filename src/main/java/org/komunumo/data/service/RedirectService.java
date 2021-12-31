@@ -23,14 +23,12 @@ import org.jetbrains.annotations.Nullable;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.RedirectRecord;
 import org.komunumo.data.service.getter.DSLContextGetter;
-import org.springframework.stereotype.Service;
 
 import java.util.stream.Stream;
 
 import static org.komunumo.data.db.tables.Redirect.REDIRECT;
 
-@Service
-public interface RedirectService extends DSLContextGetter {
+interface RedirectService extends DSLContextGetter {
 
     default RedirectRecord newRedirect() {
         return dsl().newRecord(REDIRECT);

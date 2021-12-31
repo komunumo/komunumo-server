@@ -28,10 +28,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.RouterLayout;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.configuration.Configuration;
 import org.komunumo.data.service.DatabaseService;
-import org.komunumo.data.service.SponsorService;
-import org.komunumo.data.service.StatisticService;
 import org.komunumo.security.AuthenticatedUser;
 
 @CssImport(value = "./themes/komunumo/views/website/website-layout.css")

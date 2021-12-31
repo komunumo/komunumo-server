@@ -21,8 +21,9 @@ package org.komunumo.data.service;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.enums.EventType;
+import org.komunumo.data.entity.MonthlyVisitors;
+import org.komunumo.data.entity.NoShows;
 import org.komunumo.data.service.getter.DSLContextGetter;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -37,8 +38,7 @@ import static org.komunumo.data.db.tables.Event.EVENT;
 import static org.komunumo.data.db.tables.Member.MEMBER;
 import static org.komunumo.data.db.tables.Registration.REGISTRATION;
 
-@Service
-public interface StatisticService extends DSLContextGetter {
+interface StatisticService extends DSLContextGetter {
 
     default int countMembersByYear(@NotNull final Year year) {
         final var endOfYear = year.atMonth(DECEMBER).atEndOfMonth();
@@ -107,7 +107,7 @@ public interface StatisticService extends DSLContextGetter {
                         .and(REGISTRATION.NO_SHOW.isFalse())
                 .groupBy(EVENT.LOCATION)
                 .orderBy(EVENT.LOCATION)
-                .fetchInto(StatisticService.MonthlyVisitors.class);
+                .fetchInto(MonthlyVisitors.class);
     }
 
     default List<Year> getYearsWithEvents() {
@@ -119,12 +119,5 @@ public interface StatisticService extends DSLContextGetter {
                 .map(record -> Year.of((Integer) record.getValue("year")))
                 .toList();
     }
-
-    enum NoShows {
-        INCLUDE, EXCLUDE, ONLY
-    }
-
-    record MonthlyVisitors (String location, int january, int february, int march, int april, int may, int june,
-                            int july, int august, int september, int october, int november, int december) { }
 
 }

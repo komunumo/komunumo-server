@@ -38,7 +38,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.tables.records.FaqRecord;
 import org.komunumo.data.entity.Role;
-import org.komunumo.data.service.FaqService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
@@ -57,12 +57,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @RolesAllowed(Role.Type.ADMIN)
 public class FaqView extends ResizableView {
 
-    private final FaqService faqService;
+    private final DatabaseService databaseService;
     private final TextField filterField;
     private final Grid<FaqRecord> grid;
 
-    public FaqView(@NotNull final FaqService faqService) {
-        this.faqService = faqService;
+    public FaqView(@NotNull final DatabaseService databaseService) {
+        this.databaseService = databaseService;
 
         addClassNames("faq-view", "flex", "flex-col", "h-full");
 
@@ -114,7 +114,7 @@ public class FaqView extends ResizableView {
 
     private void showEditDialog(@Nullable final FaqRecord faqRecord) {
         final var dialog = new FaqDialog(faqRecord != null ? "Edit Keyword" : "New Keyword");
-        dialog.open(faqRecord != null ? faqRecord : faqService.newFaqRecord(), this::reloadGridItems);
+        dialog.open(faqRecord != null ? faqRecord : databaseService.newFaqRecord(), this::reloadGridItems);
     }
 
     private void deleteEntry(@NotNull final FaqRecord faqRecord) {
@@ -130,7 +130,7 @@ public class FaqView extends ResizableView {
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> faqService.findFaqRecords(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> databaseService.findFaqRecords(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
     private void downloadEntries() {

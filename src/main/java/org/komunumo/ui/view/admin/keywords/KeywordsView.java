@@ -35,19 +35,17 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
-
-import javax.annotation.security.RolesAllowed;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.KeywordListEntity;
 import org.komunumo.data.entity.Role;
-import org.komunumo.data.service.KeywordService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
 
+import javax.annotation.security.RolesAllowed;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 
@@ -60,12 +58,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @RolesAllowed(Role.Type.ADMIN)
 public class KeywordsView extends ResizableView {
 
-    private final KeywordService keywordService;
+    private final DatabaseService databaseService;
     private final TextField filterField;
     private final Grid<KeywordListEntity> grid;
 
-    public KeywordsView(@NotNull final KeywordService keywordService) {
-        this.keywordService = keywordService;
+    public KeywordsView(@NotNull final DatabaseService databaseService) {
+        this.databaseService = databaseService;
 
         addClassNames("keywords-view", "flex", "flex-col", "h-full");
 
@@ -120,8 +118,8 @@ public class KeywordsView extends ResizableView {
     }
 
     private void showKeywordDialog(@Nullable final KeywordListEntity keywordListEntity) {
-        final var keywordRecord = keywordListEntity == null || keywordListEntity.id() == null ? keywordService.newKeyword() :
-                keywordService.getKeywordRecord(keywordListEntity.id()).orElse(keywordService.newKeyword());
+        final var keywordRecord = keywordListEntity == null || keywordListEntity.id() == null ? databaseService.newKeyword() :
+                databaseService.getKeywordRecord(keywordListEntity.id()).orElse(databaseService.newKeyword());
         final var dialog = new KeywordDialog(keywordRecord.getId() != null ? "Edit Keyword" : "New Keyword");
         dialog.open(keywordRecord, this::reloadGridItems);
     }
@@ -130,7 +128,7 @@ public class KeywordsView extends ResizableView {
         new ConfirmDialog("Confirm deletion",
                 String.format("Are you sure you want to permanently delete the keyword \"%s\"?", keywordListEntity.keyword()),
                 "Delete", dialogEvent -> {
-            keywordService.deleteKeyword(keywordListEntity.id());
+            databaseService.deleteKeyword(keywordListEntity.id());
             reloadGridItems();
             dialogEvent.getSource().close();
         },
@@ -139,7 +137,7 @@ public class KeywordsView extends ResizableView {
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> keywordService.findKeywords(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> databaseService.findKeywords(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
     private void downloadKeywords() {

@@ -42,7 +42,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.NewsEntity;
 import org.komunumo.data.entity.Role;
-import org.komunumo.data.service.NewsService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
 import org.komunumo.ui.component.ResizableView;
@@ -63,12 +63,12 @@ import static org.komunumo.util.FormatterUtil.formatDateTime;
 @RolesAllowed(Role.Type.ADMIN)
 public class NewsView extends ResizableView implements HasUrlParameter<String> {
 
-    private final NewsService newsService;
+    private final DatabaseService databaseService;
     private final TextField filterField;
     private final Grid<NewsEntity> grid;
 
-    public NewsView(@NotNull final NewsService newsService) {
-        this.newsService = newsService;
+    public NewsView(@NotNull final DatabaseService databaseService) {
+        this.databaseService = databaseService;
 
         addClassNames("news-view", "flex", "flex-col", "h-full");
 
@@ -149,8 +149,8 @@ public class NewsView extends ResizableView implements HasUrlParameter<String> {
     }
 
     private void showNewsDialog(@Nullable final NewsEntity newsEntity) {
-        final var newsRecord = newsEntity == null || newsEntity.id() == null ? newsService.newNews() :
-                newsService.getNewsRecord(newsEntity.id()).orElse(newsService.newNews());
+        final var newsRecord = newsEntity == null || newsEntity.id() == null ? databaseService.newNews() :
+                databaseService.getNewsRecord(newsEntity.id()).orElse(databaseService.newNews());
         final var dialog = new NewsDialog(newsRecord.getId() != null ? "Edit News" : "New News");
         dialog.open(newsRecord, this::reloadGridItems);
     }
@@ -159,7 +159,7 @@ public class NewsView extends ResizableView implements HasUrlParameter<String> {
         new ConfirmDialog("Confirm deletion",
                 String.format("Are you sure you want to permanently delete the news \"%s\"?", newsEntity.title()),
                 "Delete", dialogEvent -> {
-            newsService.deleteNews(newsEntity.id());
+            databaseService.deleteNews(newsEntity.id());
             reloadGridItems();
             dialogEvent.getSource().close();
         },
@@ -168,7 +168,7 @@ public class NewsView extends ResizableView implements HasUrlParameter<String> {
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> newsService.findNews(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> databaseService.findNews(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
     private void downloadNews() {

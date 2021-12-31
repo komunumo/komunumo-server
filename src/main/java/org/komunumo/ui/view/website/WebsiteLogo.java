@@ -21,10 +21,9 @@ package org.komunumo.ui.view.website;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.server.InvalidApplicationConfigurationException;
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.service.DatabaseService;
 
 import java.util.Random;
-
-import org.komunumo.data.service.DatabaseService;
 
 public class WebsiteLogo extends Image {
 

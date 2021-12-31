@@ -18,24 +18,21 @@
 
 package org.komunumo.data.importer.bigmarker;
 
-import java.time.LocalDateTime;
-import java.util.Locale;
-
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Member;
-import org.komunumo.data.service.RegistrationService;
-import org.komunumo.data.service.EventService;
-import org.komunumo.data.service.MemberService;
+import org.komunumo.data.service.DatabaseService;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -98,15 +95,15 @@ public class BigMarkerReport {
         return bigMarkerRegistrations;
     }
 
-    private Member getOrCreateMember(@NotNull final MemberService memberService,
+    private Member getOrCreateMember(@NotNull final DatabaseService databaseService,
                                      @NotNull final BigMarkerRegistration registration) {
         final Optional<Member> existingMember = registration.email() == null ? Optional.empty() :
-                memberService.getMemberByEmail(registration.email());
+                databaseService.getMemberByEmail(registration.email());
         if (existingMember.isPresent()) {
             return existingMember.get();
         }
 
-        final var newMember = memberService.newMember();
+        final var newMember = databaseService.newMember();
         newMember.setFirstName(registration.firstName());
         newMember.setLastName(registration.lastName());
         newMember.setEmail(registration.email());
@@ -123,22 +120,20 @@ public class BigMarkerReport {
         return newMember;
     }
 
-    public void importRegistrations(@NotNull final EventService eventService,
-                                    @NotNull final RegistrationService registrationService,
-                                    @NotNull final MemberService memberService) {
-        final var event = eventService.getEventByWebinarUrl(webinarUrl).orElseThrow(() ->
+    public void importRegistrations(@NotNull final DatabaseService databaseService) {
+        final var event = databaseService.getEventByWebinarUrl(webinarUrl).orElseThrow(() ->
                 new NoSuchElementException(String.format("No event found with webinar URL: %s", webinarUrl)));
         for (final var bigMarkerRegistration : getBigMarkerRegistrations()) {
             final var noShow = bigMarkerRegistration.noShow();
-            final var member = getOrCreateMember(memberService, bigMarkerRegistration);
-            final var existingRegistration = registrationService.getRegistration(event.getId(), member.getId());
+            final var member = getOrCreateMember(databaseService, bigMarkerRegistration);
+            final var existingRegistration = databaseService.getRegistration(event.getId(), member.getId());
             if (existingRegistration.isPresent()) {
                 final var registration = existingRegistration.get();
-                registrationService.updateNoShow(registration, noShow);
+                databaseService.updateNoShow(registration, noShow);
             } else {
                 final var date = bigMarkerRegistration.registrationDate() != null ?
                         bigMarkerRegistration.registrationDate().toLocalDateTime() : LocalDateTime.now();
-                registrationService.registerForEvent(event, member, date, "BigMarker", noShow, false);
+                databaseService.registerForEvent(event, member, date, "BigMarker", noShow, false);
             }
         }
     }

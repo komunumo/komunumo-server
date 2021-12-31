@@ -20,9 +20,6 @@ package org.komunumo.data.importer.jugs;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
-
-import java.util.Random;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
@@ -42,19 +39,7 @@ import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
-import org.komunumo.data.service.EventKeywordService;
-import org.komunumo.data.service.EventOrganizerService;
-import org.komunumo.data.service.EventService;
-import org.komunumo.data.service.EventSpeakerService;
-import org.komunumo.data.service.FaqService;
-import org.komunumo.data.service.KeywordService;
-import org.komunumo.data.service.LocationColorService;
-import org.komunumo.data.service.MemberService;
-import org.komunumo.data.service.NewsService;
-import org.komunumo.data.service.RedirectService;
-import org.komunumo.data.service.RegistrationService;
-import org.komunumo.data.service.SpeakerService;
-import org.komunumo.data.service.SponsorService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.util.URLUtil;
 
 import java.io.IOException;
@@ -78,6 +63,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -98,19 +84,7 @@ import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
 public class JUGSImporter {
 
     private final DSLContext dsl;
-    private final SponsorService sponsorService;
-    private final MemberService memberService;
-    private final EventService eventService;
-    private final RegistrationService registrationService;
-    private final SpeakerService speakerService;
-    private final EventSpeakerService eventSpeakerService;
-    private final EventOrganizerService eventOrganizerService;
-    private final KeywordService keywordService;
-    private final EventKeywordService eventKeywordService;
-    private final FaqService faqService;
-    private final NewsService newsService;
-    private final LocationColorService locationColorService;
-    private final RedirectService redirectService;
+    private final DatabaseService databaseService;
     private final ApplicationServiceInitListener applicationServiceInitListener;
 
     private int hansMaerkiId;
@@ -124,35 +98,11 @@ public class JUGSImporter {
     private UI ui = null;
 
     public JUGSImporter(
-            @NotNull final DSLContext dsl,
-            @NotNull final SponsorService sponsorService,
-            @NotNull final MemberService memberService,
-            @NotNull final EventService eventService,
-            @NotNull final RegistrationService registrationService,
-            @NotNull final SpeakerService speakerService,
-            @NotNull final EventSpeakerService eventSpeakerService,
-            @NotNull final EventOrganizerService eventOrganizerService,
-            @NotNull final KeywordService keywordService,
-            @NotNull final EventKeywordService eventKeywordService,
-            @NotNull final FaqService faqService,
-            @NotNull final NewsService newsService,
-            @NotNull final LocationColorService locationColorService,
-            @NotNull final RedirectService redirectService,
+            @NotNull final DSLContext dsl, // TODO Should not be used here
+            @NotNull final DatabaseService databaseService,
             @NotNull final ApplicationServiceInitListener applicationServiceInitListener) {
         this.dsl = dsl;
-        this.sponsorService = sponsorService;
-        this.memberService = memberService;
-        this.eventService = eventService;
-        this.registrationService = registrationService;
-        this.speakerService = speakerService;
-        this.eventSpeakerService = eventSpeakerService;
-        this.eventOrganizerService = eventOrganizerService;
-        this.keywordService = keywordService;
-        this.eventKeywordService = eventKeywordService;
-        this.faqService = faqService;
-        this.newsService = newsService;
-        this.locationColorService = locationColorService;
-        this.redirectService = redirectService;
+        this.databaseService = databaseService;
         this.applicationServiceInitListener = applicationServiceInitListener;
     }
 
@@ -192,19 +142,19 @@ public class JUGSImporter {
     }
 
     private void addRedirects() {
-        redirectService.addRedirect("/exec", "/admin");
-        redirectService.addRedirect("/exec/", "/admin");
+        databaseService.addRedirect("/exec", "/admin");
+        databaseService.addRedirect("/exec/", "/admin");
         applicationServiceInitListener.reloadRedirects();
     }
 
     private void addLocationColors() {
-        final var existingColors = locationColorService.getAllLocationColors();
+        final var existingColors = databaseService.getAllLocationColors();
         final var random = new Random();
-        eventService.getAllEventLocations().forEach(location -> {
+        databaseService.getAllEventLocations().forEach(location -> {
             if (!existingColors.containsKey(location)) {
                 final var nextInt = random.nextInt(0xffffff + 1);
                 final var colorCode = String.format("#%06x", nextInt);
-                final var record = locationColorService.newLocationColorRecord();
+                final var record = databaseService.newLocationColorRecord();
                 record.setLocation(location);
                 record.setColor(colorCode);
                 record.store();
@@ -229,7 +179,7 @@ public class JUGSImporter {
     }
 
     private boolean notExistingFaqEntry(@NotNull final FaqRecord faqRecord) {
-        return faqService.getFaqRecord(faqRecord.getId()).isEmpty();
+        return databaseService.getFaqRecord(faqRecord.getId()).isEmpty();
     }
 
     private FaqRecord toFaqRecord(@NotNull final String html) {
@@ -238,7 +188,7 @@ public class JUGSImporter {
         final var question = html.substring(questionBeginIndex, questionEndIndex).trim();
         final var answerBeginIndex = html.indexOf("</h3>") + 5;
         final var answer = html.substring(answerBeginIndex).trim();
-        final var faqRecord = faqService.newFaqRecord();
+        final var faqRecord = databaseService.newFaqRecord();
         faqRecord.setId(++faqImportCount);
         faqRecord.setQuestion(question);
         faqRecord.setAnswer(answer);
@@ -259,8 +209,8 @@ public class JUGSImporter {
             final var result = statement.executeQuery(
                     "SELECT id, timestamp, start, stop, titel, untertitel, teaser, beschreibung FROM news ORDER BY id ASC");
             while (result.next()) {
-                final var news = newsService.getNewsRecord(result.getLong("id"))
-                        .orElse(newsService.newNews());
+                final var news = databaseService.getNewsRecord(result.getLong("id"))
+                        .orElse(databaseService.newNews());
                 if (news.getId() == null && !result.getString("titel").isBlank()) {
                     news.set(NEWS.ID, result.getLong("id"));
                     news.set(NEWS.CREATED, getDateTime(result.getString("timestamp")));
@@ -285,8 +235,8 @@ public class JUGSImporter {
             final var result = statement.executeQuery(
                     "SELECT id, bezeichnung FROM eventlabels");
             while (result.next()) {
-                final var keyword = keywordService.getKeywordRecord(result.getLong("id"))
-                        .orElse(keywordService.newKeyword());
+                final var keyword = databaseService.getKeywordRecord(result.getLong("id"))
+                        .orElse(databaseService.newKeyword());
                 if (keyword.getId() == null) {
                     keyword.set(KEYWORD.ID, result.getLong("id"));
                     keyword.set(KEYWORD.KEYWORD_, result.getString("bezeichnung"));
@@ -301,12 +251,12 @@ public class JUGSImporter {
             while (result.next()) {
                 final var eventId = result.getLong("events_id");
                 final var keywordId = result.getLong("eventlabels_id");
-                final var event = eventService.getEvent(eventId);
-                final var keyword = keywordService.getKeywordRecord(keywordId);
+                final var event = databaseService.getEvent(eventId);
+                final var keyword = databaseService.getKeywordRecord(keywordId);
                 if (event.isPresent() && keyword.isPresent()
-                        && eventKeywordService.getKeywordsForEvent(event.orElseThrow())
+                        && databaseService.getKeywordsForEvent(event.orElseThrow())
                             .filter(keywordEntity -> keywordEntity.id() == keywordId).findAny().isEmpty()) {
-                    final var eventKeyword = eventKeywordService.newEventKeyword();
+                    final var eventKeyword = databaseService.newEventKeyword();
                     eventKeyword.set(EVENT_KEYWORD.EVENT_ID, eventId);
                     eventKeyword.set(EVENT_KEYWORD.KEYWORD_ID, keywordId);
                     eventKeyword.store();
@@ -317,22 +267,22 @@ public class JUGSImporter {
     }
 
     private void addMissingMembers() {
-        final var hansMaerki = memberService.getMemberByName("Hans", "Märki")
-                .orElse(memberService.newMember());
+        final var hansMaerki = databaseService.getMemberByName("Hans", "Märki")
+                .orElse(databaseService.newMember());
         hansMaerki.setFirstName("Hans");
         hansMaerki.setLastName("Märki");
         hansMaerki.store();
         hansMaerkiId = hansMaerki.getId().intValue();
 
-        final var rogerSuess = memberService.getMemberByName("Roger", "Süess")
-                .orElse(memberService.newMember());
+        final var rogerSuess = databaseService.getMemberByName("Roger", "Süess")
+                .orElse(databaseService.newMember());
         rogerSuess.setFirstName("Roger");
         rogerSuess.setLastName("Süess");
         rogerSuess.store();
         rogerSuessId = rogerSuess.getId().intValue();
 
-        final var sandroRuch = memberService.getMemberByName("Sandro", "Ruch")
-                .orElse(memberService.newMember());
+        final var sandroRuch = databaseService.getMemberByName("Sandro", "Ruch")
+                .orElse(databaseService.newMember());
         sandroRuch.setFirstName("Sandro");
         sandroRuch.setLastName("Ruch");
         sandroRuch.store();
@@ -350,7 +300,7 @@ public class JUGSImporter {
                 if (eventId == 0) {
                     continue;
                 }
-                final var event = eventService.getEvent(eventId);
+                final var event = databaseService.getEvent(eventId);
                 if (event.isEmpty()) {
                     continue;
                 }
@@ -360,12 +310,12 @@ public class JUGSImporter {
                         || result.getString("noshow") != null && result.getString("noshow").equals("1");
                 final var deregisterCode = result.getString("hashtag");
                 try {
-                    if (registrationService.registerForEvent(eventId, memberId, registerDate, noShow, deregisterCode)) {
+                    if (databaseService.registerForEvent(eventId, memberId, registerDate, noShow, deregisterCode)) {
                         counter.incrementAndGet();
                     }
                 } catch (final Exception e1) {
-                    if (memberService.getMember(memberId, true).isEmpty()) {
-                        final var member = memberService.newMember();
+                    if (databaseService.getMember(memberId, true).isEmpty()) {
+                        final var member = databaseService.newMember();
                         member.setId(memberId);
                         member.setFirstName(RandomStringUtils.randomAlphabetic(32));
                         member.setLastName(RandomStringUtils.randomAlphabetic(32));
@@ -374,16 +324,16 @@ public class JUGSImporter {
                         member.setAccountDeleted(true);
                         member.store();
                         try {
-                            if (registrationService.registerForEvent(eventId, memberId, registerDate, noShow, deregisterCode)) {
+                            if (databaseService.registerForEvent(eventId, memberId, registerDate, noShow, deregisterCode)) {
                                 counter.incrementAndGet();
                             }
                         } catch (final Exception e2) {
-                            if (eventService.getEvent(eventId).isPresent()) {
+                            if (databaseService.getEvent(eventId).isPresent()) {
                                 throw e2;
                             }
                         }
                     } else {
-                        if (eventService.getEvent(eventId).isPresent()) {
+                        if (databaseService.getEvent(eventId).isPresent()) {
                             throw e1;
                         }
                     }
@@ -407,10 +357,10 @@ public class JUGSImporter {
     }
 
     private void updateEventLevel() {
-        eventService.findEvents(0, Integer.MAX_VALUE, null)
+        databaseService.findEvents(0, Integer.MAX_VALUE, null)
                 .filter(Event::getPublished)
                 .filter(event -> event.getLevel() == null)
-                .map(event -> eventService.getEvent(event.getId()))
+                .map(event -> databaseService.getEvent(event.getId()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .forEach(event -> {
@@ -427,7 +377,7 @@ public class JUGSImporter {
             final var result = statement.executeQuery(
                     "SELECT id, vname, nname, firma, bio, image, e_mail, twitter, firmenurl, events_id, lang_talk, abstract, level FROM eventspeaker ORDER BY id DESC");
             while (result.next()) {
-                final var speakerRecord = getSpeaker(speakerService, result);
+                final var speakerRecord = getSpeaker(result);
                 if (speakerRecord.get(SPEAKER.ID) == null
                         && (!getEmptyForNull(result.getString("vname")).isBlank()
                         || !getEmptyForNull(result.getString("nname")).isBlank())) {
@@ -445,16 +395,16 @@ public class JUGSImporter {
                 }
                 final var eventId = result.getLong("events_id");
                 if (eventId > 0) {
-                    final var event = eventService.getEvent(eventId).orElse(null);
+                    final var event = databaseService.getEvent(eventId).orElse(null);
                     if (event != null) {
                         if (speakerRecord.get(SPEAKER.ID) != null) {
-                            final var speakers = eventSpeakerService.getSpeakersForEvent(event).collect(Collectors.toSet());
+                            final var speakers = databaseService.getSpeakersForEvent(event).collect(Collectors.toSet());
                             final var eventSpeakerEntity = new EventSpeakerEntity(
                                     speakerRecord.getId(), speakerRecord.getFirstName(), speakerRecord.getLastName(),
                                     speakerRecord.getCompany(), speakerRecord.getPhoto(), speakerRecord.getBio());
                             if (!speakers.contains(eventSpeakerEntity)) {
                                 speakers.add(eventSpeakerEntity);
-                                eventSpeakerService.setEventSpeakers(event, speakers);
+                                databaseService.setEventSpeakers(event, speakers);
                             }
                         }
 
@@ -501,11 +451,10 @@ public class JUGSImporter {
         showNotification(counter.get() + " new speakers imported.");
     }
 
-    private SpeakerRecord getSpeaker(final @NotNull SpeakerService speakerService,
-                                     final @NotNull ResultSet result) throws SQLException {
+    private SpeakerRecord getSpeaker(final @NotNull ResultSet result) throws SQLException {
         final var speakerId = result.getLong("id");
 
-        final var speakerById = speakerService.getSpeakerRecord(speakerId);
+        final var speakerById = databaseService.getSpeakerRecord(speakerId);
         if (speakerById.isPresent()) {
             return speakerById.get();
         }
@@ -514,7 +463,7 @@ public class JUGSImporter {
         final var lastName = result.getString("nname");
         final var company = result.getString("firma");
         if (!firstName.isBlank() && !lastName.isBlank() && !company.isBlank()) {
-            final var speakerByName = speakerService.getSpeaker(firstName, lastName, company);
+            final var speakerByName = databaseService.getSpeaker(firstName, lastName, company);
             if (speakerByName.isPresent()) {
                 return speakerByName.get();
             }
@@ -522,13 +471,13 @@ public class JUGSImporter {
 
         final var email = result.getString("e_mail");
         if (!email.isBlank()) {
-            final var speakerByEmail = speakerService.getSpeaker(email);
+            final var speakerByEmail = databaseService.getSpeaker(email);
             if (speakerByEmail.isPresent()) {
                 return speakerByEmail.get();
             }
         }
 
-        return speakerService.newSpeaker();
+        return databaseService.newSpeaker();
     }
 
     private String getTwitter(@Nullable final String twitter) {
@@ -558,8 +507,8 @@ public class JUGSImporter {
             final var result = statement.executeQuery(
                     "SELECT id, ort, room, travel_instructions, datum, startzeit, zeitende, titel, untertitel, agenda, abstract, sichtbar, verantwortung, urldatei, url_webinar, anm_formular FROM events_neu WHERE sichtbar='ja' OR datum >= '2021-01-01' ORDER BY id");
             while (result.next()) {
-                final var event = eventService.getEvent(result.getLong("id"))
-                        .orElse(eventService.newEvent());
+                final var event = databaseService.getEvent(result.getLong("id"))
+                        .orElse(databaseService.newEvent());
                 if (event.get(EVENT.ID) == null) {
                     event.set(EVENT.ID, result.getLong("id"));
                     event.set(EVENT.LOCATION, getEmptyForNull(result.getString("ort")));
@@ -599,7 +548,7 @@ public class JUGSImporter {
                     counter.incrementAndGet();
 
                     if (result.getString("urldatei") != null && !result.getString("urldatei").isBlank()) {
-                        redirectService.addRedirect(result.getString("urldatei"), event.getCompleteEventUrl());
+                        databaseService.addRedirect(result.getString("urldatei"), event.getCompleteEventUrl());
                     }
                 }
             }
@@ -709,12 +658,12 @@ public class JUGSImporter {
             }
             final var organizers = organizerIds.stream()
                     .map(Integer::longValue)
-                    .map(memberService::getMember)
+                    .map(databaseService::getMember)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .collect(Collectors.toSet());
             if (!organizers.isEmpty()) {
-                eventOrganizerService.setEventOrganizers(event, organizers);
+                databaseService.setEventOrganizers(event, organizers);
             }
         }
     }
@@ -731,8 +680,8 @@ public class JUGSImporter {
             final var result = statement.executeQuery(
                     "SELECT id, vname, nname, e_mail, strasse, plz, wohnort, land, datum, join_as FROM teilnehmer ORDER BY id");
             while (result.next()) {
-                final var member = memberService.getMember(result.getLong("id"))
-                        .orElse(memberService.newMember());
+                final var member = databaseService.getMember(result.getLong("id"))
+                        .orElse(databaseService.newMember());
                 if (member.get(MEMBER.ID) == null) {
                     final var email = result.getString("e_mail");
                     if (email == null || email.isBlank()) {
@@ -820,8 +769,8 @@ public class JUGSImporter {
             final var result = statement.executeQuery(
                     "SELECT id, firma, sponsortyp, url, logo FROM sponsoren WHERE aktiv='ja' ORDER BY id");
             while (result.next()) {
-                final var sponsorRecord = sponsorService.getSponsorRecord(result.getLong("id"))
-                        .orElse(sponsorService.newSponsor());
+                final var sponsorRecord = databaseService.getSponsorRecord(result.getLong("id"))
+                        .orElse(databaseService.newSponsor());
                 if (sponsorRecord.get(SPONSOR.ID) == null) {
                     sponsorRecord.set(SPONSOR.ID, result.getLong("id"));
                     sponsorRecord.set(SPONSOR.NAME, result.getString("firma"));
@@ -831,7 +780,7 @@ public class JUGSImporter {
                     sponsorRecord.store();
                     if (!sponsorRecord.getWebsite().isBlank()) {
                         final var domain = URLUtil.getDomainFromUrl(sponsorRecord.getWebsite());
-                        final var sponsorDomainRecord = sponsorService.newSponsorDomain();
+                        final var sponsorDomainRecord = databaseService.newSponsorDomain();
                         sponsorDomainRecord.setSponsorId(sponsorRecord.getId());
                         sponsorDomainRecord.setDomain(domain);
                         sponsorDomainRecord.store();
