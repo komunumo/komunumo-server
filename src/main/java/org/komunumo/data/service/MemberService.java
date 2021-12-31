@@ -21,12 +21,12 @@ package org.komunumo.data.service;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
-import org.komunumo.configuration.Configuration;
 import org.komunumo.data.entity.Member;
+import org.komunumo.data.service.getter.ConfigurationGetter;
+import org.komunumo.data.service.getter.DSLContextGetter;
+import org.komunumo.data.service.getter.MailSenderGetter;
 import org.komunumo.util.URLUtil;
-import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
@@ -38,23 +38,10 @@ import static org.jooq.impl.DSL.concat;
 import static org.komunumo.data.db.tables.Member.MEMBER;
 
 @Service
-@SuppressWarnings("ClassCanBeRecord")
-public class MemberService {
+public interface MemberService extends ConfigurationGetter, DSLContextGetter, MailSenderGetter {
 
-    private final DSLContext dsl;
-    private final Configuration configuration;
-    private final MailSender mailSender;
-
-    public MemberService(@NotNull final DSLContext dsl,
-                         @NotNull final Configuration configuration,
-                         @NotNull final MailSender mailSender) {
-        this.dsl = dsl;
-        this.configuration = configuration;
-        this.mailSender = mailSender;
-    }
-
-    public Member newMember() {
-        final var member = dsl.newRecord(MEMBER)
+    default Member newMember() {
+        final var member = dsl().newRecord(MEMBER)
                 .into(Member.class);
         member.setFirstName("");
         member.setLastName("");
@@ -78,13 +65,9 @@ public class MemberService {
         return member;
     }
 
-    public int count() {
-        return dsl.fetchCount(MEMBER, MEMBER.ACCOUNT_DELETED.isFalse());
-    }
-
-    public Stream<Member> find(final int offset, final int limit, @Nullable final String filter) {
+    default Stream<Member> findMembers(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
-        return dsl.select(MEMBER.asterisk())
+        return dsl().select(MEMBER.asterisk())
                 .from(MEMBER)
                 .where(MEMBER.ACCOUNT_DELETED.isFalse().and(
                         filterValue == null ? DSL.noCondition() :
@@ -97,8 +80,8 @@ public class MemberService {
                 .stream();
     }
 
-    public Optional<Member> get(@NotNull final Long id) {
-        return dsl.selectFrom(MEMBER)
+    default Optional<Member> getMember(@NotNull final Long id) {
+        return dsl().selectFrom(MEMBER)
                 .where(MEMBER.ID.eq(id)
                         .and(MEMBER.ACCOUNT_DELETED.isFalse()))
                 .fetchOptionalInto(Member.class);
@@ -108,15 +91,15 @@ public class MemberService {
      * @deprecated remove after migration of JUG.CH to Komunumo has finished
      */
     @Deprecated(forRemoval = true)
-    public Optional<Member> get(@NotNull final Long id, final boolean ignoreDeleted) {
-        return dsl.selectFrom(MEMBER)
+    default Optional<Member> getMember(@NotNull final Long id, final boolean ignoreDeleted) {
+        return dsl().selectFrom(MEMBER)
                 .where(MEMBER.ID.eq(id)
                         .and(ignoreDeleted ? DSL.noCondition() : MEMBER.ACCOUNT_DELETED.isFalse()))
                 .fetchOptionalInto(Member.class);
     }
 
-    public Optional<Member> getByEmail(@NotNull final String email) {
-        return dsl.selectFrom(MEMBER)
+    default Optional<Member> getMemberByEmail(@NotNull final String email) {
+        return dsl().selectFrom(MEMBER)
                 .where(MEMBER.EMAIL.eq(email)
                         .and(MEMBER.ACCOUNT_DELETED.isFalse()))
                 .orderBy(MEMBER.REGISTRATION_DATE.desc())
@@ -128,8 +111,8 @@ public class MemberService {
      * @deprecated remove after migration of JUG.CH to Komunumo has finished
      */
     @Deprecated
-    public Optional<Member> getByName(@NotNull final String firstName, @NotNull final String lastName) {
-        return dsl.selectFrom(MEMBER)
+    default Optional<Member> getMemberByName(@NotNull final String firstName, @NotNull final String lastName) {
+        return dsl().selectFrom(MEMBER)
                 .where(MEMBER.FIRST_NAME.eq(firstName)
                         .and(MEMBER.LAST_NAME.eq(lastName))
                         .and(MEMBER.ACCOUNT_DELETED.isFalse()))
@@ -138,11 +121,7 @@ public class MemberService {
                 .fetchOptionalInto(Member.class);
     }
 
-    public void store(@NotNull final Member member) {
-        member.store();
-    }
-
-    private void anonymize(@NotNull final Member member) {
+    private void anonymizeMember(@NotNull final Member member) {
         member.setFirstName(RandomStringUtils.randomAlphabetic(32));
         member.setLastName(RandomStringUtils.randomAlphabetic(32));
         member.setCompany("");
@@ -160,7 +139,7 @@ public class MemberService {
         member.setAccountBlockedReason("");
         member.setAccountDeleted(true);
         member.setComment("");
-        store(member);
+        member.store();
     }
 
     /**
@@ -171,12 +150,12 @@ public class MemberService {
      *
      * @param member the member to be deleted
      */
-    public void delete(@NotNull final Member member) {
-        anonymize(member);
+    default void deleteMember(@NotNull final Member member) {
+        anonymizeMember(member);
     }
 
-    public Stream<Member> getAllAdmins() {
-        return dsl.selectFrom(MEMBER)
+    default Stream<Member> getAllAdmins() {
+        return dsl().selectFrom(MEMBER)
                 .where(MEMBER.ADMIN.isTrue()
                         .and(MEMBER.ACCOUNT_DELETED.isFalse()))
                 .orderBy(MEMBER.FIRST_NAME, MEMBER.LAST_NAME)
@@ -184,7 +163,7 @@ public class MemberService {
                 .stream();
     }
 
-    public Member createMember(@NotNull final String firstName, @NotNull final String lastName, @NotNull final String emailAddress) {
+    default Member createMember(@NotNull final String firstName, @NotNull final String lastName, @NotNull final String emailAddress) {
         final var activationCode = RandomStringUtils.randomAlphanumeric(16);
 
         final var member = newMember();
@@ -196,17 +175,17 @@ public class MemberService {
 
         final var message = new SimpleMailMessage();
         message.setTo(emailAddress);
-        message.setFrom(configuration.getEmail().getAddress());
+        message.setFrom(configuration().getWebsiteContactEmail());
         message.setSubject("Confirm your email address");
         message.setText("""
                     This is the first time you used the email address %s with the %s.
                     Please click on the following link to validate your email address:
                     %s/member/validate?email=%s&code=%s
                     """.formatted(
-                emailAddress, configuration.getClient().getName(),
-                configuration.getWebsite().getBaseUrl(), URLUtil.encode(emailAddress), URLUtil.encode(activationCode)
+                emailAddress, configuration().getWebsiteName(),
+                configuration().getWebsiteBaseUrl(), URLUtil.encode(emailAddress), URLUtil.encode(activationCode)
         ));
-        mailSender.send(message);
+        mailSender().send(message);
 
         return member;
     }

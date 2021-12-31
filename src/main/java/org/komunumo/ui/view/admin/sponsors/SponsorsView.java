@@ -166,7 +166,7 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
         new ConfirmDialog("Confirm deletion",
                 String.format("Are you sure you want to permanently delete the sponsor \"%s\"?", sponsorEntity.name()),
                 "Delete", dialogEvent -> {
-            sponsorService.delete(sponsorEntity.id());
+            sponsorService.deleteSponsor(sponsorEntity.id());
             reloadGridItems();
             dialogEvent.getSource().close();
         },
@@ -175,7 +175,7 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> sponsorService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> sponsorService.findSponsors(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
     private void downloadSponsors() {

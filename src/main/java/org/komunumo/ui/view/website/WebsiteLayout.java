@@ -29,6 +29,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.RouterLayout;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.configuration.Configuration;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.data.service.SponsorService;
 import org.komunumo.data.service.StatisticService;
 import org.komunumo.security.AuthenticatedUser;
@@ -40,9 +41,7 @@ public class WebsiteLayout extends Div implements RouterLayout {
     private final TwitterFeed twitterFeed;
 
     public WebsiteLayout(@NotNull final AuthenticatedUser authenticatedUser,
-                         @NotNull final Configuration configuration,
-                         @NotNull final StatisticService statisticService,
-                         @NotNull final SponsorService sponsorService) {
+                         @NotNull final DatabaseService databaseService) {
         addClassName("website-container");
 
         final var website = new VerticalLayout();
@@ -51,7 +50,7 @@ public class WebsiteLayout extends Div implements RouterLayout {
 
         website.add(new CookieConsent());
         website.add(new WebsiteMenu(authenticatedUser));
-        website.add(new WebsiteHeader(configuration, statisticService));
+        website.add(new WebsiteHeader(databaseService));
 
         main = new Main();
 
@@ -60,11 +59,11 @@ public class WebsiteLayout extends Div implements RouterLayout {
         final var mainLayout = new HorizontalLayout(
                 new VerticalLayout(
                         main,
-                        new SponsorBlock(sponsorService)),
+                        new SponsorBlock(databaseService)),
                 twitterFeed);
         mainLayout.setId("main-layout");
         website.add(mainLayout);
-        website.add(new WebsiteFooter(configuration));
+        website.add(new WebsiteFooter(databaseService));
 
         final var page = UI.getCurrent().getPage();
         page.retrieveExtendedClientDetails(extendedClientDetails -> pageResized(extendedClientDetails.getBodyClientWidth()));

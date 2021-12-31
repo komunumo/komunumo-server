@@ -19,85 +19,52 @@
 package org.komunumo.configuration;
 
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.entity.Client;
-import org.komunumo.data.service.ClientService;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-@org.springframework.context.annotation.Configuration
-@ConfigurationProperties(prefix = "komunumo")
-@EnableConfigurationProperties
+import java.util.Map;
+
+@SuppressWarnings("ClassCanBeRecord")
 public class Configuration {
 
-    private final ClientService clientService;
+    private final Map<String, String> configuration;
 
-    /**
-     * Version information of Komunumo.
-     */
-    private String version;
-
-    /**
-     * Configure the administrator.
-     */
-    private Admin admin;
-
-    /**
-     * Configure email settings.
-     */
-    private Email email;
-
-    /**
-     * Configure website settings.
-     */
-    private Website website;
-
-    /**
-     * Configure client.
-     */
-    private Client client;
-
-    public Configuration(@NotNull ClientService clientService) {
-        this.clientService = clientService;
+    public Configuration(@NotNull Map<String, String> configuration) {
+        this.configuration = configuration;
     }
 
-    public String getVersion() {
-        return version;
+    public String getWebsiteBaseUrl() {
+        return configuration.getOrDefault("website.url", "http://localhost:8080");
     }
 
-    public void setVersion(@NotNull final String version) {
-        this.version = version;
+    public String getWebsiteName() {
+        return configuration.getOrDefault("website.name", "");
     }
 
-    public Admin getAdmin() {
-        return admin;
+    public String getWebsiteContactAddress() {
+        return configuration.getOrDefault("website.contact.address", "");
     }
 
-    public void setAdmin(@NotNull final Admin admin) {
-        this.admin = admin;
+    public String getWebsiteContactEmail() {
+        return configuration.getOrDefault("website.contact.email", "noreply@localhost");
     }
 
-    public Email getEmail() {
-        return email;
+    public String getWebsiteCopyright() {
+        return configuration.getOrDefault("website.copyright", "");
     }
 
-    public void setEmail(@NotNull final Email email) {
-        this.email = email;
+    public String getWebsiteAboutText() {
+        return configuration.getOrDefault("website.about.text", "");
     }
 
-    public Website getWebsite() {
-        return website;
+    public String getWebsiteLogoTemplate() {
+        return configuration.getOrDefault("website.logo.template", "");
     }
 
-    public void setWebsite(@NotNull final Website website) {
-        this.website = website;
+    public int getWebsiteMinLogoNumber() {
+        return Integer.parseInt(configuration.getOrDefault("website.logo.min", "0"));
     }
 
-    public void setClient(@NotNull final Long clientId) {
-        this.client = clientService.getClient(clientId).orElseThrow();
-    }
-
-    public Client getClient() {
-        return client;
+    public int getWebsiteMaxLogoNumber() {
+        return Integer.parseInt(configuration.getOrDefault("website.logo.max", "0"));
     }
 
 }

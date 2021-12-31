@@ -93,7 +93,7 @@ public class ClubDeskFile {
     public void importMembers(@NotNull final MemberService memberService) {
         for (final var clubDeskMember : getMembers()) {
             final var email = clubDeskMember.email();
-            final var member = memberService.getByEmail(email).orElse(memberService.newMember());
+            final var member = memberService.getMemberByEmail(email).orElse(memberService.newMember());
             member.setMembershipBegin(clubDeskMember.membershipBeginDate());
             member.setMembershipEnd(clubDeskMember.membershipEndDate());
             member.setMembershipId(clubDeskMember.membershipId());
@@ -105,7 +105,7 @@ public class ClubDeskFile {
             member.setZipCode(clubDeskMember.zipCode());
             member.setCity(clubDeskMember.city());
             member.setComment(clubDeskMember.comment());
-            memberService.store(member);
+            member.store();
         }
     }
 }

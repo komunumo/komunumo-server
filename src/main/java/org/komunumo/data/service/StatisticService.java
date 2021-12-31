@@ -18,20 +18,17 @@
 
 package org.komunumo.data.service;
 
-import java.util.List;
-
-import java.util.Map;
-
 import org.jetbrains.annotations.NotNull;
-import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.enums.EventType;
+import org.komunumo.data.service.getter.DSLContextGetter;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Year;
 import java.util.Collection;
+import java.util.List;
 
 import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
@@ -41,52 +38,42 @@ import static org.komunumo.data.db.tables.Member.MEMBER;
 import static org.komunumo.data.db.tables.Registration.REGISTRATION;
 
 @Service
-@SuppressWarnings("ClassCanBeRecord")
-public class StatisticService {
+public interface StatisticService extends DSLContextGetter {
 
-    private final DSLContext dsl;
-    private final LocationColorService locationColorService;
-
-    public StatisticService(@NotNull final DSLContext dsl,
-                            @NotNull final LocationColorService locationColorService) {
-        this.dsl = dsl;
-        this.locationColorService = locationColorService;
-    }
-
-    public int countMembersByYear(@NotNull final Year year) {
+    default int countMembersByYear(@NotNull final Year year) {
         final var endOfYear = year.atMonth(DECEMBER).atEndOfMonth();
-        return dsl.fetchCount(MEMBER,
+        return dsl().fetchCount(MEMBER,
                 MEMBER.ACCOUNT_DELETED.isFalse().and(MEMBER.MEMBERSHIP_BEGIN.lessOrEqual(endOfYear)).and(
                         MEMBER.MEMBERSHIP_END.isNull().or(MEMBER.MEMBERSHIP_END.greaterOrEqual(endOfYear))));
     }
 
-    public int countNewMembers(@NotNull final LocalDate fromDate, @NotNull final LocalDate toDate) {
-        return dsl.fetchCount(MEMBER, MEMBER.ACCOUNT_DELETED.isFalse()
+    default int countNewMembers(@NotNull final LocalDate fromDate, @NotNull final LocalDate toDate) {
+        return dsl().fetchCount(MEMBER, MEMBER.ACCOUNT_DELETED.isFalse()
                 .and(MEMBER.MEMBERSHIP_BEGIN.between(fromDate, toDate)));
     }
 
-    public int countEventsByYear(@NotNull final Year year) {
+    default int countEventsByYear(@NotNull final Year year) {
         final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
         final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
-        return dsl.fetchCount(EVENT, EVENT.DATE.between(firstDay, lastDay)
+        return dsl().fetchCount(EVENT, EVENT.DATE.between(firstDay, lastDay)
                 .and(EVENT.TYPE.notEqual(EventType.Sponsored))
                 .and(EVENT.PUBLISHED.isTrue()));
     }
 
-    public int countAttendeesByYear(@NotNull final Year year, @NotNull final NoShows noShows) {
+    default int countAttendeesByYear(@NotNull final Year year, @NotNull final NoShows noShows) {
         final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
         final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
-        return dsl.fetchCount(REGISTRATION,
+        return dsl().fetchCount(REGISTRATION,
                 REGISTRATION.DATE.between(firstDay, lastDay)
                         .and(noShows == NoShows.INCLUDE
                                 ? DSL.noCondition()
                                 : REGISTRATION.NO_SHOW.eq(noShows == NoShows.ONLY)));
     }
 
-    public int countUniqueAttendeesByYear(@NotNull final Year year, @NotNull final NoShows noShows) {
+    default int countUniqueAttendeesByYear(@NotNull final Year year, @NotNull final NoShows noShows) {
         final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
         final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
-        return dsl.selectCount()
+        return dsl().selectCount()
                 .from(REGISTRATION)
                 .where(REGISTRATION.DATE.between(firstDay, lastDay)
                         .and(noShows == NoShows.INCLUDE
@@ -96,11 +83,11 @@ public class StatisticService {
                 .execute();
     }
 
-    public Collection<MonthlyVisitors> calculateMonthlyVisitorsByYear(@NotNull final Year year) {
+    default Collection<MonthlyVisitors> calculateMonthlyVisitorsByYear(@NotNull final Year year) {
         final var firstDay = year.atMonth(JANUARY).atDay(1).atTime(LocalTime.MIN);
         final var lastDay = year.atMonth(DECEMBER).atEndOfMonth().atTime(LocalTime.MAX);
 
-        return dsl.select(
+        return dsl().select(
                         EVENT.LOCATION.as("Location"),
                         DSL.count().filterWhere(month(EVENT.DATE).eq(1)).as("January"),
                         DSL.count().filterWhere(month(EVENT.DATE).eq(2)).as("February"),
@@ -123,8 +110,8 @@ public class StatisticService {
                 .fetchInto(StatisticService.MonthlyVisitors.class);
     }
 
-    public List<Year> getYears() {
-        return dsl.selectDistinct(DSL.year(EVENT.DATE).as("year"))
+    default List<Year> getYearsWithEvents() {
+        return dsl().selectDistinct(DSL.year(EVENT.DATE).as("year"))
                 .from(EVENT)
                 .where(EVENT.DATE.isNotNull())
                 .orderBy(DSL.field("year").desc())
@@ -133,16 +120,12 @@ public class StatisticService {
                 .toList();
     }
 
-    public Map<String, String> getLocationColorMap() {
-        return locationColorService.getAllColors();
-    }
-
-    public enum NoShows {
+    enum NoShows {
         INCLUDE, EXCLUDE, ONLY
     }
 
     @SuppressWarnings("unused") // setters used via reflection by jOOQ
-    public static class MonthlyVisitors {
+    class MonthlyVisitors { // TODO Can be a record?
         private String location;
 
         private int january;

@@ -19,11 +19,11 @@
 package org.komunumo.data.service;
 
 import org.jetbrains.annotations.NotNull;
-import org.jooq.DSLContext;
 import org.komunumo.data.db.tables.records.EventKeywordRecord;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.KeywordEntity;
+import org.komunumo.data.service.getter.DSLContextGetter;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -35,32 +35,18 @@ import static org.komunumo.data.db.tables.EventKeyword.EVENT_KEYWORD;
 import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 
 @Service
-public class EventKeywordService {
-
-    private final DSLContext dsl;
-
-    public EventKeywordService(@NotNull final DSLContext dsl) {
-        this.dsl = dsl;
-    }
+public interface EventKeywordService extends DSLContextGetter {
 
     /**
      * @deprecated remove after migration of JUG.CH to Komunumo has finished
      */
     @Deprecated(forRemoval = true)
-    public EventKeywordRecord newEventKeyword() {
-        return dsl.newRecord(EVENT_KEYWORD);
+    default EventKeywordRecord newEventKeyword() {
+        return dsl().newRecord(EVENT_KEYWORD);
     }
 
-    /**
-     * @deprecated remove after migration of JUG.CH to Komunumo has finished
-     */
-    @Deprecated(forRemoval = true)
-    public void store(@NotNull final EventKeywordRecord event) {
-        event.store();
-    }
-
-    public Stream<KeywordEntity> getKeywordsForEvent(@NotNull final EventRecord event) {
-        return dsl
+    default Stream<KeywordEntity> getKeywordsForEvent(@NotNull final EventRecord event) {
+        return dsl()
                 .selectFrom(KEYWORD)
                 .where(KEYWORD.ID.in(
                         select(EVENT_KEYWORD.KEYWORD_ID)
@@ -71,8 +57,8 @@ public class EventKeywordService {
                 .stream();
     }
 
-    public void setEventKeywords(@NotNull final EventRecord eventRecord,
-                                 @NotNull final Set<KeywordEntity> keywordEntities) {
+    default void setEventKeywords(@NotNull final EventRecord eventRecord,
+                                  @NotNull final Set<KeywordEntity> keywordEntities) {
         final var eventKeywords = new HashSet<KeywordEntity>(keywordEntities.size());
         eventKeywords.addAll(keywordEntities);
         getKeywordsForEvent(eventRecord).forEach(keywordEntity -> {
@@ -87,7 +73,7 @@ public class EventKeywordService {
 
     private void addKeywordToEvent(@NotNull final EventRecord eventRecord,
                                    @NotNull final KeywordEntity keywordEntity) {
-        final var eventKeyword = dsl.newRecord(EVENT_KEYWORD);
+        final var eventKeyword = dsl().newRecord(EVENT_KEYWORD);
         eventKeyword.setEventId(eventRecord.getId());
         eventKeyword.setKeywordId(keywordEntity.id());
         eventKeyword.store();
@@ -95,15 +81,16 @@ public class EventKeywordService {
 
     private void removeKeywordsFromEvent(@NotNull final EventRecord event,
                                          @NotNull final KeywordEntity keywordEntity) {
-        dsl.delete(EVENT_KEYWORD)
+        dsl().delete(EVENT_KEYWORD)
                 .where(EVENT_KEYWORD.EVENT_ID.eq(event.getId()))
                 .and(EVENT_KEYWORD.KEYWORD_ID.eq(keywordEntity.id()))
                 .execute();
     }
 
-    public void removeAllKeywordsFromEvent(@NotNull final Event event) {
-        dsl.delete(EVENT_KEYWORD)
+    default void removeAllKeywordsFromEvent(@NotNull final Event event) {
+        dsl().delete(EVENT_KEYWORD)
                 .where(EVENT_KEYWORD.EVENT_ID.eq(event.getId()))
                 .execute();
     }
+
 }

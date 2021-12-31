@@ -20,9 +20,9 @@ package org.komunumo.data.service;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.LocationColorRecord;
+import org.komunumo.data.service.getter.DSLContextGetter;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -32,30 +32,23 @@ import java.util.stream.Stream;
 import static org.komunumo.data.db.tables.LocationColor.LOCATION_COLOR;
 
 @Service
-@SuppressWarnings("ClassCanBeRecord")
-public class LocationColorService {
+public interface LocationColorService extends DSLContextGetter {
 
-    private final DSLContext dsl;
-
-    public LocationColorService(@NotNull final DSLContext dsl) {
-        this.dsl = dsl;
+    default @NotNull LocationColorRecord newLocationColorRecord() {
+        return dsl().newRecord(LOCATION_COLOR);
     }
 
-    public @NotNull LocationColorRecord newRecord() {
-        return dsl.newRecord(LOCATION_COLOR);
-    }
-
-    public Map<String, String> getAllColors() {
+    default Map<String, String> getAllLocationColors() {
         final var colors = new HashMap<String, String>();
-        dsl.selectFrom(LOCATION_COLOR)
+        dsl().selectFrom(LOCATION_COLOR)
                 .stream()
                 .forEach(record -> colors.put(record.getLocation(), record.getColor()));
         return colors;
     }
 
-    public Stream<LocationColorRecord> find(final int offset, final int limit, @Nullable final String filter) {
+    default Stream<LocationColorRecord> findLocationColors(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
-        return dsl.selectFrom(LOCATION_COLOR)
+        return dsl().selectFrom(LOCATION_COLOR)
                 .where(filterValue == null ? DSL.noCondition() : LOCATION_COLOR.LOCATION.like(filterValue))
                 .orderBy(LOCATION_COLOR.LOCATION)
                 .offset(offset)

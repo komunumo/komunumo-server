@@ -18,9 +18,6 @@
 package org.komunumo.ui.view.website.events;
 
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.ListItem;
-import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.NotFoundException;
@@ -80,7 +77,7 @@ public class EventDetailView extends ContentBlock implements BeforeEnterObserver
         final var queryParams = beforeEnterEvent.getLocation().getQueryParameters();
         final var deregisterCode = queryParams.getParameters().getOrDefault("deregister", List.of("")).get(0).trim();
 
-        final var event = eventService.getByEventUrl(mapLocation(location), Year.of(year), url)
+        final var event = eventService.getEventByUrl(mapLocation(location), Year.of(year), url)
                 .orElseThrow(NotFoundException::new);
 
         if (!previewCode.isBlank() && event.getPublished()) {
@@ -112,7 +109,7 @@ public class EventDetailView extends ContentBlock implements BeforeEnterObserver
 
     private String mapLocation(@NotNull final String location) {
         if (!locationMapper.containsKey(location)) {
-            eventService.getAllLocations()
+            eventService.getAllEventLocations()
                     .forEach(value -> locationMapper.put(URLUtil.createReadableUrl(value), value));
         }
         return locationMapper.getOrDefault(location, location);

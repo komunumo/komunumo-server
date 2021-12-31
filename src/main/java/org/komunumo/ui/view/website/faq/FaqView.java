@@ -46,7 +46,7 @@ public class FaqView extends ContentBlock {
 
         final var content = new Div();
         content.add(new H2("Frequently asked questions"));
-        faqService.getAllEntries()
+        faqService.getAllFaqRecords()
                 .map(this::toArticle)
                 .forEach(content::add);
         setContent(content);

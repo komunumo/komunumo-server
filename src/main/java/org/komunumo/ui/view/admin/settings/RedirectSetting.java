@@ -131,7 +131,7 @@ public class RedirectSetting extends ResizableView {
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> redirectService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> redirectService.findRedirect(query.getOffset(), query.getLimit(), filterField.getValue()));
         grid.recalculateColumnWidths();
     }
 

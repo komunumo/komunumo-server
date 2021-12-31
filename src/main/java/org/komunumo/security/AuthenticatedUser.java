@@ -48,7 +48,7 @@ public class AuthenticatedUser {
     }
 
     public Optional<Member> get() {
-        return getAuthentication().flatMap(authentication -> memberService.getByEmail(authentication.getName()));
+        return getAuthentication().flatMap(authentication -> memberService.getMemberByEmail(authentication.getName()));
     }
 
     public void logout() {

@@ -20,10 +20,10 @@ package org.komunumo.data.service;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.NewsRecord;
 import org.komunumo.data.entity.NewsEntity;
+import org.komunumo.data.service.getter.DSLContextGetter;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,29 +34,19 @@ import java.util.stream.Stream;
 import static org.komunumo.data.db.tables.News.NEWS;
 
 @Service
-public class NewsService {
+public interface NewsService extends DSLContextGetter {
 
-    private final DSLContext dsl;
-
-    public NewsService(@NotNull final DSLContext dsl) {
-        this.dsl = dsl;
-    }
-
-    public NewsRecord newNews() {
-        final var news = dsl.newRecord(NEWS);
+    default NewsRecord newNews() {
+        final var news = dsl().newRecord(NEWS);
         news.setCreated(LocalDateTime.now());
         news.setTitle("");
         news.setSubtitle("");
         return news;
     }
 
-    public int count() {
-        return dsl.fetchCount(NEWS);
-    }
-
-    public Stream<NewsEntity> find(final int offset, final int limit, @Nullable final String filter) {
+    default Stream<NewsEntity> findNews(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
-        return dsl.select(NEWS.asterisk())
+        return dsl().select(NEWS.asterisk())
                 .from(NEWS)
                 .where(filterValue == null ? DSL.noCondition() :
                         NEWS.TITLE.like(filterValue).or(NEWS.SUBTITLE.like(filterValue)))
@@ -67,30 +57,26 @@ public class NewsService {
                 .stream();
     }
 
-    public Optional<NewsEntity> getWhenVisible(@NotNull final Long id) {
-        return dsl.selectFrom(NEWS)
+    default Optional<NewsEntity> getNewsWhenVisible(@NotNull final Long id) {
+        return dsl().selectFrom(NEWS)
                 .where(NEWS.ID.eq(id))
                 .and(NEWS.SHOW_FROM.isNull().or(NEWS.SHOW_FROM.lessOrEqual(LocalDateTime.now())))
                 .and(NEWS.SHOW_TO.isNull().or(NEWS.SHOW_TO.greaterOrEqual(LocalDateTime.now())))
                 .fetchOptionalInto(NewsEntity.class);
     }
 
-    public Optional<NewsRecord> getNewsRecord(@NotNull final Long id) {
-        return dsl.selectFrom(NEWS)
+    default Optional<NewsRecord> getNewsRecord(@NotNull final Long id) {
+        return dsl().selectFrom(NEWS)
                 .where(NEWS.ID.eq(id))
                 .fetchOptional();
     }
 
-    public void store(@NotNull final NewsRecord newsRecord) {
-        newsRecord.store();
-    }
-
-    public void delete(final long newsId) {
+    default void deleteNews(final long newsId) {
         getNewsRecord(newsId).ifPresent(NewsRecord::delete);
     }
 
-    public NewsEntity getLatestNews() {
-        return dsl.selectFrom(NEWS)
+    default NewsEntity getLatestNews() {
+        return dsl().selectFrom(NEWS)
                 .where(NEWS.SHOW_FROM.isNull().or(NEWS.SHOW_FROM.lessOrEqual(LocalDateTime.now())))
                 .and(NEWS.SHOW_TO.isNull().or(NEWS.SHOW_TO.greaterOrEqual(LocalDateTime.now())))
                 .orderBy(NEWS.CREATED.desc())
@@ -98,8 +84,8 @@ public class NewsService {
                 .fetchOneInto(NewsEntity.class);
     }
 
-    public List<NewsEntity> getVisibleNews() {
-        return dsl.selectFrom(NEWS)
+    default List<NewsEntity> getAllVisibleNews() {
+        return dsl().selectFrom(NEWS)
                 .where(NEWS.SHOW_FROM.isNull().or(NEWS.SHOW_FROM.lessOrEqual(LocalDateTime.now())))
                 .and(NEWS.SHOW_TO.isNull().or(NEWS.SHOW_TO.greaterOrEqual(LocalDateTime.now())))
                 .orderBy(NEWS.CREATED.desc())

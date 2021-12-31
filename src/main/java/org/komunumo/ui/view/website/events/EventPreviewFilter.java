@@ -54,7 +54,7 @@ public class EventPreviewFilter implements Filter {
                     final var location = uriElements[2];
                     final var year = uriElements[3];
                     final var url = uriElements[4];
-                    final var event = eventService.getByEventUrl(location, Year.of(Integer.parseInt(year)), url);
+                    final var event = eventService.getEventByUrl(location, Year.of(Integer.parseInt(year)), url);
                     if (event.isPresent() && event.get().getPublished() && response instanceof HttpServletResponse httpServletResponse) {
                         httpServletResponse.setStatus(301);
                         httpServletResponse.setHeader("Location", event.get().getCompleteEventUrl());

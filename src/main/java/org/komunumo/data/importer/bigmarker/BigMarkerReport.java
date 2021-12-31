@@ -101,7 +101,7 @@ public class BigMarkerReport {
     private Member getOrCreateMember(@NotNull final MemberService memberService,
                                      @NotNull final BigMarkerRegistration registration) {
         final Optional<Member> existingMember = registration.email() == null ? Optional.empty() :
-                memberService.getByEmail(registration.email());
+                memberService.getMemberByEmail(registration.email());
         if (existingMember.isPresent()) {
             return existingMember.get();
         }
@@ -119,19 +119,19 @@ public class BigMarkerReport {
         } else {
             newMember.setComment("Registered at BigMarker");
         }
-        memberService.store(newMember);
+        newMember.store();
         return newMember;
     }
 
     public void importRegistrations(@NotNull final EventService eventService,
                                     @NotNull final RegistrationService registrationService,
                                     @NotNull final MemberService memberService) {
-        final var event = eventService.getByWebinarUrl(webinarUrl).orElseThrow(() ->
+        final var event = eventService.getEventByWebinarUrl(webinarUrl).orElseThrow(() ->
                 new NoSuchElementException(String.format("No event found with webinar URL: %s", webinarUrl)));
         for (final var bigMarkerRegistration : getBigMarkerRegistrations()) {
             final var noShow = bigMarkerRegistration.noShow();
             final var member = getOrCreateMember(memberService, bigMarkerRegistration);
-            final var existingRegistration = registrationService.get(event.getId(), member.getId());
+            final var existingRegistration = registrationService.getRegistration(event.getId(), member.getId());
             if (existingRegistration.isPresent()) {
                 final var registration = existingRegistration.get();
                 registrationService.updateNoShow(registration, noShow);

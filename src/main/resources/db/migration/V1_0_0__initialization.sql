@@ -1,19 +1,9 @@
-CREATE TABLE client (
-    id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+CREATE TABLE configuration (
+    `key` VARCHAR(255) NOT NULL,
+    `value` MEDIUMTEXT NOT NULL DEFAULT '',
 
-    name VARCHAR(255) NOT NULL,
-    address VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    copyright VARCHAR(255) NOT NULL,
-    about MEDIUMTEXT NOT NULL DEFAULT '',
-
-    PRIMARY KEY (id)
+    PRIMARY KEY (`key`)
 ) DEFAULT CHARSET=utf8;
-
-INSERT INTO client (id, name, address, email, copyright, about)
-    VALUES (1, 'Default', '', '', '', '<p>Default client.</p>');
-
-CREATE INDEX client_name ON client (name);
 
 CREATE TABLE event (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,

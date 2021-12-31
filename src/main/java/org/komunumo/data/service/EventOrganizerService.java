@@ -18,34 +18,27 @@
 
 package org.komunumo.data.service;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import java.util.stream.Stream;
-
 import org.jetbrains.annotations.NotNull;
-import org.jooq.DSLContext;
 import org.komunumo.data.db.tables.records.EventRecord;
 import org.komunumo.data.db.tables.records.MemberRecord;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Member;
+import org.komunumo.data.service.getter.DSLContextGetter;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.jooq.impl.DSL.select;
 import static org.komunumo.data.db.tables.EventOrganizer.EVENT_ORGANIZER;
 import static org.komunumo.data.db.tables.Member.MEMBER;
 
 @Service
-public class EventOrganizerService {
+public interface EventOrganizerService extends DSLContextGetter {
 
-    private final DSLContext dsl;
-
-    public EventOrganizerService(@NotNull final DSLContext dsl) {
-        this.dsl = dsl;
-    }
-
-    public Stream<Member> getOrganizersForEvent(@NotNull final EventRecord event) {
-        return dsl
+    default Stream<Member> getOrganizersForEvent(@NotNull final EventRecord event) {
+        return dsl()
                 .selectFrom(MEMBER)
                 .where(MEMBER.ID.in(
                         select(EVENT_ORGANIZER.MEMBER_ID)
@@ -56,8 +49,8 @@ public class EventOrganizerService {
                 .stream();
     }
 
-    public void setEventOrganizers(@NotNull final EventRecord event,
-                                   @NotNull final Set<Member> organizers) {
+    default void setEventOrganizers(@NotNull final EventRecord event,
+                                    @NotNull final Set<Member> organizers) {
         final var eventOrganizers = new HashSet<Member>(organizers.size());
         eventOrganizers.addAll(organizers);
         getOrganizersForEvent(event).forEach(organizer -> {
@@ -72,7 +65,7 @@ public class EventOrganizerService {
 
     private void addOrganizerToEvent(@NotNull final EventRecord event,
                                      @NotNull final MemberRecord organizer) {
-        final var eventOrganizer = dsl.newRecord(EVENT_ORGANIZER);
+        final var eventOrganizer = dsl().newRecord(EVENT_ORGANIZER);
         eventOrganizer.setEventId(event.getId());
         eventOrganizer.setMemberId(organizer.getId());
         eventOrganizer.store();
@@ -80,15 +73,16 @@ public class EventOrganizerService {
 
     private void removeOrganizersFromEvent(@NotNull final EventRecord event,
                                            @NotNull final MemberRecord organizer) {
-        dsl.delete(EVENT_ORGANIZER)
+        dsl().delete(EVENT_ORGANIZER)
                 .where(EVENT_ORGANIZER.EVENT_ID.eq(event.getId()))
                 .and(EVENT_ORGANIZER.MEMBER_ID.eq(organizer.getId()))
                 .execute();
     }
 
-    public void removeAllOrganizersFromEvent(@NotNull final Event event) {
-        dsl.delete(EVENT_ORGANIZER)
+    default void removeAllOrganizersFromEvent(@NotNull final Event event) {
+        dsl().delete(EVENT_ORGANIZER)
                 .where(EVENT_ORGANIZER.EVENT_ID.eq(event.getId()))
                 .execute();
     }
+
 }

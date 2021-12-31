@@ -26,16 +26,14 @@ import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-
-import java.util.Comparator;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Role;
-import org.komunumo.data.service.StatisticService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.view.admin.AdminLayout;
 
 import javax.annotation.security.RolesAllowed;
 import java.time.Year;
+import java.util.Comparator;
 
 @Route(value = "admin/dashboard", layout = AdminLayout.class)
 @RouteAlias(value = "admin", layout = AdminLayout.class)
@@ -44,10 +42,10 @@ import java.time.Year;
 @RolesAllowed(Role.Type.MEMBER)
 public class DashboardView extends Div {
 
-    public DashboardView(@NotNull final StatisticService statisticService) {
+    public DashboardView(@NotNull final DatabaseService databaseService) {
         addClassName("dashboard-view");
 
-        final var years = statisticService.getYears();
+        final var years = databaseService.getYearsWithEvents();
         final var minYear = years.stream().min(Comparator.naturalOrder()).orElse(Year.now());
         final var maxYear = years.stream().max(Comparator.naturalOrder()).orElse(Year.now());
 
@@ -66,10 +64,10 @@ public class DashboardView extends Div {
         yearSelector.setMax(maxYear.getValue());
         yearSelector.setValue(selectedYear.getValue());
 
-        final var analyticsContainer = new Div(new AnalyticsBoard(statisticService, selectedYear));
+        final var analyticsContainer = new Div(new AnalyticsBoard(databaseService, selectedYear));
         yearSelector.addValueChangeListener(valueChangeEvent -> {
             analyticsContainer.removeAll();
-            analyticsContainer.add(new AnalyticsBoard(statisticService, Year.of(valueChangeEvent.getValue())));
+            analyticsContainer.add(new AnalyticsBoard(databaseService, Year.of(valueChangeEvent.getValue())));
         });
 
         add(title, new Div(yearSelector), analyticsContainer);

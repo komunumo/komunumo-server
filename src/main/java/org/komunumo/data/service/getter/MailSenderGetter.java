@@ -16,9 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.data.entity;
+package org.komunumo.data.service.getter;
 
-import org.komunumo.data.db.tables.records.ClientRecord;
+import org.springframework.mail.MailSender;
 
-public class Client extends ClientRecord {
+public interface MailSenderGetter {
+
+    MailSender mailSender();
+
 }

@@ -20,49 +20,39 @@ package org.komunumo.data.service;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.FaqRecord;
-import org.komunumo.data.entity.KeywordListEntity;
+import org.komunumo.data.service.getter.DSLContextGetter;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.komunumo.data.db.tables.EventKeyword.EVENT_KEYWORD;
 import static org.komunumo.data.db.tables.Faq.FAQ;
-import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 
 @Service
-@SuppressWarnings("ClassCanBeRecord")
-public class FaqService {
+public interface FaqService extends DSLContextGetter {
 
-    private final DSLContext dsl;
-
-    public FaqService(@NotNull final DSLContext dsl) {
-        this.dsl = dsl;
+    default @NotNull FaqRecord newFaqRecord() {
+        return dsl().newRecord(FAQ);
     }
 
-    public @NotNull FaqRecord newRecord() {
-        return dsl.newRecord(FAQ);
-    }
-
-    public Stream<FaqRecord> getAllEntries() {
-        return dsl.selectFrom(FAQ)
+    default Stream<FaqRecord> getAllFaqRecords() {
+        return dsl().selectFrom(FAQ)
                 .orderBy(FAQ.ID.asc())
                 .fetch()
                 .stream();
     }
 
-    public Optional<FaqRecord> getEntry(@NotNull final Long id) {
-        return dsl.selectFrom(FAQ)
+    default Optional<FaqRecord> getFaqRecord(@NotNull final Long id) {
+        return dsl().selectFrom(FAQ)
                 .where(FAQ.ID.eq(id))
                 .fetchOptional();
     }
 
-    public Stream<FaqRecord> find(final int offset, final int limit, @Nullable final String filter) {
+    default Stream<FaqRecord> findFaqRecords(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
-        return dsl.selectFrom(FAQ)
+        return dsl().selectFrom(FAQ)
                 .where(filterValue == null ? DSL.noCondition() :
                         FAQ.QUESTION.like(filterValue).or(FAQ.ANSWER.like(filterValue)))
                 .orderBy(FAQ.ID.desc())

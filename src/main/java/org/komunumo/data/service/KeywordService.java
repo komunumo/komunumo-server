@@ -20,11 +20,11 @@ package org.komunumo.data.service;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.KeywordRecord;
 import org.komunumo.data.entity.KeywordEntity;
 import org.komunumo.data.entity.KeywordListEntity;
+import org.komunumo.data.service.getter.DSLContextGetter;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -34,32 +34,22 @@ import static org.komunumo.data.db.tables.EventKeyword.EVENT_KEYWORD;
 import static org.komunumo.data.db.tables.Keyword.KEYWORD;
 
 @Service
-public class KeywordService {
+public interface KeywordService extends DSLContextGetter {
 
-    private final DSLContext dsl;
-
-    public KeywordService(@NotNull final DSLContext dsl) {
-        this.dsl = dsl;
+    default KeywordRecord newKeyword() {
+        return dsl().newRecord(KEYWORD);
     }
 
-    public KeywordRecord newKeyword() {
-        return dsl.newRecord(KEYWORD);
-    }
-
-    public int count() {
-        return dsl.fetchCount(KEYWORD);
-    }
-
-    public Stream<KeywordEntity> getAllKeywords() {
-        return dsl.selectFrom(KEYWORD)
+    default Stream<KeywordEntity> getAllKeywords() {
+        return dsl().selectFrom(KEYWORD)
                 .orderBy(KEYWORD.KEYWORD_)
                 .fetchInto(KeywordEntity.class)
                 .stream();
     }
 
-    public Stream<KeywordListEntity> find(final int offset, final int limit, @Nullable final String filter) {
+    default Stream<KeywordListEntity> findKeywords(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
-        return dsl.select(KEYWORD.ID, KEYWORD.KEYWORD_, DSL.count(EVENT_KEYWORD.EVENT_ID).as("event_count"))
+        return dsl().select(KEYWORD.ID, KEYWORD.KEYWORD_, DSL.count(EVENT_KEYWORD.EVENT_ID).as("event_count"))
                 .from(KEYWORD)
                 .leftJoin(EVENT_KEYWORD).on(KEYWORD.ID.eq(EVENT_KEYWORD.KEYWORD_ID))
                 .where(filterValue == null ? DSL.noCondition() : KEYWORD.KEYWORD_.like(filterValue))
@@ -71,17 +61,13 @@ public class KeywordService {
                 .stream();
     }
 
-    public Optional<KeywordRecord> getKeywordRecord(@NotNull final Long id) {
-        return dsl.selectFrom(KEYWORD)
+    default Optional<KeywordRecord> getKeywordRecord(@NotNull final Long id) {
+        return dsl().selectFrom(KEYWORD)
                 .where(KEYWORD.ID.eq(id))
                 .fetchOptional();
     }
 
-    public void store(@NotNull final KeywordRecord keywordRecord) {
-        keywordRecord.store();
-    }
-
-    public void delete(final long keywordId) {
+    default void deleteKeyword(final long keywordId) {
         getKeywordRecord(keywordId).ifPresent(KeywordRecord::delete);
     }
 }

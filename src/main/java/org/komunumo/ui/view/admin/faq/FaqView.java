@@ -114,7 +114,7 @@ public class FaqView extends ResizableView {
 
     private void showEditDialog(@Nullable final FaqRecord faqRecord) {
         final var dialog = new FaqDialog(faqRecord != null ? "Edit Keyword" : "New Keyword");
-        dialog.open(faqRecord != null ? faqRecord : faqService.newRecord(), this::reloadGridItems);
+        dialog.open(faqRecord != null ? faqRecord : faqService.newFaqRecord(), this::reloadGridItems);
     }
 
     private void deleteEntry(@NotNull final FaqRecord faqRecord) {
@@ -130,7 +130,7 @@ public class FaqView extends ResizableView {
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> faqService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> faqService.findFaqRecords(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
     private void downloadEntries() {

@@ -16,23 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.komunumo.configuration;
+package org.komunumo.data.service.getter;
 
-import org.jetbrains.annotations.NotNull;
+import org.komunumo.configuration.Configuration;
 
-public class Email {
+public interface ConfigurationGetter {
 
-    /**
-     * The email address used as the default from address.
-     */
-    private String address = "noreply@localhost";
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(@NotNull final String address) {
-        this.address = address;
-    }
+    Configuration configuration();
 
 }

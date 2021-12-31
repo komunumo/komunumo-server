@@ -20,12 +20,12 @@ package org.komunumo.data.service;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jooq.DSLContext;
-import org.komunumo.configuration.Configuration;
 import org.komunumo.data.db.enums.SubscriptionStatus;
 import org.komunumo.data.db.tables.records.SubscriptionRecord;
+import org.komunumo.data.service.getter.ConfigurationGetter;
+import org.komunumo.data.service.getter.DSLContextGetter;
+import org.komunumo.data.service.getter.MailSenderGetter;
 import org.komunumo.util.URLUtil;
-import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
@@ -35,30 +35,17 @@ import java.util.Optional;
 import static org.komunumo.data.db.tables.Subscription.SUBSCRIPTION;
 
 @Service
-@SuppressWarnings("ClassCanBeRecord")
-public class SubscriptionService {
+public interface SubscriptionService extends ConfigurationGetter, DSLContextGetter, MailSenderGetter {
 
-    private final DSLContext dsl;
-    private final Configuration configuration;
-    private final MailSender mailSender;
-
-    public SubscriptionService(@NotNull final DSLContext dsl,
-                               @NotNull final Configuration configuration,
-                               @NotNull final MailSender mailSender) {
-        this.dsl = dsl;
-        this.configuration = configuration;
-        this.mailSender = mailSender;
-    }
-
-    public Optional<SubscriptionRecord> getSubscription(@NotNull final String emailAddress) {
-        return dsl.selectFrom(SUBSCRIPTION)
+    default Optional<SubscriptionRecord> getSubscription(@NotNull final String emailAddress) {
+        return dsl().selectFrom(SUBSCRIPTION)
                 .where(SUBSCRIPTION.EMAIL.eq(emailAddress))
                 .fetchOptional();
     }
 
-    public void addSubscription(@NotNull final String emailAddress) {
+    default void addSubscription(@NotNull final String emailAddress) {
         if (getSubscription(emailAddress).isEmpty()) {
-            final var subscription = dsl.newRecord(SUBSCRIPTION);
+            final var subscription = dsl().newRecord(SUBSCRIPTION);
 
             final var validationCode = RandomStringUtils.randomAlphabetic(16);
 
@@ -69,19 +56,19 @@ public class SubscriptionService {
             subscription.store();
 
             final var link = "%s/newsletter/subscription/validation?email=%s&code=%s"
-                    .formatted(configuration.getWebsite().getBaseUrl(), URLUtil.encode(emailAddress), URLUtil.encode(validationCode));
+                    .formatted(configuration().getWebsiteBaseUrl(), URLUtil.encode(emailAddress), URLUtil.encode(validationCode));
 
             final var message = new SimpleMailMessage();
             message.setTo(emailAddress);
-            message.setFrom(configuration.getEmail().getAddress());
+            message.setFrom(configuration().getWebsiteContactEmail());
             message.setSubject("Validate your newsletter subscription");
             message.setText("Please click on the following link to validate your newsletter subscription:\n" + link);
-            mailSender.send(message);
+            mailSender().send(message);
         }
     }
 
-    public boolean validateSubscription(@NotNull final String emailAddress, @NotNull final String validationCode) {
-        final var subscription =  dsl.selectFrom(SUBSCRIPTION)
+    default boolean validateSubscription(@NotNull final String emailAddress, @NotNull final String validationCode) {
+        final var subscription =  dsl().selectFrom(SUBSCRIPTION)
                 .where(SUBSCRIPTION.EMAIL.eq(emailAddress))
                 .and(SUBSCRIPTION.VALIDATION_CODE.eq(validationCode))
                 .fetchOne();
@@ -92,13 +79,14 @@ public class SubscriptionService {
 
             final var message = new SimpleMailMessage();
             message.setTo(emailAddress);
-            message.setFrom(configuration.getEmail().getAddress());
+            message.setFrom(configuration().getWebsiteContactEmail());
             message.setSubject("Newsletter subscription activated");
             message.setText("Thank you very much for subscribing to our newsletter.");
-            mailSender.send(message);
+            mailSender().send(message);
 
             return true;
         }
         return false;
     }
+
 }

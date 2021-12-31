@@ -18,10 +18,7 @@
 
 package org.komunumo.ui.view.admin.events;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
-import com.vaadin.flow.component.HasEnabled;
-import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -30,21 +27,21 @@ import org.jetbrains.annotations.Nullable;
 import org.komunumo.Callback;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.RegistrationMemberEntity;
-import org.komunumo.data.service.RegistrationService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.component.EnhancedDialog;
 
 public class AddRegistrationDialog extends EnhancedDialog {
 
     private final Focusable<?> focusField;
 
-    public AddRegistrationDialog(@NotNull final RegistrationService registrationService,
+    public AddRegistrationDialog(@NotNull final DatabaseService databaseService,
                                  @NotNull final Event event,
                                  @Nullable final Callback afterSaveCallback) {
         super("Add registration for \"%s\"".formatted(event.getTitle()));
 
         // Content
         final var memberSelect = new ComboBox<RegistrationMemberEntity>("Select attendee to register");
-        memberSelect.setItems(registrationService.getUnregisteredMembers(event.getId()));
+        memberSelect.setItems(databaseService.getUnregisteredMembers(event.getId()));
         memberSelect.setItemLabelGenerator(registrationMemberEntity ->
                 "%s <%s>".formatted(registrationMemberEntity.fullName(), registrationMemberEntity.email()));
         focusField = memberSelect;
@@ -58,8 +55,8 @@ public class AddRegistrationDialog extends EnhancedDialog {
         saveButton.addClickListener(buttonClickEvent -> {
             final var registrationMemberEntity = memberSelect.getValue();
             if (registrationMemberEntity != null) {
-                registrationService.toMember(registrationMemberEntity).ifPresent(member -> {
-                    registrationService.registerForEvent(event, member, "Admin");
+                databaseService.getMember(registrationMemberEntity.memberId()).ifPresent(member -> {
+                    databaseService.registerForEvent(event, member, "Admin");
                     if (afterSaveCallback != null) {
                         afterSaveCallback.execute();
                     }

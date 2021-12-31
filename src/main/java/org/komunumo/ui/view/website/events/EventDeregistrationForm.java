@@ -56,7 +56,7 @@ public class EventDeregistrationForm extends Div {
 
             deregisterButton.addClickListener(clickEvent -> {
                 final var message = new Div();
-                if (registrationService.deregister(deregisterCode)) {
+                if (registrationService.deregisterFromEvent(deregisterCode)) {
                     final var success = new Paragraph("You successfully deregistered from this event.");
                     success.addClassName("success");
                     message.add(success);

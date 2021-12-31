@@ -20,11 +20,11 @@ package org.komunumo.data.service;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.SpeakerRecord;
 import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.entity.SpeakerListEntity;
+import org.komunumo.data.service.getter.DSLContextGetter;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -35,16 +35,10 @@ import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
 @Service
-public class SpeakerService {
+public interface SpeakerService extends DSLContextGetter {
 
-    private final DSLContext dsl;
-
-    public SpeakerService(@NotNull final DSLContext dsl) {
-        this.dsl = dsl;
-    }
-
-    public SpeakerRecord newSpeaker() {
-        final var speaker = dsl.newRecord(SPEAKER);
+    default SpeakerRecord newSpeaker() {
+        final var speaker = dsl().newRecord(SPEAKER);
         speaker.setFirstName("");
         speaker.setLastName("");
         speaker.setCompany("");
@@ -62,21 +56,17 @@ public class SpeakerService {
         return speaker;
     }
 
-    public int count() {
-        return dsl.fetchCount(SPEAKER);
-    }
-
-    public Stream<EventSpeakerEntity> getAllEventSpeakers() {
-        return dsl.select(SPEAKER.ID, SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME, SPEAKER.COMPANY, SPEAKER.PHOTO, SPEAKER.BIO)
+    default Stream<EventSpeakerEntity> getAllEventSpeakers() {
+        return dsl().select(SPEAKER.ID, SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME, SPEAKER.COMPANY, SPEAKER.PHOTO, SPEAKER.BIO)
                 .from(SPEAKER)
                 .orderBy(SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME)
                 .fetchInto(EventSpeakerEntity.class)
                 .stream();
     }
 
-    public Stream<SpeakerListEntity> find(final int offset, final int limit, @Nullable final String filter) {
+    default Stream<SpeakerListEntity> findSpeakers(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
-        return dsl.select(SPEAKER.ID, SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME, SPEAKER.COMPANY, SPEAKER.WEBSITE, SPEAKER.EMAIL, SPEAKER.TWITTER,
+        return dsl().select(SPEAKER.ID, SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME, SPEAKER.COMPANY, SPEAKER.WEBSITE, SPEAKER.EMAIL, SPEAKER.TWITTER,
                         DSL.count(EVENT_SPEAKER.EVENT_ID).as("event_count"))
                 .from(SPEAKER)
                 .leftJoin(EVENT_SPEAKER).on(SPEAKER.ID.eq(EVENT_SPEAKER.SPEAKER_ID))
@@ -93,33 +83,30 @@ public class SpeakerService {
                 .stream();
     }
 
-    public Optional<SpeakerRecord> getSpeakerRecord(@NotNull final Long id) {
-        return dsl.selectFrom(SPEAKER)
+    default Optional<SpeakerRecord> getSpeakerRecord(@NotNull final Long id) {
+        return dsl().selectFrom(SPEAKER)
                 .where(SPEAKER.ID.eq(id))
                 .fetchOptional();
     }
 
-    public Optional<SpeakerRecord> getSpeaker(@NotNull final String email) {
-        return dsl.selectFrom(SPEAKER)
+    default Optional<SpeakerRecord> getSpeaker(@NotNull final String email) {
+        return dsl().selectFrom(SPEAKER)
                 .where(SPEAKER.EMAIL.eq(email))
                 .fetchOptional();
     }
 
-    public Optional<SpeakerRecord> getSpeaker(@NotNull final String firstName,
+    default Optional<SpeakerRecord> getSpeaker(@NotNull final String firstName,
                                         @NotNull final String lastName,
                                         @NotNull final String company) {
-        return dsl.selectFrom(SPEAKER)
+        return dsl().selectFrom(SPEAKER)
                 .where(SPEAKER.FIRST_NAME.eq(firstName)
                         .and(SPEAKER.LAST_NAME.eq(lastName))
                         .and(SPEAKER.COMPANY.eq(company)))
                 .fetchOptional();
     }
 
-    public void store(@NotNull final SpeakerRecord speakerRecord) {
-        speakerRecord.store();
-    }
-
-    public void delete(final long speakerId) {
+    default void deleteSpeaker(final long speakerId) {
         getSpeakerRecord(speakerId).ifPresent(SpeakerRecord::delete);
     }
+
 }

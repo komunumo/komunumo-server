@@ -118,7 +118,7 @@ public class LocationColorSetting extends ResizableView {
 
     private void showLocationColorDialog(@Nullable final LocationColorRecord locationColorRecord) {
         final var dialog = new LocationColorDialog(locationColorRecord != null ? "Edit Location Color" : "New Location Color");
-        dialog.open(locationColorRecord != null ? locationColorRecord : locationColorService.newRecord(), this::reloadGridItems);
+        dialog.open(locationColorRecord != null ? locationColorRecord : locationColorService.newLocationColorRecord(), this::reloadGridItems);
     }
 
     private void deleteLocationColor(@NotNull final LocationColorRecord locationColorRecord) {
@@ -134,7 +134,7 @@ public class LocationColorSetting extends ResizableView {
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> locationColorService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> locationColorService.findLocationColors(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
     private void downloadLocationColors() {

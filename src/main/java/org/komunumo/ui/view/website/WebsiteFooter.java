@@ -28,15 +28,14 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.configuration.Configuration;
-import org.komunumo.data.entity.Client;
+import org.komunumo.data.service.DatabaseService;
 
 public class WebsiteFooter extends Footer {
 
-    private final Client client;
+    private final Configuration configuration;
 
-    public WebsiteFooter(@NotNull Configuration configuration) {
-        this.client = configuration.getClient();
-
+    public WebsiteFooter(@NotNull DatabaseService databaseService) {
+        this.configuration = databaseService.configuration();
         setId("website-footer");
 
         add(
@@ -50,7 +49,7 @@ public class WebsiteFooter extends Footer {
         layout.setId("website-footer-about");
 
         final var title = new Div(new H2("About"));
-        final var about = new Html("<div>%s</div>".formatted(client.getAbout()));
+        final var about = new Html("<div>%s</div>".formatted(configuration.getWebsiteAboutText()));
         layout.add(new HorizontalLayout(title, about));
 
         return layout;
@@ -61,10 +60,10 @@ public class WebsiteFooter extends Footer {
         layout.setId("website-footer-contact");
 
         final var title = new H2("Contact");
-        final var name = new Div(new Text(client.getName()));
-        final var address = new Div(new Text(client.getAddress()));
-        final var email = createEmail(client.getEmail());
-        final var copyright = new Div(new Text(client.getCopyright()));
+        final var name = new Div(new Text(configuration.getWebsiteName()));
+        final var address = new Div(new Text(configuration.getWebsiteContactAddress()));
+        final var email = createEmail(configuration.getWebsiteContactEmail());
+        final var copyright = new Div(new Text(configuration.getWebsiteCopyright()));
         layout.add(new HorizontalLayout(title, new Div(name, address, email, copyright)));
 
         return layout;

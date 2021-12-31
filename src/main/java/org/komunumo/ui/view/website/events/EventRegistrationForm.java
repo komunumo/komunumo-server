@@ -82,7 +82,7 @@ public class EventRegistrationForm extends Div {
                 new Span("» on %s in %s:".formatted(formatDate(event.getDate().toLocalDate()), event.getLocation()))));
         emailForm.add(new HorizontalLayout(emailField, verifyButton));
         if (event.getAttendeeLimit() > 0) {
-            final var freeSeats = event.getAttendeeLimit() - registrationService.count(event.getId());
+            final var freeSeats = event.getAttendeeLimit() - registrationService.countRegistrations(event.getId());
             if (freeSeats == 1) {
                 final var seatMessage = new Paragraph("There is only one free seat left!");
                 seatMessage.addClassName("seat-message");
@@ -106,7 +106,7 @@ public class EventRegistrationForm extends Div {
         verifyButton.addClickListener(verifyButtonClickEvent -> {
             final var registrationForm = new Div();
             final var emailAddress = emailField.getValue().trim();
-            final var memberFound = memberService.getByEmail(emailAddress);
+            final var memberFound = memberService.getMemberByEmail(emailAddress);
 
             final var foundMessage = new Paragraph();
             foundMessage.addClassName("found-message");

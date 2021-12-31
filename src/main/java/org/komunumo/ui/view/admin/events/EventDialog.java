@@ -39,13 +39,7 @@ import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.entity.KeywordEntity;
 import org.komunumo.data.entity.Member;
-import org.komunumo.data.service.EventKeywordService;
-import org.komunumo.data.service.EventOrganizerService;
-import org.komunumo.data.service.EventService;
-import org.komunumo.data.service.EventSpeakerService;
-import org.komunumo.data.service.KeywordService;
-import org.komunumo.data.service.MemberService;
-import org.komunumo.data.service.SpeakerService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.security.AuthenticatedUser;
 import org.komunumo.ui.component.CustomLabel;
 import org.komunumo.ui.component.DateTimePicker;
@@ -65,13 +59,7 @@ import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 public class EventDialog extends EditDialog<Event> {
 
     private final AuthenticatedUser authenticatedUser;
-    private final EventService eventService;
-    private final SpeakerService speakerService;
-    private final EventSpeakerService eventSpeakerService;
-    private final EventOrganizerService eventOrganizerService;
-    private final MemberService memberService;
-    private final KeywordService keywordService;
-    private final EventKeywordService eventKeywordService;
+    private final DatabaseService databaseService;
 
     private Set<EventSpeakerEntity> speakers;
     private Set<Member> organizers;
@@ -80,22 +68,10 @@ public class EventDialog extends EditDialog<Event> {
 
     public EventDialog(@NotNull final String title,
                        @NotNull final AuthenticatedUser authenticatedUser,
-                       @NotNull final EventService eventService,
-                       @NotNull final SpeakerService speakerService,
-                       @NotNull final EventSpeakerService eventSpeakerService,
-                       @NotNull final EventOrganizerService eventOrganizerService,
-                       @NotNull final MemberService memberService,
-                       @NotNull final KeywordService keywordService,
-                       @NotNull final EventKeywordService eventKeywordService) {
+                       @NotNull final DatabaseService databaseService) {
         super(title);
         this.authenticatedUser = authenticatedUser;
-        this.eventService = eventService;
-        this.speakerService = speakerService;
-        this.eventSpeakerService = eventSpeakerService;
-        this.eventOrganizerService = eventOrganizerService;
-        this.memberService = memberService;
-        this.keywordService = keywordService;
-        this.eventKeywordService = eventKeywordService;
+        this.databaseService = databaseService;
     }
 
     @Override
@@ -133,17 +109,17 @@ public class EventDialog extends EditDialog<Event> {
         subtitle.setValueChangeMode(EAGER);
         speaker.setOrdered(true);
         speaker.setItemLabelGenerator(EventSpeakerEntity::fullName);
-        speaker.setItems(speakerService.getAllEventSpeakers());
+        speaker.setItems(databaseService.getAllEventSpeakers());
         organizer.setOrdered(true);
         organizer.setItemLabelGenerator(value -> String.format("%s %s", value.getFirstName(), value.getLastName()));
-        organizer.setItems(memberService.getAllAdmins());
+        organizer.setItems(databaseService.getAllAdmins());
         organizer.setRequiredIndicatorVisible(true);
         keyword.setOrdered(true);
         keyword.setItemLabelGenerator(KeywordEntity::keyword);
-        keyword.setItems(keywordService.getAllKeywords());
+        keyword.setItems(databaseService.getAllKeywords());
         level.setLabel("Level");
         language.setLabel("Language");
-        location.setItems(eventService.getAllLocations());
+        location.setItems(databaseService.getAllEventLocations());
         location.setAllowCustomValue(true);
         location.addValueChangeListener(changeEvent -> {
             final var value = changeEvent.getValue();
@@ -326,7 +302,7 @@ public class EventDialog extends EditDialog<Event> {
     @Override
     public void open(@NotNull final Event event, @Nullable final Callback afterSave) {
         speakers = Set.copyOf(event.getSpeakers());
-        organizers = eventOrganizerService.getOrganizersForEvent(event)
+        organizers = databaseService.getOrganizersForEvent(event)
                 .collect(Collectors.toSet());
         final var organizer = authenticatedUser.get();
         if (organizers.isEmpty() && event.getId() == null && organizer.isPresent()) {
@@ -340,9 +316,9 @@ public class EventDialog extends EditDialog<Event> {
                     }
                 },
                 () -> {
-                    eventSpeakerService.setEventSpeakers(event, speakers);
-                    eventOrganizerService.setEventOrganizers(event, organizers);
-                    eventKeywordService.setEventKeywords(event, keywords);
+                    databaseService.setEventSpeakers(event, speakers);
+                    databaseService.setEventOrganizers(event, organizers);
+                    databaseService.setEventKeywords(event, keywords);
                     if (afterSave != null) {
                         afterSave.execute();
                     }

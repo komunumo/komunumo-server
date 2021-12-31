@@ -159,7 +159,7 @@ public class NewsView extends ResizableView implements HasUrlParameter<String> {
         new ConfirmDialog("Confirm deletion",
                 String.format("Are you sure you want to permanently delete the news \"%s\"?", newsEntity.title()),
                 "Delete", dialogEvent -> {
-            newsService.delete(newsEntity.id());
+            newsService.deleteNews(newsEntity.id());
             reloadGridItems();
             dialogEvent.getSource().close();
         },
@@ -168,7 +168,7 @@ public class NewsView extends ResizableView implements HasUrlParameter<String> {
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> newsService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> newsService.findNews(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
     private void downloadNews() {

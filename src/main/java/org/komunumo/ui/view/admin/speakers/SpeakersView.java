@@ -166,7 +166,7 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
         new ConfirmDialog("Confirm deletion",
                 String.format("Are you sure you want to permanently delete the speaker \"%s\"?", speakerListEntity.fullName()),
                 "Delete", dialogEvent -> {
-            speakerService.delete(speakerListEntity.id());
+            speakerService.deleteSpeaker(speakerListEntity.id());
             reloadGridItems();
             dialogEvent.getSource().close();
         },
@@ -175,7 +175,7 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> speakerService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> speakerService.findSpeakers(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
     private void downloadSpeakers() {

@@ -212,7 +212,7 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         new ConfirmDialog("Confirm deletion",
                 String.format("Are you sure you want to permanently delete the member \"%s\"?", member.getFullName()),
                 "Delete", dialogEvent -> {
-            memberService.delete(member);
+            memberService.deleteMember(member);
             reloadGridItems();
             dialogEvent.getSource().close();
         },
@@ -221,7 +221,7 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> memberService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> memberService.findMembers(query.getOffset(), query.getLimit(), filterField.getValue()));
         grid.recalculateColumnWidths();
     }
 

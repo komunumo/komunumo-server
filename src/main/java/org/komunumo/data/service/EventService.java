@@ -20,12 +20,12 @@ package org.komunumo.data.service;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.impl.DSL;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.entity.KeywordEntity;
+import org.komunumo.data.service.getter.DSLContextGetter;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -44,26 +44,10 @@ import static org.komunumo.data.db.tables.Registration.REGISTRATION;
 import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 
 @Service
-@SuppressWarnings("ClassCanBeRecord")
-public class EventService {
+public interface EventService extends DSLContextGetter, EventKeywordService, EventSpeakerService, EventOrganizerService {
 
-    private final DSLContext dsl;
-    private final EventSpeakerService eventSpeakerService;
-    private final EventOrganizerService eventOrganizerService;
-    private final EventKeywordService eventKeywordService;
-
-    public EventService(@NotNull final DSLContext dsl,
-                        @NotNull final EventSpeakerService eventSpeakerService,
-                        @NotNull final EventOrganizerService eventOrganizerService,
-                        @NotNull final EventKeywordService eventKeywordService) {
-        this.dsl = dsl;
-        this.eventSpeakerService = eventSpeakerService;
-        this.eventOrganizerService = eventOrganizerService;
-        this.eventKeywordService = eventKeywordService;
-    }
-
-    public Event newEvent() {
-        final var event = dsl.newRecord(EVENT)
+    default Event newEvent() {
+        final var event = dsl().newRecord(EVENT)
                 .into(Event.class);
         event.setTitle("");
         event.setSubtitle("");
@@ -79,7 +63,7 @@ public class EventService {
         return event;
     }
 
-    public Event copyEvent(@NotNull final Event originalEvent) {
+    default Event copyEvent(@NotNull final Event originalEvent) {
         final var newEvent = originalEvent.copy().into(Event.class);
         newEvent.setSpeakers(originalEvent.getSpeakers());
         newEvent.setKeywords(originalEvent.getKeywords());
@@ -91,14 +75,14 @@ public class EventService {
         return newEvent;
     }
 
-    public Optional<Event> get(@NotNull final Long id) {
-        return dsl.selectFrom(EVENT)
+    default Optional<Event> getEvent(@NotNull final Long id) {
+        return dsl().selectFrom(EVENT)
                 .where(EVENT.ID.eq(id))
                 .fetchOptionalInto(Event.class);
     }
 
-    public Optional<Event> getByEventUrl(@NotNull final String location, @NotNull final Year year, @NotNull final String url) {
-        return dsl.selectFrom(EVENT)
+    default Optional<Event> getEventByUrl(@NotNull final String location, @NotNull final Year year, @NotNull final String url) {
+        return dsl().selectFrom(EVENT)
                 .where(EVENT.LOCATION.eq(location)
                         .and(DSL.year(EVENT.DATE).eq(year.getValue()))
                         .and(EVENT.EVENT_URL.eq(url)))
@@ -106,28 +90,20 @@ public class EventService {
                 .map(this::addAdditionalData);
     }
 
-    public Optional<Event> getByWebinarUrl(@NotNull final String webinarUrl) {
-        final var event = dsl.selectFrom(EVENT)
+    default Optional<Event> getEventByWebinarUrl(@NotNull final String webinarUrl) {
+        final var event = dsl().selectFrom(EVENT)
                 .where(EVENT.WEBINAR_URL.eq(webinarUrl))
                 .fetchOptionalInto(Event.class);
         if (event.isEmpty() && !webinarUrl.endsWith("/")) {
-            return getByWebinarUrl(webinarUrl.concat("/"));
+            return getEventByWebinarUrl(webinarUrl.concat("/"));
         }
         return event;
     }
 
-    public void store(@NotNull final Event event) {
-        event.store();
-    }
-
-    public int count() {
-        return dsl.fetchCount(EVENT);
-    }
-
-    public Stream<Event> find(final int offset, final int limit, @Nullable final String filter) {
+    default Stream<Event> findEvents(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         final var speakerFullName = concat(SPEAKER.FIRST_NAME, DSL.value(" "), SPEAKER.LAST_NAME);
-        return dsl.select(EVENT.asterisk())
+        return dsl().select(EVENT.asterisk())
                 .from(EVENT)
                 .leftJoin(EVENT_SPEAKER).on(EVENT.ID.eq(EVENT_SPEAKER.EVENT_ID))
                 .leftJoin(SPEAKER).on(EVENT_SPEAKER.SPEAKER_ID.eq(SPEAKER.ID))
@@ -143,15 +119,15 @@ public class EventService {
                 .map(this::addAdditionalData);
     }
 
-    public void deleteEvent(@NotNull final Event event) {
-        eventSpeakerService.removeAllSpeakersFromEvent(event);
-        eventOrganizerService.removeAllOrganizersFromEvent(event);
-        eventKeywordService.removeAllKeywordsFromEvent(event);
-        dsl.delete(EVENT).where(EVENT.ID.eq(event.getId())).execute();
+    default void deleteEvent(@NotNull final Event event) {
+        removeAllSpeakersFromEvent(event);
+        removeAllOrganizersFromEvent(event);
+        removeAllKeywordsFromEvent(event);
+        dsl().delete(EVENT).where(EVENT.ID.eq(event.getId())).execute();
     }
 
-    public Stream<Event> upcomingEvents() {
-        return dsl.selectFrom(EVENT)
+    default Stream<Event> upcomingEvents() {
+        return dsl().selectFrom(EVENT)
                 .where(condition(EVENT.PUBLISHED)
                         .and(EVENT.DATE.greaterOrEqual(LocalDateTime.now().withHour(0).withMinute(0))))
                 .orderBy(EVENT.DATE.asc())
@@ -167,8 +143,8 @@ public class EventService {
                 .map(this::addAdditionalData);
     }
 
-    public Stream<Event> pastEvents(@NotNull final Year year) {
-        return dsl.selectFrom(EVENT)
+    default Stream<Event> pastEvents(@NotNull final Year year) {
+        return dsl().selectFrom(EVENT)
                 .where(condition(EVENT.PUBLISHED)
                         .and(DSL.year(EVENT.DATE).eq(year.getValue())))
                 .orderBy(EVENT.DATE.desc())
@@ -185,7 +161,7 @@ public class EventService {
     }
 
     private void addSpeakers(@NotNull final Event event) {
-        final var speakers = dsl.select(SPEAKER.ID, SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME,
+        final var speakers = dsl().select(SPEAKER.ID, SPEAKER.FIRST_NAME, SPEAKER.LAST_NAME,
                         SPEAKER.COMPANY, SPEAKER.PHOTO, SPEAKER.BIO)
                 .from(SPEAKER)
                 .join(EVENT_SPEAKER).on(SPEAKER.ID.eq(EVENT_SPEAKER.SPEAKER_ID))
@@ -196,7 +172,7 @@ public class EventService {
     }
 
     private void addKeywords(@NotNull final Event event) {
-        final var keywords = dsl.select(KEYWORD.asterisk())
+        final var keywords = dsl().select(KEYWORD.asterisk())
                 .from(KEYWORD)
                 .join(EVENT_KEYWORD).on(KEYWORD.ID.eq(EVENT_KEYWORD.KEYWORD_ID))
                 .where(EVENT_KEYWORD.EVENT_ID.eq(event.getId()))
@@ -206,12 +182,12 @@ public class EventService {
     }
 
     private void addAttendeeCount(@NotNull final Event event) {
-        final var attendeeCount = dsl.fetchCount(REGISTRATION, REGISTRATION.EVENT_ID.eq(event.getId()).and(REGISTRATION.NO_SHOW.isFalse()));
+        final var attendeeCount = dsl().fetchCount(REGISTRATION, REGISTRATION.EVENT_ID.eq(event.getId()).and(REGISTRATION.NO_SHOW.isFalse()));
         event.setAttendeeCount(attendeeCount);
     }
 
-    public List<String> getAllLocations() {
-        return dsl.selectDistinct(EVENT.LOCATION)
+    default List<String> getAllEventLocations() {
+        return dsl().selectDistinct(EVENT.LOCATION)
                 .from(EVENT)
                 .orderBy(EVENT.LOCATION)
                 .stream()
@@ -219,8 +195,8 @@ public class EventService {
                 .toList();
     }
 
-    public List<Year> getYearsWithPastEvents() {
-        return dsl.selectDistinct(DSL.year(EVENT.DATE).as("year"))
+    default List<Year> getYearsWithPastEvents() {
+        return dsl().selectDistinct(DSL.year(EVENT.DATE).as("year"))
                 .from(EVENT)
                 .where(condition(EVENT.PUBLISHED)
                         .and(EVENT.DATE.lessOrEqual(LocalDateTime.now())))

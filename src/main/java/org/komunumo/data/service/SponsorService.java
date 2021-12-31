@@ -18,19 +18,18 @@
 
 package org.komunumo.data.service;
 
-import java.time.LocalDate;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.db.tables.records.SponsorDomainRecord;
 import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.data.entity.SponsorEntity;
+import org.komunumo.data.service.getter.DSLContextGetter;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,33 +39,23 @@ import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
 import static org.komunumo.data.db.tables.SponsorDomain.SPONSOR_DOMAIN;
 
 @Service
-public class SponsorService {
+public interface SponsorService extends DSLContextGetter {
 
-    private final DSLContext dsl;
-
-    public SponsorService(@NotNull final DSLContext dsl) {
-        this.dsl = dsl;
-    }
-
-    public SponsorRecord newSponsor() {
-        final var sponsor = dsl.newRecord(SPONSOR);
+    default SponsorRecord newSponsor() {
+        final var sponsor = dsl().newRecord(SPONSOR);
         sponsor.setName("");
         sponsor.setWebsite("");
         sponsor.setLogo("");
         return sponsor;
     }
 
-    public @NotNull SponsorDomainRecord newSponsorDomain() {
-        return dsl.newRecord(SPONSOR_DOMAIN);
+    default @NotNull SponsorDomainRecord newSponsorDomain() {
+        return dsl().newRecord(SPONSOR_DOMAIN);
     }
 
-    public int count() {
-        return dsl.fetchCount(SPONSOR);
-    }
-
-    public Stream<SponsorEntity> find(final int offset, final int limit, @Nullable final String filter) {
+    default Stream<SponsorEntity> findSponsors(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
-        return dsl.select(SPONSOR.asterisk())
+        return dsl().select(SPONSOR.asterisk())
                 .from(SPONSOR)
                 .where(filterValue == null ? DSL.noCondition() : SPONSOR.NAME.like(filterValue))
                 .orderBy(SPONSOR.NAME)
@@ -76,34 +65,30 @@ public class SponsorService {
                 .stream();
     }
 
-    public Optional<SponsorRecord> getSponsorRecord(@NotNull final Long id) {
-        return dsl.selectFrom(SPONSOR)
+    default Optional<SponsorRecord> getSponsorRecord(@NotNull final Long id) {
+        return dsl().selectFrom(SPONSOR)
                 .where(SPONSOR.ID.eq(id))
                 .fetchOptional();
     }
 
-    public void store(@NotNull final SponsorRecord sponsorRecord) {
-        sponsorRecord.store();
-    }
-
-    public void delete(final long sponsorId) {
+    default void deleteSponsor(final long sponsorId) {
         getSponsorRecord(sponsorId).ifPresent(SponsorRecord::delete);
     }
 
-    public Set<String> getSponsorDomains(@NotNull final SponsorRecord sponsorRecord) {
-        return dsl.selectFrom(SPONSOR_DOMAIN)
+    default Set<String> getSponsorDomains(@NotNull final SponsorRecord sponsorRecord) {
+        return dsl().selectFrom(SPONSOR_DOMAIN)
                 .where(SPONSOR_DOMAIN.SPONSOR_ID.eq(sponsorRecord.getId()))
                 .stream()
                 .map(SponsorDomainRecord::getDomain)
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public void setSponsorDomains(@NotNull final SponsorRecord sponsorRecord, @NotNull final Set<String> sponsorDomains) {
+    default void setSponsorDomains(@NotNull final SponsorRecord sponsorRecord, @NotNull final Set<String> sponsorDomains) {
         final var newDomains = sponsorDomains.stream().map(String::toLowerCase).collect(Collectors.toUnmodifiableSet());
         final var oldDomains = getSponsorDomains(sponsorRecord);
         oldDomains.forEach(domain -> {
             if (!newDomains.contains(domain)) {
-                dsl.deleteFrom(SPONSOR_DOMAIN)
+                dsl().deleteFrom(SPONSOR_DOMAIN)
                         .where(SPONSOR_DOMAIN.SPONSOR_ID.eq(sponsorRecord.getId())
                                 .and(SPONSOR_DOMAIN.DOMAIN.eq(domain)))
                         .execute();
@@ -111,15 +96,15 @@ public class SponsorService {
         });
         newDomains.forEach(domain -> {
             if (!oldDomains.contains(domain)) {
-                dsl.insertInto(SPONSOR_DOMAIN, SPONSOR_DOMAIN.SPONSOR_ID, SPONSOR_DOMAIN.DOMAIN)
+                dsl().insertInto(SPONSOR_DOMAIN, SPONSOR_DOMAIN.SPONSOR_ID, SPONSOR_DOMAIN.DOMAIN)
                         .values(sponsorRecord.getId(), domain)
                         .execute();
             }
         });
     }
 
-    public Set<String> getActiveSponsorDomains() {
-        return dsl.select(SPONSOR_DOMAIN.DOMAIN)
+    default Set<String> getActiveSponsorDomains() {
+        return dsl().select(SPONSOR_DOMAIN.DOMAIN)
                 .from(SPONSOR_DOMAIN, SPONSOR)
                 .where(SPONSOR_DOMAIN.SPONSOR_ID.eq(SPONSOR.ID))
                 .and(SPONSOR.VALID_FROM.isNull().or(SPONSOR.VALID_FROM.lessOrEqual(LocalDate.now())))
@@ -129,8 +114,8 @@ public class SponsorService {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public Stream<SponsorEntity> getActiveSponsors(@NotNull final SponsorLevel level) {
-        return dsl.selectFrom(SPONSOR)
+    default Stream<SponsorEntity> getActiveSponsors(@NotNull final SponsorLevel level) {
+        return dsl().selectFrom(SPONSOR)
                 .where(SPONSOR.LEVEL.eq(level))
                 .and(SPONSOR.VALID_FROM.isNull().or(SPONSOR.VALID_FROM.lessOrEqual(LocalDate.now())))
                 .and(SPONSOR.VALID_TO.isNull().or(SPONSOR.VALID_TO.greaterOrEqual(LocalDate.now())))
@@ -138,4 +123,5 @@ public class SponsorService {
                 .fetchInto(SponsorEntity.class)
                 .stream();
     }
+
 }

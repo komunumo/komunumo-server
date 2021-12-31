@@ -69,7 +69,7 @@ public class NewsView extends ContentBlock implements BeforeEnterObserver {
         final var idParam = params.get("id");
         if (idParam.isPresent()) {
             final var id = Long.parseLong(idParam.get());
-            newsService.getWhenVisible(id).ifPresent(newsEntities::add);
+            newsService.getNewsWhenVisible(id).ifPresent(newsEntities::add);
             if (newsEntities.isEmpty()) {
                 beforeEnterEvent.forwardTo(NewsView.class);
             }
@@ -81,7 +81,7 @@ public class NewsView extends ContentBlock implements BeforeEnterObserver {
         }
 
         if (newsEntities.isEmpty()) {
-            newsEntities.addAll(newsService.getVisibleNews());
+            newsEntities.addAll(newsService.getAllVisibleNews());
         }
 
         if (newsEntities.isEmpty()) {

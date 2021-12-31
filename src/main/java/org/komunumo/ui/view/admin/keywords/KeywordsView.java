@@ -130,7 +130,7 @@ public class KeywordsView extends ResizableView {
         new ConfirmDialog("Confirm deletion",
                 String.format("Are you sure you want to permanently delete the keyword \"%s\"?", keywordListEntity.keyword()),
                 "Delete", dialogEvent -> {
-            keywordService.delete(keywordListEntity.id());
+            keywordService.deleteKeyword(keywordListEntity.id());
             reloadGridItems();
             dialogEvent.getSource().close();
         },
@@ -139,7 +139,7 @@ public class KeywordsView extends ResizableView {
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> keywordService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> keywordService.findKeywords(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
     private void downloadKeywords() {

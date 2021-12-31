@@ -22,17 +22,17 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Header;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.configuration.Configuration;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.data.service.StatisticService;
 
 public class WebsiteHeader extends Header {
 
-    public WebsiteHeader(@NotNull final Configuration configuration,
-                         @NotNull final StatisticService statisticService) {
+    public WebsiteHeader(@NotNull final DatabaseService databaseService) {
         setId("website-header");
 
         add(
-                new Anchor("/", new WebsiteLogo(configuration)),
-                new WebsiteStats(statisticService)
+                new Anchor("/", new WebsiteLogo(databaseService)),
+                new WebsiteStats(databaseService)
         );
     }
 

@@ -20,45 +20,36 @@ package org.komunumo.data.service;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
-import org.komunumo.data.db.tables.records.LocationColorRecord;
 import org.komunumo.data.db.tables.records.RedirectRecord;
+import org.komunumo.data.service.getter.DSLContextGetter;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Stream;
 
-import static org.komunumo.data.db.tables.LocationColor.LOCATION_COLOR;
 import static org.komunumo.data.db.tables.Redirect.REDIRECT;
 
 @Service
-@SuppressWarnings("ClassCanBeRecord")
-public class RedirectService {
+public interface RedirectService extends DSLContextGetter {
 
-    private final DSLContext dsl;
-
-    public RedirectService(@NotNull final DSLContext dsl) {
-        this.dsl = dsl;
+    default RedirectRecord newRedirect() {
+        return dsl().newRecord(REDIRECT);
     }
 
-    public RedirectRecord newRedirect() {
-        return dsl.newRecord(REDIRECT);
+    default @NotNull Stream<RedirectRecord> getAllRedirects() {
+        return dsl().selectFrom(REDIRECT).stream();
     }
 
-    public @NotNull Stream<RedirectRecord> getAllRedirects() {
-        return dsl.selectFrom(REDIRECT).stream();
-    }
-
-    public void addRedirect(@NotNull final String oldUrl, @NotNull final String newUrl) {
-        dsl.insertInto(REDIRECT, REDIRECT.OLD_URL, REDIRECT.NEW_URL)
+    default void addRedirect(@NotNull final String oldUrl, @NotNull final String newUrl) {
+        dsl().insertInto(REDIRECT, REDIRECT.OLD_URL, REDIRECT.NEW_URL)
                 .values(oldUrl, newUrl)
                 .onDuplicateKeyIgnore()
                 .execute();
     }
 
-    public Stream<RedirectRecord> find(final int offset, final int limit, @Nullable final String filter) {
+    default Stream<RedirectRecord> findRedirect(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
-        return dsl.selectFrom(REDIRECT)
+        return dsl().selectFrom(REDIRECT)
                 .where(filterValue == null ? DSL.noCondition() :
                         REDIRECT.OLD_URL.like(filterValue).or(REDIRECT.NEW_URL.like(filterValue)))
                 .orderBy(REDIRECT.OLD_URL)

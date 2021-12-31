@@ -22,7 +22,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.configuration.Configuration;
 import org.komunumo.data.entity.Member;
-import org.komunumo.data.service.MemberService;
+import org.komunumo.data.service.DatabaseService;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -42,27 +42,25 @@ import java.util.stream.Collectors;
 @Service
 public class SecurityService implements UserDetailsService {
 
-    private final MemberService memberService;
+    private final DatabaseService databaseService;
     private final Configuration configuration;
     private final MailSender mailSender;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticatedUser authenticatedUser;
 
-    public SecurityService(@NotNull final MemberService memberService,
-                           @NotNull final Configuration configuration,
-                           @NotNull final MailSender mailSender,
+    public SecurityService(@NotNull final DatabaseService databaseService,
                            @NotNull final PasswordEncoder passwordEncoder,
                            @NotNull final AuthenticatedUser authenticatedUser) {
-        this.memberService = memberService;
-        this.configuration = configuration;
-        this.mailSender = mailSender;
+        this.databaseService = databaseService;
+        this.configuration = databaseService.configuration();
+        this.mailSender = databaseService.mailSender();
         this.passwordEncoder = passwordEncoder;
         this.authenticatedUser = authenticatedUser;
     }
 
     @Override
     public UserDetails loadUserByUsername(@NotNull final String email) throws UsernameNotFoundException {
-        final var optionalMember = memberService.getByEmail(email);
+        final var optionalMember = databaseService.getMemberByEmail(email);
         if (optionalMember.isEmpty()) {
             throw new UsernameNotFoundException("No member present with email: " + email);
         } else {
@@ -79,7 +77,7 @@ public class SecurityService implements UserDetailsService {
     }
 
     public void resetPassword(@NotNull final String email) {
-        final var member = memberService.getByEmail(email);
+        final var member = databaseService.getMemberByEmail(email);
         if (member.isPresent()) {
             final var record = member.get();
             if (record.getAccountActive()) {
@@ -87,11 +85,11 @@ public class SecurityService implements UserDetailsService {
                 final var passwordHash = passwordEncoder.encode(password);
                 record.setPasswordHash(passwordHash);
                 record.setPasswordChange(true);
-                memberService.store(record);
+                record.store();
 
                 final var message = new SimpleMailMessage();
                 message.setTo(email);
-                message.setFrom(configuration.getEmail().getAddress());
+                message.setFrom(configuration.getWebsiteContactEmail());
                 message.setSubject("Reset your password");
                 message.setText("To reset your password, use the following one time password to login: " + password);
                 mailSender.send(message);
@@ -107,7 +105,7 @@ public class SecurityService implements UserDetailsService {
             final var newPasswordHash = passwordEncoder.encode(newPassword);
             member.setPasswordHash(newPasswordHash);
             member.setPasswordChange(false);
-            memberService.store(member);
+            member.store();
         } else {
             throw new BadCredentialsException("Password change denied!");
         }
@@ -115,10 +113,10 @@ public class SecurityService implements UserDetailsService {
 
     public void activate(@NotNull final String email,
                          @NotNull final String activationCode) {
-        final var member = memberService.getByEmail(email).orElse(null);
+        final var member = databaseService.getMemberByEmail(email).orElse(null);
         if (member != null && member.getActivationCode().equals(activationCode)) {
             member.setAccountActive(true);
-            memberService.store(member);
+            member.store();
         } else {
             throw new BadCredentialsException("Activation failed");
         }

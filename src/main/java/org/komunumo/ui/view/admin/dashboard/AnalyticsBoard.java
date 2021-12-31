@@ -34,6 +34,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.data.service.StatisticService;
 import org.komunumo.util.FormatterUtil;
 
@@ -47,10 +48,10 @@ public class AnalyticsBoard extends Div {
     private final H2 numberOfEvents = new H2();
     private final H2 noShowRate = new H2();
 
-    private final StatisticService statisticService;
+    private final DatabaseService databaseService;
 
-    public AnalyticsBoard(@NotNull final StatisticService statisticService, @NotNull final Year year) {
-        this.statisticService = statisticService;
+    public AnalyticsBoard(@NotNull final DatabaseService databaseService, @NotNull final Year year) {
+        this.databaseService = databaseService;
         addClassName("analytics-board");
 
         final var board = new Board();
@@ -85,18 +86,18 @@ public class AnalyticsBoard extends Div {
 
     private void populateCharts(@NotNull final Year year) {
         // Top row widgets
-        final var registrations = statisticService.countAttendeesByYear(year, StatisticService.NoShows.INCLUDE);
-        final var events = statisticService.countEventsByYear(year);
-        final var noShows = statisticService.countAttendeesByYear(year, StatisticService.NoShows.ONLY);
+        final var registrations = databaseService.countAttendeesByYear(year, StatisticService.NoShows.INCLUDE);
+        final var events = databaseService.countEventsByYear(year);
+        final var noShows = databaseService.countAttendeesByYear(year, StatisticService.NoShows.ONLY);
         numberOfRegistrations.setText(FormatterUtil.formatNumber(registrations));
         numberOfEvents.setText(FormatterUtil.formatNumber(events));
         noShowRate.setText(FormatterUtil.formatNumber(registrations == 0 ? 0 : noShows * 100L / registrations) + "%");
 
-        final var locationColorMap = statisticService.getLocationColorMap();
+        final var locationColorMap = databaseService.getAllLocationColors();
 
         // First chart
         final var configuration = monthlyVisitors.getConfiguration();
-        statisticService.calculateMonthlyVisitorsByYear(year).stream()
+        databaseService.calculateMonthlyVisitorsByYear(year).stream()
                 .map(data -> {
                     final var series = new ListSeries(data.getLocation(),
                             data.getJanuary(), data.getFebruary(), data.getMarch(),

@@ -49,7 +49,7 @@ public class EventPreviewFilterTest {
         when(event.getPublished()).thenReturn(false);
 
         final var eventServiceMock = mock(EventService.class);
-        when(eventServiceMock.getByEventUrl(anyString(), any(Year.class), anyString())).thenReturn(Optional.of(event));
+        when(eventServiceMock.getEventByUrl(anyString(), any(Year.class), anyString())).thenReturn(Optional.of(event));
 
         final var request = mock(HttpServletRequest.class);
         when(request.getParameter(eq("preview"))).thenReturn("12345678");
@@ -73,7 +73,7 @@ public class EventPreviewFilterTest {
         when(event.getCompleteEventUrl()).thenReturn("/event/online/2269/test-event");
 
         final var eventServiceMock = mock(EventService.class);
-        when(eventServiceMock.getByEventUrl(anyString(), any(Year.class), anyString())).thenReturn(Optional.of(event));
+        when(eventServiceMock.getEventByUrl(anyString(), any(Year.class), anyString())).thenReturn(Optional.of(event));
 
         final var request = mock(HttpServletRequest.class);
         when(request.getParameter(eq("preview"))).thenReturn("12345678");

@@ -47,14 +47,7 @@ import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.EventSpeakerEntity;
 import org.komunumo.data.entity.KeywordEntity;
 import org.komunumo.data.entity.Role;
-import org.komunumo.data.service.EventKeywordService;
-import org.komunumo.data.service.EventOrganizerService;
-import org.komunumo.data.service.EventService;
-import org.komunumo.data.service.EventSpeakerService;
-import org.komunumo.data.service.KeywordService;
-import org.komunumo.data.service.MemberService;
-import org.komunumo.data.service.RegistrationService;
-import org.komunumo.data.service.SpeakerService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.security.AuthenticatedUser;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
@@ -80,36 +73,15 @@ import static org.komunumo.util.FormatterUtil.formatDateTime;
 public class EventsView extends ResizableView implements HasUrlParameter<String> {
 
     private final AuthenticatedUser authenticatedUser;
-    private final EventService eventService;
-    private final SpeakerService speakerService;
-    private final EventSpeakerService eventSpeakerService;
-    private final EventOrganizerService eventOrganizerService;
-    private final MemberService memberService;
-    private final KeywordService keywordService;
-    private final EventKeywordService eventKeywordService;
-    private final RegistrationService registrationService;
+    private final DatabaseService databaseService;
 
     private final TextField filterField;
     private final Grid<Event> grid;
 
     public EventsView(@NotNull final AuthenticatedUser authenticatedUser,
-                      @NotNull final EventService eventService,
-                      @NotNull final SpeakerService speakerService,
-                      @NotNull final EventSpeakerService eventSpeakerService,
-                      @NotNull final EventOrganizerService eventOrganizerService,
-                      @NotNull final MemberService memberService,
-                      @NotNull final KeywordService keywordService,
-                      @NotNull final EventKeywordService eventKeywordService,
-                      @NotNull final RegistrationService registrationService) {
+                      @NotNull final DatabaseService databaseService) {
         this.authenticatedUser = authenticatedUser;
-        this.eventService = eventService;
-        this.speakerService = speakerService;
-        this.eventSpeakerService = eventSpeakerService;
-        this.eventOrganizerService = eventOrganizerService;
-        this.memberService = memberService;
-        this.keywordService = keywordService;
-        this.eventKeywordService = eventKeywordService;
-        this.registrationService = registrationService;
+        this.databaseService = databaseService;
 
         addClassNames("events-view", "flex", "flex-col", "h-full");
 
@@ -180,7 +152,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
 
         grid.addColumn(new ComponentRenderer<>(event -> {
                     final var button = new EnhancedButton(Integer.toString(event.getAttendeeCount()),
-                            clickEvent -> new RegistrationsDialog(registrationService, event, this::reloadGridItems).open()
+                            clickEvent -> new RegistrationsDialog(databaseService, event, this::reloadGridItems).open()
                     );
                     button.setTitle("Manage registrations for this event");
                     return button;
@@ -244,27 +216,24 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
     }
 
     private void newEvent() {
-        showEventDialog(eventService.newEvent());
+        showEventDialog(databaseService.newEvent());
     }
 
     private void showEventDialog(@NotNull final Event event) {
         new EventDialog(event.getId() != null ? "Edit Event" : "New Event",
-                authenticatedUser, eventService,
-                speakerService, eventSpeakerService,
-                eventOrganizerService, memberService,
-                keywordService, eventKeywordService)
+                authenticatedUser, databaseService)
                 .open(event, this::reloadGridItems);
     }
 
     private void copyEvent(@NotNull final Event event) {
-        showEventDialog(eventService.copyEvent(event));
+        showEventDialog(databaseService.copyEvent(event));
     }
 
     private void deleteEvent(@NotNull final Event event) {
         new ConfirmDialog("Confirm deletion",
                 String.format("Are you sure you want to permanently delete the event \"%s\"?", event.getTitle()),
                 "Delete", dialogEvent -> {
-            eventService.deleteEvent(event);
+            databaseService.deleteEvent(event);
             reloadGridItems();
             dialogEvent.getSource().close();
         },
@@ -273,7 +242,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> eventService.find(query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> databaseService.findEvents(query.getOffset(), query.getLimit(), filterField.getValue()));
     }
 
     private void downloadEvents() {

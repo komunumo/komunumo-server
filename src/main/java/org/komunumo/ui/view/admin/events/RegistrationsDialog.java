@@ -41,7 +41,7 @@ import org.komunumo.Callback;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.RegistrationListEntity;
 import org.komunumo.data.entity.reports.RegistrationListEntityWrapper;
-import org.komunumo.data.service.RegistrationService;
+import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.EnhancedDialog;
 import org.komunumo.ui.component.FilterField;
@@ -58,17 +58,17 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @CssImport(value = "./themes/komunumo/views/admin/registration-dialog.css")
 public class RegistrationsDialog extends EnhancedDialog {
 
-    private final RegistrationService registrationService;
+    private final DatabaseService databaseService;
     private final Event event;
     private final Callback afterChangeCallback;
     private final TextField filterField;
     private final Grid<RegistrationListEntity> grid;
 
-    public RegistrationsDialog(@NotNull final RegistrationService registrationService,
+    public RegistrationsDialog(@NotNull final DatabaseService databaseService,
                                @NotNull final Event event,
                                @Nullable final Callback afterChangeCallback) {
         super("Event registrations for \"%s\"".formatted(event.getTitle()));
-        this.registrationService = registrationService;
+        this.databaseService = databaseService;
         this.event = event;
         this.afterChangeCallback = afterChangeCallback;
 
@@ -145,12 +145,12 @@ public class RegistrationsDialog extends EnhancedDialog {
     }
 
     private void reloadGridItems() {
-        grid.setItems(query -> registrationService.find(event.getId(), query.getOffset(), query.getLimit(), filterField.getValue()));
+        grid.setItems(query -> databaseService.findRegistrations(event.getId(), query.getOffset(), query.getLimit(), filterField.getValue()));
         grid.recalculateColumnWidths();
     }
 
     private void showRegisterDialog() {
-        new AddRegistrationDialog(registrationService, event, () -> {
+        new AddRegistrationDialog(databaseService, event, () -> {
             reloadGridItems();
             if (afterChangeCallback != null) {
                 afterChangeCallback.execute();
@@ -162,7 +162,7 @@ public class RegistrationsDialog extends EnhancedDialog {
         new ConfirmDialog("Confirm deregistration",
                 String.format("Are you sure you want to deregister \"%s\"?", registrationListEntity.fullName()),
                 "Deregister", dialogEvent -> {
-            registrationService.deregister(event.getId(), registrationListEntity.memberId());
+            databaseService.deregisterFromEvent(event.getId(), registrationListEntity.memberId());
             reloadGridItems();
             if (afterChangeCallback != null) {
                 afterChangeCallback.execute();
