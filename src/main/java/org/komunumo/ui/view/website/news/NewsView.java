@@ -21,14 +21,11 @@ package org.komunumo.ui.view.website.news;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Article;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -39,6 +36,8 @@ import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.NewsEntity;
 import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.view.website.ContentBlock;
+import org.komunumo.ui.view.website.SubMenu;
+import org.komunumo.ui.view.website.SubMenuItem;
 import org.komunumo.ui.view.website.WebsiteLayout;
 
 import java.util.ArrayList;
@@ -73,9 +72,7 @@ public class NewsView extends ContentBlock implements BeforeEnterObserver {
             if (newsEntities.isEmpty()) {
                 beforeEnterEvent.forwardTo(NewsView.class);
             }
-            final var newsOverview = new UnorderedList(new ListItem(new Anchor("/news", "News overview")));
-            newsOverview.addClassName("location-selector");
-            setSubMenu(newsOverview);
+            setSubMenu(new SubMenu(new SubMenuItem("/news", "News overview")));
         } else {
             setSubMenu(null);
         }
