@@ -29,6 +29,7 @@ import org.komunumo.data.entity.Registration;
 import org.komunumo.data.entity.RegistrationListEntity;
 import org.komunumo.data.entity.RegistrationMemberEntity;
 import org.komunumo.data.entity.RegistrationResult;
+import org.komunumo.data.entity.reports.RegistrationListEntityWrapper;
 import org.komunumo.data.service.getter.ConfigurationGetter;
 import org.komunumo.data.service.getter.DSLContextGetter;
 import org.komunumo.data.service.getter.MailSenderGetter;
@@ -205,6 +206,16 @@ interface RegistrationService extends ConfigurationGetter, DSLContextGetter, Mai
                 .limit(limit)
                 .fetchInto(RegistrationListEntity.class)
                 .stream();
+    }
+
+    default List<RegistrationListEntityWrapper> getRegistrationsForAttendanceList(final long eventId) {
+        return dsl().select(MEMBER.FIRST_NAME, MEMBER.LAST_NAME, MEMBER.CITY)
+                .from(REGISTRATION)
+                .join(MEMBER).on(REGISTRATION.MEMBER_ID.eq(MEMBER.ID))
+                .where(REGISTRATION.EVENT_ID.eq(eventId)
+                        .and(MEMBER.ACCOUNT_DELETED.isFalse()))
+                .orderBy(MEMBER.FIRST_NAME, MEMBER.LAST_NAME)
+                .fetchInto(RegistrationListEntityWrapper.class);
     }
 
     default List<RegistrationMemberEntity> getUnregisteredMembers(final long eventId) {

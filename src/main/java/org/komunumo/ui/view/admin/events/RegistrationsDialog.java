@@ -51,7 +51,6 @@ import org.vaadin.reports.PrintPreviewReport;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -194,6 +193,7 @@ public class RegistrationsDialog extends EnhancedDialog {
     }
 
     private void printRegistrations() {
+        final var reportData = databaseService.getRegistrationsForAttendanceList(event.getId());
         final var report = new PrintPreviewReport<>(RegistrationListEntityWrapper.class, "attendee", "city", "check");
         report.getReportBuilder()
                 .setTitle(event.getTitle())
@@ -202,16 +202,10 @@ public class RegistrationsDialog extends EnhancedDialog {
                 .getColumn(2).setWidth(15);
         final var resource = report.getStreamResource(
                 "registrations.pdf",
-                this::getRegistrationsForReport,
+                () -> reportData,
                 PrintPreviewReport.Format.PDF);
         final StreamRegistration registration = VaadinSession.getCurrent().getResourceRegistry().registerResource(resource);
           UI.getCurrent().getPage().open(registration.getResourceUri().toString());
-    }
-
-    private List<RegistrationListEntityWrapper> getRegistrationsForReport() {
-        return grid.getGenericDataView().getItems()
-                .map(RegistrationListEntityWrapper::new)
-                .toList();
     }
 
 }

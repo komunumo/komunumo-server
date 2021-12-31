@@ -19,17 +19,16 @@
 package org.komunumo.data.entity.reports;
 
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.data.entity.RegistrationListEntity;
 
-@SuppressWarnings("unused") // used by jasper reports
+@SuppressWarnings("unused") // getters used by jasper reports
 public class RegistrationListEntityWrapper {
 
     private final String attendee;
     private final String city;
 
-    public RegistrationListEntityWrapper(@NotNull final RegistrationListEntity entity) {
-        this.attendee = entity.fullName();
-        this.city = entity.city();
+    public RegistrationListEntityWrapper(@NotNull final String firstName, @NotNull final String lastName, @NotNull final String city) {
+        this.attendee = "%s %s".formatted(firstName, lastName).trim();
+        this.city = city;
     }
 
     public String getAttendee() {
