@@ -18,6 +18,7 @@
 
 package org.komunumo.ui.view.admin.events;
 
+import ar.com.fdvs.dj.domain.ImageBanner;
 import com.opencsv.CSVWriter;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -200,6 +201,12 @@ public class RegistrationsDialog extends EnhancedDialog {
                 .setDetailHeight(30)
                 .setColumnsPerPage(2, 10)
                 .getColumn(2).setWidth(15);
+        final var websiteLogo = databaseService.configuration().getWebsiteLogo();
+        if (!websiteLogo.isBlank()) {
+            final var websiteLogoWidth = databaseService.configuration().getWebsiteLogoWidth();
+            final var websiteLogoHeight = databaseService.configuration().getWebsiteLogoHeight();
+            report.getReportBuilder().addFirstPageImageBanner(websiteLogo, websiteLogoWidth, websiteLogoHeight, ImageBanner.Alignment.Center);
+        }
         final var resource = report.getStreamResource(
                 "registrations.pdf",
                 () -> reportData,

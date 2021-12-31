@@ -55,6 +55,18 @@ public class Configuration {
         return configuration.getOrDefault("website.about.text", "");
     }
 
+    public String getWebsiteLogo() {
+        return configuration.getOrDefault("website.logo", "");
+    }
+
+    public int getWebsiteLogoWidth() {
+        return Integer.parseInt(configuration.getOrDefault("website.logo.width", "0"));
+    }
+
+    public int getWebsiteLogoHeight() {
+        return Integer.parseInt(configuration.getOrDefault("website.logo.height", "0"));
+    }
+
     public String getWebsiteLogoTemplate() {
         return configuration.getOrDefault("website.logo.template", "");
     }
