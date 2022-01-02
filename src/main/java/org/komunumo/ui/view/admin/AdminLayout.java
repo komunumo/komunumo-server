@@ -20,6 +20,7 @@ package org.komunumo.ui.view.admin;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -51,6 +52,7 @@ import org.komunumo.ui.view.admin.settings.SettingsView;
 import org.komunumo.ui.view.admin.speakers.SpeakersView;
 import org.komunumo.ui.view.admin.sponsors.SponsorsView;
 import org.komunumo.ui.view.login.ChangePasswordView;
+import org.komunumo.ui.view.website.home.HomeView;
 import org.komunumo.util.GravatarUtil;
 
 import java.util.ArrayList;
@@ -96,6 +98,7 @@ public class AdminLayout extends AppLayout {
 
         final var menuItem = menuBar.addItem(createAvatar());
         final var subMenu = menuItem.getSubMenu();
+        subMenu.addItem("Website", e -> UI.getCurrent().navigate(HomeView.class));
         subMenu.addItem("Logout", e -> authenticatedUser.logout());
 
         return menuBar;
