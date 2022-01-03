@@ -68,31 +68,31 @@ public class PastEventsView extends ContentBlock implements BeforeEnterObserver,
         final var years = databaseService.getYearsWithPastEvents();
         final var events = databaseService.pastEvents(selectedYear).toList();
 
-        final var locationSelector = createLocationSelector(years, selectedYear);
+        final var subMenu = createSubMenu(years, selectedYear);
 
         final var eventsList = new Div();
         eventsList.addClassName("events-list");
         events.stream()
                 .map(EventPreview::new)
                 .forEach(eventsList::add);
-        setSubMenu(locationSelector);
+        setSubMenu(subMenu);
         setContent(eventsList);
     }
 
-    private Component createLocationSelector(List<Year> years, @Nullable final Year selectedYear) {
-        final var locationSelector = new SubMenu();
-        locationSelector.add(new SubMenuItem("/events", "upcoming"));
+    private Component createSubMenu(List<Year> years, @Nullable final Year selectedYear) {
+        final var subMenu = new SubMenu();
+        subMenu.add(new SubMenuItem("/events", "upcoming"));
 
         final var pastEvents = new SubMenuItem("/events/past", "Past Events", true);
         pastEvents.addClassName("past-events");
-        locationSelector.add(pastEvents);
+        subMenu.add(pastEvents);
 
         years.stream()
                 .distinct()
                 .sorted(Comparator.reverseOrder())
                 .map(year -> new SubMenuItem("/events/past/%s".formatted(year), year.toString(), year.equals(selectedYear)))
-                .forEach(locationSelector::add);
-        return locationSelector;
+                .forEach(subMenu::add);
+        return subMenu;
     }
 
     @Override

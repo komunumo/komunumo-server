@@ -66,21 +66,21 @@ public class EventsView extends ContentBlock implements BeforeEnterObserver, Has
         final var params = beforeEnterEvent.getRouteParameters();
         final var location = params.get("location");
         final var events = databaseService.upcomingEvents().toList();
-        final var locationSelector = createLocationSelector(events, location.orElse(null));
+        final var subMenu = createSubMenu(events, location.orElse(null));
         final var eventsList = new Div();
         eventsList.addClassName("events-list");
         events.stream()
                 .filter(event -> location.isEmpty() || URLUtil.createReadableUrl(event.getLocation()).equals(location.get()))
                 .map(EventPreview::new)
                 .forEach(eventsList::add);
-        setSubMenu(locationSelector);
+        setSubMenu(subMenu);
         setContent(eventsList);
     }
 
-    private Component createLocationSelector(List<Event> events, @Nullable final String actualLocation) {
-        final var locationSelector = new SubMenu();
-        locationSelector.add(new SubMenuItem("/events", "upcoming", true));
-        locationSelector.add(new SubMenuItem("/events", "all locations", actualLocation == null));
+    private Component createSubMenu(List<Event> events, @Nullable final String actualLocation) {
+        final var subMenu = new SubMenu();
+        subMenu.add(new SubMenuItem("/events", "upcoming", true));
+        subMenu.add(new SubMenuItem("/events", "all locations", actualLocation == null));
         events.stream()
                 .map(Event::getLocation)
                 .distinct()
@@ -92,11 +92,11 @@ public class EventsView extends ContentBlock implements BeforeEnterObserver, Has
                     }
                     return new SubMenuItem("/events/".concat(url), location, url.equals(actualLocation));
                 })
-                .forEach(locationSelector::add);
+                .forEach(subMenu::add);
         final var pastEvents = new SubMenuItem("/events/past", "Past Events");
         pastEvents.addClassName("past-events");
-        locationSelector.add(pastEvents);
-        return locationSelector;
+        subMenu.add(pastEvents);
+        return subMenu;
     }
 
     @Override
