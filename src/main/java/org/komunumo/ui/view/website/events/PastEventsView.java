@@ -27,6 +27,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -66,6 +67,10 @@ public class PastEventsView extends ContentBlock implements BeforeEnterObserver,
         final var year = params.get("year");
         selectedYear = year.isPresent() ? Year.parse(year.get()) : Year.now();
         final var years = databaseService.getYearsWithPastEvents();
+        if (!years.contains(selectedYear) && !years.isEmpty()) {
+            beforeEnterEvent.forwardTo(PastEventsView.class, new RouteParameters("year", years.get(0).toString()));
+        }
+
         final var events = databaseService.pastEvents(selectedYear).toList();
 
         final var subMenu = createSubMenu(years, selectedYear);

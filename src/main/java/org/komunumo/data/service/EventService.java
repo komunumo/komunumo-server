@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 
 import static org.jooq.impl.DSL.concat;
 import static org.jooq.impl.DSL.condition;
+import static org.jooq.impl.DSL.field;
 import static org.komunumo.data.db.tables.Event.EVENT;
 import static org.komunumo.data.db.tables.EventKeyword.EVENT_KEYWORD;
 import static org.komunumo.data.db.tables.EventSpeaker.EVENT_SPEAKER;
@@ -198,7 +199,7 @@ interface EventService extends DSLContextGetter, EventKeywordService, EventSpeak
                 .from(EVENT)
                 .where(condition(EVENT.PUBLISHED)
                         .and(EVENT.DATE.lessOrEqual(LocalDateTime.now())))
-                .orderBy(1)
+                .orderBy(field("year", Integer.class).desc())
                 .stream()
                 .map(record -> Year.of(record.value1()))
                 .toList();
