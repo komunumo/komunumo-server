@@ -24,7 +24,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -42,12 +42,13 @@ import java.util.List;
 
 @Route(value = "events", layout = WebsiteLayout.class)
 @RouteAlias(value = "events/:location", layout = WebsiteLayout.class)
-@PageTitle("Events")
 @CssImport("./themes/komunumo/views/website/events-view.css")
 @AnonymousAllowed
-public class EventsView extends ContentBlock implements BeforeEnterObserver {
+public class EventsView extends ContentBlock implements BeforeEnterObserver, HasDynamicTitle {
 
     private final DatabaseService databaseService;
+
+    private String selectedLocation;
 
     public EventsView(@NotNull final DatabaseService databaseService) {
         super("Events");
@@ -61,6 +62,7 @@ public class EventsView extends ContentBlock implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(@NotNull final BeforeEnterEvent beforeEnterEvent) {
+        selectedLocation = null;
         final var params = beforeEnterEvent.getRouteParameters();
         final var location = params.get("location");
         final var events = databaseService.upcomingEvents().toList();
@@ -85,6 +87,9 @@ public class EventsView extends ContentBlock implements BeforeEnterObserver {
                 .sorted()
                 .map(location -> {
                     final var url = URLUtil.createReadableUrl(location);
+                    if (url.equals(actualLocation)) {
+                        selectedLocation = location;
+                    }
                     return new SubMenuItem("/events/".concat(url), location, url.equals(actualLocation));
                 })
                 .forEach(locationSelector::add);
@@ -92,6 +97,19 @@ public class EventsView extends ContentBlock implements BeforeEnterObserver {
         pastEvents.addClassName("past-events");
         locationSelector.add(pastEvents);
         return locationSelector;
+    }
+
+    @Override
+    public String getPageTitle() {
+        var title = "Events";
+        if (selectedLocation != null) {
+            if (selectedLocation.equals("Online")) {
+                title = "Online events";
+            } else {
+                title = "Events in %s".formatted(selectedLocation);
+            }
+        }
+        return "%s: %s".formatted(databaseService.configuration().getWebsiteName(), title);
     }
 
 }

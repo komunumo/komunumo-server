@@ -25,7 +25,7 @@ import com.vaadin.flow.component.html.Article;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
@@ -35,13 +35,15 @@ import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.WebsiteLayout;
 
 @Route(value = "faq", layout = WebsiteLayout.class)
-@PageTitle("FAQ")
 @CssImport("./themes/komunumo/views/website/faq-view.css")
 @AnonymousAllowed
-public class FaqView extends ContentBlock {
+public class FaqView extends ContentBlock implements HasDynamicTitle {
+
+    private final DatabaseService databaseService;
 
     public FaqView(@NotNull final DatabaseService databaseService) {
         super("FAQ");
+        this.databaseService = databaseService;
         addClassName("faq-view");
 
         final var content = new Div();
@@ -58,6 +60,11 @@ public class FaqView extends ContentBlock {
         article.add(new H3(faqRecord.getQuestion()));
         article.add(new Html("<div>%s</div>".formatted(faqRecord.getAnswer())));
         return article;
+    }
+
+    @Override
+    public String getPageTitle() {
+        return "%s: FAQ".formatted(databaseService.configuration().getWebsiteName());
     }
 
 }

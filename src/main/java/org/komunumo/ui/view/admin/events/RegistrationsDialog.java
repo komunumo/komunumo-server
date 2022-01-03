@@ -54,6 +54,7 @@ import java.io.StringWriter;
 import java.time.LocalDateTime;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.komunumo.util.FormatterUtil.formatDate;
 
 @CssImport(value = "./themes/komunumo/views/admin/registration-dialog.css")
 public class RegistrationsDialog extends EnhancedDialog {
@@ -195,9 +196,12 @@ public class RegistrationsDialog extends EnhancedDialog {
 
     private void printRegistrations() {
         final var reportData = databaseService.getRegistrationsForAttendanceList(event.getId());
+        for (var i = 0; i < 10; i++) {
+            reportData.add(new RegistrationListEntityWrapper("", "____________________", "_______________"));
+        }
         final var report = new PrintPreviewReport<>(RegistrationListEntityWrapper.class, "attendee", "city", "check");
         report.getReportBuilder()
-                .setTitle("%s: %s".formatted(FormatterUtil.formatDate(event.getDate().toLocalDate()), event.getTitle()))
+                .setTitle("%s: %s".formatted(formatDate(event.getDate().toLocalDate()), event.getTitle()))
                 .setSubtitle("%d registrations".formatted(reportData.size()))
                 .setDetailHeight(30)
                 .setColumnsPerPage(2, 10)

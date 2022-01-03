@@ -28,7 +28,7 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -47,12 +47,13 @@ import static org.komunumo.util.FormatterUtil.formatDate;
 
 @Route(value = "news", layout = WebsiteLayout.class)
 @RouteAlias(value = "news/:id", layout = WebsiteLayout.class)
-@PageTitle("News")
 @CssImport("./themes/komunumo/views/website/news-view.css")
 @AnonymousAllowed
-public class NewsView extends ContentBlock implements BeforeEnterObserver {
+public class NewsView extends ContentBlock implements BeforeEnterObserver, HasDynamicTitle {
 
     private final DatabaseService databaseService;
+
+    private NewsEntity newsEntity = null;
 
     public NewsView(@NotNull final DatabaseService databaseService) {
         super("News");
@@ -62,6 +63,7 @@ public class NewsView extends ContentBlock implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(@NotNull final BeforeEnterEvent beforeEnterEvent) {
+        newsEntity = null;
         final var newsEntities = new ArrayList<NewsEntity>();
 
         final var params = beforeEnterEvent.getRouteParameters();
@@ -71,6 +73,8 @@ public class NewsView extends ContentBlock implements BeforeEnterObserver {
             databaseService.getNewsWhenVisible(id).ifPresent(newsEntities::add);
             if (newsEntities.isEmpty()) {
                 beforeEnterEvent.forwardTo(NewsView.class);
+            } else {
+                newsEntity = newsEntities.get(0);
             }
             setSubMenu(new SubMenu(new SubMenuItem("/news", "News overview")));
         } else {
@@ -119,6 +123,11 @@ public class NewsView extends ContentBlock implements BeforeEnterObserver {
         newsItem.add(message);
 
         return newsItem;
+    }
+
+    @Override
+    public String getPageTitle() {
+        return "%s: %s".formatted(databaseService.configuration().getWebsiteName(), newsEntity != null ? newsEntity.title() : "News");
     }
 
 }

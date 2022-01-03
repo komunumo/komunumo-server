@@ -24,7 +24,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -42,12 +42,13 @@ import java.util.List;
 
 @Route(value = "events/past", layout = WebsiteLayout.class)
 @RouteAlias(value = "events/past/:year", layout = WebsiteLayout.class)
-@PageTitle("Past Events")
 @CssImport("./themes/komunumo/views/website/events-view.css")
 @AnonymousAllowed
-public class PastEventsView extends ContentBlock implements BeforeEnterObserver {
+public class PastEventsView extends ContentBlock implements BeforeEnterObserver, HasDynamicTitle {
 
     private final DatabaseService databaseService;
+
+    private Year selectedYear;
 
     public PastEventsView(@NotNull final DatabaseService databaseService) {
         super("Events");
@@ -63,7 +64,7 @@ public class PastEventsView extends ContentBlock implements BeforeEnterObserver 
     public void beforeEnter(@NotNull final BeforeEnterEvent beforeEnterEvent) {
         final var params = beforeEnterEvent.getRouteParameters();
         final var year = params.get("year");
-        final var selectedYear = year.isPresent() ? Year.parse(year.get()) : Year.now();
+        selectedYear = year.isPresent() ? Year.parse(year.get()) : Year.now();
         final var years = databaseService.getYearsWithPastEvents();
         final var events = databaseService.pastEvents(selectedYear).toList();
 
@@ -92,6 +93,11 @@ public class PastEventsView extends ContentBlock implements BeforeEnterObserver 
                 .map(year -> new SubMenuItem("/events/past/%s".formatted(year), year.toString(), year.equals(selectedYear)))
                 .forEach(locationSelector::add);
         return locationSelector;
+    }
+
+    @Override
+    public String getPageTitle() {
+        return "%s: Past events from %s".formatted(databaseService.configuration().getWebsiteName(), selectedYear);
     }
 
 }

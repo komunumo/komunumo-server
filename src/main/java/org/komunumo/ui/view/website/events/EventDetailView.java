@@ -20,11 +20,12 @@ package org.komunumo.ui.view.website.events;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.NotFoundException;
-import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.SubMenu;
@@ -38,14 +39,15 @@ import java.util.List;
 import java.util.Map;
 
 @Route(value = "event/:location/:year/:url", layout = WebsiteLayout.class)
-@PageTitle("Events") // TODO title based on event
 @CssImport("./themes/komunumo/views/website/event-details.css")
 @AnonymousAllowed
-public class EventDetailView extends ContentBlock implements BeforeEnterObserver{
+public class EventDetailView extends ContentBlock implements BeforeEnterObserver, HasDynamicTitle {
 
     private final DatabaseService databaseService;
 
     private final Map<String, String> locationMapper = new HashMap<>();
+
+    private Event event;
 
     public EventDetailView(@NotNull final DatabaseService databaseService) {
         super("Events");
@@ -63,7 +65,7 @@ public class EventDetailView extends ContentBlock implements BeforeEnterObserver
         final var queryParams = beforeEnterEvent.getLocation().getQueryParameters();
         final var deregisterCode = queryParams.getParameters().getOrDefault("deregister", List.of("")).get(0).trim();
 
-        final var event = databaseService.getEventByUrl(mapLocation(location), Year.of(year), url)
+        event = databaseService.getEventByUrl(mapLocation(location), Year.of(year), url)
                 .orElseThrow(NotFoundException::new);
 
         if (!previewCode.isBlank() && event.getPublished()) {
@@ -105,6 +107,11 @@ public class EventDetailView extends ContentBlock implements BeforeEnterObserver
         final var params = beforeEnterEvent.getLocation().getQueryParameters().getParameters();
         final var preview = params.getOrDefault("preview", null);
         return preview != null ? preview.get(0) : "";
+    }
+
+    @Override
+    public String getPageTitle() {
+        return "%s: %s".formatted(databaseService.configuration().getWebsiteName(), event.getTitle());
     }
 
 }

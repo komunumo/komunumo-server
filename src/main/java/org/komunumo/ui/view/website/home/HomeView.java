@@ -20,7 +20,7 @@ package org.komunumo.ui.view.website.home;
 
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
@@ -29,18 +29,25 @@ import org.komunumo.ui.view.website.NewsBlock;
 import org.komunumo.ui.view.website.WebsiteLayout;
 
 @Route(value = "", layout = WebsiteLayout.class)
-@PageTitle("Home")
 @CssImport("./themes/komunumo/views/website/home-view.css")
 @CssImport("./themes/komunumo/views/website/events-view.css")
 @AnonymousAllowed
-public class HomeView extends Div {
+public class HomeView extends Div implements HasDynamicTitle {
+
+    private final DatabaseService databaseService;
 
     public HomeView(@NotNull final DatabaseService databaseService) {
+        this.databaseService = databaseService;
         addClassName("home-view");
         add(
                 new NewsBlock(databaseService),
                 new EventPreviewBlock(databaseService)
         );
+    }
+
+    @Override
+    public String getPageTitle() {
+        return "%s: Home".formatted(databaseService.configuration().getWebsiteName());
     }
 
 }
