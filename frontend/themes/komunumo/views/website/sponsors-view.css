@@ -39,6 +39,7 @@
 .website .sponsors-view section {
     border-top: 2px solid #bfbfbf;
     margin-top: 30px;
+    max-width: 770px;
     padding-right: 20px;
 }
 
