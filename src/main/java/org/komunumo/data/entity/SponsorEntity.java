@@ -22,4 +22,5 @@ import org.komunumo.data.db.enums.SponsorLevel;
 
 import java.time.LocalDate;
 
-public record SponsorEntity(Long id, String name, String website, String logo, LocalDate validFrom, LocalDate validTo, SponsorLevel level) { }
+public record SponsorEntity(Long id, String name, String website, String logo, String description,
+                            LocalDate validFrom, LocalDate validTo, SponsorLevel level) { }

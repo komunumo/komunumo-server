@@ -154,6 +154,7 @@ CREATE TABLE sponsor (
     name VARCHAR(255) NOT NULL,
     website VARCHAR(255) NOT NULL DEFAULT '',
     logo MEDIUMTEXT NOT NULL DEFAULT '',
+    description MEDIUMTEXT NOT NULL DEFAULT '',
     valid_from DATE NULL,
     valid_to DATE NULL,
     level ENUM('Silver', 'Gold', 'Platinum') NULL,

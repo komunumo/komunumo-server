@@ -47,7 +47,7 @@ public class SponsorBlock extends ContentBlock {
     }
 
     private Component createSponsorComponent(@NotNull final DatabaseService databaseService, @NotNull final SponsorLevel sponsorLevel) {
-        final var levelTitle = new H3("%s sponsor".formatted(sponsorLevel.getLiteral()));
+        final var levelTitle = new H3(sponsorLevel.getLiteral());
         levelTitle.addClassName("sponsor-level");
 
         final var sponsorLogos = new Div();

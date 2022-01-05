@@ -1,0 +1,75 @@
+/*
+ * Komunumo - Open Source Community Manager
+ * Copyright (C) Marcus Fihlon and the individual contributors to Komunumo.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.website .sponsors-view .content-column {
+    padding-right: 0;
+}
+
+.website .sponsors-view h2 {
+    margin-top: 0;
+}
+
+.website .sponsors-view h3 {
+    margin-top: 8px;
+}
+
+.website .sponsors-view p {
+    max-width: 555px;
+}
+
+.website .sponsors-view p:last-child {
+    margin-bottom: 20px;
+}
+
+.website .sponsors-view section {
+    border-top: 2px solid #bfbfbf;
+    margin-top: 30px;
+    padding-right: 20px;
+}
+
+.website .sponsors-view hr {
+    border-top: 1px solid #bfbfbf;
+    max-width: 555px;
+    /*margin: 15px 0 15px 0;*/
+}
+
+.website .sponsors-view article:last-child hr {
+    display: none;
+}
+
+/*
+.website .sponsors-view article {
+    border-bottom: 1px solid #bfbfbf;
+}
+
+.website .sponsors-view article:last-child {
+    border-bottom: none;
+}
+*/
+
+.website .sponsors-view .level-platinum .sponsor-logo,
+.website .sponsors-view .level-gold .sponsor-logo {
+    clear: right;
+    float: right;
+    margin: 10px 0 10px 20px;
+    width: 175px;
+}
+
+.website .sponsors-view .level-silver .sponsor-logo {
+    margin: 15px 0 15px 30px;
+}

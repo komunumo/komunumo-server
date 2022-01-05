@@ -74,7 +74,7 @@ public class ContentBlock extends HorizontalLayout {
         }
     }
 
-    public void setContent(@NotNull final Component content) {
+    public void setContent(@NotNull final Component... content) {
         final var newContentColumn = new Div(content);
         newContentColumn.addClassName("content-column");
         replace(contentColumn, newContentColumn);

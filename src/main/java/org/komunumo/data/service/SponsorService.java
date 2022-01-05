@@ -44,6 +44,7 @@ interface SponsorService extends DSLContextGetter {
         sponsor.setName("");
         sponsor.setWebsite("");
         sponsor.setLogo("");
+        sponsor.setDescription("");
         return sponsor;
     }
 

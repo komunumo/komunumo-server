@@ -20,6 +20,7 @@ package org.komunumo.ui.view.admin.sponsors;
 
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.richtexteditor.RichTextEditor;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
@@ -29,6 +30,7 @@ import org.komunumo.Callback;
 import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.data.service.DatabaseService;
+import org.komunumo.ui.component.CustomLabel;
 import org.komunumo.ui.component.DatePicker;
 import org.komunumo.ui.component.EditDialog;
 import org.komunumo.ui.component.ImageUploadField;
@@ -57,6 +59,7 @@ public class SponsorDialog extends EditDialog<SponsorRecord> {
         final var website = new TextField("Website");
         final var level = new ComboBox<SponsorLevel>("Level");
         final var logo = new ImageUploadField("Logo");
+        final var description = new RichTextEditor();
         final var validFrom = new DatePicker("Valid from");
         final var validTo = new DatePicker("Valid to");
         final var domains = new TagField("Domains");
@@ -66,7 +69,7 @@ public class SponsorDialog extends EditDialog<SponsorRecord> {
         website.setValueChangeMode(EAGER);
         level.setItems(SponsorLevel.values());
 
-        formLayout.add(name, website, level, logo, validFrom, validTo, domains);
+        formLayout.add(name, website, level, logo, new CustomLabel("Description"), description, validFrom, validTo, domains);
 
         binder.forField(name)
                 .withValidator(new StringLengthValidator(
@@ -89,6 +92,11 @@ public class SponsorDialog extends EditDialog<SponsorRecord> {
                 .withValidator(new StringLengthValidator(
                         "The logo is too big (max. 100 KB)", 0, 100_000))
                 .bind(SponsorRecord::getLogo, SponsorRecord::setLogo);
+
+        binder.forField(description.asHtml())
+                .withValidator(new StringLengthValidator(
+                        "The description is too long (max. 100'000 chars)", 0, 100_000))
+                .bind(SponsorRecord::getDescription, SponsorRecord::setDescription);
 
         binder.forField(validFrom)
                 .withValidator(value -> value == null || validTo.isEmpty() || value.isBefore(validTo.getValue()),
