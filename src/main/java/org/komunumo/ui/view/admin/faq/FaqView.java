@@ -71,16 +71,16 @@ public class FaqView extends ResizableView {
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter keywords");
 
-        final var newKeywordButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), clickEvent -> showEditDialog(null));
-        newKeywordButton.setTitle("Add a new keyword");
+        final var newEntryButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), clickEvent -> showEditDialog(null));
+        newEntryButton.setTitle("Add a new entry");
 
-        final var refreshKeywordsButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), clickEvent -> reloadGridItems());
-        refreshKeywordsButton.setTitle("Refresh the list of keywords");
+        final var refreshListButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), clickEvent -> reloadGridItems());
+        refreshListButton.setTitle("Refresh the FAQ list");
 
-        final var downloadKeywordsButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD), clickEvent -> downloadEntries());
-        downloadKeywordsButton.setTitle("Download the list of keywords");
+        final var downloadEntriesButton = new EnhancedButton(new Icon(VaadinIcon.DOWNLOAD), clickEvent -> downloadEntries());
+        downloadEntriesButton.setTitle("Download the list of entries");
 
-        final var optionBar = new HorizontalLayout(filterField, newKeywordButton, refreshKeywordsButton, downloadKeywordsButton);
+        final var optionBar = new HorizontalLayout(filterField, newEntryButton, refreshListButton, downloadEntriesButton);
         optionBar.setPadding(true);
 
         add(optionBar, grid);
