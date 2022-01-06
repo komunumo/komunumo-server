@@ -62,7 +62,10 @@ public class SponsorsView extends ContentBlock implements HasDynamicTitle {
 
         setContent(
                 new H2("%s Sponsors".formatted(databaseService.configuration().getWebsiteName())),
-                new Paragraph("The JUG Switzerland is supported by industry sponsors. We appreciate their commitment to the JUG Switzerland and we greatly value their active contribution to the JAVA software and technology community."),
+                new Paragraph("""
+                        The JUG Switzerland is supported by industry sponsors. We appreciate their commitment to the
+                        JUG Switzerland and we greatly value their active contribution to the JAVA software and
+                        technology community."""),
                 createSponsorSection(SponsorLevel.Platinum),
                 createSponsorSection(SponsorLevel.Gold),
                 createSponsorSection(SponsorLevel.Silver)
