@@ -84,8 +84,10 @@ public class SponsorsView extends ContentBlock implements HasDynamicTitle {
     private Component createSponsorArticle(@NotNull final SponsorEntity sponsorEntity) {
         final var sponsor = new Article();
 
-        final var logo = new Div(new Anchor(sponsorEntity.website(), new Image(sponsorEntity.logo(), "Logo")));
+        final var logoHint = "Go to %s website".formatted(sponsorEntity.name());
+        final var logo = new Div(new Anchor(sponsorEntity.website(), new Image(sponsorEntity.logo(), logoHint)));
         logo.addClassName("sponsor-logo");
+        logo.setTitle(logoHint);
         sponsor.add(logo);
         if (sponsorEntity.level().equals(SponsorLevel.Platinum) || sponsorEntity.level().equals(SponsorLevel.Gold)) {
             sponsor.add(new H4(sponsorEntity.name()));

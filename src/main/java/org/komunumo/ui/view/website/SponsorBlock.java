@@ -19,8 +19,8 @@
 package org.komunumo.ui.view.website;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Image;
@@ -60,12 +60,14 @@ public class SponsorBlock extends ContentBlock {
     }
 
     private static Component toLogo(@NotNull final SponsorEntity sponsor) {
-        final var logo = new Div(new Image(sponsor.logo(), sponsor.name()));
-        logo.addClassName("sponsor-logo");
-        logo.addClickListener(clickEvent -> UI.getCurrent().getPage().setLocation(sponsor.website()));
+        final var logoHint = "Go to %s website".formatted(sponsor.name());
 
-        final var logoContainer = new Div(logo);
+        final var logo = new Div(new Image(sponsor.logo(), logoHint));
+        logo.addClassName("sponsor-logo");
+
+        final var logoContainer = new Div(new Anchor(sponsor.website(), logo));
         logoContainer.addClassName("sponsor-logo-container");
+        logoContainer.setTitle(logoHint);
         return logoContainer;
     }
 
