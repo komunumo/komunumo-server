@@ -56,9 +56,11 @@ public class Event extends EventRecord {
     }
 
     public String getCompleteEventUrl() {
-        return "/event/%s/%d/%s".formatted(
-                URLUtil.createReadableUrl(getLocation()),
-                getDate().getYear(), getEventUrl());
+        return (getLocation().isBlank() || getDate() == null) ? "" :
+                "/event/%s/%d/%s".formatted(
+                        URLUtil.createReadableUrl(getLocation()),
+                        getDate().getYear(),
+                        getEventUrl());
     }
 
     public String getCompleteEventPreviewUrl() {

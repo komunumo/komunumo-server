@@ -27,3 +27,7 @@
 .events-view vaadin-icon[icon="vaadin:eye-slash"] {
     color: var(--lumo-disabled-text-color);
 }
+
+.events-view vaadin-icon[icon="vaadin:warning"] {
+    color: rgb(255, 194, 122);
+}

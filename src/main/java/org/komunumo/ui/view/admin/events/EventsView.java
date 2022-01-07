@@ -189,8 +189,15 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
     }
 
     private Component createPublishStateIcon(@NotNull final Event event) {
+        if (!event.getPublished() && event.getCompleteEventUrl().isBlank()) {
+            final var warning = new Icon(VaadinIcon.WARNING);
+            warning.getElement().setAttribute("title", "No publishing or preview without location and date/time!");
+            return warning;
+        }
         final var url = event.getPublished() ? event.getCompleteEventUrl() : event.getCompleteEventPreviewUrl();
-        return new Anchor(url, new Icon(event.getPublished() ? VaadinIcon.EYE : VaadinIcon.EYE_SLASH));
+        final var anchor = new Anchor(url, new Icon(event.getPublished() ? VaadinIcon.EYE : VaadinIcon.EYE_SLASH));
+        anchor.setTitle(event.getPublished() ? "Show the event on the website" : "Show the event preview");
+        return anchor;
     }
 
     private String getEventClass(@NotNull final Event event) {
