@@ -77,8 +77,8 @@ public class RedirectDialog extends EditDialog<RedirectRecord> {
                     }
                 },
                 () -> {
+                    applicationServiceInitListener.reloadRedirects();
                     if (afterSave != null) {
-                        applicationServiceInitListener.reloadRedirects();
                         afterSave.execute();
                     }
                 }
