@@ -78,6 +78,8 @@ public class AdminLayout extends AppLayout {
         addToNavbar(true, createHeaderContent());
         menu = createMenu();
         addToDrawer(createDrawerContent(menu));
+
+        authenticatedUser.get().ifPresent(member -> UI.getCurrent().getElement().setAttribute("theme", member.getTheme().getLiteral()));
     }
 
     private Component createHeaderContent() {
