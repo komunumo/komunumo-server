@@ -61,6 +61,7 @@ CREATE TABLE member (
     membership_begin DATE NULL,
     membership_end DATE NULL,
     membership_id INTEGER UNSIGNED NOT NULL DEFAULT 0,
+    theme ENUM('dark', 'light') NOT NULL DEFAULT 'light',
     admin BOOLEAN NOT NULL DEFAULT 0,
     password_hash VARCHAR(255) NULL,
     password_change BOOLEAN NOT NULL DEFAULT 0,

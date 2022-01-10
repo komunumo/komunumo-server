@@ -28,6 +28,7 @@ import com.vaadin.flow.component.cookieconsent.CookieConsent;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -40,6 +41,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.db.enums.MemberTheme;
 import org.komunumo.security.AuthenticatedUser;
 import org.komunumo.ui.view.admin.dashboard.DashboardView;
 import org.komunumo.ui.view.admin.events.EventsView;
@@ -98,8 +100,39 @@ public class AdminLayout extends AppLayout {
 
         final var menuItem = menuBar.addItem(createAvatar());
         final var subMenu = menuItem.getSubMenu();
+        final var darkThemeItem = subMenu.addItem("Dark Theme");
+        final var lightThemeItem = subMenu.addItem("Light Theme");
+        subMenu.addItem(new Hr());
         subMenu.addItem("Website", e -> UI.getCurrent().navigate(HomeView.class));
+        subMenu.addItem(new Hr());
         subMenu.addItem("Logout", e -> authenticatedUser.logout());
+
+        darkThemeItem.setCheckable(true);
+        lightThemeItem.setCheckable(true);
+        authenticatedUser.get().ifPresent(member -> {
+            switch (member.getTheme()) {
+                case dark -> darkThemeItem.setChecked(true);
+                case light -> lightThemeItem.setChecked(true);
+            }
+        });
+
+        darkThemeItem.addClickListener(clickEvent -> {
+            authenticatedUser.get().ifPresent(member -> {
+                member.setTheme(MemberTheme.dark);
+                member.store();
+            });
+            UI.getCurrent().getElement().setAttribute("theme", "dark");
+            lightThemeItem.setChecked(false);
+        });
+
+        lightThemeItem.addClickListener(clickEvent -> {
+            authenticatedUser.get().ifPresent(member -> {
+                member.setTheme(MemberTheme.light);
+                member.store();
+            });
+            UI.getCurrent().getElement().setAttribute("theme", "light");
+            darkThemeItem.setChecked(false);
+        });
 
         return menuBar;
     }
