@@ -196,13 +196,14 @@ public class RegistrationsDialog extends EnhancedDialog {
 
     private void printRegistrations() {
         final var reportData = databaseService.getRegistrationsForAttendanceList(event.getId());
+        final var registrationCount = reportData.size();
         for (var i = 0; i < 10; i++) {
             reportData.add(new RegistrationListEntityWrapper("", "____________________", "_______________"));
         }
         final var report = new PrintPreviewReport<>(RegistrationListEntityWrapper.class, "attendee", "city", "check");
         report.getReportBuilder()
                 .setTitle("%s: %s".formatted(formatDate(event.getDate().toLocalDate()), event.getTitle()))
-                .setSubtitle("%d registrations".formatted(reportData.size()))
+                .setSubtitle("%d registrations".formatted(registrationCount))
                 .setDetailHeight(30)
                 .setColumnsPerPage(2, 10)
                 .getColumn(2).setWidth(15);
