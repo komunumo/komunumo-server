@@ -123,4 +123,9 @@ interface SponsorService extends DSLContextGetter {
                 .stream();
     }
 
+    default void deleteSponsorDomains(@NotNull final SponsorRecord sponsorRecord) {
+        dsl().deleteFrom(SPONSOR_DOMAIN)
+                .where(SPONSOR_DOMAIN.SPONSOR_ID.eq(sponsorRecord.getId()))
+                .execute();
+    }
 }

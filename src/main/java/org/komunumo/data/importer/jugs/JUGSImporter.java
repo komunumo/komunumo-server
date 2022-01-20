@@ -20,6 +20,7 @@ package org.komunumo.data.importer.jugs;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +45,7 @@ import org.komunumo.util.URLUtil;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -771,25 +773,41 @@ public class JUGSImporter {
             while (result.next()) {
                 final var sponsorRecord = databaseService.getSponsorRecord(result.getLong("id"))
                         .orElse(databaseService.newSponsor());
-                if (sponsorRecord.get(SPONSOR.ID) == null) {
-                    sponsorRecord.set(SPONSOR.ID, result.getLong("id"));
-                    sponsorRecord.set(SPONSOR.NAME, result.getString("firma"));
-                    sponsorRecord.set(SPONSOR.LEVEL, getSponsorLevel(result.getString("sponsortyp")));
-                    sponsorRecord.set(SPONSOR.WEBSITE, result.getString("url").replaceFirst("^http://", "https://"));
-                    sponsorRecord.set(SPONSOR.LOGO, "https://static.jug.ch/images/sponsors/" + result.getString("logo"));
-                    sponsorRecord.store();
-                    if (!sponsorRecord.getWebsite().isBlank()) {
-                        final var domain = URLUtil.getDomainFromUrl(sponsorRecord.getWebsite());
-                        final var sponsorDomainRecord = databaseService.newSponsorDomain();
-                        sponsorDomainRecord.setSponsorId(sponsorRecord.getId());
-                        sponsorDomainRecord.setDomain(domain);
-                        sponsorDomainRecord.store();
-                    }
-                    counter.incrementAndGet();
+                sponsorRecord.set(SPONSOR.ID, result.getLong("id"));
+                sponsorRecord.set(SPONSOR.NAME, result.getString("firma"));
+                sponsorRecord.set(SPONSOR.LEVEL, getSponsorLevel(result.getString("sponsortyp")));
+                sponsorRecord.set(SPONSOR.WEBSITE, result.getString("url").replaceFirst("^http://", "https://"));
+                sponsorRecord.set(SPONSOR.LOGO, loadImageFromWeb("https://www.jug.ch/images/sponsors/" + result.getString("logo")));
+                sponsorRecord.store();
+                databaseService.deleteSponsorDomains(sponsorRecord);
+                if (!sponsorRecord.getWebsite().isBlank()) {
+                    final var domain = URLUtil.getDomainFromUrl(sponsorRecord.getWebsite());
+                    final var sponsorDomainRecord = databaseService.newSponsorDomain();
+                    sponsorDomainRecord.setSponsorId(sponsorRecord.getId());
+                    sponsorDomainRecord.setDomain(domain);
+                    sponsorDomainRecord.update();
+                    sponsorDomainRecord.store();
                 }
+                counter.incrementAndGet();
             }
         }
-        showNotification(counter.get() + " new sponsors imported.");
+        showNotification(counter.get() + " sponsors imported.");
+    }
+
+    private String loadImageFromWeb(@NotNull final String imageURL) {
+        final var lastDot = imageURL.lastIndexOf(".");
+        final var extension = imageURL.substring(lastDot + 1);
+
+        try {
+            final var url = new URL(imageURL);
+            try (final var is = url.openStream()) {
+                final var bytes = org.apache.commons.io.IOUtils.toByteArray(is);
+                final var imageString = Base64.encodeBase64String(bytes);
+                return "data:image/%s;base64,%s".formatted(extension, imageString);
+            }
+        } catch (final Exception e) {
+            return null;
+        }
     }
 
     private SponsorLevel getSponsorLevel(@NotNull final String sponsortyp) {
