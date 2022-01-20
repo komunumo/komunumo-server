@@ -450,7 +450,7 @@ public class JUGSImporter {
                 }
             }
         }
-        showNotification(counter.get() + " new speakers imported.");
+        showNotification(counter.get() + " speakers imported.");
     }
 
     private SpeakerRecord getSpeaker(final @NotNull ResultSet result) throws SQLException {
@@ -498,7 +498,7 @@ public class JUGSImporter {
         } else if (image.startsWith("https://")) {
             return image;
         } else {
-            return "https://static.jug.ch/images/speakers/" + image;
+            return loadImageFromWeb("https://www.jug.ch/images/speaker/" + image);
         }
     }
 
@@ -806,7 +806,7 @@ public class JUGSImporter {
                 return "data:image/%s;base64,%s".formatted(extension, imageString);
             }
         } catch (final Exception e) {
-            return null;
+            return "";
         }
     }
 
