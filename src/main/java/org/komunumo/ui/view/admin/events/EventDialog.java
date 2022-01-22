@@ -126,6 +126,7 @@ public class EventDialog extends EditDialog<Event> {
             final var isOnline = "Online".equalsIgnoreCase(value);
             webinarUrl.setEnabled(isOnline);
             webinarUrl.setRequiredIndicatorVisible(published.getValue() && isOnline);
+            room.setRequiredIndicatorVisible(!isOnline);
             updateEventUrlPrefix(location, date, eventUrl);
             binder.validate();
         });
@@ -150,7 +151,7 @@ public class EventDialog extends EditDialog<Event> {
             description.setRequiredIndicatorVisible(value);
             language.setRequiredIndicatorVisible(value);
             location.setRequiredIndicatorVisible(value);
-            room.setRequiredIndicatorVisible(value);
+            room.setRequiredIndicatorVisible(!"Online".equalsIgnoreCase(location.getValue()));
             date.setRequiredIndicatorVisible(value);
             duration.setRequiredIndicatorVisible(value);
             eventUrl.setRequiredIndicatorVisible(value);
@@ -213,7 +214,7 @@ public class EventDialog extends EditDialog<Event> {
                 .bind(Event::getLocation, Event::setLocation);
 
         binder.forField(room)
-                .withValidator(value -> !published.getValue() || !"Online".equalsIgnoreCase(location.getValue()) || !value.isBlank(),
+                .withValidator(value -> !published.getValue() || "Online".equalsIgnoreCase(location.getValue()) || !value.isBlank(),
                         "Please enter a room")
                 .bind(Event::getRoom, Event::setRoom);
 
