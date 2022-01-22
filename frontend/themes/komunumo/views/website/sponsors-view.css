@@ -38,7 +38,7 @@
 
 .website .sponsors-view section {
     border-top: 2px solid #bfbfbf;
-    margin-top: 30px;
+    margin-top: 50px;
     max-width: 770px;
     padding-right: 20px;
 }
@@ -72,5 +72,16 @@
 }
 
 .website .sponsors-view .level-silver .sponsor-logo {
+    height: 50px;
     margin: 15px 0 15px 30px;
+    position: relative;
+}
+
+.website .sponsors-view .level-silver .sponsor-logo img {
+    max-height: 100%;
+    height: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto;
 }
