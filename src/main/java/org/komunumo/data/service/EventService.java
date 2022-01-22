@@ -110,7 +110,7 @@ interface EventService extends DSLContextGetter, EventKeywordService, EventSpeak
                         : EVENT.TITLE.like(filterValue)
                         .or(speakerFullName.like(filterValue)))
                 .groupBy(EVENT.ID)
-                .orderBy(EVENT.DATE.desc().nullsFirst())
+                .orderBy(EVENT.DATE.desc().nullsFirst(), EVENT.LOCATION.asc().nullsFirst())
                 .offset(offset)
                 .limit(limit)
                 .fetchInto(Event.class)
@@ -129,7 +129,7 @@ interface EventService extends DSLContextGetter, EventKeywordService, EventSpeak
         return dsl().selectFrom(EVENT)
                 .where(condition(EVENT.PUBLISHED)
                         .and(EVENT.DATE.greaterOrEqual(LocalDateTime.now().withHour(0).withMinute(0))))
-                .orderBy(EVENT.DATE.asc())
+                .orderBy(EVENT.DATE.asc(), EVENT.LOCATION.asc())
                 .fetchInto(Event.class)
                 .stream()
                 .filter(event -> {
@@ -146,7 +146,7 @@ interface EventService extends DSLContextGetter, EventKeywordService, EventSpeak
         return dsl().selectFrom(EVENT)
                 .where(condition(EVENT.PUBLISHED)
                         .and(DSL.year(EVENT.DATE).eq(year.getValue())))
-                .orderBy(EVENT.DATE.desc())
+                .orderBy(EVENT.DATE.asc(), EVENT.LOCATION.asc())
                 .fetchInto(Event.class)
                 .stream()
                 .map(this::addAdditionalData);
