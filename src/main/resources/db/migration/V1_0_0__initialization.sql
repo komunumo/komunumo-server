@@ -200,3 +200,14 @@ CREATE TABLE faq (
 
     PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
+
+CREATE TABLE page (
+    id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    parent ENUM('Members', 'Sponsors') NOT NULL,
+    page_url VARCHAR(255) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    content LONGTEXT NOT NULL,
+
+    PRIMARY KEY (id),
+    UNIQUE INDEX (page_url)
+) DEFAULT CHARSET=utf8;
