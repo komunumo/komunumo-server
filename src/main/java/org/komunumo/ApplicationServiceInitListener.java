@@ -18,10 +18,14 @@
 
 package org.komunumo;
 
+import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.db.enums.PageParent;
 import org.komunumo.data.service.DatabaseService;
+import org.komunumo.ui.view.website.WebsiteLayout;
+import org.komunumo.ui.view.website.sponsors.SponsorsView;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,6 +57,9 @@ public class ApplicationServiceInitListener implements VaadinServiceInitListener
             }
             return false;
         });
+        //noinspection unchecked
+        databaseService.getPages(PageParent.Sponsors).forEach(
+                pageRecord -> RouteConfiguration.forApplicationScope().setRoute(pageRecord.getPageUrl(), SponsorsView.class, WebsiteLayout.class));
     }
 
     public void reloadRedirects() {

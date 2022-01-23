@@ -31,10 +31,13 @@ import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Section;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.db.enums.PageParent;
 import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.entity.SponsorEntity;
 import org.komunumo.data.service.DatabaseService;
@@ -47,7 +50,7 @@ import org.komunumo.util.URLUtil;
 @Route(value = "sponsors", layout = WebsiteLayout.class)
 @CssImport("./themes/komunumo/views/website/sponsors-view.css")
 @AnonymousAllowed
-public class SponsorsView extends ContentBlock implements HasDynamicTitle {
+public class SponsorsView extends ContentBlock implements AfterNavigationObserver, HasDynamicTitle {
 
     private final DatabaseService databaseService;
 
@@ -56,10 +59,24 @@ public class SponsorsView extends ContentBlock implements HasDynamicTitle {
         this.databaseService = databaseService;
         addClassName("sponsors-view");
 
-        final var subMenu = new SubMenu();
-        subMenu.add(new SubMenuItem("/sponsors", "Our sponsors", true));
-        setSubMenu(subMenu);
+    }
 
+    @Override
+    public void afterNavigation(AfterNavigationEvent event) {
+        final var url = event.getLocation().getPath();
+        final var subMenu = new SubMenu();
+        subMenu.add(new SubMenuItem("sponsors", "Our sponsors", url.equals("sponsors")));
+        databaseService.getPages(PageParent.Sponsors).forEach(pageRecord ->
+                subMenu.add(new SubMenuItem(pageRecord.getPageUrl(), pageRecord.getTitle(), url.equals(pageRecord.getPageUrl()))));
+        setSubMenu(subMenu);
+        if (url.equals("sponsors")) {
+            showSponsors();
+        } else {
+            loadPage(databaseService, url);
+        }
+    }
+
+    private void showSponsors() {
         setContent(
                 new H2("%s Sponsors".formatted(databaseService.configuration().getWebsiteName())),
                 new Paragraph("""
