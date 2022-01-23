@@ -34,8 +34,8 @@ import static org.komunumo.data.db.tables.Configuration.CONFIGURATION;
 
 @Service
 public class DatabaseService implements DSLContextGetter, ConfigurationGetter, MailSenderGetter, EventService, EventKeywordService,
-        EventOrganizerService, EventSpeakerService, FaqService, KeywordService, LocationColorService, MemberService, NewsService, RedirectService,
-        RegistrationService, SpeakerService, SponsorService, StatisticService, SubscriptionService {
+        EventOrganizerService, EventSpeakerService, FaqService, KeywordService, LocationColorService, MemberService, NewsService, PageService,
+        RedirectService, RegistrationService, SpeakerService, SponsorService, StatisticService, SubscriptionService {
 
     private final Configuration configuration;
     private final DSLContext dsl;
