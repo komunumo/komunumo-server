@@ -75,7 +75,7 @@ CREATE TABLE member (
     PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
 
-CREATE INDEX member_names ON member (last_name, first_name);
+CREATE INDEX member_names ON member (first_name, last_name);
 CREATE INDEX member_email ON member (email);
 
 CREATE TABLE registration (
@@ -138,7 +138,7 @@ CREATE TABLE speaker (
     PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
 
-CREATE INDEX speaker_names ON speaker (last_name, first_name);
+CREATE INDEX speaker_names ON speaker (first_name, last_name);
 
 CREATE TABLE event_speaker (
    event_id INTEGER UNSIGNED NOT NULL,
