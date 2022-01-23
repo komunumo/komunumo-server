@@ -41,6 +41,9 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
+
+import java.util.ArrayList;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
@@ -62,6 +65,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.lang.String.join;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.komunumo.util.FormatterUtil.formatDateTime;
 
@@ -189,10 +193,22 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
     }
 
     private Component createPublishStateIcon(@NotNull final Event event) {
-        if (!event.getPublished() && event.getCompleteEventUrl().isBlank()) {
-            final var warning = new Icon(VaadinIcon.WARNING);
-            warning.getElement().setAttribute("title", "No publishing or preview without location and date/time!");
-            return warning;
+        if (!event.getPublished()) {
+            final var missingFields = new ArrayList<String>();
+            if (event.getLocation().isBlank()) {
+                missingFields.add("location");
+            }
+            if (event.getDate() == null) {
+                missingFields.add("date & time");
+            }
+            if (event.getLevel() == null) {
+                missingFields.add("level");
+            }
+            if (!missingFields.isEmpty()) {
+                final var warning = new Icon(VaadinIcon.WARNING);
+                warning.getElement().setAttribute("title", "Missing data: %s".formatted(join(", ", missingFields)));
+                return warning;
+            }
         }
         final var url = event.getPublished() ? event.getCompleteEventUrl() : event.getCompleteEventPreviewUrl();
         final var anchor = new Anchor(url, new Icon(event.getPublished() ? VaadinIcon.EYE : VaadinIcon.EYE_SLASH));
