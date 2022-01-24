@@ -104,9 +104,9 @@ public class AdminLayout extends AppLayout {
         final var subMenu = menuItem.getSubMenu();
         final var darkThemeItem = subMenu.addItem("Dark Theme");
         final var lightThemeItem = subMenu.addItem("Light Theme");
-        subMenu.addItem(new Hr());
+        subMenu.add(new Hr());
         subMenu.addItem("Website", e -> UI.getCurrent().navigate(HomeView.class));
-        subMenu.addItem(new Hr());
+        subMenu.add(new Hr());
         subMenu.addItem("Logout", e -> authenticatedUser.logout());
 
         darkThemeItem.setCheckable(true);
