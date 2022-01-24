@@ -27,29 +27,25 @@ import org.komunumo.data.service.getter.MailSenderGetter;
 import org.springframework.mail.MailSender;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashMap;
-
-import static org.komunumo.data.db.tables.Configuration.CONFIGURATION;
-
 @Service
-public class DatabaseService implements DSLContextGetter, ConfigurationGetter, MailSenderGetter, EventService, EventKeywordService,
-        EventOrganizerService, EventSpeakerService, FaqService, KeywordService, LocationColorService, MemberService, NewsService, PageService,
-        RedirectService, RegistrationService, SpeakerService, SponsorService, StatisticService, SubscriptionService {
+public class DatabaseService implements DSLContextGetter, ConfigurationGetter, MailSenderGetter, ConfigurationService, EventService,
+        EventKeywordService, EventOrganizerService, EventSpeakerService, FaqService, KeywordService, LocationColorService, MemberService,
+        NewsService, PageService, RedirectService, RegistrationService, SpeakerService, SponsorService, StatisticService, SubscriptionService {
 
-    private final Configuration configuration;
     private final DSLContext dsl;
     private final MailSender mailSender;
+
+    private Configuration configuration;
 
     public DatabaseService(@NotNull final DSLContext dsl,
                            @NotNull final MailSender mailSender) {
         this.dsl = dsl;
         this.mailSender = mailSender;
+        this.configuration = loadConfigurationFromDatabase();
+    }
 
-        final var configurationData = new HashMap<String, String>();
-        dsl().selectFrom(CONFIGURATION)
-                .forEach(configurationRecord -> configurationData.put(configurationRecord.getKey(), configurationRecord.getValue()));
-        configuration = new Configuration(Collections.unmodifiableMap(configurationData));
+    public void reloadConfiguration() {
+        configuration = loadConfigurationFromDatabase();
     }
 
     @Override

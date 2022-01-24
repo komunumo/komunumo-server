@@ -67,6 +67,10 @@ public class SettingsView extends ResizableView implements BeforeEnterObserver {
         content = new Div();
         content.addClassName("tab-content");
 
+        final var configuration = new Tab(new Anchor(ANCHOR_PREFIX + "configuration", "Configuration"));
+        configuration.setId("configuration");
+        settingTabs.add(configuration);
+
         final var locationColors = new Tab(new Anchor(ANCHOR_PREFIX + "location-colors", "Location colors"));
         locationColors.setId("location-colors");
         settingTabs.add(locationColors);
@@ -100,6 +104,7 @@ public class SettingsView extends ResizableView implements BeforeEnterObserver {
         content.removeAll();
         final var tabId = tab.getId().orElse("");
         final var tabContent = switch (tabId) {
+            case "configuration" -> new ConfigurationSetting(databaseService);
             case "location-colors" -> new LocationColorSetting(databaseService);
             case "redirects" -> new RedirectSetting(databaseService, applicationServiceInitListener);
             default -> new Paragraph("This setting has not been implemented yet!");
