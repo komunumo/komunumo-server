@@ -29,6 +29,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.security.AuthenticatedUser;
+import org.komunumo.security.LoginAttemptService;
 import org.komunumo.security.SecurityService;
 import org.komunumo.ui.view.admin.dashboard.DashboardView;
 
@@ -40,7 +41,8 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
     private final AuthenticatedUser authenticatedUser;
 
     public LoginView(@NotNull final AuthenticatedUser authenticatedUser,
-                     @NotNull final SecurityService securityService) {
+                     @NotNull final SecurityService securityService,
+                     @NotNull final LoginAttemptService loginAttemptService) {
         this.authenticatedUser = authenticatedUser;
         setAction("login");
 
@@ -57,8 +59,13 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
         i18n.getForm().setPassword("Password");
         i18n.getForm().setForgotPassword("I forgot my password");
 
-        i18n.getErrorMessage().setTitle("Incorrect email or password");
-        i18n.getErrorMessage().setMessage("Check that you have entered the correct email and password and try again.");
+        if (loginAttemptService.isBlocked(securityService.getClientIP())) {
+            i18n.getErrorMessage().setTitle("IP address blocked for 24 hours");
+            i18n.getErrorMessage().setMessage("Too many failed login attempts from your IP address. Try again in 24 hours or later.");
+        } else {
+            i18n.getErrorMessage().setTitle("Incorrect email or password");
+            i18n.getErrorMessage().setMessage("Check that you have entered the correct email and password and try again.");
+        }
 
         setI18n(i18n);
 

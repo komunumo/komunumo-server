@@ -36,6 +36,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,19 +48,29 @@ public class SecurityService implements UserDetailsService {
     private final MailSender mailSender;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticatedUser authenticatedUser;
+    private final LoginAttemptService loginAttemptService;
+    private final HttpServletRequest request;
 
     public SecurityService(@NotNull final DatabaseService databaseService,
                            @NotNull final PasswordEncoder passwordEncoder,
-                           @NotNull final AuthenticatedUser authenticatedUser) {
+                           @NotNull final AuthenticatedUser authenticatedUser,
+                           @NotNull final LoginAttemptService loginAttemptService,
+                           @NotNull final HttpServletRequest request) {
         this.databaseService = databaseService;
         this.configuration = databaseService.configuration();
         this.mailSender = databaseService.mailSender();
         this.passwordEncoder = passwordEncoder;
         this.authenticatedUser = authenticatedUser;
+        this.loginAttemptService = loginAttemptService;
+        this.request = request;
     }
 
     @Override
     public UserDetails loadUserByUsername(@NotNull final String email) throws UsernameNotFoundException {
+        if (loginAttemptService.isBlocked(getClientIP())) {
+            throw new RuntimeException("Too many failed login attempts, IP address blocked for 24 hours!");
+        }
+
         final var optionalMember = databaseService.getMemberByEmail(email);
         if (optionalMember.isEmpty()) {
             throw new UsernameNotFoundException("No member present with email: " + email);
@@ -120,6 +131,14 @@ public class SecurityService implements UserDetailsService {
         } else {
             throw new BadCredentialsException("Activation failed");
         }
+    }
+
+    public String getClientIP() {
+        final var xfHeader = request.getHeader("X-Forwarded-For");
+        if (xfHeader == null){
+            return request.getRemoteAddr();
+        }
+        return xfHeader.split(",")[0];
     }
 
 }
