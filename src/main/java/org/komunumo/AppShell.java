@@ -25,6 +25,7 @@ import com.vaadin.flow.server.AppShellSettings;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import org.jetbrains.annotations.NotNull;
+import org.komunumo.data.service.DatabaseService;
 
 @SuppressWarnings("unused")
 @Push
@@ -34,17 +35,18 @@ import org.jetbrains.annotations.NotNull;
 @NpmPackage(value = "line-awesome", version = "1.3.0")
 public class AppShell implements AppShellConfigurator {
 
+    private final DatabaseService databaseService;
+
+    public AppShell(@NotNull final DatabaseService databaseService) {
+        this.databaseService = databaseService;
+    }
+
     @Override
     public void configurePage(@NotNull final AppShellSettings settings) {
         AppShellConfigurator.super.configurePage(settings);
         final var pathInfo = settings.getRequest().getPathInfo();
-        if (pathInfo.startsWith("admin") || pathInfo.startsWith("/admin")) {
-            settings.addFavIcon("icon", "https://komunumo.org/images/favicon/favicon.ico", "16x16");
-            settings.addLink("shortcut icon", "https://komunumo.org/images/favicon/favicon.ico");
-        } else {
-            settings.addFavIcon("icon", "https://static.jug.ch/images/favicon.ico", "16x16");
-            settings.addLink("shortcut icon", "https://static.jug.ch/images/favicon.ico");
-        }
+        settings.addFavIcon("icon", databaseService.configuration().getWebsiteFavicon(), "16x16");
+        settings.addLink("shortcut icon", databaseService.configuration().getWebsiteFavicon());
     }
 
 }

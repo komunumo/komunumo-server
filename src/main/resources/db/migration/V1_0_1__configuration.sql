@@ -2,6 +2,7 @@
 
 replace into configuration (`key`, `value`)
 values  ('website.url', 'http://localhost:8080'),
+        ('website.favicon', 'https://static.jug.ch/images/favicon.ico'),
         ('website.name', 'Java User Group Switzerland'),
         ('website.contact.address', '8000 Zürich'),
         ('website.contact.email', 'info@jug.ch'),

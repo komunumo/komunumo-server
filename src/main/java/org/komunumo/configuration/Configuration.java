@@ -79,4 +79,7 @@ public class Configuration {
         return Integer.parseInt(configuration.getOrDefault("website.logo.max", "0"));
     }
 
+    public String getWebsiteFavicon() {
+        return configuration.getOrDefault("website.favicon", "/facicon.ico");
+    }
 }
