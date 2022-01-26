@@ -10,19 +10,19 @@ The server of *Komunumo* is written using the [Java programming language](https:
 
 ## Configuration
 
-The file `application.properties` contains only some default values. To override the default values and to specify other configuration options, just set them as environment variables. The following sections describe all available configuration options.
+The file `application.properties` contains only some default values. To override the default values and to specify other configuration options, just set them as environment variables. The following sections describe all available configuration options. You only need to specify these options if your configuration settings differ from the defaults.
 
 ### Server
 
 The server runs on port 8080 by default. If you don't like it, change it:
 
 ```
-PORT=80
+PORT=8080
 ```
 
 ### Mail
 
-To be able to send mails, you need to specify an SMTP server:
+To be able to send mails, you need to specify an SMTP server (defaults are `localhost` and port`25`):
 
 ```
 MAIL_HOST=localhost
@@ -41,7 +41,7 @@ DB_USER=johndoe
 DB_PASS=verysecret
 ```
 
-The database schema will be migrated automatically by *Komunumo*.
+The database schema will be migrated automatically by *Komunumo*. The defaults are MariaDB (driver `mariadb`) running on `localhost`, port `3306`, database name `komunumo`, and user `root` without a password.
 
 #### Important MySQL and MariaDB configuration
 
@@ -50,6 +50,8 @@ MySQL and MariaDB have a possible silent truncation problem with the `GROUP_CONC
 ```
 DB_URL=jdbc:mariadb://localhost:3306/komunumo?serverTimezone\=Europe/Zurich&allowMultiQueries=true
 ```
+
+This option is set by default for the default database setting.
 
 ### Admin
 
