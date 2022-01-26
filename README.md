@@ -29,12 +29,6 @@ MAIL_HOST=localhost
 MAIL_PORT=25
 ```
 
-You can optionally configure the sender address (highly recommended):
-
-```
-KOMUNUMO_EMAIL_ADDRESS=noreply@localhost
-```
-
 ### Database
 
 *Komunumo* needs a database to permanently store the business data. All JDBC compatible databases are supported. We highly recommend [MariaDB](https://mariadb.org/), just because we are using it during development and it is highly tested with *Komunumo*.
@@ -59,7 +53,14 @@ DB_URL=jdbc:mariadb://localhost:3306/komunumo?serverTimezone\=Europe/Zurich&allo
 
 ### Admin
 
-Only members with administrative privileges are allowed to login to the backend. If you specify the email address of an admin in the environment variable `KOMUNUMO_ADMIN_EMAIL`, *Komunumo* will make sure that the member with this email address has administrative privileges. If there is no member with this email address, *Komunumo* will create a new one and send an email with a one time password. At the first login, the user is forced to specify a new password.
+Only members with administrative privileges are allowed to login to the backend. You should add yourself as admin to the database, **after** you have started *Komunumo* (because the database tables will be created at the first start):
+
+```sql
+insert into member (id, first_name, last_name, email, registration_date, membership_begin, admin, account_active)
+values (1, 'First name', 'Last name', 'email@domain.tld', now(), null, true, true);
+```
+
+Then, open `http://localhost:8080/admin`, enter your email address, and click on "I forgot my password" to start the password reset process (you will receive a one time password via email), and set your own admin password.
 
 ## Running and debugging the server
 
