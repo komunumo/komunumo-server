@@ -26,6 +26,7 @@ import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.cookieconsent.CookieConsent;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.AnchorTarget;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Hr;
@@ -54,7 +55,6 @@ import org.komunumo.ui.view.admin.settings.SettingsView;
 import org.komunumo.ui.view.admin.speakers.SpeakersView;
 import org.komunumo.ui.view.admin.sponsors.SponsorsView;
 import org.komunumo.ui.view.login.ChangePasswordView;
-import org.komunumo.ui.view.website.home.HomeView;
 import org.komunumo.util.GravatarUtil;
 
 import java.util.ArrayList;
@@ -105,7 +105,7 @@ public class AdminLayout extends AppLayout {
         final var darkThemeItem = subMenu.addItem("Dark Theme");
         final var lightThemeItem = subMenu.addItem("Light Theme");
         subMenu.add(new Hr());
-        subMenu.addItem("Website", e -> UI.getCurrent().navigate(HomeView.class));
+        subMenu.addItem("Website", e -> UI.getCurrent().getPage().open("/", AnchorTarget.TOP.getValue()));
         subMenu.add(new Hr());
         subMenu.addItem("Logout", e -> authenticatedUser.logout());
 

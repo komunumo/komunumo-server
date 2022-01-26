@@ -19,11 +19,12 @@
 package org.komunumo.ui.view.website;
 
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.AnchorTarget;
 import com.vaadin.flow.component.html.Nav;
 import com.vaadin.flow.router.RouterLink;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.security.AuthenticatedUser;
-import org.komunumo.ui.view.admin.dashboard.DashboardView;
 import org.komunumo.ui.view.website.events.EventsView;
 import org.komunumo.ui.view.website.faq.FaqView;
 import org.komunumo.ui.view.website.home.HomeView;
@@ -41,7 +42,7 @@ public class WebsiteMenu extends Nav {
         add(new RouterLink("Sponsors", SponsorsView.class));
         add(new RouterLink("FAQ", FaqView.class));
         if (authenticatedUser.get().isPresent() && authenticatedUser.get().get().getAdmin()) {
-            add(new RouterLink("Admin", DashboardView.class));
+            add(new Anchor("/admin", "Admin", AnchorTarget.TOP));
         }
     }
 

@@ -27,12 +27,12 @@ import com.vaadin.flow.theme.Theme;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.DatabaseService;
 
-@SuppressWarnings("unused")
 @Push
 @Theme(value = "komunumo")
 @PWA(name = "Komunumo", shortName = "Komunumo", iconPath = "")
 @NpmPackage(value = "lumo-css-framework", version = "^4.0.10")
 @NpmPackage(value = "line-awesome", version = "1.3.0")
+@SuppressWarnings({"unused", "ClassCanBeRecord"})
 public class AppShell implements AppShellConfigurator {
 
     private final DatabaseService databaseService;
@@ -45,8 +45,13 @@ public class AppShell implements AppShellConfigurator {
     public void configurePage(@NotNull final AppShellSettings settings) {
         AppShellConfigurator.super.configurePage(settings);
         final var pathInfo = settings.getRequest().getPathInfo();
-        settings.addFavIcon("icon", databaseService.configuration().getWebsiteFavicon(), "16x16");
-        settings.addLink("shortcut icon", databaseService.configuration().getWebsiteFavicon());
+        if (pathInfo.startsWith("admin") || pathInfo.startsWith("/admin")) {
+            settings.addFavIcon("icon", "https://komunumo.org/images/favicon/favicon.ico", "16x16");
+            settings.addLink("shortcut icon", "https://komunumo.org/images/favicon/favicon.ico");
+        } else {
+            settings.addFavIcon("icon", databaseService.configuration().getWebsiteFavicon(), "16x16");
+            settings.addLink("shortcut icon", databaseService.configuration().getWebsiteFavicon());
+        }
     }
 
 }
