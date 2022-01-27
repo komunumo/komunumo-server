@@ -1,4 +1,4 @@
-name: Update contributors
+name: Update Contributors
 
 on:
   schedule: # Run workflow automatically
