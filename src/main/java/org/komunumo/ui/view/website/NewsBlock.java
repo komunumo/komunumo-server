@@ -78,10 +78,14 @@ public class NewsBlock extends ContentBlock {
         final var subscribeButton = new Button("Subscribe", (clickEvent) -> {
             final var emailAddress = emailField.getValue().trim();
             if (!emailAddress.isBlank()) {
-                databaseService.addSubscription(emailAddress);
+                final var subscriptionStatus = databaseService.addSubscription(emailAddress);
+                final var infoMessage = switch (subscriptionStatus) {
+                    case PENDING -> "You have been added to the newsletter. Please check your email account for verification (opt-in).";
+                    case ACTIVE -> "You are already subscribed to the newsletter. If you don't receive it, check your spam folder.";
+                };
                 UI.getCurrent().access(() -> {
                     emailField.setValue("");
-                    message.add(new Paragraph("You have been added to the newsletter. Please check your email account for verification (opt-in)."));
+                    message.add(new Paragraph(infoMessage));
                 });
             }
         });

@@ -41,28 +41,33 @@ interface SubscriptionService extends ConfigurationGetter, DSLContextGetter, Mai
                 .fetchOptional();
     }
 
-    default void addSubscription(@NotNull final String emailAddress) {
-        if (getSubscription(emailAddress).isEmpty()) {
-            final var subscription = dsl().newRecord(SUBSCRIPTION);
+    default SubscriptionStatus addSubscription(@NotNull final String emailAddress) {
+        final var subscriptionRecord = getSubscription(emailAddress).orElse(dsl().newRecord(SUBSCRIPTION));
 
+        if (subscriptionRecord.getStatus() == null) {
             final var validationCode = RandomStringUtils.randomAlphabetic(16);
+            subscriptionRecord.setEmail(emailAddress);
+            subscriptionRecord.setSubscriptionDate(LocalDateTime.now());
+            subscriptionRecord.setStatus(SubscriptionStatus.PENDING);
+            subscriptionRecord.setValidationCode(validationCode);
+            subscriptionRecord.store();
+        }
 
-            subscription.setEmail(emailAddress);
-            subscription.setSubscriptionDate(LocalDateTime.now());
-            subscription.setStatus(SubscriptionStatus.PENDING);
-            subscription.setValidationCode(validationCode);
-            subscription.store();
-
-            final var link = "%s/newsletter/subscription/validation?email=%s&code=%s"
-                    .formatted(configuration().getWebsiteBaseUrl(), URLUtil.encode(emailAddress), URLUtil.encode(validationCode));
+        if (subscriptionRecord.getStatus() == SubscriptionStatus.PENDING) {
+            final var link = "%s/newsletter/subscription/validation?email=%s&code=%s".formatted(
+                    configuration().getWebsiteBaseUrl(),
+                    URLUtil.encode(subscriptionRecord.getEmail()),
+                    URLUtil.encode(subscriptionRecord.getValidationCode()));
 
             final var message = new SimpleMailMessage();
-            message.setTo(emailAddress);
+            message.setTo(subscriptionRecord.getEmail());
             message.setFrom(configuration().getWebsiteContactEmail());
             message.setSubject("Validate your newsletter subscription");
             message.setText("Please click on the following link to validate your newsletter subscription:\n" + link);
             mailSender().send(message);
         }
+
+        return subscriptionRecord.getStatus();
     }
 
     default boolean validateSubscription(@NotNull final String emailAddress, @NotNull final String validationCode) {
