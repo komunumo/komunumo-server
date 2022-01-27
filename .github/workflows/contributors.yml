@@ -1,0 +1,22 @@
+name: Update contributors
+
+on:
+  schedule: # Run workflow automatically
+    - cron: '10 1 * * *' # Runs every night at 01:10 am
+  workflow_dispatch: # Run workflow manually (without waiting for the cron to be called), through the GitHub Actions Workflow page directly
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: minicli/action-contributors@v3
+        name: "Update a projects CONTRIBUTORS file"
+        env:
+          CONTRIB_REPOSITORY: 'minicli/minicli'
+          CONTRIB_OUTPUT_FILE: 'CONTRIBUTORS.md'
+      - name: Commit changes
+        uses: test-room-7/action-update-file@v1
+        with:
+          file-path: 'CONTRIBUTORS.md'
+          commit-msg: ':busts_in_silhouette: Update contributors'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
