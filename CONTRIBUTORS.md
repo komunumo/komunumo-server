@@ -1,20 +1,16 @@
 # Contributors
 
-## Special thanks for all the people who had helped this project so far!
+Shout out to our top contributors!
 
-In alphabetical order by GitHub username:
-
-* [Interactiondesigner](https://github.com/Interactiondesigner)
-* [McPringle](https://github.com/McPringle)
-* [simasch](https://github.com/simasch)
-
-## I would like to join this list. How can I help the project?
-
-We're currently looking for contributions for the following:
-
-* Bug fixes
-* Translations
-* New features
-* GUI redesign
-
-For more information, please refer to our [CONTRIBUTING](CONTRIBUTING.md) guide.
+- [erikaheidi](https://api.github.com/users/erikaheidi)
+- [syntaxseed](https://api.github.com/users/syntaxseed)
+- [github-actions[bot]](https://api.github.com/users/github-actions%5Bbot%5D)
+- [tombenevides](https://api.github.com/users/tombenevides)
+- [ScullWM](https://api.github.com/users/ScullWM)
+- [wandersonwhcr](https://api.github.com/users/wandersonwhcr)
+- [lotfio](https://api.github.com/users/lotfio)
+- [flug](https://api.github.com/users/flug)
+- [mauriciofauth](https://api.github.com/users/mauriciofauth)
+- [mrpc](https://api.github.com/users/mrpc)
+- [peter279k](https://api.github.com/users/peter279k)
+- [zaghadon](https://api.github.com/users/zaghadon)
