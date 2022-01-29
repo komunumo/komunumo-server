@@ -34,6 +34,8 @@ class URLUtilTest {
     @Test
     @SuppressWarnings("HttpUrlsUsage")
     void extractLink() {
+        assertEquals("", URLUtil.extractLink(""));
+        assertEquals("", URLUtil.extractLink("There is no link in this text!"));
         assertEquals("http://komunumo.org", URLUtil.extractLink("Go to http://komunumo.org and try it out!"));
         assertEquals("https://komunumo.org", URLUtil.extractLink("Go to https://komunumo.org and try it out!"));
         assertEquals("http://komunumo.org/", URLUtil.extractLink("Go to http://komunumo.org/ and try it out!"));
