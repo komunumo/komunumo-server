@@ -31,9 +31,9 @@ MAIL_PORT=25
 
 ### Database
 
-*Komunumo* needs a database to permanently store the business data. All JDBC compatible databases are supported. We highly recommend [MariaDB](https://mariadb.org/), just because we are using it during development and it is highly tested with *Komunumo*.
+*Komunumo* needs a database to permanently store the business data. All JDBC compatible databases are supported. By default, *Komunumo* uses an in memory [H2](https://www.h2database.com/) database. You don't need to configure anything, but you will loose all your data when you stop *Komunumo*.
 
-Please make sure that your database is using a unicode character set to avoid problems storing data containing unicode characters.
+To permanently store data, we highly recommend [MariaDB](https://mariadb.org/), just because we are using it during development and it is highly tested with *Komunumo*. Please make sure that your database is using an unicode character set to avoid problems storing data containing unicode characters.
 
 The `DB_USER` is used to access the *Komunumo* database including automatic schema migrations and needs `ALL PRIVILEGES`.
 
