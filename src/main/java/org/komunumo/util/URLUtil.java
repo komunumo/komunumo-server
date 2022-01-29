@@ -96,7 +96,7 @@ public class URLUtil {
         return false;
     }
 
-    public URLUtil() {
+    private URLUtil() {
         throw new IllegalStateException("Utility class");
     }
 
