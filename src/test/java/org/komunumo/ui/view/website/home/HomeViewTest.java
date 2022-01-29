@@ -27,12 +27,12 @@ import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.KaribuTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.mail.MessagingException;
-
 import static com.github.mvysny.kaributesting.v10.LocatorJ._assertOne;
 import static com.github.mvysny.kaributesting.v10.LocatorJ._click;
 import static com.github.mvysny.kaributesting.v10.LocatorJ._get;
 import static com.github.mvysny.kaributesting.v10.LocatorJ._setValue;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -43,7 +43,7 @@ public class HomeViewTest extends KaribuTest {
     private DatabaseService databaseService;
 
     @Test
-    void subscribeToNewsletterWithSuccess() throws MessagingException {
+    void subscribeToNewsletterWithSuccess() {
         final var correctEmailAddress = "test@komunumo.org";
 
         UI.getCurrent().navigate(HomeView.class);
@@ -54,11 +54,13 @@ public class HomeViewTest extends KaribuTest {
 
         assertTrue(databaseService.getSubscription(correctEmailAddress).isPresent());
 
-        final var receivedMessage = greenMail.getReceivedMessages()[0];
-        assertEquals("Validate your newsletter subscription", receivedMessage.getSubject());
-        assertTrue(GreenMailUtil.getBody(receivedMessage).startsWith("Please click on the following link to validate your newsletter subscription:"));
-        assertEquals(1, receivedMessage.getAllRecipients().length);
-        assertEquals(correctEmailAddress, receivedMessage.getAllRecipients()[0].toString());
+        await().atMost(2, SECONDS).untilAsserted(() -> {
+            final var receivedMessage = greenMail.getReceivedMessages()[0];
+            assertEquals("Validate your newsletter subscription", receivedMessage.getSubject());
+            assertTrue(GreenMailUtil.getBody(receivedMessage).startsWith("Please click on the following link to validate your newsletter subscription:"));
+            assertEquals(1, receivedMessage.getAllRecipients().length);
+            assertEquals(correctEmailAddress, receivedMessage.getAllRecipients()[0].toString());
+        });
     }
 
     @Test
