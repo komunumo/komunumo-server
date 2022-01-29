@@ -53,8 +53,6 @@ MySQL and MariaDB have a possible silent truncation problem with the `GROUP_CONC
 DB_URL=jdbc:mariadb://localhost:3306/komunumo?serverTimezone\=Europe/Zurich&allowMultiQueries=true
 ```
 
-This option is set by default for the default database setting.
-
 ### Admin
 
 Only members with administrative privileges are allowed to login to the backend. You should add yourself as admin to the database, **after** you have started *Komunumo* (because the database tables will be created at the first start):
