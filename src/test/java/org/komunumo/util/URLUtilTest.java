@@ -18,10 +18,15 @@
 
 package org.komunumo.util;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class URLUtilTest {
@@ -86,4 +91,18 @@ class URLUtilTest {
         assertTrue(URLUtil.isValid("https://www.komunumo.org"));
         assertTrue(URLUtil.isValid("https://www.komunumo.org/"));
     }
+
+    @Test
+    void privateConstructorWithException() {
+        final var cause = assertThrows(InvocationTargetException.class, () -> {
+            Constructor<URLUtil> constructor = URLUtil.class.getDeclaredConstructor();
+            if (Modifier.isPrivate(constructor.getModifiers())) {
+                constructor.setAccessible(true);
+                constructor.newInstance();
+            }
+        }).getCause();
+        assertTrue(cause instanceof IllegalStateException);
+        assertEquals("Utility class", cause.getMessage());
+    }
+
 }
