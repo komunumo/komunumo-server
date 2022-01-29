@@ -23,7 +23,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.textfield.EmailField;
 import org.junit.jupiter.api.Test;
 import org.komunumo.data.service.DatabaseService;
-import org.komunumo.ui.AbstractKaribuTest;
+import org.komunumo.ui.KaribuTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.github.mvysny.kaributesting.v10.LocatorJ._assertOne;
@@ -33,7 +33,7 @@ import static com.github.mvysny.kaributesting.v10.LocatorJ._setValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class HomeViewTest extends AbstractKaribuTest {
+public class HomeViewTest extends KaribuTest {
 
     @Autowired
     private DatabaseService databaseService;

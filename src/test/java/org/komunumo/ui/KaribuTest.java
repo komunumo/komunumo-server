@@ -55,7 +55,7 @@ import java.util.List;
  */
 @SpringBootTest
 @DirtiesContext
-public abstract class AbstractKaribuTest {
+public abstract class KaribuTest {
 
     private static Routes routes;
 
