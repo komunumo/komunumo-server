@@ -18,13 +18,19 @@
 
 package org.komunumo.util;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.Calendar;
 
 import static java.time.Month.JANUARY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DateUtilTest {
 
@@ -44,6 +50,19 @@ class DateUtilTest {
         assertEquals(1974, localDate.getYear());
         assertEquals(JANUARY, localDate.getMonth());
         assertEquals(30, localDate.getDayOfMonth());
+    }
+
+    @Test
+    void privateConstructorWithException() {
+        final var cause = assertThrows(InvocationTargetException.class, () -> {
+            Constructor<DateUtil> constructor = DateUtil.class.getDeclaredConstructor();
+            if (Modifier.isPrivate(constructor.getModifiers())) {
+                constructor.setAccessible(true);
+                constructor.newInstance();
+            }
+        }).getCause();
+        assertTrue(cause instanceof IllegalStateException);
+        assertEquals("Utility class", cause.getMessage());
     }
 
 }
