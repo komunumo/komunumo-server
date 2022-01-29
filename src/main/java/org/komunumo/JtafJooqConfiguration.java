@@ -28,6 +28,7 @@ public class JtafJooqConfiguration {
 
     @Bean
     Settings jooqSettings() {
-        return new Settings().withRenderNameCase(RenderNameCase.LOWER);
+        return new Settings().withRenderNameCase(RenderNameCase.UPPER);
     }
+
 }

@@ -1,7 +1,7 @@
 -- [jooq ignore start]
 
-replace into configuration (`key`, `value`)
-values  ('website.url', 'http://localhost:8080'),
+INSERT INTO configuration (`key`, `value`)
+VALUES  ('website.url', 'http://localhost:8080'),
         ('website.favicon', 'https://static.jug.ch/images/favicon.ico'),
         ('website.name', 'Java User Group Switzerland'),
         ('website.contact.address', '8000 Zürich'),
@@ -15,8 +15,8 @@ values  ('website.url', 'http://localhost:8080'),
         ('website.logo.min', '1'),
         ('website.logo.max', '22');
 
-replace into komunumo.location_color (location, color)
-values  ('Basel', '#ff8c00'),
+INSERT INTO location_color (location, color)
+VALUES  ('Basel', '#ff8c00'),
         ('Bern', '#a8a6e9'),
         ('Luzern', '#7abaff'),
         ('Online', '#55c8a9'),

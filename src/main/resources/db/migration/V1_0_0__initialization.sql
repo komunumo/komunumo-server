@@ -3,7 +3,7 @@ CREATE TABLE configuration (
     `value` MEDIUMTEXT NOT NULL DEFAULT '',
 
     PRIMARY KEY (`key`)
-) DEFAULT CHARSET=utf8;
+);
 
 CREATE TABLE event (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -27,7 +27,7 @@ CREATE TABLE event (
     event_url VARCHAR(255) NOT NULL DEFAULT '',
 
     PRIMARY KEY (id)
-) DEFAULT CHARSET=utf8;
+);
 
 CREATE INDEX event_date ON event (date);
 
@@ -36,14 +36,14 @@ CREATE TABLE redirect (
     new_url VARCHAR(255) NOT NULL,
 
     PRIMARY KEY (old_url)
-) DEFAULT CHARSET=utf8;
+);
 
 CREATE TABLE location_color (
     location VARCHAR(255) NOT NULL,
     color VARCHAR(7) NOT NULL,
 
     PRIMARY KEY (location)
-) DEFAULT CHARSET=utf8;
+);
 
 CREATE TABLE member (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -73,7 +73,7 @@ CREATE TABLE member (
     comment MEDIUMTEXT NOT NULL DEFAULT '',
 
     PRIMARY KEY (id)
-) DEFAULT CHARSET=utf8;
+);
 
 CREATE INDEX member_names ON member (first_name, last_name);
 CREATE INDEX member_email ON member (email);
@@ -87,18 +87,18 @@ CREATE TABLE registration (
     no_show BOOLEAN NOT NULL DEFAULT 0,
 
     PRIMARY KEY (event_id, member_id),
-    CONSTRAINT FOREIGN KEY (event_id) REFERENCES event(id),
-    CONSTRAINT FOREIGN KEY (member_id) REFERENCES member(id)
-) DEFAULT CHARSET=utf8;
+    FOREIGN KEY (event_id) REFERENCES event(id),
+    FOREIGN KEY (member_id) REFERENCES member(id)
+);
 
 CREATE TABLE event_organizer (
     event_id INTEGER UNSIGNED NOT NULL,
     member_id INTEGER UNSIGNED NOT NULL,
 
     PRIMARY KEY (event_id, member_id),
-    CONSTRAINT FOREIGN KEY (event_id) REFERENCES event(id),
-    CONSTRAINT FOREIGN KEY (member_id) REFERENCES member(id)
-) DEFAULT CHARSET=utf8;
+    FOREIGN KEY (event_id) REFERENCES event(id),
+    FOREIGN KEY (member_id) REFERENCES member(id)
+);
 
 CREATE TABLE keyword (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -106,16 +106,16 @@ CREATE TABLE keyword (
 
     PRIMARY KEY (id),
     UNIQUE INDEX (keyword)
-) DEFAULT CHARSET=utf8;
+);
 
 CREATE TABLE event_keyword (
     event_id INTEGER UNSIGNED NOT NULL,
     keyword_id INTEGER UNSIGNED NOT NULL,
 
     PRIMARY KEY (event_id, keyword_id),
-    CONSTRAINT FOREIGN KEY (event_id) REFERENCES event(id),
-    CONSTRAINT FOREIGN KEY (keyword_id) REFERENCES keyword(id)
-) DEFAULT CHARSET=utf8;
+    FOREIGN KEY (event_id) REFERENCES event(id),
+    FOREIGN KEY (keyword_id) REFERENCES keyword(id)
+);
 
 CREATE TABLE speaker (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -136,7 +136,7 @@ CREATE TABLE speaker (
     country VARCHAR(255) NOT NULL DEFAULT '',
 
     PRIMARY KEY (id)
-) DEFAULT CHARSET=utf8;
+);
 
 CREATE INDEX speaker_names ON speaker (first_name, last_name);
 
@@ -145,9 +145,9 @@ CREATE TABLE event_speaker (
    speaker_id INTEGER UNSIGNED NOT NULL,
 
    PRIMARY KEY (event_id, speaker_id),
-   CONSTRAINT FOREIGN KEY (event_id) REFERENCES event(id),
-   CONSTRAINT FOREIGN KEY (speaker_id) REFERENCES speaker(id)
-) DEFAULT CHARSET=utf8;
+   FOREIGN KEY (event_id) REFERENCES event(id),
+   FOREIGN KEY (speaker_id) REFERENCES speaker(id)
+);
 
 CREATE TABLE sponsor (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -161,15 +161,15 @@ CREATE TABLE sponsor (
     level ENUM('Silver', 'Gold', 'Platinum') NULL,
 
     PRIMARY KEY (id)
-) DEFAULT CHARSET=utf8;
+);
 
 CREATE TABLE sponsor_domain (
     sponsor_id INTEGER UNSIGNED NOT NULL,
     domain VARCHAR(255) NOT NULL DEFAULT '',
 
     PRIMARY KEY (sponsor_id, domain),
-    CONSTRAINT FOREIGN KEY (sponsor_id) REFERENCES sponsor(id)
-) DEFAULT CHARSET=utf8;
+    FOREIGN KEY (sponsor_id) REFERENCES sponsor(id)
+);
 
 CREATE TABLE news (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -182,7 +182,7 @@ CREATE TABLE news (
     show_to DATETIME NULL,
 
     PRIMARY KEY (id)
-) DEFAULT CHARSET=utf8;
+);
 
 CREATE TABLE subscription (
     email VARCHAR(255) NOT NULL,
@@ -191,7 +191,7 @@ CREATE TABLE subscription (
     validation_code VARCHAR(255) NULL,
 
     PRIMARY KEY (email)
-) DEFAULT CHARSET=utf8;
+);
 
 CREATE TABLE faq (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -199,7 +199,7 @@ CREATE TABLE faq (
     answer MEDIUMTEXT NOT NULL,
 
     PRIMARY KEY (id)
-) DEFAULT CHARSET=utf8;
+);
 
 CREATE TABLE page (
     id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -210,4 +210,4 @@ CREATE TABLE page (
 
     PRIMARY KEY (id),
     UNIQUE INDEX (page_url)
-) DEFAULT CHARSET=utf8;
+);

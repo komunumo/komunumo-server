@@ -33,6 +33,8 @@ MAIL_PORT=25
 
 *Komunumo* needs a database to permanently store the business data. All JDBC compatible databases are supported. We highly recommend [MariaDB](https://mariadb.org/), just because we are using it during development and it is highly tested with *Komunumo*.
 
+Please make sure that your database is using a unicode character set to avoid problems storing data containing unicode characters.
+
 The `DB_USER` is used to access the *Komunumo* database including automatic schema migrations and needs `ALL PRIVILEGES`.
 
 ```
