@@ -769,15 +769,18 @@ public class JUGSImporter {
         final var counter = new AtomicInteger(0);
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
-                    "SELECT id, firma, sponsortyp, url, logo FROM sponsoren WHERE aktiv='ja' ORDER BY id");
+                    "SELECT id, name, url, logo, beschreibung, vertrag_beginn, vertrag_ende, level FROM sponsoren ORDER BY id");
             while (result.next()) {
                 final var sponsorRecord = databaseService.getSponsorRecord(result.getLong("id"))
                         .orElse(databaseService.newSponsor());
                 sponsorRecord.set(SPONSOR.ID, result.getLong("id"));
-                sponsorRecord.set(SPONSOR.NAME, result.getString("firma"));
-                sponsorRecord.set(SPONSOR.LEVEL, getSponsorLevel(result.getString("sponsortyp")));
+                sponsorRecord.set(SPONSOR.NAME, result.getString("name"));
                 sponsorRecord.set(SPONSOR.WEBSITE, result.getString("url").replaceFirst("^http://", "https://"));
                 sponsorRecord.set(SPONSOR.LOGO, loadImageFromWeb("https://www.jug.ch/images/sponsors/" + result.getString("logo")));
+                sponsorRecord.set(SPONSOR.DESCRIPTION, result.getString("beschreibung"));
+                sponsorRecord.set(SPONSOR.VALID_FROM, getDate(result.getString("vertrag_beginn")));
+                sponsorRecord.set(SPONSOR.VALID_TO, getDate(result.getString("vertrag_ende")));
+                sponsorRecord.set(SPONSOR.LEVEL, SponsorLevel.valueOf(WordUtils.capitalizeFully(result.getString("level"))));
                 sponsorRecord.store();
                 databaseService.deleteSponsorDomains(sponsorRecord);
                 if (!sponsorRecord.getWebsite().isBlank()) {
@@ -808,13 +811,6 @@ public class JUGSImporter {
         } catch (final Exception e) {
             return "";
         }
-    }
-
-    private SponsorLevel getSponsorLevel(@NotNull final String sponsortyp) {
-        return SponsorLevel.valueOf(
-                sponsortyp.equalsIgnoreCase("Platin")
-                        ? "Platinum"
-                        : WordUtils.capitalizeFully(sponsortyp));
     }
 
     private void mergeMembers() {
