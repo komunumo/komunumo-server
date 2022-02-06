@@ -66,13 +66,13 @@ public class SponsorsView extends ContentBlock implements AfterNavigationObserve
         final var url = event.getLocation().getPath();
         final var subMenu = new SubMenu();
         subMenu.add(new SubMenuItem("sponsors", "Our sponsors", url.equals("sponsors")));
-        databaseService.getPages(PageParent.Sponsors).forEach(pageRecord ->
-                subMenu.add(new SubMenuItem(pageRecord.getPageUrl(), pageRecord.getTitle(), url.equals(pageRecord.getPageUrl()))));
+        databaseService.getPages(PageParent.Sponsors).forEach(page ->
+                subMenu.add(new SubMenuItem(page.getCompletePageUrl(), page.getTitle(), url.equals(page.getCompletePageUrl()))));
         setSubMenu(subMenu);
         if (url.equals("sponsors")) {
             showSponsors();
         } else {
-            loadPage(databaseService, url);
+            loadPage(databaseService, url.split("/", 2)[1]);
         }
     }
 

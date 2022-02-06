@@ -59,7 +59,7 @@ public class ApplicationServiceInitListener implements VaadinServiceInitListener
         });
         //noinspection unchecked
         databaseService.getPages(PageParent.Sponsors).forEach(
-                pageRecord -> RouteConfiguration.forApplicationScope().setRoute(pageRecord.getPageUrl(), SponsorsView.class, WebsiteLayout.class));
+                page -> RouteConfiguration.forApplicationScope().setRoute(page.getCompletePageUrl(), SponsorsView.class, WebsiteLayout.class));
     }
 
     public void reloadRedirects() {

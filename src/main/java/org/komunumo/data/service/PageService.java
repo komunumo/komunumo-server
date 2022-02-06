@@ -19,8 +19,10 @@
 package org.komunumo.data.service;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jooq.impl.DSL;
 import org.komunumo.data.db.enums.PageParent;
-import org.komunumo.data.db.tables.records.PageRecord;
+import org.komunumo.data.entity.Page;
 import org.komunumo.data.service.getter.DSLContextGetter;
 
 import java.util.Optional;
@@ -30,17 +32,42 @@ import static org.komunumo.data.db.tables.Page.PAGE;
 
 interface PageService extends DSLContextGetter {
 
-    default Stream<PageRecord> getPages(@NotNull final PageParent parent) {
-        return dsl().selectFrom(PAGE)
-                .where(PAGE.PARENT.eq(parent))
-                .orderBy(PAGE.ID.asc())
-                .fetch()
+    default Page newPage() {
+        final var page = dsl().newRecord(PAGE)
+                .into(Page.class);
+        page.setParent(null);
+        page.setPageUrl("");
+        page.setTitle("");
+        page.setContent("");
+        return page;
+    }
+
+    default Stream<Page> findPages(final int offset, final int limit, @Nullable final String filter) {
+        final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
+        return dsl().select(PAGE.asterisk())
+                .from(PAGE)
+                .where(filterValue == null ? DSL.noCondition() :
+                        PAGE.PAGE_URL.like(filterValue).or(PAGE.TITLE.like(filterValue)))
+                .orderBy(PAGE.PARENT.asc(), PAGE.TITLE.asc())
+                .offset(offset)
+                .limit(limit)
+                .fetchInto(Page.class)
                 .stream();
     }
 
-    default Optional<PageRecord> getPage(@NotNull final PageParent parent, @NotNull final String url) {
-        return dsl().selectFrom(PAGE)
+    default Stream<Page> getPages(@NotNull final PageParent parent) {
+        return dsl().select(PAGE.asterisk())
+                .from(PAGE)
+                .where(PAGE.PARENT.eq(parent))
+                .orderBy(PAGE.ID.asc())
+                .fetchInto(Page.class)
+                .stream();
+    }
+
+    default Optional<Page> getPage(@NotNull final PageParent parent, @NotNull final String url) {
+        return dsl().select(PAGE.asterisk())
+                .from(PAGE)
                 .where(PAGE.PARENT.eq(parent).and(PAGE.PAGE_URL.eq(url)))
-                .fetchOptional();
+                .fetchOptionalInto(Page.class);
     }
 }
