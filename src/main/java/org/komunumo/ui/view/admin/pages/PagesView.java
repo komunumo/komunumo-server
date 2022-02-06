@@ -34,6 +34,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
@@ -51,6 +52,9 @@ import javax.annotation.security.RolesAllowed;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.util.List;
+
+import org.komunumo.ui.view.website.WebsiteLayout;
+import org.komunumo.ui.view.website.sponsors.SponsorsView;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -130,14 +134,28 @@ public class PagesView extends ResizableView implements HasUrlParameter<String> 
     }
 
     private void showEditDialog(@Nullable final Page page) {
+        final var oldURL = page != null ? page.getCompletePageUrl() : null;
         final var dialog = new PageDialog(page != null ? "Edit Page" : "New Page");
-        dialog.open(page != null ? page : databaseService.newPage(), this::reloadGridItems);
+        final var pageToEdit = page != null ? page : databaseService.newPage();
+        dialog.open(pageToEdit, () -> afterSave(oldURL, pageToEdit));
+    }
+
+    private void afterSave(@Nullable final String oldURL, @NotNull final Page page) {
+        reloadGridItems();
+        if (!page.getCompletePageUrl().equals(oldURL)) {
+            if (oldURL != null) {
+                RouteConfiguration.forApplicationScope().removeRoute(oldURL);
+            }
+            RouteConfiguration.forApplicationScope().setRoute(
+                    page.getCompletePageUrl(), SponsorsView.class, List.of(WebsiteLayout.class));
+        }
     }
 
     private void deletePage(final Page page) {
         new ConfirmDialog("Confirm deletion",
                 String.format("Are you sure you want to permanently delete the page \"%s\"?", page.getTitle()),
                 "Delete", dialogEvent -> {
+            RouteConfiguration.forApplicationScope().removeRoute(page.getCompletePageUrl());
             page.delete();
             reloadGridItems();
             dialogEvent.getSource().close();
