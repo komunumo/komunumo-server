@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -57,9 +58,10 @@ public class ApplicationServiceInitListener implements VaadinServiceInitListener
             }
             return false;
         });
-        //noinspection unchecked
+
         databaseService.getPages(PageParent.Sponsors).forEach(
-                page -> RouteConfiguration.forApplicationScope().setRoute(page.getCompletePageUrl(), SponsorsView.class, WebsiteLayout.class));
+                page -> RouteConfiguration.forApplicationScope().setRoute(
+                        page.getCompletePageUrl(), SponsorsView.class, List.of(WebsiteLayout.class)));
     }
 
     public void reloadRedirects() {
