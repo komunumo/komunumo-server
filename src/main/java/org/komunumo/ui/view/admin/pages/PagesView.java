@@ -54,6 +54,7 @@ import java.io.StringWriter;
 import java.util.List;
 
 import org.komunumo.ui.view.website.WebsiteLayout;
+import org.komunumo.ui.view.website.members.MembersView;
 import org.komunumo.ui.view.website.sponsors.SponsorsView;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -146,8 +147,12 @@ public class PagesView extends ResizableView implements HasUrlParameter<String> 
             if (oldURL != null) {
                 RouteConfiguration.forApplicationScope().removeRoute(oldURL);
             }
+            final var clazz = switch (page.getParent()) {
+                case Members -> MembersView.class;
+                case Sponsors -> SponsorsView.class;
+            };
             RouteConfiguration.forApplicationScope().setRoute(
-                    page.getCompletePageUrl(), SponsorsView.class, List.of(WebsiteLayout.class));
+                    page.getCompletePageUrl(), clazz, List.of(WebsiteLayout.class));
         }
     }
 
