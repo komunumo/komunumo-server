@@ -33,7 +33,6 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Section;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
-import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +49,7 @@ import org.komunumo.util.URLUtil;
 @Route(value = "sponsors", layout = WebsiteLayout.class)
 @CssImport("./themes/komunumo/views/website/sponsors-view.css")
 @AnonymousAllowed
-public class SponsorsView extends ContentBlock implements AfterNavigationObserver, HasDynamicTitle {
+public class SponsorsView extends ContentBlock implements AfterNavigationObserver {
 
     private final DatabaseService databaseService;
 
@@ -58,7 +57,6 @@ public class SponsorsView extends ContentBlock implements AfterNavigationObserve
         super("Sponsors");
         this.databaseService = databaseService;
         addClassName("sponsors-view");
-
     }
 
     @Override
@@ -69,11 +67,15 @@ public class SponsorsView extends ContentBlock implements AfterNavigationObserve
         databaseService.getPages(PageParent.Sponsors).forEach(page ->
                 subMenu.add(new SubMenuItem(page.getCompletePageUrl(), page.getTitle(), url.equals(page.getCompletePageUrl()))));
         setSubMenu(subMenu);
+        final String pageTitle;
         if (url.equals("sponsors")) {
             showSponsors();
+            pageTitle = "Sponsors";
         } else {
-            loadPage(databaseService, url.split("/", 2)[1]);
+            final var page = loadPage(databaseService, url.split("/", 2)[1]);
+            pageTitle = page.getTitle();
         }
+        this.getUI().ifPresent(ui -> ui.getPage().setTitle("%s: %s".formatted(databaseService.configuration().getWebsiteName(), pageTitle)));
     }
 
     private void showSponsors() {
@@ -113,11 +115,6 @@ public class SponsorsView extends ContentBlock implements AfterNavigationObserve
         sponsor.add(new Hr());
 
         return sponsor;
-    }
-
-    @Override
-    public String getPageTitle() {
-        return "%s: Sponsors".formatted(databaseService.configuration().getWebsiteName());
     }
 
 }

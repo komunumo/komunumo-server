@@ -29,6 +29,7 @@ import com.vaadin.flow.router.NotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.PageParent;
+import org.komunumo.data.entity.Page;
 import org.komunumo.data.service.DatabaseService;
 
 @CssImport("./themes/komunumo/views/website/content-block.css")
@@ -85,12 +86,13 @@ public class ContentBlock extends HorizontalLayout {
         contentColumn = newContentColumn;
     }
 
-    public void loadPage(@NotNull final DatabaseService databaseService, @NotNull final String url) {
-        final var pageRecord = databaseService.getPage(PageParent.Sponsors, url).orElseThrow(NotFoundException::new);
+    public Page loadPage(@NotNull final DatabaseService databaseService, @NotNull final String url) {
+        final var page = databaseService.getPage(PageParent.Sponsors, url).orElseThrow(NotFoundException::new);
         setContent(
-                new H2(pageRecord.getTitle()),
-                new Html("<div>%s</div>".formatted(pageRecord.getContent()))
+                new H2(page.getTitle()),
+                new Html("<div>%s</div>".formatted(page.getContent()))
         );
+        return page;
     }
 
 }
