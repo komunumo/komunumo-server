@@ -46,22 +46,11 @@
 .website .sponsors-view hr {
     border-top: 1px solid #bfbfbf;
     max-width: 555px;
-    /*margin: 15px 0 15px 0;*/
 }
 
 .website .sponsors-view article:last-child hr {
     display: none;
 }
-
-/*
-.website .sponsors-view article {
-    border-bottom: 1px solid #bfbfbf;
-}
-
-.website .sponsors-view article:last-child {
-    border-bottom: none;
-}
-*/
 
 .website .sponsors-view .level-platinum .sponsor-logo,
 .website .sponsors-view .level-gold .sponsor-logo {
