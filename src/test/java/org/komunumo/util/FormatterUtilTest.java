@@ -71,6 +71,17 @@ class FormatterUtilTest {
     }
 
     @Test
+    void testCamelCase() {
+        assertNull(FormatterUtil.camelCase(null));
+        assertEquals("", FormatterUtil.camelCase(""));
+        assertEquals("Foo", FormatterUtil.camelCase("foo"));
+        assertEquals("Foo", FormatterUtil.camelCase("Foo"));
+        assertEquals("Foobar", FormatterUtil.camelCase("Foobar"));
+        assertEquals("FooBar", FormatterUtil.camelCase("foo bar"));
+        assertEquals("FooBar", FormatterUtil.camelCase("Foo Bar"));
+    }
+
+    @Test
     void privateConstructorWithException() {
         final var cause = assertThrows(InvocationTargetException.class, () -> {
             Constructor<FormatterUtil> constructor = FormatterUtil.class.getDeclaredConstructor();

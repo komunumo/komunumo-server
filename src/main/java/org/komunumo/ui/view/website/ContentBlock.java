@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.PageParent;
 import org.komunumo.data.entity.Page;
 import org.komunumo.data.service.DatabaseService;
+import org.komunumo.util.FormatterUtil;
 
 @CssImport("./themes/komunumo/views/website/content-block.css")
 public class ContentBlock extends HorizontalLayout {
@@ -87,7 +88,12 @@ public class ContentBlock extends HorizontalLayout {
     }
 
     public Page loadPage(@NotNull final DatabaseService databaseService, @NotNull final String url) {
-        final var page = databaseService.getPage(PageParent.Sponsors, url).orElseThrow(NotFoundException::new);
+        final var urlParts = url.split("/", 2);
+        if (urlParts.length < 2 || urlParts[1].isBlank()) {
+            throw new NotFoundException();
+        }
+        final var parent = PageParent.valueOf(FormatterUtil.camelCase(urlParts[0]));
+        final var page = databaseService.getPage(parent, urlParts[1]).orElseThrow(NotFoundException::new);
         setContent(
                 new H2(page.getTitle()),
                 new Html("<div>%s</div>".formatted(page.getContent()))

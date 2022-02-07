@@ -18,6 +18,7 @@
 
 package org.komunumo.util;
 
+import org.apache.commons.text.CaseUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
@@ -68,6 +69,10 @@ public class FormatterUtil {
         return string != null && string.length() > maxLength
                 ? string.substring(0, maxLength).concat("…")
                 : string;
+    }
+
+    public static String camelCase(@Nullable final String string) {
+        return CaseUtils.toCamelCase(string, true, ' ');
     }
 
     private FormatterUtil() {

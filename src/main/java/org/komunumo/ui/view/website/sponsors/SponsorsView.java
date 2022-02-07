@@ -72,7 +72,7 @@ public class SponsorsView extends ContentBlock implements AfterNavigationObserve
             showSponsors();
             pageTitle = "Sponsors";
         } else {
-            final var page = loadPage(databaseService, url.split("/", 2)[1]);
+            final var page = loadPage(databaseService, url);
             pageTitle = page.getTitle();
         }
         this.getUI().ifPresent(ui -> ui.getPage().setTitle("%s: %s".formatted(databaseService.configuration().getWebsiteName(), pageTitle)));
