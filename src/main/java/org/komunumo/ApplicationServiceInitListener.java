@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.enums.PageParent;
 import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.view.website.WebsiteLayout;
+import org.komunumo.ui.view.website.members.MembersView;
 import org.komunumo.ui.view.website.sponsors.SponsorsView;
 import org.springframework.stereotype.Component;
 
@@ -59,6 +60,9 @@ public class ApplicationServiceInitListener implements VaadinServiceInitListener
             return false;
         });
 
+        databaseService.getPages(PageParent.Members).forEach(
+                page -> RouteConfiguration.forApplicationScope().setRoute(
+                        page.getCompletePageUrl(), MembersView.class, List.of(WebsiteLayout.class)));
         databaseService.getPages(PageParent.Sponsors).forEach(
                 page -> RouteConfiguration.forApplicationScope().setRoute(
                         page.getCompletePageUrl(), SponsorsView.class, List.of(WebsiteLayout.class)));

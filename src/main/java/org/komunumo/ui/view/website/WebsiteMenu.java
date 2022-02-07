@@ -28,6 +28,7 @@ import org.komunumo.security.AuthenticatedUser;
 import org.komunumo.ui.view.website.events.EventsView;
 import org.komunumo.ui.view.website.faq.FaqView;
 import org.komunumo.ui.view.website.home.HomeView;
+import org.komunumo.ui.view.website.members.MembersView;
 import org.komunumo.ui.view.website.sponsors.SponsorsView;
 
 @CssImport("./themes/komunumo/views/website/website-menu.css")
@@ -39,6 +40,7 @@ public class WebsiteMenu extends Nav {
 
         add(new RouterLink("Home", HomeView.class));
         add(new RouterLink("Events", EventsView.class));
+        add(new RouterLink("Members", MembersView.class));
         add(new RouterLink("Sponsors", SponsorsView.class));
         add(new RouterLink("FAQ", FaqView.class));
         if (authenticatedUser.get().isPresent() && authenticatedUser.get().get().getAdmin()) {
