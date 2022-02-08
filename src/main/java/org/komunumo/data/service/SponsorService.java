@@ -71,7 +71,10 @@ interface SponsorService extends DSLContextGetter {
     }
 
     default void deleteSponsor(final long sponsorId) {
-        getSponsorRecord(sponsorId).ifPresent(SponsorRecord::delete);
+        getSponsorRecord(sponsorId).ifPresent(sponsorRecord -> {
+            deleteSponsorDomains(sponsorRecord);
+            sponsorRecord.delete();
+        });
     }
 
     default Set<String> getSponsorDomains(@NotNull final SponsorRecord sponsorRecord) {
