@@ -720,7 +720,10 @@ public class JUGSImporter {
         return LocalTime.of(0,0).plus(duration);
     }
 
-    private LocalDate getDate(@NotNull final String datum) {
+    private LocalDate getDate(@Nullable final String datum) {
+        if (datum == null) {
+            return null;
+        }
         try {
             return LocalDate.parse(datum, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         } catch (final DateTimeParseException e) {
