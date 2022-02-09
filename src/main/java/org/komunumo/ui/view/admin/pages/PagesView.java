@@ -115,6 +115,8 @@ public class PagesView extends ResizableView implements HasUrlParameter<String> 
 
         grid.addColumn(Page::getParent)
                 .setHeader("Parent").setAutoWidth(true).setFlexGrow(0);
+        grid.addColumn(Page::getPageUrl)
+                .setHeader("URL").setAutoWidth(true).setFlexGrow(0);
         grid.addColumn(Page::getTitle)
                 .setHeader("Title").setAutoWidth(true).setFlexGrow(1);
 
