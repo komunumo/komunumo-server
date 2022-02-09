@@ -802,14 +802,15 @@ public class JUGSImporter {
 
     private String loadImageFromWeb(@NotNull final String imageURL) {
         final var lastDot = imageURL.lastIndexOf(".");
-        final var extension = imageURL.substring(lastDot + 1);
+        final var extension = imageURL.substring(lastDot + 1).toLowerCase(Locale.getDefault());
 
         try {
             final var url = new URL(imageURL);
             try (final var is = url.openStream()) {
                 final var bytes = org.apache.commons.io.IOUtils.toByteArray(is);
                 final var imageString = Base64.encodeBase64String(bytes);
-                return "data:image/%s;base64,%s".formatted(extension, imageString);
+                final var imageType = extension.equals("svg") ? "svg+xml" : extension;
+                return "data:image/%s;base64,%s".formatted(imageType, imageString);
             }
         } catch (final Exception e) {
             return "";
