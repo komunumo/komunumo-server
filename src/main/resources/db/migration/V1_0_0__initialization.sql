@@ -211,3 +211,12 @@ CREATE TABLE page (
     PRIMARY KEY (id),
     UNIQUE INDEX (page_url)
 );
+
+CREATE TABLE mail_template (
+    id VARCHAR(255) NOT NULL,
+    subject VARCHAR(255) NOT NULL,
+    content_text LONGTEXT NOT NULL,
+    content_html LONGTEXT NOT NULL,
+
+    PRIMARY KEY (id)
+);
