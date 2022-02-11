@@ -40,7 +40,7 @@ public interface MailService extends ConfigurationGetter, DSLContextGetter, Mail
         final var message = new SimpleMailMessage();
         message.setTo(emailAddresses);
         message.setFrom(configuration().getWebsiteContactEmail());
-        message.setSubject(mailTemplateRecord.getSubject());
+        message.setSubject(replaceVariables(mailTemplateRecord.getSubject(), variables));
         message.setText(replaceVariables(mailTemplateRecord.getContentText(), variables));
         mailSender().send(message);
     }
