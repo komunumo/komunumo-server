@@ -18,11 +18,14 @@
 
 package org.komunumo.data.service;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.MailTemplateRecord;
+import org.komunumo.data.entity.MailTemplateId;
 import org.komunumo.data.service.getter.DSLContextGetter;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.komunumo.data.db.tables.MailTemplate.MAIL_TEMPLATE;
@@ -31,6 +34,12 @@ public interface MailTemplateService extends DSLContextGetter {
 
     default MailTemplateRecord newMailTemplate() {
         return dsl().newRecord(MAIL_TEMPLATE);
+    }
+
+    default Optional<MailTemplateRecord> getMailTemplate(@NotNull final MailTemplateId mailTemplateId) {
+        return dsl().selectFrom(MAIL_TEMPLATE)
+                .where(MAIL_TEMPLATE.ID.eq(mailTemplateId.name()))
+                .fetchOptional();
     }
 
     default Stream<MailTemplateRecord> findMailTemplate(final int offset, final int limit, @Nullable final String filter) {
