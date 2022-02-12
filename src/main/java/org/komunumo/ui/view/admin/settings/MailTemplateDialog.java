@@ -33,23 +33,25 @@ import org.komunumo.data.entity.MailTemplateId;
 import org.komunumo.ui.component.CustomLabel;
 import org.komunumo.ui.component.EditDialog;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
 public class MailTemplateDialog extends EditDialog<MailTemplateRecord> {
 
+    private final List<MailTemplateId> mailTemplateIds;
     private Callback afterOpen;
 
-    public MailTemplateDialog(@NotNull final String title) {
+    public MailTemplateDialog(@NotNull final String title, List<MailTemplateId> mailTemplateIds) {
         super(title);
+        this.mailTemplateIds = mailTemplateIds;
     }
 
     @Override
     public void createForm(@NotNull final FormLayout formLayout,
                            @NotNull final Binder<MailTemplateRecord> binder) {
-        final var id = new Select<>(Arrays.stream(MailTemplateId.values()).map(MailTemplateId::name).toArray(String[]::new));
+        final var id = new Select<>(mailTemplateIds.stream().map(MailTemplateId::name).toArray(String[]::new));
         id.setRequiredIndicatorVisible(true);
         id.setLabel("ID");
         formLayout.add(id);

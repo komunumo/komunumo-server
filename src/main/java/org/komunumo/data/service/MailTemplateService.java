@@ -18,6 +18,10 @@
 
 package org.komunumo.data.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.impl.DSL;
@@ -51,6 +55,13 @@ public interface MailTemplateService extends DSLContextGetter {
                 .offset(offset)
                 .limit(limit)
                 .stream();
+    }
+
+    default List<MailTemplateId> findMissingMailTemplateIds() {
+        final var mailTemplateIds = new ArrayList<>(List.of(MailTemplateId.values()));
+        dsl().selectFrom(MAIL_TEMPLATE)
+                .forEach(mailTemplateRecord -> mailTemplateIds.remove(MailTemplateId.valueOf(mailTemplateRecord.getId())));
+        return Collections.unmodifiableList(mailTemplateIds);
     }
 
 }

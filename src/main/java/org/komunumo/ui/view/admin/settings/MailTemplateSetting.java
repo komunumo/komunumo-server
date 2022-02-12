@@ -32,9 +32,13 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
+
+import java.util.ArrayList;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.tables.records.MailTemplateRecord;
+import org.komunumo.data.entity.MailTemplateId;
 import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.component.EnhancedButton;
 import org.komunumo.ui.component.FilterField;
@@ -51,6 +55,7 @@ public class MailTemplateSetting extends ResizableView {
     private final DatabaseService databaseService;
 
     private final TextField filterField;
+    private final EnhancedButton newMailTemplatesButton;
     private final Grid<MailTemplateRecord> grid;
 
     public MailTemplateSetting(@NotNull final DatabaseService databaseService) {
@@ -63,7 +68,7 @@ public class MailTemplateSetting extends ResizableView {
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter mail templates");
 
-        final var newMailTemplatesButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), clickEvent -> showEditDialog(null));
+        newMailTemplatesButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), clickEvent -> showEditDialog(null));
         newMailTemplatesButton.setTitle("Add a new mail template");
 
         final var refreshMailTemplatesButton = new EnhancedButton(new Icon(VaadinIcon.REFRESH), clickEvent -> reloadGridItems());
@@ -108,7 +113,11 @@ public class MailTemplateSetting extends ResizableView {
     }
 
     private void showEditDialog(@Nullable final MailTemplateRecord mailTemplateRecord) {
-        final var dialog = new MailTemplateDialog(mailTemplateRecord != null ? "Edit Mail Template" : "New Mail Template");
+        final var mailTemplateIds = new ArrayList<>(databaseService.findMissingMailTemplateIds());
+        if (mailTemplateIds.isEmpty() && mailTemplateRecord != null) {
+            mailTemplateIds.add(MailTemplateId.valueOf(mailTemplateRecord.getId()));
+        }
+        final var dialog = new MailTemplateDialog(mailTemplateRecord != null ? "Edit Mail Template" : "New Mail Template", mailTemplateIds);
         dialog.open(mailTemplateRecord != null ? mailTemplateRecord : databaseService.newMailTemplate(), this::reloadGridItems);
     }
 
@@ -128,6 +137,7 @@ public class MailTemplateSetting extends ResizableView {
     private void reloadGridItems() {
         grid.setItems(query -> databaseService.findMailTemplate(query.getOffset(), query.getLimit(), filterField.getValue()));
         grid.recalculateColumnWidths();
+        newMailTemplatesButton.setEnabled(!databaseService.findMissingMailTemplateIds().isEmpty());
     }
 
     private void downloadMailTemplates() {
