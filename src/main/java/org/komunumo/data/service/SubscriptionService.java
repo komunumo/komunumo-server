@@ -57,7 +57,7 @@ interface SubscriptionService extends DSLContextGetter, MailService {
                     configuration().getWebsiteBaseUrl(),
                     URLUtil.encode(subscriptionRecord.getEmail()),
                     URLUtil.encode(subscriptionRecord.getValidationCode()));
-            sendMail(MailTemplateId.EVENT_REGISTRATION_LIMIT_REACHED, Map.of("validation.url", link), subscriptionRecord.getEmail());
+            sendMail(MailTemplateId.NEWSLETTER_SUBSCRIPTION_VALIDATION, Map.of("validation.url", link), subscriptionRecord.getEmail());
 
         }
 
