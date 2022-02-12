@@ -20,6 +20,18 @@ package org.komunumo.data.entity;
 
 public enum MailTemplateId {
 
-    RESET_PASSWORD
+    // Event registration
+    EVENT_REGISTRATION_CONFIRMATION,
+    EVENT_REGISTRATION_LIMIT_REACHED,
+
+    // New member
+    MEMBER_CONFIRM_EMAIL,
+
+    // Newsletter subscription
+    NEWSLETTER_SUBSCRIPTION_VALIDATION,
+    NEWSLETTER_SUBSCRIPTION_CONFIRMATION,
+
+    // Security
+    SECURITY_RESET_PASSWORD
 
 }

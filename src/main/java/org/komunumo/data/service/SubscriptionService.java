@@ -22,18 +22,17 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.enums.SubscriptionStatus;
 import org.komunumo.data.db.tables.records.SubscriptionRecord;
-import org.komunumo.data.service.getter.ConfigurationGetter;
+import org.komunumo.data.entity.MailTemplateId;
 import org.komunumo.data.service.getter.DSLContextGetter;
-import org.komunumo.data.service.getter.MailSenderGetter;
 import org.komunumo.util.URLUtil;
-import org.springframework.mail.SimpleMailMessage;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.komunumo.data.db.tables.Subscription.SUBSCRIPTION;
 
-interface SubscriptionService extends ConfigurationGetter, DSLContextGetter, MailSenderGetter {
+interface SubscriptionService extends DSLContextGetter, MailService {
 
     default Optional<SubscriptionRecord> getSubscription(@NotNull final String emailAddress) {
         return dsl().selectFrom(SUBSCRIPTION)
@@ -58,13 +57,8 @@ interface SubscriptionService extends ConfigurationGetter, DSLContextGetter, Mai
                     configuration().getWebsiteBaseUrl(),
                     URLUtil.encode(subscriptionRecord.getEmail()),
                     URLUtil.encode(subscriptionRecord.getValidationCode()));
+            sendMail(MailTemplateId.EVENT_REGISTRATION_LIMIT_REACHED, Map.of("validation.url", link), subscriptionRecord.getEmail());
 
-            final var message = new SimpleMailMessage();
-            message.setTo(subscriptionRecord.getEmail());
-            message.setFrom(configuration().getWebsiteContactEmail());
-            message.setSubject("Validate your newsletter subscription");
-            message.setText("Please click on the following link to validate your newsletter subscription:\n" + link);
-            mailSender().send(message);
         }
 
         return subscriptionRecord.getStatus();
@@ -80,12 +74,7 @@ interface SubscriptionService extends ConfigurationGetter, DSLContextGetter, Mai
             subscription.setValidationCode(null);
             subscription.store();
 
-            final var message = new SimpleMailMessage();
-            message.setTo(emailAddress);
-            message.setFrom(configuration().getWebsiteContactEmail());
-            message.setSubject("Newsletter subscription activated");
-            message.setText("Thank you very much for subscribing to our newsletter.");
-            mailSender().send(message);
+            sendMail(MailTemplateId.NEWSLETTER_SUBSCRIPTION_CONFIRMATION, null, emailAddress);
 
             return true;
         }

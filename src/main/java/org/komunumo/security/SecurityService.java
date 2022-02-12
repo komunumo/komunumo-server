@@ -20,11 +20,9 @@ package org.komunumo.security;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.komunumo.configuration.Configuration;
+import org.komunumo.data.entity.MailTemplateId;
 import org.komunumo.data.entity.Member;
 import org.komunumo.data.service.DatabaseService;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -38,14 +36,13 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class SecurityService implements UserDetailsService {
 
     private final DatabaseService databaseService;
-    private final Configuration configuration;
-    private final MailSender mailSender;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticatedUser authenticatedUser;
     private final LoginAttemptService loginAttemptService;
@@ -57,8 +54,6 @@ public class SecurityService implements UserDetailsService {
                            @NotNull final LoginAttemptService loginAttemptService,
                            @NotNull final HttpServletRequest request) {
         this.databaseService = databaseService;
-        this.configuration = databaseService.configuration();
-        this.mailSender = databaseService.mailSender();
         this.passwordEncoder = passwordEncoder;
         this.authenticatedUser = authenticatedUser;
         this.loginAttemptService = loginAttemptService;
@@ -98,12 +93,7 @@ public class SecurityService implements UserDetailsService {
                 record.setPasswordChange(true);
                 record.store();
 
-                final var message = new SimpleMailMessage();
-                message.setTo(email);
-                message.setFrom(configuration.getWebsiteContactEmail());
-                message.setSubject("Reset your password");
-                message.setText("To reset your password, use the following one time password to login: " + password);
-                mailSender.send(message);
+                databaseService.sendMail(MailTemplateId.SECURITY_RESET_PASSWORD, Map.of("password", password), email);
             }
         }
     }

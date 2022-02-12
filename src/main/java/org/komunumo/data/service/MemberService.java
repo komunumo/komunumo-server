@@ -22,21 +22,20 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.impl.DSL;
+import org.komunumo.data.entity.MailTemplateId;
 import org.komunumo.data.entity.Member;
-import org.komunumo.data.service.getter.ConfigurationGetter;
 import org.komunumo.data.service.getter.DSLContextGetter;
-import org.komunumo.data.service.getter.MailSenderGetter;
 import org.komunumo.util.URLUtil;
-import org.springframework.mail.SimpleMailMessage;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.jooq.impl.DSL.concat;
 import static org.komunumo.data.db.tables.Member.MEMBER;
 
-interface MemberService extends ConfigurationGetter, DSLContextGetter, MailSenderGetter {
+interface MemberService extends DSLContextGetter, MailService {
 
     default Member newMember() {
         final var member = dsl().newRecord(MEMBER)
@@ -171,19 +170,14 @@ interface MemberService extends ConfigurationGetter, DSLContextGetter, MailSende
         member.setActivationCode(activationCode);
         member.store();
 
-        final var message = new SimpleMailMessage();
-        message.setTo(emailAddress);
-        message.setFrom(configuration().getWebsiteContactEmail());
-        message.setSubject("Confirm your email address");
-        message.setText("""
-                    This is the first time you used the email address %s with the %s.
-                    Please click on the following link to validate your email address:
-                    %s/member/validate?email=%s&code=%s
-                    """.formatted(
-                emailAddress, configuration().getWebsiteName(),
-                configuration().getWebsiteBaseUrl(), URLUtil.encode(emailAddress), URLUtil.encode(activationCode)
-        ));
-        mailSender().send(message);
+        final var variables = Map.of(
+                "email", emailAddress,
+                "website.name", configuration().getWebsiteName(),
+                "validation.url", "%s/member/validate?email=%s&code=%s".formatted(
+                        configuration().getWebsiteBaseUrl(),
+                        URLUtil.encode(emailAddress),
+                        URLUtil.encode(activationCode)));
+        sendMail(MailTemplateId.MEMBER_CONFIRM_EMAIL, variables, emailAddress);
 
         return member;
     }

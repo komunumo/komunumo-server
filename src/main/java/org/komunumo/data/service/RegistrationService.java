@@ -24,21 +24,20 @@ import org.jetbrains.annotations.Nullable;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.tables.records.RegistrationRecord;
 import org.komunumo.data.entity.Event;
+import org.komunumo.data.entity.MailTemplateId;
 import org.komunumo.data.entity.Member;
 import org.komunumo.data.entity.Registration;
 import org.komunumo.data.entity.RegistrationListEntity;
 import org.komunumo.data.entity.RegistrationMemberEntity;
 import org.komunumo.data.entity.RegistrationResult;
 import org.komunumo.data.entity.reports.RegistrationListEntityWrapper;
-import org.komunumo.data.service.getter.ConfigurationGetter;
 import org.komunumo.data.service.getter.DSLContextGetter;
-import org.komunumo.data.service.getter.MailSenderGetter;
-import org.komunumo.util.FormatterUtil;
 import org.komunumo.util.URLUtil;
 import org.springframework.mail.SimpleMailMessage;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -46,7 +45,7 @@ import static org.komunumo.data.db.tables.Member.MEMBER;
 import static org.komunumo.data.db.tables.Registration.REGISTRATION;
 import static org.komunumo.util.FormatterUtil.formatDateTime;
 
-interface RegistrationService extends ConfigurationGetter, DSLContextGetter, MailSenderGetter, EventOrganizerService {
+interface RegistrationService extends DSLContextGetter, EventOrganizerService, MailService {
 
     default Optional<Registration> getRegistration(@NotNull final Long eventId,
                                                   @NotNull final Long memberId) {
@@ -96,7 +95,12 @@ interface RegistrationService extends ConfigurationGetter, DSLContextGetter, Mai
                                 event.getTitle(), formatDateTime(event.getDate()), event.getLocation(),
                                 attendeeLimit, attendeeCount + 1
                         ));
-                        mailSender().send(message);
+                        final var variables = Map.of(
+                                "percent", Integer.toString(percent),
+                                "event.title", event.getTitle(),
+                                "event.date", formatDateTime(event.getDate()),
+                                "event.location", event.getLocation());
+                        sendMail(MailTemplateId.EVENT_REGISTRATION_LIMIT_REACHED, variables, emailAddresses);
                     }
                 }
                 registration = dsl().newRecord(REGISTRATION);
@@ -112,28 +116,19 @@ interface RegistrationService extends ConfigurationGetter, DSLContextGetter, Mai
             }
 
             if (sendConfirmationMail) {
-                final var message = new SimpleMailMessage();
-                message.setTo(member.getEmail());
-                message.setFrom(configuration().getWebsiteContactEmail());
-                message.setSubject("%s: Event-Registration for %s"
-                        .formatted(FormatterUtil.formatDate(event.getDate().toLocalDate()), member.getFullName()));
-                message.setText("""
-                        You successfully registered for the following event:
-                        "%s" at %s in %s
-                        Details: %s%s
-                                        
-                        Registration date: %s
-                        Your name: %s
-                        Source: %s
-                                        
-                        To deregister from this event, please click on the following link:
-                        %s%s?deregister=%s
-                        """.formatted(
-                        event.getTitle(), formatDateTime(event.getDate()), event.getLocation(), configuration().getWebsiteBaseUrl(),
-                        event.getCompleteEventUrl(), formatDateTime(registration.getDate()), member.getFullName(), source,
-                        configuration().getWebsiteBaseUrl(), event.getCompleteEventUrl(), URLUtil.encode(registration.getDeregister())
-                ));
-                mailSender().send(message);
+                final var variables = Map.of(
+                        "event.date", formatDateTime(event.getDate()),
+                        "event.title", event.getTitle(),
+                        "event.location", event.getLocation(),
+                        "event.url", "%s%s".formatted(configuration().getWebsiteBaseUrl(), event.getCompleteEventUrl()),
+                        "member.name", member.getFullName(),
+                        "registration.date", formatDateTime(registration.getDate()),
+                        "registration.source", registration.getSource(),
+                        "registration.cancelurl", "%s%s?deregister=%s".formatted(
+                                configuration().getWebsiteBaseUrl(),
+                                event.getCompleteEventUrl(),
+                                URLUtil.encode(registration.getDeregister())));
+                sendMail(MailTemplateId.EVENT_REGISTRATION_CONFIRMATION, variables, member.getEmail());
             }
             return hasRegistered.isPresent() ? RegistrationResult.EXISTING : RegistrationResult.SUCCESS;
         }
