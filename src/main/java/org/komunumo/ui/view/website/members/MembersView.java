@@ -21,6 +21,8 @@ package org.komunumo.ui.view.website.members;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +36,7 @@ import org.komunumo.ui.view.website.WebsiteLayout;
 @Route(value = "members", layout = WebsiteLayout.class)
 @CssImport("./themes/komunumo/views/website/members-view.css")
 @AnonymousAllowed
-public class MembersView extends ContentBlock implements AfterNavigationObserver {
+public class MembersView extends ContentBlock implements BeforeEnterObserver, AfterNavigationObserver {
 
     private final DatabaseService databaseService;
 
@@ -45,8 +47,15 @@ public class MembersView extends ContentBlock implements AfterNavigationObserver
     }
 
     @Override
-    public void afterNavigation(AfterNavigationEvent event) {
-        final var url = event.getLocation().getPath();
+    public void beforeEnter(@NotNull final BeforeEnterEvent beforeEnterEvent) {
+        if (beforeEnterEvent.getLocation().getPath().equalsIgnoreCase("members")) {
+            beforeEnterEvent.forwardTo("/members/general");
+        }
+    }
+
+    @Override
+    public void afterNavigation(AfterNavigationEvent afterNavigationEvent) {
+        final var url = afterNavigationEvent.getLocation().getPath();
         final var subMenu = new SubMenu();
         databaseService.getPages(PageParent.Members).forEach(page ->
                 subMenu.add(new SubMenuItem(page.getCompletePageUrl(), page.getTitle(), url.equals(page.getCompletePageUrl()))));
