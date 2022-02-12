@@ -7,6 +7,13 @@ VALUES (1, 'Sponsors', 'benefits', 'Benefits of sponsoring', '<p>The Java User G
 INSERT INTO redirect (old_url, new_url)
 VALUES ('/sponsors.php', '/sponsors'),
        ('/sponsor_benefits.php', '/sponsors/benefits'),
-       ('/become_sponsor.php', '/sponsors/become-a-sponsor')
+       ('/become_sponsor.php', '/sponsors/become-a-sponsor');
+
+INSERT INTO page (id, parent, page_url, title, content)
+VALUES (3, 'Members', 'slack', 'Slack-Channel', '<p>In our <a href="https://jugch.slack.com/" target="_blank">slack channel for members</a> we would like to get into conversation with you.</p><p>Register at <a href="http://slack.jug.ch/" target="_blank">slack.jug.ch</a> and discuss with us and other members!</p>');
+
+INSERT INTO redirect (old_url, new_url)
+VALUES ('/members.php', '/members'),
+       ('/joinus_slack.php', '/members/slack');
 
 -- [jooq ignore stop]
