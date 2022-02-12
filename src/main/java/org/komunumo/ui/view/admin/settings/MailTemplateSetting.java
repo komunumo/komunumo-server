@@ -34,6 +34,7 @@ import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.komunumo.ApplicationServiceInitListener;
 import org.komunumo.data.db.tables.records.MailTemplateRecord;
 import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.component.EnhancedButton;

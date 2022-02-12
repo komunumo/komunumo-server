@@ -25,19 +25,22 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
-
-import java.util.Arrays;
-import java.util.Objects;
-
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.komunumo.Callback;
 import org.komunumo.data.db.tables.records.MailTemplateRecord;
 import org.komunumo.data.entity.MailTemplateId;
 import org.komunumo.ui.component.CustomLabel;
 import org.komunumo.ui.component.EditDialog;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
 public class MailTemplateDialog extends EditDialog<MailTemplateRecord> {
+
+    private Callback afterOpen;
 
     public MailTemplateDialog(@NotNull final String title) {
         super(title);
@@ -82,6 +85,20 @@ public class MailTemplateDialog extends EditDialog<MailTemplateRecord> {
                 .withValidator(new StringLengthValidator(
                         "Please enter the content as formattet HTML (max. 8'000 chars)", 1, 8_000))
                 .bind(MailTemplateRecord::getContentHtml, MailTemplateRecord::setContentHtml);
+
+        afterOpen = () -> id.setReadOnly(id.getValue() != null);
+    }
+
+    @Override
+    public void open(@NotNull final MailTemplateRecord mailTemplateRecord, @Nullable final Callback afterSave) {
+        super.open(mailTemplateRecord,
+                () -> {
+                    if (afterOpen != null) {
+                        afterOpen.execute();
+                    }
+                },
+                afterSave
+        );
     }
 
 }
