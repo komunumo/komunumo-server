@@ -119,9 +119,9 @@ While developing, sometimes it is very useful to reset the database manually. Yo
 
 ```
 mvn flyway:clean \
-    -Dflyway.user='johndoe' \
-    -Dflyway.password='verysecret' \
-    -Dflyway.url='jdbc:mariadb://localhost:3306/komunumo?serverTimezone\=Europe/Zurich'
+    -D'flyway.user'='johndoe' \
+    -D'flyway.password'='verysecret' \
+    -D'flyway.url'='jdbc:mariadb://localhost:3306/komunumo?serverTimezone\=Europe/Zurich'
 ```
 
 This command will clean your database (erase everything). You need to specify the credentials for a database user with administrative privileges to the database and the database URL.
