@@ -14,7 +14,8 @@ VALUES (3, 'Members', 'general', 'General Information', '<h3>What is the "Java U
        (4, 'Members', 'slack', 'Slack-Channel', '<p>In our <a href="https://jugch.slack.com/" target="_blank">slack channel for members</a> we would like to get into conversation with you.</p><p>Register at <a href="https://slack.jug.ch/" target="_blank">slack.jug.ch</a> and discuss with us and other members!</p>');
 
 INSERT INTO redirect (old_url, new_url)
-VALUES ('/members.php', '/members/general'),
+VALUES ('/members', '/members/general'),
+       ('/members.php', '/members/general'),
        ('/joinus_slack.php', '/members/slack');
 
 -- [jooq ignore stop]
