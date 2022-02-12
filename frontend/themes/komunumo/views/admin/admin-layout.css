@@ -50,6 +50,7 @@ vaadin-app-layout[dir='rtl'] #header vaadin-avatar {
 #header vaadin-menu-bar {
     margin-left: auto;
     margin-right: var(--lumo-space-m);
+    width: auto;
 }
 
 #header h1 {
