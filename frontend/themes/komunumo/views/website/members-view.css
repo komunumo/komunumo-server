@@ -47,3 +47,17 @@
     border-top: 1px solid #bfbfbf;
     max-width: 555px;
 }
+
+.website .members-view div.feedback-form {
+    max-width: 555px;
+}
+
+.website .members-view div.feedback-form vaadin-button {
+    margin-top: 15px;
+    max-width: 100px;
+}
+
+.website .members-view div.feedback-form p {
+    color: #930722;
+    font-weight: bold;
+}

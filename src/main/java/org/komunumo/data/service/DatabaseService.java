@@ -29,9 +29,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DatabaseService implements DSLContextGetter, ConfigurationGetter, MailSenderGetter, ConfigurationService, EventService,
-        EventKeywordService, EventOrganizerService, EventSpeakerService, FaqService, KeywordService, LocationColorService, MailService,
-        MailTemplateService, MemberService, NewsService, PageService, RedirectService, RegistrationService, SpeakerService, SponsorService,
-        StatisticService, SubscriptionService {
+        EventKeywordService, EventOrganizerService, EventSpeakerService, FaqService, FeedbackService, KeywordService, LocationColorService,
+        MailService, MailTemplateService, MemberService, NewsService, PageService, RedirectService, RegistrationService, SpeakerService,
+        SponsorService, StatisticService, SubscriptionService {
 
     private final DSLContext dsl;
     private final MailSender mailSender;

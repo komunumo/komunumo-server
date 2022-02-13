@@ -36,6 +36,9 @@
 }
 
 .website {
+    --lumo-required-field-indicator-color: #930722;
+    --lumo-primary-color: #930722;
+    --lumo-primary-text-color: #930722;
     font-size: 0.8rem;
     width: 100%;
 }
@@ -80,12 +83,9 @@
 .website vaadin-button[focus-ring],
 .website vaadin-radio-button[focus-ring]::part(radio),
 .website vaadin-email-field[focus-ring]::part(input-field),
-.website vaadin-text-field[focus-ring]::part(input-field) {
+.website vaadin-text-field[focus-ring]::part(input-field),
+.website vaadin-text-area[focus-ring]::part(input-field) {
     box-shadow: 0 0 0 2px #930722;
-}
-
-.website vaadin-button:not([disabled]) {
-    color: #930722;
 }
 
 #website-header {

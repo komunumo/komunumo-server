@@ -220,3 +220,15 @@ CREATE TABLE mail_template (
 
     PRIMARY KEY (id)
 );
+
+CREATE TABLE feedback (
+    id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    received DATETIME NOT NULL,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    feedback MEDIUMTEXT NOT NULL,
+
+    PRIMARY KEY (id)
+);
+

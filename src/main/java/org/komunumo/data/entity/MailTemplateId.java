@@ -26,6 +26,7 @@ public enum MailTemplateId {
 
     // New member
     MEMBER_CONFIRM_EMAIL,
+    MEMBER_FEEDBACK,
 
     // Newsletter subscription
     NEWSLETTER_SUBSCRIPTION_VALIDATION,
