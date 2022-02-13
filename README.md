@@ -128,6 +128,22 @@ This command will clean your database (erase everything). You need to specify th
 
 *Komunumo* will automatically migrate the database schema on the next start.
 
+## Security
+
+There are three levels of security for three areas of the website:
+
+### Public access
+
+Most pages are public. There is no authentication or authorization needed to access public pages. These contain public informations only.
+
+### Self-service
+
+Members can enter a self-service area to change their email address, postal address, newsletter subscription, etc. The member must be authenticated to access this area. The authentication process is very easy: *Komunumo* will send an email to the member with a random code valid for five minutes. Within these five minutes the member must enter this code on the website to get access to the self-service area. In the self-service area the member has access to his own information only and the access is limited to the self-service area itself plus the public pages.
+
+### Administration
+
+The admin area is protected by a traditional login with username and password. Once authenticated, the user has access to all administrative informations and can execute standard CRUD operations (create, read, update, delete).
+
 ## Copyright and License
 
 [AGPL License](https://www.gnu.org/licenses/agpl-3.0.de.html)
