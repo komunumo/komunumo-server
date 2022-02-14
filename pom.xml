@@ -166,7 +166,7 @@
         <dependency>
             <groupId>org.vaadin.gatanaso</groupId>
             <artifactId>multiselect-combo-box-flow</artifactId>
-            <version>4.0.0-rc1</version>
+            <version>4.0.0-rc2</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin.componentfactory</groupId>
@@ -314,7 +314,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.9.0</version>
+                    <version>3.10.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
