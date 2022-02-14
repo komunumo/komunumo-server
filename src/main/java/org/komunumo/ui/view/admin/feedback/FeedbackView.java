@@ -90,12 +90,10 @@ public class FeedbackView extends ResizableView {
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
-        grid.addColumn(FeedbackRecord::getReceived)
+        grid.addColumn(feedbackRecord -> formatDateTime(feedbackRecord.getReceived()))
                 .setHeader("Received").setAutoWidth(true).setFlexGrow(0);
-        grid.addColumn(FeedbackRecord::getFirstName)
-                .setHeader("First name").setAutoWidth(true).setFlexGrow(1);
-        grid.addColumn(FeedbackRecord::getLastName)
-                .setHeader("Last name").setAutoWidth(true).setFlexGrow(1);
+        grid.addColumn(feedbackRecord -> "%s %s".formatted(feedbackRecord.getFirstName(), feedbackRecord.getLastName()))
+                .setHeader("Name").setAutoWidth(true).setFlexGrow(1);
         grid.addColumn(FeedbackRecord::getEmail)
                 .setHeader("Email").setAutoWidth(true).setFlexGrow(1);
 
