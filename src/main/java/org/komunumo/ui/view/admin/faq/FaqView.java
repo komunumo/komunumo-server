@@ -69,7 +69,7 @@ public class FaqView extends ResizableView {
         grid = createGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
-        filterField.setTitle("Filter keywords");
+        filterField.setTitle("Filter FAQ list");
 
         final var newEntryButton = new EnhancedButton(new Icon(VaadinIcon.FILE_ADD), clickEvent -> showEditDialog(null));
         newEntryButton.setTitle("Add a new entry");
@@ -113,7 +113,7 @@ public class FaqView extends ResizableView {
     }
 
     private void showEditDialog(@Nullable final FaqRecord faqRecord) {
-        final var dialog = new FaqDialog(faqRecord != null ? "Edit Keyword" : "New Keyword");
+        final var dialog = new FaqDialog(faqRecord != null ? "Edit FAQ Entry" : "New FAQ Entry");
         dialog.open(faqRecord != null ? faqRecord : databaseService.newFaqRecord(), this::reloadGridItems);
     }
 
