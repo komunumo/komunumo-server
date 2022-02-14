@@ -109,7 +109,7 @@
     "line-awesome": "1.3.0",
     "lit": "2.0.0",
     "lumo-css-framework": "^4.0.10",
-    "multiselect-combo-box": "3.0.0-alpha.1"
+    "multiselect-combo-box": "3.0.0-alpha.2"
   },
   "devDependencies": {
     "@vaadin/application-theme-plugin": "./target/plugins/application-theme-plugin",
@@ -245,7 +245,7 @@
       "line-awesome": "1.3.0",
       "lit": "2.0.0",
       "lumo-css-framework": "^4.0.10",
-      "multiselect-combo-box": "3.0.0-alpha.1"
+      "multiselect-combo-box": "3.0.0-alpha.2"
     },
     "devDependencies": {
       "chokidar": "^3.5.0",
@@ -269,6 +269,6 @@
       "workbox-precaching": "6.4.2",
       "workbox-webpack-plugin": "6.4.2"
     },
-    "hash": "d82d31e20cedaa9f4f941405847bffb8bf46e9d1d75cca254e7dcd7f8624ef10"
+    "hash": "5e9b6f0333445cbcfd3078a5024d943bc6963ab525f2bf4d6b5386889ef454df"
   }
 }
