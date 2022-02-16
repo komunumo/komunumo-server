@@ -115,6 +115,8 @@ While developing, I highly recommend not to use your real mail server. Instead, 
 
 ### Database
 
+#### Reset
+
 While developing, sometimes it is very useful to reset the database manually. You can do this very easily using Maven and Flyway:
 
 ```
@@ -127,6 +129,21 @@ mvn flyway:clean \
 This command will clean your database (erase everything). You need to specify the credentials for a database user with administrative privileges to the database and the database URL.
 
 *Komunumo* will automatically migrate the database schema on the next start.
+
+### Repair
+
+When you modify the database schema during development, Flyway will detect the change and complain. If you update the Flyway SQL scripts and don't want to clean your database, you can manually update the schema in your database, too. Then start a repair using Maven and Flyway:
+
+```
+mvn flyway:repair \
+    -D'flyway.user'='johndoe' \
+    -D'flyway.password'='verysecret' \
+    -D'flyway.url'='jdbc:mariadb://localhost:3306/komunumo?serverTimezone\=Europe/Zurich'
+```
+
+This command will update the flyway database history table, so *Komunumo* will start again without complaining about the database schema. The database schema itself will **not** be modified. You need to specify the credentials for a database user with administrative privileges to the database and the database URL.
+
+*Komunumo* will **not** migrate the database schema on the next start.
 
 ## Security
 
