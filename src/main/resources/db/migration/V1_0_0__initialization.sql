@@ -19,6 +19,7 @@ CREATE TABLE event (
     room varchar(255) NOT NULL DEFAULT '',
     travel_instructions varchar(255) NOT NULL DEFAULT '',
     webinar_url VARCHAR(255) NOT NULL DEFAULT '',
+    youtube VARCHAR(255) NOT NULL DEFAULT '',
     date DATETIME NULL,
     duration TIME NULL,
     attendee_limit SMALLINT UNSIGNED NOT NULL DEFAULT 0,

@@ -53,6 +53,7 @@ interface EventService extends DSLContextGetter, EventKeywordService, EventSpeak
         event.setDescription("");
         event.setAgenda("");
         event.setWebinarUrl("");
+        event.setYoutube("");
         event.setPublished(false);
         event.setSpeakers(List.of());
         event.setKeywords(List.of());
