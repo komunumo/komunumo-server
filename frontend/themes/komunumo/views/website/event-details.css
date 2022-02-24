@@ -42,10 +42,6 @@
     vertical-align: top;
 }
 
-.website article.event-details .agenda span {
-    display: inline-block;
-}
-
 .website article.event-details .speakerbox {
     float: right;
     padding-left: 50px;
