@@ -90,6 +90,7 @@ public class EventDialog extends EditDialog<Event> {
         final var travelInstructions = new TextField("Travel instructions");
         final var location = new ComboBox<String>("Location");
         final var webinarUrl = new TextField("Webinar URL");
+        final var youtTube = new TextField("YouTube");
         final var date = new DateTimePicker("Date & Time");
         final var duration = new TimePicker("Duration");
         final var eventUrl = new TextField("Event URL");
@@ -158,8 +159,8 @@ public class EventDialog extends EditDialog<Event> {
             binder.validate();
         });
 
-        formLayout.add(type, title, subtitle, speaker, organizer, level, new CustomLabel("Description"), description,
-                keyword, new CustomLabel("Agenda"), agenda, language, location, room, travelInstructions, webinarUrl,
+        formLayout.add(type, title, subtitle, speaker, organizer, level, new CustomLabel("Description"), description, keyword,
+                new CustomLabel("Agenda"), agenda, language, location, room, travelInstructions, webinarUrl, youtTube,
                 date, duration, eventUrl, attendeeLimit, membersOnly, published);
 
         binder.forField(type)
@@ -228,6 +229,9 @@ public class EventDialog extends EditDialog<Event> {
                         "Please enter a valid URL")
                 .bind(Event::getWebinarUrl, Event::setWebinarUrl);
 
+        binder.forField(youtTube)
+                .bind(Event::getYoutube, Event::setYoutube);
+
         binder.forField(date)
                 .withValidator(value -> isPastEvent(date) || !published.getValue() && (value == null || value.isAfter(LocalDateTime.now()))
                                 || value != null && value.isAfter(LocalDateTime.now()),
@@ -258,6 +262,7 @@ public class EventDialog extends EditDialog<Event> {
             if (isPastEvent(date)) {
                 binder.setReadOnly(true);
                 binder.setValidatorsDisabled(true);
+                youtTube.setReadOnly(false);
             }
         };
     }
