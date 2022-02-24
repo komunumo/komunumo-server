@@ -148,7 +148,7 @@ interface EventService extends DSLContextGetter, EventKeywordService, EventSpeak
         return dsl().selectFrom(EVENT)
                 .where(condition(EVENT.PUBLISHED)
                         .and(DSL.year(EVENT.DATE).eq(year.getValue())))
-                .orderBy(EVENT.DATE.asc(), EVENT.LOCATION.asc())
+                .orderBy(EVENT.DATE.desc(), EVENT.LOCATION.asc())
                 .fetchInto(Event.class)
                 .stream()
                 .map(this::addAdditionalData);
