@@ -152,4 +152,15 @@ public class EventDetailArticle extends EventArticle {
         add(new Hr(), new H4("Levels"), levelInfo);
     }
 
+    public void addYoutube(@NotNull final Event event) {
+        if (!event.getYoutube().isBlank()) {
+            add(new Hr(), new Html("""
+                    <iframe width="560" height="315"
+                            src="https://www.youtube-nocookie.com/embed/%s"
+                            title="YouTube video player"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+                    </iframe>""".formatted(event.getYoutube())));
+        }
+    }
 }

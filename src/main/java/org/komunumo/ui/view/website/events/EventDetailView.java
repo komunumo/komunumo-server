@@ -89,6 +89,7 @@ public class EventDetailView extends ContentBlock implements BeforeEnterObserver
         article.addDescription(event);
         article.addLevel(event);
         article.addLanguage(event);
+        article.addYoutube(event);
         article.addRegistrationForm(databaseService, event, deregisterCode);
         article.addLevelInfo();
         setContent(article);
