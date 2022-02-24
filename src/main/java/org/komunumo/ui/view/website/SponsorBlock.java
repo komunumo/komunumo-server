@@ -34,7 +34,7 @@ import java.util.Locale;
 @CssImport("./themes/komunumo/views/website/sponsor-block.css")
 public class SponsorBlock extends ContentBlock {
 
-    public SponsorBlock(@NotNull DatabaseService databaseService) {
+    public SponsorBlock(@NotNull final DatabaseService databaseService) {
         super("Sponsors");
         addClassName("sponsor-block");
         setContent(createSponsorComponent(databaseService));

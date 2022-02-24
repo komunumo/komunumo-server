@@ -37,7 +37,7 @@ import org.komunumo.ui.view.website.WebsiteLayout;
 @Route(value = "faq", layout = WebsiteLayout.class)
 @CssImport("./themes/komunumo/views/website/faq-view.css")
 @AnonymousAllowed
-public class FaqView extends ContentBlock implements HasDynamicTitle {
+public final class FaqView extends ContentBlock implements HasDynamicTitle {
 
     private final DatabaseService databaseService;
 

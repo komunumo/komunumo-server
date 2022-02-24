@@ -35,7 +35,7 @@ import java.util.Base64;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class ImageUploadField extends CustomField<String> {
+public final class ImageUploadField extends CustomField<String> {
 
     public static final int MAX_FILE_COUNT = 1;
     public static final int MAX_FILE_SIZE = 1_000_000;

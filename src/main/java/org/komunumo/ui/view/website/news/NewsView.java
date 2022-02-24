@@ -49,7 +49,7 @@ import static org.komunumo.util.FormatterUtil.formatDate;
 @RouteAlias(value = "news/:id", layout = WebsiteLayout.class)
 @CssImport("./themes/komunumo/views/website/news-view.css")
 @AnonymousAllowed
-public class NewsView extends ContentBlock implements BeforeEnterObserver, HasDynamicTitle {
+public final class NewsView extends ContentBlock implements BeforeEnterObserver, HasDynamicTitle {
 
     private final DatabaseService databaseService;
 
@@ -96,12 +96,12 @@ public class NewsView extends ContentBlock implements BeforeEnterObserver, HasDy
         final var newsList = new Div();
         newsList.addClassName("news-list");
         newsEntities.stream()
-                .map(this::toNewsItem)
+                .map(NewsView::toNewsItem)
                 .forEach(newsList::add);
         return newsList;
     }
 
-    private Component toNewsItem(@NotNull final NewsEntity newsEntity) {
+    private static Component toNewsItem(@NotNull final NewsEntity newsEntity) {
         final var newsItem = new Article();
         newsItem.addClassName("news-item");
 

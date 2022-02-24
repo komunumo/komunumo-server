@@ -30,11 +30,11 @@ import java.util.stream.Collectors;
 
 class DatePickerI18N extends EnhancedDatePicker.DatePickerI18n {
 
-    public DatePickerI18N() {
+    DatePickerI18N() {
         this(UI.getCurrent().getSession().getBrowser().getLocale());
     }
 
-    public DatePickerI18N(@NotNull final Locale locale) {
+    DatePickerI18N(@NotNull final Locale locale) {
         final var symbols = new DateFormatSymbols(locale);
         this.setMonthNames(Arrays.asList(symbols.getMonths()));
         this.setFirstDayOfWeek(Calendar.getInstance(locale).getFirstDayOfWeek());

@@ -62,7 +62,8 @@ public class RedirectSetting extends ResizableView {
 
         addClassNames("redirect-setting", "flex", "flex-col", "h-full");
 
-        grid = createGrid();
+        grid = new Grid<>();
+        configureGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter redirect");
@@ -84,8 +85,7 @@ public class RedirectSetting extends ResizableView {
         filterField.focus();
     }
 
-    private Grid<RedirectRecord> createGrid() {
-        final var grid = new Grid<RedirectRecord>();
+    private void configureGrid() {
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
@@ -107,8 +107,6 @@ public class RedirectSetting extends ResizableView {
                 .setFlexGrow(0);
 
         grid.setHeightFull();
-
-        return grid;
     }
 
     private void showEditDialog(@Nullable final RedirectRecord redirectRecord) {
@@ -139,7 +137,9 @@ public class RedirectSetting extends ResizableView {
         final var resource = new StreamResource("redirects.csv", () -> {
             final var stringWriter = new StringWriter();
             final var csvWriter = new CSVWriter(stringWriter);
-            csvWriter.writeNext(new String[] { "Old URL", "New URL" });
+            csvWriter.writeNext(new String[] {
+                    "Old URL", "New URL"
+            });
             grid.getGenericDataView()
                     .getItems().map(redirectRecord -> new String[] {
                             redirectRecord.getOldUrl(),

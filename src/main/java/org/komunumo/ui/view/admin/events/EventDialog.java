@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-public class EventDialog extends EditDialog<Event> {
+public final class EventDialog extends EditDialog<Event> {
 
     private final AuthenticatedUser authenticatedUser;
     private final DatabaseService databaseService;
@@ -74,6 +74,7 @@ public class EventDialog extends EditDialog<Event> {
         this.databaseService = databaseService;
     }
 
+    @SuppressWarnings("checkstyle:MethodLength") // just a lot of fields for the form
     @Override
     public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<Event> binder) {
         final var type = new Select<>(EventType.values());
@@ -293,6 +294,7 @@ public class EventDialog extends EditDialog<Event> {
         return organizers;
     }
 
+    @SuppressWarnings("checkstyle:HiddenField") // setter
     private void setOrganizer(@NotNull final Event event, @Nullable final Set<Member> organizers) {
         this.organizers = organizers != null ? organizers : Set.of();
     }
@@ -301,6 +303,7 @@ public class EventDialog extends EditDialog<Event> {
         return keywords;
     }
 
+    @SuppressWarnings("checkstyle:HiddenField") // setter
     private void setKeyword(@NotNull final Event event, @Nullable final Set<KeywordEntity> keywords) {
         this.keywords = keywords != null ? keywords : Set.of();
     }

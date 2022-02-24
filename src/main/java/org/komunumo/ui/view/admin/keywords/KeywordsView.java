@@ -67,7 +67,8 @@ public class KeywordsView extends ResizableView {
 
         addClassNames("keywords-view", "flex", "flex-col", "h-full");
 
-        grid = createGrid();
+        grid = new Grid<>();
+        configureGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter keywords");
@@ -89,8 +90,7 @@ public class KeywordsView extends ResizableView {
         filterField.focus();
     }
 
-    private Grid<KeywordListEntity> createGrid() {
-        final var grid = new Grid<KeywordListEntity>();
+    private void configureGrid() {
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
@@ -113,13 +113,11 @@ public class KeywordsView extends ResizableView {
                 .setFlexGrow(0);
 
         grid.setHeightFull();
-
-        return grid;
     }
 
     private void showKeywordDialog(@Nullable final KeywordListEntity keywordListEntity) {
-        final var keywordRecord = keywordListEntity == null || keywordListEntity.id() == null ? databaseService.newKeyword() :
-                databaseService.getKeywordRecord(keywordListEntity.id()).orElse(databaseService.newKeyword());
+        final var keywordRecord = keywordListEntity == null || keywordListEntity.id() == null ? databaseService.newKeyword()
+                : databaseService.getKeywordRecord(keywordListEntity.id()).orElse(databaseService.newKeyword());
         final var dialog = new KeywordDialog(keywordRecord.getId() != null ? "Edit Keyword" : "New Keyword");
         dialog.open(keywordRecord, this::reloadGridItems);
     }
@@ -144,7 +142,9 @@ public class KeywordsView extends ResizableView {
         final var resource = new StreamResource("keywords.csv", () -> {
             final var stringWriter = new StringWriter();
             final var csvWriter = new CSVWriter(stringWriter);
-            csvWriter.writeNext(new String[] { "ID", "Keyword", "Event count" });
+            csvWriter.writeNext(new String[] {
+                    "ID", "Keyword", "Event count"
+            });
             grid.getGenericDataView()
                     .getItems().map(keywordListEntity -> new String[] {
                             keywordListEntity.id().toString(),

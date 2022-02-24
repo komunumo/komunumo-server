@@ -42,7 +42,7 @@ import static org.komunumo.util.WorkbookUtil.getColumnHeaders;
 import static org.komunumo.util.WorkbookUtil.getDateFromRow;
 import static org.komunumo.util.WorkbookUtil.getStringFromRow;
 
-public class BigMarkerReport {
+public final class BigMarkerReport {
 
     private final Workbook workbook;
 
@@ -83,8 +83,8 @@ public class BigMarkerReport {
             final var email = getStringFromRow(row, emailColumn).orElse(null);
             final var date = getDateFromRow(row, registrationDateColumn).orElse(null);
             final var timezone = getStringFromRow(row, timezoneColumn).orElse(null);
-            final var registrationDate = date == null || timezone == null ? null :
-                    ZonedDateTime.ofInstant(date.toInstant(), !timezone.isBlank() ? ZoneId.of(timezone) : ZoneId.systemDefault());
+            final var registrationDate = date == null || timezone == null ? null
+                    : ZonedDateTime.ofInstant(date.toInstant(), !timezone.isBlank() ? ZoneId.of(timezone) : ZoneId.systemDefault());
             final var unsubscribed = getStringFromRow(row, unsubscribedColumn).orElseThrow().equals("Yes");
             final var attendedLive = getStringFromRow(row, attendedLiveColumn).orElseThrow().equals("Yes");
             final var membership = membershipColumn.map(columnHeader -> getStringFromRow(row, columnHeader).orElseThrow()).orElse(null);
@@ -97,8 +97,8 @@ public class BigMarkerReport {
 
     private Member getOrCreateMember(@NotNull final DatabaseService databaseService,
                                      @NotNull final BigMarkerRegistration registration) {
-        final Optional<Member> existingMember = registration.email() == null ? Optional.empty() :
-                databaseService.getMemberByEmail(registration.email());
+        final Optional<Member> existingMember = registration.email() == null ? Optional.empty()
+                : databaseService.getMemberByEmail(registration.email());
         if (existingMember.isPresent()) {
             return existingMember.get();
         }
@@ -131,8 +131,8 @@ public class BigMarkerReport {
                 final var registration = existingRegistration.get();
                 databaseService.updateNoShow(registration, noShow);
             } else {
-                final var date = bigMarkerRegistration.registrationDate() != null ?
-                        bigMarkerRegistration.registrationDate().toLocalDateTime() : LocalDateTime.now();
+                final var date = bigMarkerRegistration.registrationDate() != null
+                        ? bigMarkerRegistration.registrationDate().toLocalDateTime() : LocalDateTime.now();
                 databaseService.registerForEvent(event, member, date, "BigMarker", noShow, false);
             }
         }

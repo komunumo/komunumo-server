@@ -66,7 +66,8 @@ public class FaqView extends ResizableView {
 
         addClassNames("faq-view", "flex", "flex-col", "h-full");
 
-        grid = createGrid();
+        grid = new Grid<>();
+        configureGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter FAQ list");
@@ -88,8 +89,7 @@ public class FaqView extends ResizableView {
         filterField.focus();
     }
 
-    private Grid<FaqRecord> createGrid() {
-        final var grid = new Grid<FaqRecord>();
+    private void configureGrid() {
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
@@ -108,8 +108,6 @@ public class FaqView extends ResizableView {
                 .setFlexGrow(0);
 
         grid.setHeightFull();
-
-        return grid;
     }
 
     private void showEditDialog(@Nullable final FaqRecord faqRecord) {
@@ -137,7 +135,9 @@ public class FaqView extends ResizableView {
         final var resource = new StreamResource("faq.csv", () -> {
             final var stringWriter = new StringWriter();
             final var csvWriter = new CSVWriter(stringWriter);
-            csvWriter.writeNext(new String[] { "ID", "Question", "Answer" });
+            csvWriter.writeNext(new String[] {
+                    "ID", "Question", "Answer"
+            });
             grid.getGenericDataView()
                     .getItems().map(faqRecord -> new String[] {
                             faqRecord.getId().toString(),

@@ -63,7 +63,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 @CssImport(value = "./themes/komunumo/views/admin/admin-layout.css")
-public class AdminLayout extends AppLayout {
+public final class AdminLayout extends AppLayout {
 
     private final AuthenticatedUser authenticatedUser;
     private final AccessAnnotationChecker accessChecker;
@@ -79,7 +79,7 @@ public class AdminLayout extends AppLayout {
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
         menu = createMenu();
-        addToDrawer(createDrawerContent(menu));
+        addToDrawer(createDrawerContent());
 
         authenticatedUser.get().ifPresent(member -> UI.getCurrent().getElement().setAttribute("theme", member.getTheme().getLiteral()));
     }
@@ -117,6 +117,7 @@ public class AdminLayout extends AppLayout {
             switch (member.getTheme()) {
                 case dark -> darkThemeItem.setChecked(true);
                 case light -> lightThemeItem.setChecked(true);
+                default -> throw new IllegalStateException("Unexpected value: " + member.getTheme());
             }
         });
 
@@ -153,7 +154,7 @@ public class AdminLayout extends AppLayout {
         }
     }
 
-    private Component createDrawerContent(@NotNull final Tabs menu) {
+    private Component createDrawerContent() {
         final var layout = new VerticalLayout();
         layout.setSizeFull();
         layout.setPadding(false);
@@ -180,7 +181,9 @@ public class AdminLayout extends AppLayout {
     private Component[] createMenuItems() {
         final var member = authenticatedUser.get().orElse(null);
         if (member != null && member.getPasswordChange()) {
-            return new Tab[] { createTab(new AdminMenuItem("Change Password", ChangePasswordView.class, false)) };
+            return new Tab[] {
+                    createTab(new AdminMenuItem("Change Password", ChangePasswordView.class, false))
+            };
         }
 
         final var views  = new ArrayList<AdminMenuItem>();

@@ -38,12 +38,13 @@ import java.util.Objects;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-public class MailTemplateDialog extends EditDialog<MailTemplateRecord> {
+public final class MailTemplateDialog extends EditDialog<MailTemplateRecord> {
 
     private final List<MailTemplateId> mailTemplateIds;
     private Callback afterOpen;
 
-    public MailTemplateDialog(@NotNull final String title, List<MailTemplateId> mailTemplateIds) {
+    public MailTemplateDialog(@NotNull final String title,
+                              @NotNull final List<MailTemplateId> mailTemplateIds) {
         super(title);
         this.mailTemplateIds = mailTemplateIds;
     }

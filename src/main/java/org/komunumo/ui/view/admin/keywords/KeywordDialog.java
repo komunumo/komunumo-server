@@ -28,7 +28,7 @@ import org.komunumo.ui.component.EditDialog;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-public class KeywordDialog extends EditDialog<KeywordRecord> {
+public final class KeywordDialog extends EditDialog<KeywordRecord> {
 
     public KeywordDialog(@NotNull final String title) {
         super(title);

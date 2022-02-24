@@ -52,18 +52,18 @@ public class WebsiteStats extends Div {
     }
 
     private Stats getRandomStats() {
-        switch (random.nextInt(9)) {
-            case 0: return getAttendeesActualYear();
-            case 1: return getUniqueAttendeesActualYear();
-            case 2: return getAttendeesLastYear();
-            case 3: return getUniqueAttendeesLastYear();
-            case 4: return getMemberCountLastYear();
-            case 5: return getMembersJoinedLastYear();
-            case 6: return getMembersJoinedThisYear();
-            case 7: return getEventCountLastYear();
-            case 8: return getEventCountThisYear();
-        }
-        throw new RuntimeException("random website stats out of bounds");
+        return switch (random.nextInt(9)) {
+            case 0 -> getAttendeesActualYear();
+            case 1 -> getUniqueAttendeesActualYear();
+            case 2 -> getAttendeesLastYear();
+            case 3 -> getUniqueAttendeesLastYear();
+            case 4 -> getMemberCountLastYear();
+            case 5 -> getMembersJoinedLastYear();
+            case 6 -> getMembersJoinedThisYear();
+            case 7 -> getEventCountLastYear();
+            case 8 -> getEventCountThisYear();
+            default -> throw new RuntimeException("random website stats out of bounds");
+        };
     }
 
     private Stats getAttendeesActualYear() {

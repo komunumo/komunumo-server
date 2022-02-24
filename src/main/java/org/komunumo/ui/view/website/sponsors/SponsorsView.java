@@ -49,7 +49,7 @@ import org.komunumo.util.URLUtil;
 @Route(value = "sponsors", layout = WebsiteLayout.class)
 @CssImport("./themes/komunumo/views/website/sponsors-view.css")
 @AnonymousAllowed
-public class SponsorsView extends ContentBlock implements AfterNavigationObserver {
+public final class SponsorsView extends ContentBlock implements AfterNavigationObserver {
 
     private final DatabaseService databaseService;
 
@@ -60,7 +60,7 @@ public class SponsorsView extends ContentBlock implements AfterNavigationObserve
     }
 
     @Override
-    public void afterNavigation(AfterNavigationEvent event) {
+    public void afterNavigation(@NotNull final AfterNavigationEvent event) {
         final var url = event.getLocation().getPath();
         final var subMenu = new SubMenu();
         subMenu.add(new SubMenuItem("sponsors", "Our sponsors", url.equals("sponsors")));

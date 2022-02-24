@@ -83,7 +83,7 @@ import static org.komunumo.data.db.tables.Speaker.SPEAKER;
 import static org.komunumo.data.db.tables.Sponsor.SPONSOR;
 
 @SuppressWarnings({"SqlResolve", "removal", "java:S112", "java:S1192", "java:S3776", "deprecation"})
-public class JUGSImporter {
+public final class JUGSImporter {
 
     private final DSLContext dsl;
     private final DatabaseService databaseService;
@@ -355,7 +355,8 @@ public class JUGSImporter {
             return LocalDateTime.of(date, dateTime.toLocalTime());
         } else if (date != null) {
             return LocalDateTime.of(date, LocalTime.MIN);
-        } else return Objects.requireNonNullElse(dateTime, LocalDateTime.MIN);
+        }
+        return Objects.requireNonNullElse(dateTime, LocalDateTime.MIN);
     }
 
     private void updateEventLevel() {
@@ -377,7 +378,8 @@ public class JUGSImporter {
         final var counter = new AtomicInteger(0);
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
-                    "SELECT id, vname, nname, firma, bio, image, e_mail, twitter, firmenurl, events_id, lang_talk, abstract, level FROM eventspeaker ORDER BY id DESC");
+                    "SELECT id, vname, nname, firma, bio, image, e_mail, twitter, firmenurl, events_id, lang_talk, abstract, level "
+                            + "FROM eventspeaker ORDER BY id DESC");
             while (result.next()) {
                 final var speakerRecord = getSpeaker(result);
                 if (speakerRecord.get(SPEAKER.ID) == null
@@ -507,7 +509,9 @@ public class JUGSImporter {
         final var counter = new AtomicInteger(0);
         try (var statement = connection.createStatement()) {
             final var result = statement.executeQuery(
-                    "SELECT id, ort, room, travel_instructions, datum, startzeit, zeitende, titel, untertitel, agenda, abstract, sichtbar, verantwortung, urldatei, url_webinar, video_id, anm_formular FROM events_neu WHERE sichtbar='ja' OR datum >= '2021-01-01' ORDER BY id");
+                    "SELECT id, ort, room, travel_instructions, datum, startzeit, zeitende, titel, untertitel, agenda, abstract, sichtbar, "
+                            + "verantwortung, urldatei, url_webinar, video_id, anm_formular FROM events_neu "
+                            + "WHERE sichtbar='ja' OR datum >= '2021-01-01' ORDER BY id");
             while (result.next()) {
                 final var event = databaseService.getEvent(result.getLong("id"))
                         .orElse(databaseService.newEvent());
@@ -524,7 +528,8 @@ public class JUGSImporter {
                     event.set(EVENT.SUBTITLE, getPlainText(getEmptyForNull(result.getString("untertitel"))));
                     event.set(EVENT.AGENDA, getEmptyForNull(result.getString("agenda")));
                     event.set(EVENT.DESCRIPTION, getEmptyForNull(result.getString("abstract")));
-                    event.set(EVENT.EVENT_URL, generateEventUrl(getEmptyForNull(result.getString("titel")), getEmptyForNull(result.getString("urldatei"))));
+                    event.set(EVENT.EVENT_URL, generateEventUrl(getEmptyForNull(result.getString("titel")),
+                            getEmptyForNull(result.getString("urldatei"))));
                     event.set(EVENT.MEMBERS_ONLY, result.getString("anm_formular").equalsIgnoreCase("anmeldeformular_membersonly.inc.php"));
                     event.set(EVENT.PUBLISHED, result.getString("sichtbar").equalsIgnoreCase("ja"));
 
@@ -575,6 +580,7 @@ public class JUGSImporter {
         return URLUtil.createReadableUrl(getEmptyForNull(titel));
     }
 
+    @SuppressWarnings("checkstyle:MissingSwitchDefault")
     private void addOrganizers(@NotNull final Event event,
                                @Nullable final String verantwortung) {
         if (verantwortung != null && !verantwortung.isBlank()) {
@@ -718,7 +724,7 @@ public class JUGSImporter {
         }
 
         final var duration = Duration.between(start, end);
-        return LocalTime.of(0,0).plus(duration);
+        return LocalTime.of(0, 0).plus(duration);
     }
 
     private LocalDate getDate(@Nullable final String datum) {
@@ -807,7 +813,7 @@ public class JUGSImporter {
 
         try {
             final var url = new URL(imageURL);
-            try (final var is = url.openStream()) {
+            try (var is = url.openStream()) {
                 final var bytes = org.apache.commons.io.IOUtils.toByteArray(is);
                 final var imageString = Base64.encodeBase64String(bytes);
                 final var imageType = extension.equals("svg") ? "svg+xml" : extension;

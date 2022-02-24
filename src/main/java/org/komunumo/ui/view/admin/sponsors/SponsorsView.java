@@ -61,7 +61,7 @@ import static org.komunumo.util.FormatterUtil.formatDate;
 @CssImport(value = "./themes/komunumo/views/admin/sponsors-view.css")
 @CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
 @RolesAllowed(Role.Type.ADMIN)
-public class SponsorsView extends ResizableView implements HasUrlParameter<String> {
+public final class SponsorsView extends ResizableView implements HasUrlParameter<String> {
 
     private final DatabaseService databaseService;
     private final TextField filterField;
@@ -72,7 +72,8 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
 
         addClassNames("sponsors-view", "flex", "flex-col", "h-full");
 
-        grid = createGrid();
+        grid = new Grid<>();
+        configureGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter sponsors by name");
@@ -97,7 +98,7 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
 
     @Override
     public void setParameter(@NotNull final BeforeEvent beforeEvent,
-                             @Nullable @OptionalParameter String parameter) {
+                             @Nullable @OptionalParameter final String parameter) {
         final var location = beforeEvent.getLocation();
         final var queryParameters = location.getQueryParameters();
         final var parameters = queryParameters.getParameters();
@@ -105,8 +106,7 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
         filterField.setValue(filterValue);
     }
 
-    private Grid<SponsorEntity> createGrid() {
-        final var grid = new Grid<SponsorEntity>();
+    private void configureGrid() {
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
@@ -145,8 +145,6 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
                 .setFlexGrow(0);
 
         grid.setHeightFull();
-
-        return grid;
     }
 
     @Override
@@ -156,8 +154,8 @@ public class SponsorsView extends ResizableView implements HasUrlParameter<Strin
     }
 
     private void showSponsorDialog(@Nullable final SponsorEntity sponsorEntity) {
-        final var sponsorRecord = sponsorEntity == null || sponsorEntity.id() == null ? databaseService.newSponsor() :
-                databaseService.getSponsorRecord(sponsorEntity.id()).orElse(databaseService.newSponsor());
+        final var sponsorRecord = sponsorEntity == null || sponsorEntity.id() == null ? databaseService.newSponsor()
+                : databaseService.getSponsorRecord(sponsorEntity.id()).orElse(databaseService.newSponsor());
         final var dialog = new SponsorDialog(sponsorRecord.getId() != null ? "Edit Sponsor" : "New Sponsor", databaseService);
         dialog.open(sponsorRecord, this::reloadGridItems);
     }

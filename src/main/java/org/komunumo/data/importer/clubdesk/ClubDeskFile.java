@@ -36,7 +36,7 @@ import static org.komunumo.util.WorkbookUtil.getLocalDateFromRow;
 import static org.komunumo.util.WorkbookUtil.getLongFromRow;
 import static org.komunumo.util.WorkbookUtil.getStringFromRow;
 
-public class ClubDeskFile {
+public final class ClubDeskFile {
 
     private final Workbook workbook;
 

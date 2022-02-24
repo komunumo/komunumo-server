@@ -28,6 +28,9 @@ public class ResizableView extends Div {
 
     private Registration listener;
 
+    /**
+     * @see Div#onAttach(AttachEvent)
+     */
     @Override
     protected void onAttach(@Nullable final AttachEvent attachEvent) {
         super.onAttach(attachEvent);
@@ -43,6 +46,9 @@ public class ResizableView extends Div {
         }));
     }
 
+    /**
+     * @see Div#onDetach(DetachEvent)
+     */
     @Override
     protected void onDetach(@Nullable final DetachEvent detachEvent) {
         // Listener needs to be eventually removed in order to avoid resource leak
@@ -56,6 +62,6 @@ public class ResizableView extends Div {
      * @param width the width of the view
      */
     @SuppressWarnings("java:S1186") // methods should not be empty
-    protected void onResize(@SuppressWarnings("unused") final int width) {}
+    protected void onResize(@SuppressWarnings("unused") final int width) { }
 
 }

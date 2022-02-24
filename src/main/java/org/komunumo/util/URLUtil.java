@@ -34,16 +34,16 @@ import java.util.regex.Pattern;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 
-public class URLUtil {
+public final class URLUtil {
 
-    private static final Pattern urlPattern = Pattern.compile(
+    private static final Pattern URL_PATTERN = Pattern.compile(
             "(?:^|)((ht|f)tp(s?)://|www\\.)"
                     + "(([\\w\\-]+\\.)+?([\\w\\-.~]+/?)*"
                     + "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]*$~@!:/{};]*)",
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
     public static String extractLink(@NotNull final String text) {
-        final var matcher = urlPattern.matcher(text);
+        final var matcher = URL_PATTERN.matcher(text);
         if (matcher.find()) {
             return matcher.group();
         }

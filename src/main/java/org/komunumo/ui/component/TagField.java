@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @CssImport("./themes/komunumo/views/admin/tag-field.css")
-public class TagField extends TextField {
+public final class TagField extends TextField {
 
     private Set<String> tags;
 

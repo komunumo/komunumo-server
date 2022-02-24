@@ -30,7 +30,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.data.renderer.TemplateRenderer;
+import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
@@ -63,7 +63,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @CssImport(value = "./themes/komunumo/views/admin/speakers-view.css")
 @CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
 @RolesAllowed(Role.Type.ADMIN)
-public class SpeakersView extends ResizableView implements HasUrlParameter<String> {
+public final class SpeakersView extends ResizableView implements HasUrlParameter<String> {
 
     private final DatabaseService databaseService;
     private final TextField filterField;
@@ -74,7 +74,8 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
 
         addClassNames("speakers-view", "flex", "flex-col", "h-full");
 
-        grid = createGrid();
+        grid = new Grid<>();
+        configureGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter speakers by name, company, email, or twitter");
@@ -98,7 +99,7 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
 
     @Override
     public void setParameter(@NotNull final BeforeEvent event,
-                             @Nullable @OptionalParameter String parameter) {
+                             @Nullable @OptionalParameter final String parameter) {
         final var location = event.getLocation();
         final var queryParameters = location.getQueryParameters();
         final var parameters = queryParameters.getParameters();
@@ -106,26 +107,29 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
         filterField.setValue(filterValue);
     }
 
-    private Grid<SpeakerListEntity> createGrid() {
-        final var grid = new Grid<SpeakerListEntity>();
+    private void configureGrid() {
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
-        grid.addColumn(TemplateRenderer.<SpeakerListEntity>of("<span style=\"font-weight: bold;\">[[item.fullName]]</span><br/><a href=\"[[item.website]]\" target=\"_blank\" title=\"[[item.title]]\">[[item.company]]</a>")
+        grid.addColumn(LitRenderer.<SpeakerListEntity>of(
+                "<span style=\"font-weight: bold;\">${item.fullName}</span><br/>"
+                        + "<a href=\"${item.website}\" target=\"_blank\" title=\"${item.title}\">${item.company}</a>")
                 .withProperty("fullName", SpeakerListEntity::fullName)
                 .withProperty("company", speakerListEntity -> FormatterUtil.formatString(speakerListEntity.company(), 50))
                 .withProperty("title", SpeakerListEntity::company)
                 .withProperty("website", SpeakerListEntity::website))
                 .setHeader("Name & Company").setAutoWidth(true).setFlexGrow(1);
-        grid.addColumn(TemplateRenderer.<SpeakerListEntity>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
+        grid.addColumn(LitRenderer.<SpeakerListEntity>of(
+                "<a href=\"mailto:${item.email}\" target=\"_blank\">${item.email}</a>")
                 .withProperty("email", SpeakerListEntity::email))
                 .setHeader("Email").setAutoWidth(true).setFlexGrow(0).setKey("email");
-        grid.addColumn(TemplateRenderer.<SpeakerListEntity>of("<a href=\"https://twitter.com/[[item.twitter]]\" target=\"_blank\" title=\"[[item.twitter]]\">[[item.twitter]]</a>")
+        grid.addColumn(LitRenderer.<SpeakerListEntity>of(
+                "<a href=\"https://twitter.com/${item.twitter}\" target=\"_blank\" title=\"${item.twitter}\">${item.twitter}</a>")
                 .withProperty("twitter", SpeakerListEntity::twitter))
                 .setHeader("Twitter").setAutoWidth(true).setFlexGrow(0).setKey("twitter");
 
-        final var eventCountRenderer = TemplateRenderer.<SpeakerListEntity>of(
-                "<a href=\"/admin/events?filter=[[item.filterValue]]\">[[item.eventCount]]</a>")
+        final var eventCountRenderer = LitRenderer.<SpeakerListEntity>of(
+                "<a href=\"/admin/events?filter=${item.filterValue}\">${item.eventCount}</a>")
                 .withProperty("eventCount", SpeakerListEntity::eventCount)
                 .withProperty("filterValue", speakerListEntity -> URLEncoder.encode(speakerListEntity.fullName(), UTF_8));
         grid.addColumn(eventCountRenderer).setHeader("Events").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER).setFlexGrow(0);
@@ -143,8 +147,6 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
                 .setFlexGrow(0);
 
         grid.setHeightFull();
-
-        return grid;
     }
 
     @Override
@@ -154,8 +156,8 @@ public class SpeakersView extends ResizableView implements HasUrlParameter<Strin
     }
 
     private void showSpeakerDialog(@Nullable final SpeakerListEntity speakerListEntity) {
-        final var speakerRecord = speakerListEntity == null || speakerListEntity.id() == null ? databaseService.newSpeaker() :
-                databaseService.getSpeakerRecord(speakerListEntity.id()).orElse(databaseService.newSpeaker());
+        final var speakerRecord = speakerListEntity == null || speakerListEntity.id() == null ? databaseService.newSpeaker()
+                : databaseService.getSpeakerRecord(speakerListEntity.id()).orElse(databaseService.newSpeaker());
         final var dialog = new SpeakerDialog(speakerRecord.getId() != null ? "Edit Speaker" : "New Speaker");
         dialog.open(speakerRecord, this::reloadGridItems);
     }

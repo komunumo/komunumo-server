@@ -79,7 +79,8 @@ public abstract class EditDialog<R extends UpdatableRecord<?>> extends EnhancedD
         addToFooter(save, cancel);
     }
 
-    public abstract void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<R> binder);
+    @SuppressWarnings("checkstyle:HiddenField")
+    public abstract void createForm(@NotNull FormLayout formLayout, @NotNull Binder<R> binder);
 
     /**
      * @deprecated Use {@link #open(UpdatableRecord)} instead!
@@ -90,15 +91,31 @@ public abstract class EditDialog<R extends UpdatableRecord<?>> extends EnhancedD
         throw new UnsupportedOperationException("use \"open(UpdateableRecord)\" instead");
     }
 
+    /**
+     * Open (show) the dialog.
+     * @param record the record object to be displayed
+     */
     public void open(@NotNull final R record) {
         open(record, null, null);
     }
 
-
+    /**
+     * Open (show) the dialog.
+     * @param record the record object to be displayed
+     * @param afterSave a callback to be called after save action
+     */
+    @SuppressWarnings("checkstyle:HiddenField")
     public void open(@NotNull final R record, @Nullable final Callback afterSave) {
         open(record, null, afterSave);
     }
 
+    /**
+     * Open (show) the dialog.
+     * @param record the record object to be displayed
+     * @param afterOpen a callback to be called after dialog was opened/shown
+     * @param afterSave a callback to be called after save action
+     */
+    @SuppressWarnings("checkstyle:HiddenField")
     public void open(@NotNull final R record, @Nullable final Callback afterOpen, @Nullable final Callback afterSave) {
         binder.setBean(record);
         this.afterSave = afterSave;
@@ -120,6 +137,9 @@ public abstract class EditDialog<R extends UpdatableRecord<?>> extends EnhancedD
         }
     }
 
+    /**
+     * Close the dialog. Unsaved modifications will be reset.
+     */
     @Override
     public void close() {
         final var record = binder.getBean();

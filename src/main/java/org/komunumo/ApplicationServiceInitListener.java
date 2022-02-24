@@ -38,7 +38,7 @@ import java.util.Map;
 import static javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY;
 
 @Component
-public class ApplicationServiceInitListener implements VaadinServiceInitListener {
+public final class ApplicationServiceInitListener implements VaadinServiceInitListener {
 
     private final DatabaseService databaseService;
     private final Map<String, String> redirects = new HashMap<>();

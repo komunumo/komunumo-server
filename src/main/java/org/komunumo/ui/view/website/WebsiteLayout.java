@@ -32,7 +32,7 @@ import org.komunumo.data.service.DatabaseService;
 import org.komunumo.security.AuthenticatedUser;
 
 @CssImport(value = "./themes/komunumo/views/website/website-layout.css")
-public class WebsiteLayout extends Div implements RouterLayout {
+public final class WebsiteLayout extends Div implements RouterLayout {
 
     private final Main main;
     private final TwitterFeed twitterFeed;
@@ -72,7 +72,7 @@ public class WebsiteLayout extends Div implements RouterLayout {
     }
 
     @Override
-    public void showRouterLayoutContent(@NotNull HasElement content) {
+    public void showRouterLayoutContent(@NotNull final HasElement content) {
         main.removeAll();
         main.add(content.getElement().getComponent()
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -80,7 +80,7 @@ public class WebsiteLayout extends Div implements RouterLayout {
     }
 
     @Override
-    public void removeRouterLayoutContent(@NotNull HasElement oldContent) {
+    public void removeRouterLayoutContent(@NotNull final HasElement oldContent) {
         main.removeAll();
     }
 

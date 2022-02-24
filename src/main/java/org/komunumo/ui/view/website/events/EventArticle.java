@@ -46,6 +46,11 @@ public class EventArticle extends Article {
         addClassName("event-article");
     }
 
+    /**
+     * Add the event header.
+     * @param event the event
+     * @param withLocation include location
+     */
     protected void addHeader(@NotNull final Event event, final boolean withLocation) {
         final var upcoming = new Span(new Text("upcoming"));
         upcoming.addClassName("upcoming");
@@ -62,6 +67,10 @@ public class EventArticle extends Article {
         }
     }
 
+    /**
+     * Add the event title.
+     * @param event the event
+     */
     protected void addTitle(@NotNull final Event event) {
         final var detailLink = event.getCompleteEventUrl();
         add(new Anchor(detailLink, new H2(event.getTitle())));
@@ -70,6 +79,10 @@ public class EventArticle extends Article {
         }
     }
 
+    /**
+     * Add the event speakers.
+     * @param event the event
+     */
     protected void addSpeakers(@NotNull final Event event) {
         final var speakers = new Div();
         speakers.addClassName("speakers");
@@ -92,6 +105,10 @@ public class EventArticle extends Article {
         add(speakers);
     }
 
+    /**
+     * Add the event keywords.
+     * @param event the event
+     */
     protected void addKeywords(@NotNull final Event event) {
         if (!event.getKeywords().isEmpty()) {
             final var keywordLabel = new Span(new Text("Keywords:"));
@@ -109,6 +126,10 @@ public class EventArticle extends Article {
         }
     }
 
+    /**
+     * Add a teaser of the event description.
+     * @param event the event
+     */
     protected void addDescriptionTeaser(@NotNull final Event event) {
         final var description = event.getDescription();
         final var paragraphEnd = description.contains("</p>") ? description.indexOf("</p>") : description.indexOf("</P>");
@@ -117,6 +138,10 @@ public class EventArticle extends Article {
         add(new Div(new Html("<div>%s</div>".formatted(html)), more));
     }
 
+    /**
+     * Add the event description.
+     * @param event the event
+     */
     protected void addDescription(@NotNull final Event event) {
         add(new Html("<div>%s</div>".formatted(event.getDescription())));
     }

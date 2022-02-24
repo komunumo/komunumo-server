@@ -41,7 +41,7 @@ import java.util.Map;
 @Route(value = "event/:location/:year/:url", layout = WebsiteLayout.class)
 @CssImport("./themes/komunumo/views/website/event-details.css")
 @AnonymousAllowed
-public class EventDetailView extends ContentBlock implements BeforeEnterObserver, HasDynamicTitle {
+public final class EventDetailView extends ContentBlock implements BeforeEnterObserver, HasDynamicTitle {
 
     private final DatabaseService databaseService;
 

@@ -67,8 +67,8 @@ interface MemberService extends DSLContextGetter, MailService {
         return dsl().select(MEMBER.asterisk())
                 .from(MEMBER)
                 .where(MEMBER.ACCOUNT_DELETED.isFalse().and(
-                        filterValue == null ? DSL.noCondition() :
-                        concat(concat(MEMBER.FIRST_NAME, " "), MEMBER.LAST_NAME).like(filterValue)
+                        filterValue == null ? DSL.noCondition()
+                        : concat(concat(MEMBER.FIRST_NAME, " "), MEMBER.LAST_NAME).like(filterValue)
                                 .or(MEMBER.EMAIL.like(filterValue))))
                 .orderBy(MEMBER.FIRST_NAME, MEMBER.LAST_NAME)
                 .offset(offset)

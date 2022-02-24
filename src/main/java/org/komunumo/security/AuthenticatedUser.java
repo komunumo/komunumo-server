@@ -33,7 +33,7 @@ import java.util.Optional;
 
 @Component
 @SuppressWarnings("ClassCanBeRecord")
-public class AuthenticatedUser {
+public final class AuthenticatedUser {
 
     private final DatabaseService databaseService;
 

@@ -44,8 +44,8 @@ interface FeedbackService extends DSLContextGetter, ConfigurationGetter, MailSer
     default Stream<FeedbackRecord> findFeedbackRecords(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl().selectFrom(FEEDBACK)
-                .where(filterValue == null ? DSL.noCondition() :
-                        FEEDBACK.FIRST_NAME.like(filterValue)
+                .where(filterValue == null ? DSL.noCondition()
+                        : FEEDBACK.FIRST_NAME.like(filterValue)
                                 .or(FEEDBACK.LAST_NAME.like(filterValue))
                                 .or(FEEDBACK.EMAIL.like(filterValue)))
                 .orderBy(FEEDBACK.RECEIVED.desc())

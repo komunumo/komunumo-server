@@ -32,7 +32,7 @@ import org.komunumo.ui.view.website.WebsiteLayout;
 @CssImport("./themes/komunumo/views/website/home-view.css")
 @CssImport("./themes/komunumo/views/website/events-view.css")
 @AnonymousAllowed
-public class HomeView extends Div implements HasDynamicTitle {
+public final class HomeView extends Div implements HasDynamicTitle {
 
     private final DatabaseService databaseService;
 

@@ -26,6 +26,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class JtafJooqConfiguration {
 
+    /**
+     * Get jOOQ settings.
+     * @return jOOQ settings
+     */
     @Bean
     Settings jooqSettings() {
         return new Settings().withRenderNameCase(RenderNameCase.UPPER);

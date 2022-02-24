@@ -46,9 +46,9 @@ import java.util.List;
 @CssImport(value = "./themes/komunumo/views/admin/settings-view.css")
 @CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
 @RolesAllowed(Role.Type.ADMIN)
-public class SettingsView extends ResizableView implements BeforeEnterObserver {
+public final class SettingsView extends ResizableView implements BeforeEnterObserver {
 
-    private final static String ANCHOR_PREFIX = "admin/settings/";
+    private static final String ANCHOR_PREFIX = "admin/settings/";
 
     private final DatabaseService databaseService;
     private final ApplicationServiceInitListener applicationServiceInitListener;

@@ -44,7 +44,7 @@ import java.util.List;
 @RouteAlias(value = "events/:location", layout = WebsiteLayout.class)
 @CssImport("./themes/komunumo/views/website/events-view.css")
 @AnonymousAllowed
-public class EventsView extends ContentBlock implements BeforeEnterObserver, HasDynamicTitle {
+public final class EventsView extends ContentBlock implements BeforeEnterObserver, HasDynamicTitle {
 
     private final DatabaseService databaseService;
 
@@ -77,7 +77,8 @@ public class EventsView extends ContentBlock implements BeforeEnterObserver, Has
         setContent(eventsList);
     }
 
-    private Component createSubMenu(List<Event> events, @Nullable final String actualLocation) {
+    private Component createSubMenu(@NotNull final List<Event> events,
+                                    @Nullable final String actualLocation) {
         final var subMenu = new SubMenu();
         subMenu.add(new SubMenuItem("/events", "upcoming", true));
         subMenu.add(new SubMenuItem("/events", "all locations", actualLocation == null));

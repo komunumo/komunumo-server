@@ -35,7 +35,7 @@ import org.komunumo.util.GravatarUtil;
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 import static org.komunumo.util.GravatarUtil.GRAVATAR_URL;
 
-public class SpeakerDialog extends EditDialog<SpeakerRecord> {
+public final class SpeakerDialog extends EditDialog<SpeakerRecord> {
 
     public SpeakerDialog(@NotNull final String title) {
         super(title);

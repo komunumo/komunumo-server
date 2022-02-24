@@ -45,20 +45,35 @@ public class DatabaseService implements DSLContextGetter, ConfigurationGetter, M
         this.configuration = loadConfigurationFromDatabase();
     }
 
+    /**
+     * Reload the configuration from the database.
+     */
     public void reloadConfiguration() {
         configuration = loadConfigurationFromDatabase();
     }
 
+    /**
+     * Get the {@link Configuration}.
+     * @return the {@link Configuration}
+     */
     @Override
     public Configuration configuration() {
         return configuration;
     }
 
+    /**
+     * Get the {@link DSLContext} to access the database.
+     * @return the {@link DSLContext}
+     */
     @Override
     public DSLContext dsl() {
         return dsl;
     }
 
+    /**
+     * Get the {@link MailSender} to send emails.
+     * @return the {@link MailSender}
+     */
     @Override
     public MailSender mailSender() {
         return mailSender;

@@ -49,8 +49,8 @@ public interface MailTemplateService extends DSLContextGetter {
     default Stream<MailTemplateRecord> findMailTemplate(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl().selectFrom(MAIL_TEMPLATE)
-                .where(filterValue == null ? DSL.noCondition() :
-                        MAIL_TEMPLATE.ID.like(filterValue).or(MAIL_TEMPLATE.SUBJECT.like(filterValue)))
+                .where(filterValue == null ? DSL.noCondition()
+                        : MAIL_TEMPLATE.ID.like(filterValue).or(MAIL_TEMPLATE.SUBJECT.like(filterValue)))
                 .orderBy(MAIL_TEMPLATE.ID)
                 .offset(offset)
                 .limit(limit)

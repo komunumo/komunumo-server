@@ -52,7 +52,7 @@ import org.komunumo.ui.view.website.WebsiteLayout;
 @RouteAlias(value = "members/feedback", layout = WebsiteLayout.class)
 @CssImport("./themes/komunumo/views/website/members-view.css")
 @AnonymousAllowed
-public class MembersView extends ContentBlock implements BeforeEnterObserver, AfterNavigationObserver {
+public final class MembersView extends ContentBlock implements BeforeEnterObserver, AfterNavigationObserver {
 
     private final DatabaseService databaseService;
 
@@ -70,7 +70,7 @@ public class MembersView extends ContentBlock implements BeforeEnterObserver, Af
     }
 
     @Override
-    public void afterNavigation(AfterNavigationEvent afterNavigationEvent) {
+    public void afterNavigation(@NotNull final AfterNavigationEvent afterNavigationEvent) {
         final var url = afterNavigationEvent.getLocation().getPath();
         final var subMenu = new SubMenu();
         databaseService.getPages(PageParent.Members).forEach(page ->
@@ -112,10 +112,10 @@ public class MembersView extends ContentBlock implements BeforeEnterObserver, Af
             field.setRequiredIndicatorVisible(true);
             field.setValueChangeMode(ValueChangeMode.EAGER);
             field.addValueChangeListener(valueChangeEvent -> submit.setEnabled(
-                    !firstName.getValue().isBlank() &&
-                    !lastName.getValue().isBlank() &&
-                    !email.isInvalid() &&
-                    !feedback.getValue().isBlank()));
+                    !firstName.getValue().isBlank()
+                    && !lastName.getValue().isBlank()
+                    && !email.isInvalid()
+                    && !feedback.getValue().isBlank()));
         });
 
         final var form = new FormLayout();

@@ -32,7 +32,7 @@ import org.komunumo.ui.component.EditDialog;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-public class MemberDialog extends EditDialog<Member> {
+public final class MemberDialog extends EditDialog<Member> {
 
     public MemberDialog(@NotNull final String title) {
         super(title);

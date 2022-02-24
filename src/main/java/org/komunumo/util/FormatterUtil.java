@@ -27,13 +27,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class FormatterUtil {
+public final class FormatterUtil {
 
     public static final String DATE_PATTERN = "yyyy-MM-dd";
     public static final String TIME_PATTERN = "HH:mm";
     public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm";
 
-    private static final DecimalFormat largeNumbers = createLargeNumberFormatter();
+    private static final DecimalFormat LARGE_NUMBERS = createLargeNumberFormatter();
 
     private static DecimalFormat createLargeNumberFormatter() {
         final var formatter = (DecimalFormat) NumberFormat.getInstance();
@@ -62,7 +62,7 @@ public class FormatterUtil {
     }
 
     public static String formatNumber(final long number) {
-        return largeNumbers.format(number);
+        return LARGE_NUMBERS.format(number);
     }
 
     public static String formatString(@Nullable final String string, final int maxLength) {

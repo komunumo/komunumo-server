@@ -26,10 +26,18 @@ import java.util.Set;
 
 public class Member extends MemberRecord {
 
+    /**
+     * Get the full name (first and last) of the member.
+     * @return full name
+     */
     public String getFullName() {
         return String.format("%s %s", getFirstName(), getLastName()).trim();
     }
 
+    /**
+     * Get the roles of the member.
+     * @return a set of roles (maybe empty)
+     */
     public Set<Role> getRoles() {
         final var roles = new HashSet<Role>();
         if (getAccountActive() && !getAccountBlocked() && !getPasswordChange() && !getAccountDeleted()) {
@@ -43,6 +51,10 @@ public class Member extends MemberRecord {
         return Set.copyOf(roles);
     }
 
+    /**
+     * Checks if the membership is active.
+     * @return true on active membership, otherwise false
+     */
     public boolean isMembershipActive() {
         final var today = LocalDate.now();
         final var membershipBegin = getMembershipBegin();

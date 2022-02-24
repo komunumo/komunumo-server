@@ -30,7 +30,7 @@ import org.komunumo.data.entity.RegistrationMemberEntity;
 import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.component.EnhancedDialog;
 
-public class AddRegistrationDialog extends EnhancedDialog {
+public final class AddRegistrationDialog extends EnhancedDialog {
 
     private final Focusable<?> focusField;
 

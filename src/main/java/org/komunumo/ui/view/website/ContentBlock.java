@@ -64,6 +64,10 @@ public class ContentBlock extends HorizontalLayout {
         add(titleColumn, contentColumn);
     }
 
+    /**
+     * Set a sub menu (second level) to this page.
+     * @param subMenu the sub menu
+     */
     public void setSubMenu(@Nullable final Component subMenu) {
         if (subMenuContainer == null && subMenu == null) {
             return;
@@ -80,6 +84,10 @@ public class ContentBlock extends HorizontalLayout {
         }
     }
 
+    /**
+     * Set the content of this page.
+     * @param content the content
+     */
     public void setContent(@NotNull final Component... content) {
         final var newContentColumn = new Div(content);
         newContentColumn.addClassName("content-column");
@@ -87,6 +95,12 @@ public class ContentBlock extends HorizontalLayout {
         contentColumn = newContentColumn;
     }
 
+    /**
+     * Load a page from the database.
+     * @param databaseService the service to access the database
+     * @param url the URL of the page to load
+     * @return the loaded page
+     */
     public Page loadPage(@NotNull final DatabaseService databaseService, @NotNull final String url) {
         final var urlParts = url.split("/", 2);
         if (urlParts.length < 2 || urlParts[1].isBlank()) {

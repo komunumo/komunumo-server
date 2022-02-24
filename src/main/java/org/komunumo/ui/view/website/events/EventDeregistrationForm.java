@@ -68,8 +68,8 @@ public class EventDeregistrationForm extends Div {
                 replace(deregisterForm, message);
             });
         } else {
-            final var error = new Paragraph("The link you have used is invalid. " +
-                    "Check your email for the registration confirmation and click on the provided deregister link.");
+            final var error = new Paragraph("The link you have used is invalid. "
+                    + "Check your email for the registration confirmation and click on the provided deregister link.");
             error.addClassName("error");
             add(error);
         }

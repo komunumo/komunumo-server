@@ -21,7 +21,7 @@ package org.komunumo.util;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 
-public class GravatarUtil {
+public final class GravatarUtil {
 
     public static final String GRAVATAR_URL = "https://www.gravatar.com/avatar/";
 

@@ -18,23 +18,24 @@
 
 package org.komunumo;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ApplicationContextHolder implements ApplicationContextAware {
+public final class ApplicationContextHolder implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext;
 
-    public static <T> T getBean(Class<T> type) {
+    public static <T> T getBean(@NotNull final Class<T> type) {
         return applicationContext.getBean(type);
     }
 
     @Override
     @SuppressWarnings("java:S2696") // modify static properties from non-static methods
-    public void setApplicationContext(@SuppressWarnings("NullableProblems") ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@SuppressWarnings("NullableProblems") final ApplicationContext applicationContext) throws BeansException {
         ApplicationContextHolder.applicationContext = applicationContext;
     }
 }

@@ -68,8 +68,8 @@ interface SpeakerService extends DSLContextGetter {
                         DSL.count(EVENT_SPEAKER.EVENT_ID).as("event_count"))
                 .from(SPEAKER)
                 .leftJoin(EVENT_SPEAKER).on(SPEAKER.ID.eq(EVENT_SPEAKER.SPEAKER_ID))
-                .where(filterValue == null ? DSL.noCondition() :
-                        concat(SPEAKER.FIRST_NAME, DSL.value(" "), SPEAKER.LAST_NAME).like(filterValue)
+                .where(filterValue == null ? DSL.noCondition()
+                        : concat(SPEAKER.FIRST_NAME, DSL.value(" "), SPEAKER.LAST_NAME).like(filterValue)
                                 .or(SPEAKER.COMPANY.like(filterValue))
                                 .or(SPEAKER.EMAIL.like(filterValue))
                                 .or(SPEAKER.TWITTER.like(filterValue)))

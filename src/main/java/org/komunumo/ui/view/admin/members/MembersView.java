@@ -66,7 +66,7 @@ import static org.komunumo.util.FormatterUtil.formatDateTime;
 @CssImport(value = "./themes/komunumo/views/admin/members-view.css")
 @CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
 @RolesAllowed(Role.Type.ADMIN)
-public class MembersView extends ResizableView implements HasUrlParameter<String> {
+public final class MembersView extends ResizableView implements HasUrlParameter<String> {
 
     private final DatabaseService databaseService;
     private final TextField filterField;
@@ -77,7 +77,8 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
 
         addClassNames("members-view", "flex", "flex-col", "h-full");
 
-        grid = createGrid();
+        grid = new Grid<>();
+        configureGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter members by name or email");
@@ -101,7 +102,7 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
 
     @Override
     public void setParameter(@NotNull final BeforeEvent beforeEvent,
-                             @Nullable @OptionalParameter String parameter) {
+                             @Nullable @OptionalParameter final String parameter) {
         final var location = beforeEvent.getLocation();
         final var queryParameters = location.getQueryParameters();
         final var parameters = queryParameters.getParameters();
@@ -109,10 +110,9 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
         filterField.setValue(filterValue);
     }
 
-    private Grid<Member> createGrid() {
+    private void configureGrid() {
         final var sponsorDomains = databaseService.getActiveSponsorDomains();
 
-        final var grid = new Grid<Member>();
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
@@ -145,12 +145,10 @@ public class MembersView extends ResizableView implements HasUrlParameter<String
                 .setFlexGrow(0);
 
         grid.setHeightFull();
-
-        return grid;
     }
 
     @SuppressWarnings("ConstantConditions") // for better readability
-    private String getMembershipText(@NotNull final Member member, @NotNull Set<String> sponsorDomains) {
+    private String getMembershipText(@NotNull final Member member, @NotNull final Set<String> sponsorDomains) {
         final var begin = member.getMembershipBegin();
         final var end = member.getMembershipEnd();
 

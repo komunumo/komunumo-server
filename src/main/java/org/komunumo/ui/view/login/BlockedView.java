@@ -34,7 +34,7 @@ import javax.annotation.security.PermitAll;
 @Route(value = "blocked")
 @PageTitle("Account blocked")
 @PermitAll
-public class BlockedView extends Div implements BeforeEnterObserver {
+public final class BlockedView extends Div implements BeforeEnterObserver {
 
     private final Text message;
 

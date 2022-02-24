@@ -51,8 +51,8 @@ interface FaqService extends DSLContextGetter {
     default Stream<FaqRecord> findFaqRecords(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl().selectFrom(FAQ)
-                .where(filterValue == null ? DSL.noCondition() :
-                        FAQ.QUESTION.like(filterValue).or(FAQ.ANSWER.like(filterValue)))
+                .where(filterValue == null ? DSL.noCondition()
+                        : FAQ.QUESTION.like(filterValue).or(FAQ.ANSWER.like(filterValue)))
                 .orderBy(FAQ.ID.desc())
                 .offset(offset)
                 .limit(limit)

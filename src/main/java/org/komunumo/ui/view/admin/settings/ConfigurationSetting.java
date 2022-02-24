@@ -59,7 +59,8 @@ public class ConfigurationSetting extends ResizableView {
 
         addClassNames("configuration-setting", "flex", "flex-col", "h-full");
 
-        grid = createGrid();
+        grid = new Grid<>();
+        configureGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter configuration");
@@ -81,8 +82,7 @@ public class ConfigurationSetting extends ResizableView {
         filterField.focus();
     }
 
-    private Grid<ConfigurationRecord> createGrid() {
-        final var grid = new Grid<ConfigurationRecord>();
+    private void configureGrid() {
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
@@ -104,8 +104,6 @@ public class ConfigurationSetting extends ResizableView {
                 .setFlexGrow(0);
 
         grid.setHeightFull();
-
-        return grid;
     }
 
     private void showEditDialog(@Nullable final ConfigurationRecord configurationRecord) {
@@ -136,7 +134,9 @@ public class ConfigurationSetting extends ResizableView {
         final var resource = new StreamResource("configurations.csv", () -> {
             final var stringWriter = new StringWriter();
             final var csvWriter = new CSVWriter(stringWriter);
-            csvWriter.writeNext(new String[] { "Key", "Value" });
+            csvWriter.writeNext(new String[] {
+                    "Key", "Value"
+            });
             grid.getGenericDataView()
                     .getItems().map(configurationRecord -> new String[] {
                             configurationRecord.getKey(),

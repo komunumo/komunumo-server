@@ -30,7 +30,7 @@ import org.komunumo.ui.component.EditDialog;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-public class FaqDialog extends EditDialog<FaqRecord> {
+public final class FaqDialog extends EditDialog<FaqRecord> {
 
     public FaqDialog(@NotNull final String title) {
         super(title);

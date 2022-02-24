@@ -26,8 +26,8 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 
 @Component
-public class AuthenticationSuccessEventListener implements ApplicationListener<AuthenticationSuccessEvent> {
-    
+public final class AuthenticationSuccessEventListener implements ApplicationListener<AuthenticationSuccessEvent> {
+
     private final HttpServletRequest request;
     private final LoginAttemptService loginAttemptService;
 

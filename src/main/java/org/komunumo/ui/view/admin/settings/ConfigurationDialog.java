@@ -31,7 +31,7 @@ import org.komunumo.ui.component.EditDialog;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-public class ConfigurationDialog extends EditDialog<ConfigurationRecord> {
+public final class ConfigurationDialog extends EditDialog<ConfigurationRecord> {
 
     private final DatabaseService databaseService;
     private Callback afterOpen;

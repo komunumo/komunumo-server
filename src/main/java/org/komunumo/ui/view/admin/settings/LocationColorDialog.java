@@ -31,7 +31,7 @@ import org.komunumo.ui.component.EditDialog;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-public class LocationColorDialog extends EditDialog<LocationColorRecord> {
+public final class LocationColorDialog extends EditDialog<LocationColorRecord> {
 
     private Callback afterOpen;
 

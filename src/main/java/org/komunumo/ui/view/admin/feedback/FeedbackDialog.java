@@ -27,7 +27,7 @@ import org.komunumo.data.db.tables.records.FeedbackRecord;
 import org.komunumo.ui.component.DateTimePicker;
 import org.komunumo.ui.component.EditDialog;
 
-public class FeedbackDialog extends EditDialog<FeedbackRecord> {
+public final class FeedbackDialog extends EditDialog<FeedbackRecord> {
 
     public FeedbackDialog(@NotNull final String title) {
         super(title);

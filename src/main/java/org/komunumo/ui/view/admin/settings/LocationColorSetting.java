@@ -58,7 +58,8 @@ public class LocationColorSetting extends ResizableView {
 
         addClassNames("location-color-setting", "flex", "flex-col", "h-full");
 
-        grid = createGrid();
+        grid = new Grid<>();
+        configureGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter location");
@@ -80,8 +81,7 @@ public class LocationColorSetting extends ResizableView {
         filterField.focus();
     }
 
-    private Grid<LocationColorRecord> createGrid() {
-        final var grid = new Grid<LocationColorRecord>();
+    private void configureGrid() {
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
@@ -112,8 +112,6 @@ public class LocationColorSetting extends ResizableView {
                 .setFlexGrow(0);
 
         grid.setHeightFull();
-
-        return grid;
     }
 
     private void showLocationColorDialog(@Nullable final LocationColorRecord locationColorRecord) {
@@ -141,7 +139,9 @@ public class LocationColorSetting extends ResizableView {
         final var resource = new StreamResource("location-colors.csv", () -> {
             final var stringWriter = new StringWriter();
             final var csvWriter = new CSVWriter(stringWriter);
-            csvWriter.writeNext(new String[] { "Location", "Color" });
+            csvWriter.writeNext(new String[] {
+                    "Location", "Color"
+            });
             grid.getGenericDataView()
                     .getItems().map(locationColorRecord -> new String[] {
                             locationColorRecord.getLocation(),

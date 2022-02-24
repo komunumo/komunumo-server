@@ -37,7 +37,7 @@ import org.komunumo.util.URLUtil;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-public class PageDialog extends EditDialog<Page> {
+public final class PageDialog extends EditDialog<Page> {
 
     public PageDialog(@NotNull final String title) {
         super(title);

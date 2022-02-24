@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-public class SponsorDialog extends EditDialog<SponsorRecord> {
+public final class SponsorDialog extends EditDialog<SponsorRecord> {
 
     private final DatabaseService databaseService;
 
@@ -133,6 +133,7 @@ public class SponsorDialog extends EditDialog<SponsorRecord> {
         return domainCSV;
     }
 
+    @SuppressWarnings("checkstyle:HiddenField") // setter
     private void setDomains(@NotNull final SponsorRecord sponsorRecord, @Nullable final String domainCSV) {
         this.domainCSV = domainCSV != null ? domainCSV : "";
     }

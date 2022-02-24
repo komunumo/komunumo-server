@@ -33,7 +33,7 @@ import org.komunumo.data.service.DatabaseService;
 @NpmPackage(value = "lumo-css-framework", version = "^4.0.10")
 @NpmPackage(value = "line-awesome", version = "1.3.0")
 @SuppressWarnings({"unused", "ClassCanBeRecord"})
-public class AppShell implements AppShellConfigurator {
+public final class AppShell implements AppShellConfigurator {
 
     private final DatabaseService databaseService;
 

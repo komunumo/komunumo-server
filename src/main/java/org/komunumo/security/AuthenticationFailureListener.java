@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 
 @Component
-public class AuthenticationFailureListener implements ApplicationListener<AuthenticationFailureBadCredentialsEvent> {
+public final class AuthenticationFailureListener implements ApplicationListener<AuthenticationFailureBadCredentialsEvent> {
 
     private final HttpServletRequest request;
     private final LoginAttemptService loginAttemptService;

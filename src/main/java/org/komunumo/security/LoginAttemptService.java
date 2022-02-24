@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LoginAttemptService {
+public final class LoginAttemptService {
 
     public static final int MAX_LOGIN_ATTEMPTS = 3;
     private final LoadingCache<String, Integer> attemptsCache;

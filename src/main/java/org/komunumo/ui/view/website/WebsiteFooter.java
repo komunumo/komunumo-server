@@ -34,7 +34,7 @@ public class WebsiteFooter extends Footer {
 
     private final Configuration configuration;
 
-    public WebsiteFooter(@NotNull DatabaseService databaseService) {
+    public WebsiteFooter(@NotNull final DatabaseService databaseService) {
         this.configuration = databaseService.configuration();
         setId("website-footer");
 

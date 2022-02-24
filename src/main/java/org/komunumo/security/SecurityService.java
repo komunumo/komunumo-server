@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class SecurityService implements UserDetailsService {
+public final class SecurityService implements UserDetailsService {
 
     private final DatabaseService databaseService;
     private final PasswordEncoder passwordEncoder;
@@ -125,7 +125,7 @@ public class SecurityService implements UserDetailsService {
 
     public String getClientIP() {
         final var xfHeader = request.getHeader("X-Forwarded-For");
-        if (xfHeader == null){
+        if (xfHeader == null) {
             return request.getRemoteAddr();
         }
         return xfHeader.split(",")[0];

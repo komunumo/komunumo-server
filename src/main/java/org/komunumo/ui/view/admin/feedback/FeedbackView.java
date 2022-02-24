@@ -66,7 +66,8 @@ public class FeedbackView extends ResizableView {
 
         addClassNames("feedback-view", "flex", "flex-col", "h-full");
 
-        grid = createGrid();
+        grid = new Grid<>();
+        configureGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter feedback");
@@ -85,8 +86,7 @@ public class FeedbackView extends ResizableView {
         filterField.focus();
     }
 
-    private Grid<FeedbackRecord> createGrid() {
-        final var grid = new Grid<FeedbackRecord>();
+    private void configureGrid() {
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
@@ -109,8 +109,6 @@ public class FeedbackView extends ResizableView {
                 .setFlexGrow(0);
 
         grid.setHeightFull();
-
-        return grid;
     }
 
     private void showEditDialog(@NotNull final FeedbackRecord feedbackRecord) {
@@ -139,7 +137,9 @@ public class FeedbackView extends ResizableView {
         final var resource = new StreamResource("feedback.csv", () -> {
             final var stringWriter = new StringWriter();
             final var csvWriter = new CSVWriter(stringWriter);
-            csvWriter.writeNext(new String[] { "ID", "Received", "First name", "Last name", "Email", "Feedback" });
+            csvWriter.writeNext(new String[] {
+                    "ID", "Received", "First name", "Last name", "Email", "Feedback"
+            });
             grid.getGenericDataView()
                     .getItems().map(faqRecord -> new String[] {
                             faqRecord.getId().toString(),

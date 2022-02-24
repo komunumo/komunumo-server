@@ -48,8 +48,8 @@ interface RedirectService extends DSLContextGetter {
     default Stream<RedirectRecord> findRedirect(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl().selectFrom(REDIRECT)
-                .where(filterValue == null ? DSL.noCondition() :
-                        REDIRECT.OLD_URL.like(filterValue).or(REDIRECT.NEW_URL.like(filterValue)))
+                .where(filterValue == null ? DSL.noCondition()
+                        : REDIRECT.OLD_URL.like(filterValue).or(REDIRECT.NEW_URL.like(filterValue)))
                 .orderBy(REDIRECT.OLD_URL)
                 .offset(offset)
                 .limit(limit)

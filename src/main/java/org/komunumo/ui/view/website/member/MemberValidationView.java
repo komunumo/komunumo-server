@@ -39,7 +39,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 @PageTitle("Validation")
 @Route(value = "member/validate", layout = WebsiteLayout.class)
 @CssImport("./themes/komunumo/views/website/member-validation-view.css")
-public class MemberValidationView extends ContentBlock implements BeforeEnterObserver {
+public final class MemberValidationView extends ContentBlock implements BeforeEnterObserver {
 
     private final SecurityService securityService;
 

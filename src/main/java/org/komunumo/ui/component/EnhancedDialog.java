@@ -148,10 +148,18 @@ public class EnhancedDialog extends Dialog {
         throw new UnsupportedOperationException("Use \"addToContent(Component...)\" or \"addToFooter(Component...)\" instead");
     }
 
+    /**
+     * Add components to the content of the dialog.
+     * @param components the components to add
+     */
     public void addToContent(@NotNull final Component... components) {
         content.add(components);
     }
 
+    /**
+     * Add components to the footer of the dialog.
+     * @param components the components to add
+     */
     public void addToFooter(@NotNull final Component... components) {
         footer.add(components);
     }

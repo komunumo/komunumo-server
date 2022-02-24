@@ -21,7 +21,7 @@ package org.komunumo.data.entity.reports;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused") // getters used by jasper reports
-public class RegistrationListEntityWrapper {
+public final class RegistrationListEntityWrapper {
 
     private final String attendee;
     private final String city;

@@ -191,8 +191,8 @@ interface RegistrationService extends DSLContextGetter, EventOrganizerService, M
                 .join(MEMBER).on(REGISTRATION.MEMBER_ID.eq(MEMBER.ID))
                 .where(REGISTRATION.EVENT_ID.eq(eventId)
                         .and(MEMBER.ACCOUNT_DELETED.isFalse())
-                        .and(filterValue == null ? DSL.noCondition() :
-                                MEMBER.FIRST_NAME.like(filterValue)
+                        .and(filterValue == null ? DSL.noCondition()
+                                : MEMBER.FIRST_NAME.like(filterValue)
                                         .or(MEMBER.LAST_NAME.like(filterValue))
                                         .or(MEMBER.EMAIL.like(filterValue))
                                         .or(REGISTRATION.SOURCE.like(filterValue))))
@@ -224,7 +224,7 @@ interface RegistrationService extends DSLContextGetter, EventOrganizerService, M
                 .fetchInto(RegistrationMemberEntity.class);
     }
 
-    class LockHolder {
+    abstract class LockHolder {
         public static final Object LOCK = new Object();
     }
 

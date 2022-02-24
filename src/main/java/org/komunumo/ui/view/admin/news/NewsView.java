@@ -61,7 +61,7 @@ import static org.komunumo.util.FormatterUtil.formatDateTime;
 @CssImport(value = "./themes/komunumo/views/admin/news-view.css")
 @CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
 @RolesAllowed(Role.Type.ADMIN)
-public class NewsView extends ResizableView implements HasUrlParameter<String> {
+public final class NewsView extends ResizableView implements HasUrlParameter<String> {
 
     private final DatabaseService databaseService;
     private final TextField filterField;
@@ -72,7 +72,8 @@ public class NewsView extends ResizableView implements HasUrlParameter<String> {
 
         addClassNames("news-view", "flex", "flex-col", "h-full");
 
-        grid = createGrid();
+        grid = new Grid<>();
+        configureGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter news by name");
@@ -97,7 +98,7 @@ public class NewsView extends ResizableView implements HasUrlParameter<String> {
 
     @Override
     public void setParameter(@NotNull final BeforeEvent beforeEvent,
-                             @Nullable @OptionalParameter String parameter) {
+                             @Nullable @OptionalParameter final String parameter) {
         final var location = beforeEvent.getLocation();
         final var queryParameters = location.getQueryParameters();
         final var parameters = queryParameters.getParameters();
@@ -105,8 +106,7 @@ public class NewsView extends ResizableView implements HasUrlParameter<String> {
         filterField.setValue(filterValue);
     }
 
-    private Grid<NewsEntity> createGrid() {
-        final var grid = new Grid<NewsEntity>();
+    private void configureGrid() {
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
@@ -138,8 +138,6 @@ public class NewsView extends ResizableView implements HasUrlParameter<String> {
                 .setFlexGrow(0);
 
         grid.setHeightFull();
-
-        return grid;
     }
 
     @Override
@@ -149,8 +147,8 @@ public class NewsView extends ResizableView implements HasUrlParameter<String> {
     }
 
     private void showNewsDialog(@Nullable final NewsEntity newsEntity) {
-        final var newsRecord = newsEntity == null || newsEntity.id() == null ? databaseService.newNews() :
-                databaseService.getNewsRecord(newsEntity.id()).orElse(databaseService.newNews());
+        final var newsRecord = newsEntity == null || newsEntity.id() == null ? databaseService.newNews()
+                : databaseService.getNewsRecord(newsEntity.id()).orElse(databaseService.newNews());
         final var dialog = new NewsDialog(newsRecord.getId() != null ? "Edit News" : "New News");
         dialog.open(newsRecord, this::reloadGridItems);
     }

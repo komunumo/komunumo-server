@@ -21,11 +21,11 @@ package org.komunumo.data.entity;
 import org.komunumo.data.db.tables.records.PageRecord;
 import org.komunumo.util.URLUtil;
 
-public class Page extends PageRecord {
+public final class Page extends PageRecord {
 
     public String getCompletePageUrl() {
-        return (getParent() == null || getPageUrl().isBlank()) ? "" :
-                "%s/%s".formatted(
+        return (getParent() == null || getPageUrl().isBlank()) ? ""
+                : "%s/%s".formatted(
                         URLUtil.createReadableUrl(getParent().getLiteral()),
                         getPageUrl());
     }

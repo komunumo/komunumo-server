@@ -45,7 +45,7 @@ import java.util.List;
 @RouteAlias(value = "events/past/:year", layout = WebsiteLayout.class)
 @CssImport("./themes/komunumo/views/website/events-view.css")
 @AnonymousAllowed
-public class PastEventsView extends ContentBlock implements BeforeEnterObserver, HasDynamicTitle {
+public final class PastEventsView extends ContentBlock implements BeforeEnterObserver, HasDynamicTitle {
 
     private final DatabaseService databaseService;
 
@@ -84,7 +84,8 @@ public class PastEventsView extends ContentBlock implements BeforeEnterObserver,
         setContent(eventsList);
     }
 
-    private Component createSubMenu(List<Year> years, @Nullable final Year selectedYear) {
+    private static Component createSubMenu(@NotNull final List<Year> years,
+                                           @Nullable final Year selectedYear) {
         final var subMenu = new SubMenu();
         subMenu.add(new SubMenuItem("/events", "upcoming"));
 

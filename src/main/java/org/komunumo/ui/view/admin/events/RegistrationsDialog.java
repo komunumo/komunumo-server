@@ -77,7 +77,8 @@ public class RegistrationsDialog extends EnhancedDialog {
         setHeight("600px");
         setResizable(true);
 
-        grid = createGrid();
+        grid = new Grid<>();
+        configureGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(valueChangeEvent -> reloadGridItems());
         filterField.setTitle("Filter registrations");
@@ -104,8 +105,7 @@ public class RegistrationsDialog extends EnhancedDialog {
         filterField.focus();
     }
 
-    private Grid<RegistrationListEntity> createGrid() {
-        final var grid = new Grid<RegistrationListEntity>();
+    private void configureGrid() {
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
         grid.addClassName("registration-dialog");
@@ -141,8 +141,6 @@ public class RegistrationsDialog extends EnhancedDialog {
 
         grid.setWidthFull();
         grid.setHeightFull();
-
-        return grid;
     }
 
     private void reloadGridItems() {
@@ -178,7 +176,9 @@ public class RegistrationsDialog extends EnhancedDialog {
         final var resource = new StreamResource("registrations.csv", () -> {
             final var stringWriter = new StringWriter();
             final var csvWriter = new CSVWriter(stringWriter);
-            csvWriter.writeNext(new String[] { "First name", "Last name", "Email", "Date", "Source", "No show" });
+            csvWriter.writeNext(new String[] {
+                    "First name", "Last name", "Email", "Date", "Source", "No show"
+            });
             grid.getGenericDataView()
                     .getItems().map(registrationListEntity -> new String[] {
                             registrationListEntity.firstName(),

@@ -46,8 +46,8 @@ interface PageService extends DSLContextGetter {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl().select(PAGE.asterisk())
                 .from(PAGE)
-                .where(filterValue == null ? DSL.noCondition() :
-                        PAGE.PAGE_URL.like(filterValue).or(PAGE.TITLE.like(filterValue)))
+                .where(filterValue == null ? DSL.noCondition()
+                        : PAGE.PAGE_URL.like(filterValue).or(PAGE.TITLE.like(filterValue)))
                 .orderBy(PAGE.PARENT.asc(), PAGE.TITLE.asc())
                 .offset(offset)
                 .limit(limit)

@@ -46,8 +46,8 @@ interface NewsService extends DSLContextGetter {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl().select(NEWS.asterisk())
                 .from(NEWS)
-                .where(filterValue == null ? DSL.noCondition() :
-                        NEWS.TITLE.like(filterValue).or(NEWS.SUBTITLE.like(filterValue)))
+                .where(filterValue == null ? DSL.noCondition()
+                        : NEWS.TITLE.like(filterValue).or(NEWS.SUBTITLE.like(filterValue)))
                 .orderBy(NEWS.CREATED.desc())
                 .offset(offset)
                 .limit(limit)

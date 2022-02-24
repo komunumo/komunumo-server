@@ -18,5 +18,5 @@
 
 package org.komunumo.data.entity;
 
-public record MonthlyVisitors (String location, int january, int february, int march, int april, int may, int june,
-                            int july, int august, int september, int october, int november, int december) { }
+public record MonthlyVisitors(String location, int january, int february, int march, int april, int may, int june,
+                              int july, int august, int september, int october, int november, int december) { }

@@ -45,17 +45,27 @@ public class SecurityConfiguration extends VaadinWebSecurityConfigurerAdapter {
         this.databaseService = databaseService;
     }
 
+    /**
+     * Get a password encoder.
+     * @return a password encoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10, new SecureRandom());
     }
 
+    /**
+     * @see VaadinWebSecurityConfigurerAdapter#configure(HttpSecurity)
+     */
     @Override
     protected void configure(@NotNull final HttpSecurity http) throws Exception {
         super.configure(http);
         setLoginView(http, LoginView.class, LOGOUT_URL);
     }
 
+    /**
+     * @see VaadinWebSecurityConfigurerAdapter#configure(WebSecurity)
+     */
     @Override
     public void configure(@NotNull final WebSecurity web) throws Exception {
         super.configure(web);

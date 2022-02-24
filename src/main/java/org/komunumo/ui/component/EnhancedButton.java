@@ -24,7 +24,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import org.jetbrains.annotations.NotNull;
 
-public class EnhancedButton extends Button {
+public final class EnhancedButton extends Button {
 
     public EnhancedButton(@NotNull final String text, @NotNull final ComponentEventListener<ClickEvent<Button>> clickListener) {
         super(text, clickListener);

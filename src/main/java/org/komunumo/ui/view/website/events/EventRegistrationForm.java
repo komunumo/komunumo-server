@@ -46,6 +46,7 @@ import static org.komunumo.util.FormatterUtil.formatDate;
 @CssImport("./themes/komunumo/views/website/event-registration-form.css")
 public class EventRegistrationForm extends Div {
 
+    @SuppressWarnings("checkstyle:MethodLength") // TODO split steps in methods
     public EventRegistrationForm(@NotNull final DatabaseService databaseService,
                                  @NotNull final Event event) {
         addClassName("event-registration-form");
@@ -184,16 +185,16 @@ public class EventRegistrationForm extends Div {
 
                 registerButton.addClickListener(registerButtonClickEvent -> {
                     final var member = memberFound.orElse(createMember(databaseService, emailAddress, firstName, lastName));
-                    final var sourceValue = source.getValue().equalsIgnoreCase("other") ?
-                            otherSource.getValue() : source.getValue();
+                    final var sourceValue = source.getValue().equalsIgnoreCase("other")
+                            ? otherSource.getValue() : source.getValue();
                     final var registrationResult = databaseService.registerForEvent(event, member, sourceValue);
                     final var registrationInfo = switch (registrationResult) {
-                        case SUCCESS -> new Paragraph("Thank you for your registration! Within the next few minutes " +
-                                        "you will receive a copy of your registration and a reminder will follow shortly before the event.");
-                        case EXISTING -> new Paragraph("You have already registered before! Within the next few minutes " +
-                                        "you will receive a copy of your registration and a reminder will follow shortly before the event.");
-                        case FULL -> new Paragraph("Sorry, the last place was just snatched from right under your nose! " +
-                                        "Unfortunately, this event is now fully booked.");
+                        case SUCCESS -> new Paragraph("Thank you for your registration! Within the next few minutes "
+                                        + "you will receive a copy of your registration and a reminder will follow shortly before the event.");
+                        case EXISTING -> new Paragraph("You have already registered before! Within the next few minutes "
+                                        + "you will receive a copy of your registration and a reminder will follow shortly before the event.");
+                        case FULL -> new Paragraph("Sorry, the last place was just snatched from right under your nose! "
+                                        + "Unfortunately, this event is now fully booked.");
                     };
                     registrationInfo.addClassName("registration-info");
                     if (newsletter.getValue()) {
@@ -226,8 +227,8 @@ public class EventRegistrationForm extends Div {
                                             @NotNull final TextField otherSource) {
         final var checkFirstName = firstName == null || !firstName.getValue().trim().isBlank();
         final var checkLastName = lastName == null || !lastName.getValue().trim().isBlank();
-        final var checkOtherSource = source.getValue() != null && (!source.getValue().equalsIgnoreCase("other") ||
-                (source.getValue().equalsIgnoreCase("other") && !otherSource.getValue().isBlank()));
+        final var checkOtherSource = source.getValue() != null && (!source.getValue().equalsIgnoreCase("other")
+                || (source.getValue().equalsIgnoreCase("other") && !otherSource.getValue().isBlank()));
         return checkFirstName && checkLastName && checkOtherSource;
     }
 }

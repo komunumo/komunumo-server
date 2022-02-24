@@ -48,7 +48,7 @@ public class EventPreviewBlock extends ContentBlock {
         setContent(eventsList);
     }
 
-    private Component createLocationSelector(List<Event> events) {
+    private Component createLocationSelector(@NotNull final List<Event> events) {
         final var locationSelector = new SubMenu();
         events.stream()
                 .map(Event::getLocation)

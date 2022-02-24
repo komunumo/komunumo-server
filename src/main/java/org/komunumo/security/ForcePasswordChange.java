@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.komunumo.ui.view.login.ChangePasswordView;
 
 @SpringComponent
-public class ForcePasswordChange implements VaadinServiceInitListener {
+public final class ForcePasswordChange implements VaadinServiceInitListener {
 
 
     private final AuthenticatedUser authenticatedUser;

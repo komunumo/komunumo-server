@@ -19,6 +19,7 @@
 package org.komunumo.ui.view.website.events;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.service.DatabaseService;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +34,7 @@ import java.io.IOException;
 import java.time.Year;
 
 @Component
-public class EventPreviewFilter implements Filter {
+public final class EventPreviewFilter implements Filter {
 
     private final DatabaseService databaseService;
 
@@ -42,7 +43,9 @@ public class EventPreviewFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
+    public void doFilter(@NotNull final ServletRequest request,
+                         @NotNull final ServletResponse response,
+                         @Nullable final FilterChain chain) throws ServletException, IOException {
         var stopFilterChain = false;
 
         if (request instanceof HttpServletRequest httpServletRequest) {
@@ -64,7 +67,7 @@ public class EventPreviewFilter implements Filter {
             }
         }
 
-        if (!stopFilterChain) {
+        if (!stopFilterChain && chain != null) {
             chain.doFilter(request, response);
         }
     }

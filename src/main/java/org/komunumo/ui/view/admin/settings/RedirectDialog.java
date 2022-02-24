@@ -31,7 +31,7 @@ import org.komunumo.ui.component.EditDialog;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
-public class RedirectDialog extends EditDialog<RedirectRecord> {
+public final class RedirectDialog extends EditDialog<RedirectRecord> {
 
     private final ApplicationServiceInitListener applicationServiceInitListener;
     private Callback afterOpen;

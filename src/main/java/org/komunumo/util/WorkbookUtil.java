@@ -38,7 +38,7 @@ import java.util.Optional;
 
 import static org.komunumo.util.DateUtil.dateToLocalDate;
 
-public class WorkbookUtil {
+public final class WorkbookUtil {
 
     public static List<ColumnHeader> getColumnHeaders(@NotNull final Row row) {
         final var columnHeaders = new ArrayList<ColumnHeader>();
@@ -88,6 +88,7 @@ public class WorkbookUtil {
                 case NUMERIC: return Optional.of(Double.toString(cell.getNumericCellValue()));
                 case BOOLEAN: return Optional.of(Boolean.toString(cell.getBooleanCellValue()));
                 case ERROR: throw new IllegalStateException("Error in cell: code + " + cell.getErrorCellValue());
+                default: throw new IllegalStateException("Unknown cell type: " + cell.getCellType());
             }
         }
         return Optional.empty();

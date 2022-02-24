@@ -39,8 +39,8 @@ interface ConfigurationService extends DSLContextGetter {
     default Stream<ConfigurationRecord> findConfiguration(final int offset, final int limit, @Nullable final String filter) {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl().selectFrom(CONFIGURATION)
-                .where(filterValue == null ? DSL.noCondition() :
-                        CONFIGURATION.KEY.like(filterValue).or(CONFIGURATION.VALUE.like(filterValue)))
+                .where(filterValue == null ? DSL.noCondition()
+                        : CONFIGURATION.KEY.like(filterValue).or(CONFIGURATION.VALUE.like(filterValue)))
                 .orderBy(CONFIGURATION.KEY)
                 .offset(offset)
                 .limit(limit)

@@ -34,7 +34,7 @@ import org.komunumo.data.service.DatabaseService;
 import java.time.LocalDateTime;
 import java.util.Locale;
 
-public class EventDetailArticle extends EventArticle {
+public final class EventDetailArticle extends EventArticle {
 
     protected EventDetailArticle() {
         super();
@@ -129,7 +129,8 @@ public class EventDetailArticle extends EventArticle {
     }
 
     protected void addRegistrationForm(@NotNull final DatabaseService databaseService,
-                                       @NotNull final Event event, String deregisterCode) {
+                                       @NotNull final Event event,
+                                       @NotNull final String deregisterCode) {
         if (event.getDate().isAfter(LocalDateTime.now())) {
             add(new Hr());
             if (deregisterCode.isBlank()) {
@@ -143,11 +144,15 @@ public class EventDetailArticle extends EventArticle {
     protected void addLevelInfo() {
         final var levelInfo = new DescriptionList();
         levelInfo.add(new DescriptionList.Term("Beginner"));
-        levelInfo.add(new DescriptionList.Description("The presented topic is new to the audience or only little and superficial experience exists. This talk will mainly cover basic aspects of the topic and not go into much detail."));
+        levelInfo.add(new DescriptionList.Description("The presented topic is new to the audience or only little and superficial experience exists. "
+                + "This talk will mainly cover basic aspects of the topic and not go into much detail."));
         levelInfo.add(new DescriptionList.Term("Intermediate"));
-        levelInfo.add(new DescriptionList.Description("The presented topic is known to the audience, serious practical experience is expected. This talk might cover some basic aspects of the topic, but will as well go into depth and details."));
+        levelInfo.add(new DescriptionList.Description("The presented topic is known to the audience, serious practical experience is expected. "
+                + "This talk might cover some basic aspects of the topic, but will as well go into depth and details."));
         levelInfo.add(new DescriptionList.Term("Advanced"));
-        levelInfo.add(new DescriptionList.Description("The presented topic is well-known to the audience, serious practical experience and a deep understanding are required. This talk will not cover basics of the topic, but will go into depth, might discuss details, compare different approaches, and so on."));
+        levelInfo.add(new DescriptionList.Description("The presented topic is well-known to the audience, serious practical experience and a deep "
+                + "understanding are required. This talk will not cover basics of the topic, but will go into depth, might discuss details, compare "
+                + "different approaches, and so on."));
 
         add(new Hr(), new H4("Levels"), levelInfo);
     }

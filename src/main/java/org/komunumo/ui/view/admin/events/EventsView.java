@@ -32,7 +32,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.data.renderer.TemplateRenderer;
+import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
@@ -41,9 +41,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
-
-import java.util.ArrayList;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
@@ -62,6 +59,7 @@ import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,7 +72,7 @@ import static org.komunumo.util.FormatterUtil.formatDateTime;
 @CssImport(value = "./themes/komunumo/views/admin/events-view.css")
 @CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
 @RolesAllowed(Role.Type.ADMIN)
-public class EventsView extends ResizableView implements HasUrlParameter<String> {
+public final class EventsView extends ResizableView implements HasUrlParameter<String> {
 
     private final AuthenticatedUser authenticatedUser;
     private final DatabaseService databaseService;
@@ -89,7 +87,8 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
 
         addClassNames("events-view", "flex", "flex-col", "h-full");
 
-        grid = createGrid();
+        grid = new Grid<>();
+        configureGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter events by title or speaker");
@@ -113,7 +112,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
 
     @Override
     public void setParameter(@NotNull final BeforeEvent beforeEvent,
-                             @Nullable @OptionalParameter String parameter) {
+                             @Nullable @OptionalParameter final String parameter) {
         final var location = beforeEvent.getLocation();
         final var queryParameters = location.getQueryParameters();
         final var parameters = queryParameters.getParameters();
@@ -121,8 +120,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
         filterField.setValue(filterValue);
     }
 
-    private Grid<Event> createGrid() {
-        final var grid = new Grid<Event>();
+    private void configureGrid() {
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
@@ -142,14 +140,15 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
                 .setTextAlign(ColumnTextAlign.CENTER)
                 .setFlexGrow(0);
 
-        grid.addColumn(TemplateRenderer.<Event>of("<span class$=\"[[item.event-class]]\">[[item.title]]</span><br/><span inner-h-t-m-l=\"[[item.speaker]]\"></span>")
-                .withProperty("event-class", this::getEventClass)
+        grid.addColumn(LitRenderer.<Event>of(
+                "<span class=\"${item.eventClass}\">${item.title}</span><br/><span .innerHTML=\"${item.speaker}\"></span>")
+                .withProperty("eventClass", this::getEventClass)
                 .withProperty("title", Event::getTitle)
                 .withProperty("speaker", this::renderSpeakerLinks))
                 .setHeader("Title & Speaker").setFlexGrow(1);
 
-        final var dateRenderer = TemplateRenderer.<Event>of(
-                "[[item.date]]<br/>[[item.location]]")
+        final var dateRenderer = LitRenderer.<Event>of(
+                "${item.date}<br/>${item.location}")
                 .withProperty("date", event -> formatDateTime(event.getDate()))
                 .withProperty("location", Event::getLocation);
         grid.addColumn(dateRenderer).setHeader("Date & Location").setAutoWidth(true).setFlexGrow(0).setKey("dateLocation");
@@ -188,8 +187,6 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
             .setFlexGrow(0);
 
         grid.setHeightFull();
-
-        return grid;
     }
 
     private Component createPublishStateIcon(@NotNull final Event event) {
@@ -226,7 +223,7 @@ public class EventsView extends ResizableView implements HasUrlParameter<String>
         grid.getColumnByKey("dateLocation").setVisible(width >= 1100);
     }
 
-    private String renderSpeakerLinks(@NotNull Event event) {
+    private String renderSpeakerLinks(@NotNull final Event event) {
         final var eventSpeakerEntities = event.getSpeakers();
         if (eventSpeakerEntities == null || eventSpeakerEntities.isEmpty()) {
             return "";

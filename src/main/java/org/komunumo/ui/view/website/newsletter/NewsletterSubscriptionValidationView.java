@@ -42,7 +42,7 @@ import java.util.List;
 @PageTitle("Newsletter Subscription Validation")
 @CssImport("./themes/komunumo/views/website/newsletter-subscription-view.css")
 @AnonymousAllowed
-public class NewsletterSubscriptionValidationView extends ContentBlock implements HasUrlParameter<String> {
+public final class NewsletterSubscriptionValidationView extends ContentBlock implements HasUrlParameter<String> {
 
     private final DatabaseService databaseService;
 
@@ -66,8 +66,8 @@ public class NewsletterSubscriptionValidationView extends ContentBlock implement
         final var content = new Div();
         content.add(new H2("Newsletter Subscription Validation"));
         content.add(new Html(
-                validationOkay ? "<p class=\"successful\">You successfully subscribed to our newsletter.</p>" :
-                        "<p class=\"failed\">Your subscription was not successful.<br/>Check the link in the email you received shortly.</p>"
+                validationOkay ? "<p class=\"successful\">You successfully subscribed to our newsletter.</p>"
+                        : "<p class=\"failed\">Your subscription was not successful.<br/>Check the link in the email you received shortly.</p>"
         ));
         content.add(new RouterLink("Back to home page", HomeView.class));
         setContent(content);

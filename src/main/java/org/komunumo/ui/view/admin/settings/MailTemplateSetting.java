@@ -63,7 +63,8 @@ public class MailTemplateSetting extends ResizableView {
 
         addClassNames("mail-template-setting", "flex", "flex-col", "h-full");
 
-        grid = createGrid();
+        grid = new Grid<>();
+        configureGrid();
         filterField = new FilterField();
         filterField.addValueChangeListener(event -> reloadGridItems());
         filterField.setTitle("Filter mail templates");
@@ -85,8 +86,7 @@ public class MailTemplateSetting extends ResizableView {
         filterField.focus();
     }
 
-    private Grid<MailTemplateRecord> createGrid() {
-        final var grid = new Grid<MailTemplateRecord>();
+    private void configureGrid() {
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
@@ -108,8 +108,6 @@ public class MailTemplateSetting extends ResizableView {
                 .setFlexGrow(0);
 
         grid.setHeightFull();
-
-        return grid;
     }
 
     private void showEditDialog(@Nullable final MailTemplateRecord mailTemplateRecord) {
@@ -144,7 +142,9 @@ public class MailTemplateSetting extends ResizableView {
         final var resource = new StreamResource("mail-templates.csv", () -> {
             final var stringWriter = new StringWriter();
             final var csvWriter = new CSVWriter(stringWriter);
-            csvWriter.writeNext(new String[] { "ID", "Subject", "Content text", "Content HTML" });
+            csvWriter.writeNext(new String[] {
+                    "ID", "Subject", "Content text", "Content HTML"
+            });
             grid.getGenericDataView()
                     .getItems().map(mailTemplateRecord -> new String[] {
                             mailTemplateRecord.getId(),

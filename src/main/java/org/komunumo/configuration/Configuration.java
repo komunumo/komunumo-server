@@ -23,11 +23,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 
 @SuppressWarnings("ClassCanBeRecord")
-public class Configuration {
+public final class Configuration {
 
     private final Map<String, String> configuration;
 
-    public Configuration(@NotNull Map<String, String> configuration) {
+    public Configuration(@NotNull final Map<String, String> configuration) {
         this.configuration = configuration;
     }
 

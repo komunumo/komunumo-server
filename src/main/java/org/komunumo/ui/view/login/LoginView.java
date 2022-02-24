@@ -36,7 +36,7 @@ import org.komunumo.ui.view.admin.dashboard.DashboardView;
 @Route(value = "login")
 @PageTitle("Login")
 @AnonymousAllowed
-public class LoginView extends LoginOverlay implements BeforeEnterObserver {
+public final class LoginView extends LoginOverlay implements BeforeEnterObserver {
 
     private final AuthenticatedUser authenticatedUser;
 
@@ -71,7 +71,7 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
 
         setForgotPasswordButtonVisible(true);
         addForgotPasswordListener(event -> UI.getCurrent().getPage().executeJs(
-                        "var field = document.getElementById('vaadinLoginUsername'); if (field !== null) { return field.value; } else { return null; }")
+                "var field = document.getElementById('vaadinLoginUsername'); if (field !== null) { return field.value; } else { return null; }")
                 .then(String.class, email -> {
                             if (email.isBlank()) {
                                 Notification.show("Please enter your email address first.");

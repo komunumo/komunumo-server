@@ -24,11 +24,12 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
-public class DateUtil {
+public final class DateUtil {
 
-    public static LocalDate dateToLocalDate(@Nullable Date date) {
-        return date == null ? null :
-                date.toInstant()
+    public static LocalDate dateToLocalDate(@Nullable final Date date) {
+        return date == null
+                ? null
+                : date.toInstant()
                         .atZone(ZoneId.systemDefault())
                         .toLocalDate();
     }
