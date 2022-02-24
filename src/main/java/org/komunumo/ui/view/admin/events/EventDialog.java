@@ -137,8 +137,8 @@ public class EventDialog extends EditDialog<Event> {
         date.setMin(LocalDateTime.now());
         date.addValueChangeListener(changeEvent -> updateEventUrlPrefix(location, date, eventUrl));
         duration.setStep(Duration.ofMinutes(15));
-        duration.setMinTime(LocalTime.of(1, 0));
-        duration.setMaxTime(LocalTime.of(3, 0));
+        duration.setMin(LocalTime.of(1, 0));
+        duration.setMax(LocalTime.of(3, 0));
         eventUrl.setValueChangeMode(EAGER);
         updateEventUrlPrefix(location, date, eventUrl);
         attendeeLimit.setMin(0);
