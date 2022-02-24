@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoginAttemptService {
 
+    public static final int MAX_LOGIN_ATTEMPTS = 3;
     private final LoadingCache<String, Integer> attemptsCache;
 
     public LoginAttemptService() {
@@ -62,7 +63,7 @@ public class LoginAttemptService {
 
     public boolean isBlocked(@NotNull final String ip) {
         try {
-            return attemptsCache.get(ip) >= 3;
+            return attemptsCache.get(ip) >= MAX_LOGIN_ATTEMPTS;
         } catch (final ExecutionException e) {
             return false;
         }

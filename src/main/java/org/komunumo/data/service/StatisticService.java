@@ -19,6 +19,7 @@
 package org.komunumo.data.service;
 
 import org.jetbrains.annotations.NotNull;
+import org.jfree.data.time.Month;
 import org.jooq.impl.DSL;
 import org.komunumo.data.db.enums.EventType;
 import org.komunumo.data.entity.MonthlyVisitors;
@@ -89,18 +90,18 @@ interface StatisticService extends DSLContextGetter {
 
         return dsl().select(
                         EVENT.LOCATION.as("Location"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(1)).as("January"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(2)).as("February"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(3)).as("March"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(4)).as("April"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(5)).as("May"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(6)).as("June"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(7)).as("July"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(8)).as("August"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(9)).as("September"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(10)).as("October"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(11)).as("November"),
-                        DSL.count().filterWhere(month(EVENT.DATE).eq(12)).as("December"))
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(Month.JANUARY)).as("January"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(Month.FEBRUARY)).as("February"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(Month.MARCH)).as("March"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(Month.APRIL)).as("April"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(Month.MAY)).as("May"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(Month.JUNE)).as("June"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(Month.JULY)).as("July"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(Month.AUGUST)).as("August"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(Month.SEPTEMBER)).as("September"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(Month.OCTOBER)).as("October"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(Month.NOVEMBER)).as("November"),
+                        DSL.count().filterWhere(month(EVENT.DATE).eq(Month.DECEMBER)).as("December"))
                 .from(REGISTRATION)
                 .leftJoin(EVENT).on(REGISTRATION.EVENT_ID.eq(EVENT.ID))
                 .where(EVENT.DATE.greaterOrEqual(firstDay).and(EVENT.DATE.lessOrEqual(lastDay)))

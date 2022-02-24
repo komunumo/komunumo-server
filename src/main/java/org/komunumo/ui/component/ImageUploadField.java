@@ -37,6 +37,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ImageUploadField extends CustomField<String> {
 
+    public static final int MAX_FILE_COUNT = 1;
+    public static final int MAX_FILE_SIZE = 1_000_000;
+
     private final Image preview;
     private final Div delete;
     private final Upload upload;
@@ -54,8 +57,8 @@ public class ImageUploadField extends CustomField<String> {
         delete = new Div(deleteButton);
 
         upload = new Upload();
-        upload.setMaxFiles(1);
-        upload.setMaxFileSize(1_000_000);
+        upload.setMaxFiles(MAX_FILE_COUNT);
+        upload.setMaxFileSize(MAX_FILE_SIZE);
         upload.getStyle().set("box-sizing", "border-box");
         upload.getElement().appendChild(preview.getElement());
 

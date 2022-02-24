@@ -35,6 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY;
+
 @Component
 public class ApplicationServiceInitListener implements VaadinServiceInitListener {
 
@@ -53,7 +55,7 @@ public class ApplicationServiceInitListener implements VaadinServiceInitListener
                 final var uri = httpServletRequest.getRequestURI();
                 if (redirects.containsKey(uri) && response instanceof HttpServletResponse httpServletResponse) {
                     httpServletResponse.setHeader("Location", redirects.get(uri));
-                    httpServletResponse.setStatus(301);
+                    httpServletResponse.setStatus(SC_MOVED_PERMANENTLY);
                     return true;
                 }
             }
