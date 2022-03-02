@@ -78,7 +78,7 @@
         <java.version>17</java.version>
         <jooq.version>3.16.4</jooq.version>
         <maven.version>3.8.4</maven.version>
-        <vaadin.version>22.0.7</vaadin.version>
+        <vaadin.version>23.0.0</vaadin.version>
     </properties>
 
     <parent>
@@ -254,6 +254,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.1-jre</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
@@ -350,6 +355,13 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>3.0.0-M5</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.sun.xml.bind</groupId>
+                            <artifactId>jaxb-impl</artifactId>
+                            <version>3.0.2</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
             </plugins>
         </pluginManagement>

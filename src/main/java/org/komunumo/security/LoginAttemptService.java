@@ -19,16 +19,13 @@
 package org.komunumo.security;
 
 import com.google.common.cache.CacheBuilder;
-
 import com.google.common.cache.CacheLoader;
-
 import com.google.common.cache.LoadingCache;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-
-import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Service;
 
 @Service
 public final class LoginAttemptService {
@@ -40,7 +37,7 @@ public final class LoginAttemptService {
         super();
         attemptsCache = CacheBuilder.newBuilder().
                 expireAfterWrite(1, TimeUnit.DAYS).build(new CacheLoader<>() {
-                    public Integer load(@NotNull final String ip) {
+                    public @NotNull Integer load(@NotNull final String ip) {
                         return 0;
                     }
                 });
