@@ -55,9 +55,10 @@ public class HomeViewTest extends KaribuTest {
         assertTrue(databaseService.getSubscription(correctEmailAddress).isPresent());
 
         await().atMost(2, SECONDS).untilAsserted(() -> {
-            final var receivedMessage = greenMail.getReceivedMessages()[0];
+            final var receivedMessage = getGreenMail().getReceivedMessages()[0];
             assertEquals("Validate your newsletter subscription", receivedMessage.getSubject());
-            assertTrue(GreenMailUtil.getBody(receivedMessage).startsWith("Please click on the following link to validate your newsletter subscription:"));
+            assertTrue(GreenMailUtil.getBody(receivedMessage)
+                    .startsWith("Please click on the following link to validate your newsletter subscription:"));
             assertEquals(1, receivedMessage.getAllRecipients().length);
             assertEquals(correctEmailAddress, receivedMessage.getAllRecipients()[0].toString());
         });

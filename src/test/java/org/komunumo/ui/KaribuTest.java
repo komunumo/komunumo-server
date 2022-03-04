@@ -28,7 +28,6 @@ import com.icegreen.greenmail.util.ServerSetupTest;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinServletRequest;
 import kotlin.jvm.functions.Function0;
-import kotlin.jvm.functions.Function2;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -43,7 +42,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.security.Principal;
 import java.util.List;
 
 /**
@@ -54,15 +52,15 @@ import java.util.List;
  * You can perform programmatic logins via {@link #login(String, String, List)}.
  * Alternatively, you can use the <code>@WithMockUser</code> annotation
  * as described at <a href="https://www.baeldung.com/spring-security-integration-tests">Spring Security IT</a>,
- * but you will need still to call {@link MockRequest#setUserPrincipalInt(Principal)}
- * and {@link MockRequest#setUserInRole(Function2)}.
+ * but you will need still to call {@link MockRequest#setUserPrincipalInt(java.security.Principal)}
+ * and {@link MockRequest#setUserInRole(kotlin.jvm.functions.Function2)}.
  */
 @SpringBootTest
 @DirtiesContext
 public abstract class KaribuTest {
 
     @RegisterExtension
-    protected static final GreenMailExtension greenMail = new GreenMailExtension(ServerSetupTest.SMTP)
+    private static final GreenMailExtension GREEN_MAIL = new GreenMailExtension(ServerSetupTest.SMTP)
             .withConfiguration(GreenMailConfiguration.aConfig()
                     .withUser("komunumo", "s3cr3t"))
             .withPerMethodLifecycle(false);
@@ -75,15 +73,31 @@ public abstract class KaribuTest {
     }
 
     @Autowired
-    protected ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
-    protected void login(@NotNull final String user, @NotNull final String pass, @NotNull final List<Role> roles) {
+    /**
+     * Get access to the green mail extension to verify mail delivery.
+     *
+     * @return green mail extension
+     */
+    protected GreenMailExtension getGreenMail() {
+        return GREEN_MAIL;
+    }
+
+    /**
+     * Login a user to be used by the tests.
+     *
+     * @param email the email address
+     * @param pass the password
+     * @param roles a {@link List} of {@link Role}s
+     */
+    protected void login(@NotNull final String email, @NotNull final String pass, @NotNull final List<Role> roles) {
         // taken from https://www.baeldung.com/manually-set-user-authentication-spring-security
         // also see https://github.com/mvysny/karibu-testing/issues/47 for more details.
         final var authorities = roles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRoleName()))
                 .toList();
-        final var authenticationToken = new UsernamePasswordAuthenticationToken(user, pass, authorities);
+        final var authenticationToken = new UsernamePasswordAuthenticationToken(email, pass, authorities);
         final var securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(authenticationToken);
 
@@ -94,6 +108,9 @@ public abstract class KaribuTest {
         request.setUserInRole((principal, role) -> roles.contains(Role.valueOf(role)));
     }
 
+    /**
+     * Logout a previously logged-in user.
+     */
     protected void logout() {
         SecurityContextHolder.getContext().setAuthentication(null);
         if (VaadinServletRequest.getCurrent() != null) {
@@ -103,6 +120,9 @@ public abstract class KaribuTest {
         }
     }
 
+    /**
+     * @see org.junit.jupiter.api.BeforeEach
+     */
     @BeforeEach
     public void setup() {
         final Function0<UI> uiFactory = UI::new;
@@ -110,11 +130,17 @@ public abstract class KaribuTest {
         MockVaadin.setup(uiFactory, servlet);
     }
 
+    /**
+     * @see org.junit.jupiter.api.AfterEach
+     */
     @AfterEach
     public void tearDown() {
         MockVaadin.tearDown();
     }
 
+    /**
+     * @see org.junit.jupiter.api.AfterEach
+     */
     @AfterEach
     public void performLogout() {
         logout();
