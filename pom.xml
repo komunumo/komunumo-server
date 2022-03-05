@@ -477,7 +477,7 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <configLocation>${basedir}/config/checkstyle/checkstyle.xml</configLocation>
+                    <configLocation>${basedir}/checkstyle.xml</configLocation>
                 </configuration>
                 <executions>
                     <execution>
