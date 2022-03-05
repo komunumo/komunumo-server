@@ -22,6 +22,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
@@ -69,10 +71,16 @@ public final class EventsView extends ContentBlock implements BeforeEnterObserve
         final var subMenu = createSubMenu(events, location.orElse(null));
         final var eventsList = new Div();
         eventsList.addClassName("events-list");
-        events.stream()
+        final var filteredEventPreviews = events.stream()
                 .filter(event -> location.isEmpty() || URLUtil.createReadableUrl(event.getLocation()).equals(location.get()))
                 .map(EventPreview::new)
-                .forEach(eventsList::add);
+                .toList();
+        if (filteredEventPreviews.isEmpty()) {
+            eventsList.add(new H2("No upcoming events found"));
+            eventsList.add(new H3("Please try a different location from the menu to the left."));
+        } else {
+            eventsList.add(filteredEventPreviews.toArray(new EventPreview[0]));
+        }
         setSubMenu(subMenu);
         setContent(eventsList);
     }

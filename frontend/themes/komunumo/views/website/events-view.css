@@ -31,3 +31,8 @@
     border-bottom: 2px solid #bfbfbf;
     padding: 8px 20px 8px 0;
 }
+
+.website .events-list h2 {
+    margin-top: 0;
+    width: 100%;
+}
