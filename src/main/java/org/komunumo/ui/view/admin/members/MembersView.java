@@ -31,7 +31,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.data.renderer.TemplateRenderer;
+import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
@@ -40,9 +40,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Member;
@@ -55,6 +52,7 @@ import org.komunumo.ui.view.admin.AdminLayout;
 
 import javax.annotation.security.RolesAllowed;
 import java.io.ByteArrayInputStream;
+import java.io.Serial;
 import java.io.StringWriter;
 import java.time.LocalDate;
 import java.util.List;
@@ -124,11 +122,11 @@ public final class MembersView extends ResizableView implements HasUrlParameter<
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
-        grid.addColumn(TemplateRenderer.<Member>of("<span style=\"font-weight: bold;\">[[item.fullName]]</span><br/><span>[[item.company]]</span>")
+        grid.addColumn(LitRenderer.<Member>of("<span style=\"font-weight: bold;\">${item.fullName}</span><br/><span>${item.company}</span>")
                 .withProperty("fullName", Member::getFullName)
                 .withProperty("company", Member::getCompany))
                 .setHeader("Name").setAutoWidth(true).setFlexGrow(1);
-        grid.addColumn(TemplateRenderer.<Member>of("<a href=\"mailto:[[item.email]]\" target=\"_blank\">[[item.email]]</a>")
+        grid.addColumn(LitRenderer.<Member>of("<a href=\"mailto:${item.email}\" target=\"_blank\">${item.email}</a>")
                 .withProperty("email", Member::getEmail))
                 .setHeader("Email").setAutoWidth(true).setKey("email").setFlexGrow(0);
         grid.addColumn(new ComponentRenderer<>(member -> new Text(getMembershipText(member, sponsorDomains))))
