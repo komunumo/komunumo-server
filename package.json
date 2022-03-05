@@ -412,6 +412,6 @@
     "lit": "$lit",
     "lumo-css-framework": "$lumo-css-framework",
     "multiselect-combo-box": "$multiselect-combo-box",
-    "chokidar": "^3.5.3"
+    "chokidar": "$chokidar"
   }
 }
