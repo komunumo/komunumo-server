@@ -22,9 +22,15 @@ import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 
 public final class EnhancedButton extends Button {
+
+    @Serial
+    private static final long serialVersionUID = 4972834260936037127L;
 
     public EnhancedButton(@NotNull final String text, @NotNull final ComponentEventListener<ClickEvent<Button>> clickListener) {
         super(text, clickListener);

@@ -38,6 +38,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
+import java.io.Serial;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -54,6 +55,8 @@ import org.komunumo.ui.view.website.WebsiteLayout;
 @AnonymousAllowed
 public final class MembersView extends ContentBlock implements BeforeEnterObserver, AfterNavigationObserver {
 
+    @Serial
+    private static final long serialVersionUID = -2944489591379876351L;
     private final DatabaseService databaseService;
 
     public MembersView(@NotNull final DatabaseService databaseService) {

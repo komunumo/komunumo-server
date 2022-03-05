@@ -21,6 +21,9 @@ package org.komunumo;
 import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.enums.PageParent;
 import org.komunumo.data.service.DatabaseService;
@@ -40,6 +43,8 @@ import static javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY;
 @Component
 public final class ApplicationServiceInitListener implements VaadinServiceInitListener {
 
+    @Serial
+    private static final long serialVersionUID = -238825369839138574L;
     private final DatabaseService databaseService;
     private final Map<String, String> redirects = new HashMap<>();
 

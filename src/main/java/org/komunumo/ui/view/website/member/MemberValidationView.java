@@ -28,6 +28,9 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.security.SecurityService;
 import org.komunumo.ui.view.website.ContentBlock;
@@ -41,6 +44,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 @CssImport("./themes/komunumo/views/website/member-validation-view.css")
 public final class MemberValidationView extends ContentBlock implements BeforeEnterObserver {
 
+    @Serial
+    private static final long serialVersionUID = -679013607285455434L;
     private final SecurityService securityService;
 
     public MemberValidationView(@NotNull final SecurityService securityService) {

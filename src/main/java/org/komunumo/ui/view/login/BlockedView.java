@@ -26,6 +26,9 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.MemberRecord;
 
@@ -36,6 +39,8 @@ import javax.annotation.security.PermitAll;
 @PermitAll
 public final class BlockedView extends Div implements BeforeEnterObserver {
 
+    @Serial
+    private static final long serialVersionUID = -6817094454141435065L;
     private final Text message;
 
     public BlockedView() {

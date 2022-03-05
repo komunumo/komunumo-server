@@ -19,11 +19,17 @@
 package org.komunumo.ui.component;
 
 import com.vaadin.componentfactory.EnhancedDatePicker;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 
 import static org.komunumo.util.FormatterUtil.DATE_PATTERN;
 
 public class DatePicker extends EnhancedDatePicker {
+
+    @Serial
+    private static final long serialVersionUID = -3377656832680318019L;
 
     public DatePicker(@NotNull final String label) {
         super(label);

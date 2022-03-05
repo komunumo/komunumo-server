@@ -28,6 +28,7 @@ import org.springframework.mail.MailSender;
 import org.springframework.stereotype.Service;
 
 @Service
+@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public class DatabaseService implements DSLContextGetter, ConfigurationGetter, MailSenderGetter, ConfigurationService, EventService,
         EventKeywordService, EventOrganizerService, EventSpeakerService, FaqService, FeedbackService, KeywordService, LocationColorService,
         MailService, MailTemplateService, MemberService, NewsService, PageService, RedirectService, RegistrationService, SpeakerService,

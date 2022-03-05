@@ -21,7 +21,12 @@ package org.komunumo.ui.component;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
+import java.io.Serial;
+
 public class FilterField extends TextField {
+
+    @Serial
+    private static final long serialVersionUID = -6208990001762120998L;
 
     public FilterField() {
         super();

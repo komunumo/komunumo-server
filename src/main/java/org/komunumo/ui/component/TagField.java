@@ -25,6 +25,9 @@ import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.textfield.TextField;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -35,6 +38,8 @@ import java.util.stream.Collectors;
 @CssImport("./themes/komunumo/views/admin/tag-field.css")
 public final class TagField extends TextField {
 
+    @Serial
+    private static final long serialVersionUID = -3370499523503628664L;
     private Set<String> tags;
 
     public TagField(@NotNull final String label) {

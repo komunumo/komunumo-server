@@ -20,10 +20,16 @@ package org.komunumo.ui.view.website;
 
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Header;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.DatabaseService;
 
 public class WebsiteHeader extends Header {
+
+    @Serial
+    private static final long serialVersionUID = -2262506980198067180L;
 
     public WebsiteHeader(@NotNull final DatabaseService databaseService) {
         setId("website-header");

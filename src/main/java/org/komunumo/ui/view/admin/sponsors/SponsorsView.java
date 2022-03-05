@@ -38,6 +38,9 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Role;
@@ -63,6 +66,8 @@ import static org.komunumo.util.FormatterUtil.formatDate;
 @RolesAllowed(Role.Type.ADMIN)
 public final class SponsorsView extends ResizableView implements HasUrlParameter<String> {
 
+    @Serial
+    private static final long serialVersionUID = -5938974936125304046L;
     private final DatabaseService databaseService;
     private final TextField filterField;
     private final Grid<SponsorEntity> grid;

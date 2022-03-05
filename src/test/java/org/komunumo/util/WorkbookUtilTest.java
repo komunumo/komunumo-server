@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class WorkbookUtilTest {
 
     @Test
+    @SuppressWarnings("PMD.AvoidAccessibilityAlteration") // this is exactly what we want to test
     void privateConstructorWithException() {
         final var cause = assertThrows(InvocationTargetException.class, () -> {
             Constructor<WorkbookUtil> constructor = WorkbookUtil.class.getDeclaredConstructor();

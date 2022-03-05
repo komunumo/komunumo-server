@@ -27,6 +27,9 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.dom.Element;
 import elemental.json.Json;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.util.UriUtils;
 
@@ -39,6 +42,8 @@ public final class ImageUploadField extends CustomField<String> {
 
     public static final int MAX_FILE_COUNT = 1;
     public static final int MAX_FILE_SIZE = 1_000_000;
+    @Serial
+    private static final long serialVersionUID = 5852401231435551542L;
 
     private final Image preview;
     private final Div delete;

@@ -26,6 +26,9 @@ import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Role;
 import org.komunumo.data.service.DatabaseService;
@@ -41,6 +44,9 @@ import java.util.Comparator;
 @CssImport(value = "./themes/komunumo/views/admin/dashboard-view.css")
 @RolesAllowed(Role.Type.MEMBER)
 public class DashboardView extends Div {
+
+    @Serial
+    private static final long serialVersionUID = 3466563649520421310L;
 
     public DashboardView(@NotNull final DatabaseService databaseService) {
         addClassName("dashboard-view");

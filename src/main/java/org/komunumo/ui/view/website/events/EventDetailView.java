@@ -24,6 +24,9 @@ import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.NotFoundException;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.DatabaseService;
@@ -43,6 +46,8 @@ import java.util.Map;
 @AnonymousAllowed
 public final class EventDetailView extends ContentBlock implements BeforeEnterObserver, HasDynamicTitle {
 
+    @Serial
+    private static final long serialVersionUID = 7793548424072752819L;
     private final DatabaseService databaseService;
 
     private final Map<String, String> locationMapper = new HashMap<>();

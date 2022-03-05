@@ -417,7 +417,7 @@ public final class JUGSImporter {
                         if (event.getLanguage() == null) {
                             final var langTalk = result.getString("lang_talk");
                             if (langTalk != null && !langTalk.isBlank()) {
-                                final var language = EventLanguage.valueOf(langTalk.toUpperCase());
+                                final var language = EventLanguage.valueOf(langTalk.toUpperCase(Locale.getDefault()));
                                 event.setLanguage(language);
                                 eventModified = true;
                             }

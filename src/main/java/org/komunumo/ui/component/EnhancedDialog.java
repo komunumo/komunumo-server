@@ -30,20 +30,26 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.theme.lumo.Lumo;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("PMD.ConstructorCallsOverridableMethod") // call is prefixed with super
 @CssImport("./themes/komunumo/views/admin/komunumo-dialog.css")
 public class EnhancedDialog extends Dialog {
 
     private static final String DOCK = "dock";
     private static final String FULLSCREEN = "fullscreen";
+    @Serial
+    private static final long serialVersionUID = -1839740967601797009L;
 
     private boolean isDocked = false;
     private boolean isFullScreen = false;
 
-    private final Button minimise;
-    private final Button maximise;
+    private final Button minimiseButton;
+    private final Button maximiseButton;
 
     private final VerticalLayout content;
     private final Footer footer;
@@ -65,18 +71,18 @@ public class EnhancedDialog extends Dialog {
         final var dialogTitle = new H2(title);
         dialogTitle.addClassName("dialog-title");
 
-        minimise = new Button(VaadinIcon.DOWNLOAD_ALT.create());
-        minimise.addClickListener(event -> minimise());
-        minimise.setVisible(false); // maybe we activate this feature at a later time
+        minimiseButton = new Button(VaadinIcon.DOWNLOAD_ALT.create());
+        minimiseButton.addClickListener(event -> minimise());
+        minimiseButton.setVisible(false); // maybe we activate this feature at a later time
 
-        maximise = new Button(VaadinIcon.EXPAND_SQUARE.create());
-        maximise.addClickListener(event -> maximise());
-        maximise.setVisible(false); // maybe we activate this feature at a later time
+        maximiseButton = new Button(VaadinIcon.EXPAND_SQUARE.create());
+        maximiseButton.addClickListener(event -> maximise());
+        maximiseButton.setVisible(false); // maybe we activate this feature at a later time
 
         final var close = new Button(VaadinIcon.CLOSE_SMALL.create());
         close.addClickListener(event -> close());
 
-        final var header = new Header(dialogTitle, minimise, maximise, close);
+        final var header = new Header(dialogTitle, minimiseButton, maximiseButton, close);
         header.getElement().getThemeList().add(Lumo.DARK);
         super.add(header);
 
@@ -91,7 +97,7 @@ public class EnhancedDialog extends Dialog {
         super.add(footer);
 
         // Button theming
-        for (final var button : new Button[] {minimise, maximise, close }) {
+        for (final var button : new Button[] {minimiseButton, maximiseButton, close }) {
             button.addThemeVariants(ButtonVariant.LUMO_CONTRAST, ButtonVariant.LUMO_TERTIARY);
         }
     }
@@ -103,7 +109,7 @@ public class EnhancedDialog extends Dialog {
             if (isFullScreen) {
                 initialSize();
             }
-            minimise.setIcon(VaadinIcon.UPLOAD_ALT.create());
+            minimiseButton.setIcon(VaadinIcon.UPLOAD_ALT.create());
             getElement().getThemeList().add(DOCK);
             setWidth("320px");
         }
@@ -114,9 +120,9 @@ public class EnhancedDialog extends Dialog {
     }
 
     private void initialSize() {
-        minimise.setIcon(VaadinIcon.DOWNLOAD_ALT.create());
+        minimiseButton.setIcon(VaadinIcon.DOWNLOAD_ALT.create());
         getElement().getThemeList().remove(DOCK);
-        maximise.setIcon(VaadinIcon.EXPAND_SQUARE.create());
+        maximiseButton.setIcon(VaadinIcon.EXPAND_SQUARE.create());
         getElement().getThemeList().remove(FULLSCREEN);
         setHeight("auto");
         setWidth("600px");
@@ -129,7 +135,7 @@ public class EnhancedDialog extends Dialog {
             if (isDocked) {
                 initialSize();
             }
-            maximise.setIcon(VaadinIcon.COMPRESS_SQUARE.create());
+            maximiseButton.setIcon(VaadinIcon.COMPRESS_SQUARE.create());
             getElement().getThemeList().add(FULLSCREEN);
             setSizeFull();
             content.setVisible(true);

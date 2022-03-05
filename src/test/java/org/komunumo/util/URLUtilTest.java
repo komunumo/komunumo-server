@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SuppressWarnings({ "HttpUrlsUsage", "PMD.AvoidDuplicateLiterals" })
 class URLUtilTest {
 
     @Test
@@ -57,7 +58,6 @@ class URLUtilTest {
     }
 
     @Test
-    @SuppressWarnings("HttpUrlsUsage")
     void getDomainFromUrl() {
         assertEquals("komunumo.org", URLUtil.getDomainFromUrl("komunumo.org"));
         assertEquals("komunumo.org", URLUtil.getDomainFromUrl("www.komunumo.org"));
@@ -95,6 +95,7 @@ class URLUtilTest {
     }
 
     @Test
+    @SuppressWarnings("PMD.AvoidAccessibilityAlteration") // this is exactly what we want to test
     void privateConstructorWithException() {
         final var cause = assertThrows(InvocationTargetException.class, () -> {
             Constructor<URLUtil> constructor = URLUtil.class.getDeclaredConstructor();

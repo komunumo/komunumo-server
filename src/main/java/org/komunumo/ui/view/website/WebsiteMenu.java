@@ -23,6 +23,9 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.AnchorTarget;
 import com.vaadin.flow.component.html.Nav;
 import com.vaadin.flow.router.RouterLink;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.security.AuthenticatedUser;
 import org.komunumo.ui.view.website.events.EventsView;
@@ -33,6 +36,9 @@ import org.komunumo.ui.view.website.sponsors.SponsorsView;
 
 @CssImport("./themes/komunumo/views/website/website-menu.css")
 public class WebsiteMenu extends Nav {
+
+    @Serial
+    private static final long serialVersionUID = 2842049321921043506L;
 
     public WebsiteMenu(@NotNull final AuthenticatedUser authenticatedUser) {
         super();

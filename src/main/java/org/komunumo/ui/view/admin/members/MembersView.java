@@ -40,6 +40,9 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Member;
@@ -67,6 +70,11 @@ import static org.komunumo.util.FormatterUtil.formatDateTime;
 @CssImport(value = "./themes/komunumo/views/admin/komunumo-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
 @RolesAllowed(Role.Type.ADMIN)
 public final class MembersView extends ResizableView implements HasUrlParameter<String> {
+
+    @Serial
+    private static final long serialVersionUID = -2440457177270806566L;
+
+    private static final int EMAIL_SPLIT_LIMIT = 2;
 
     private final DatabaseService databaseService;
     private final TextField filterField;
@@ -165,8 +173,8 @@ public final class MembersView extends ResizableView implements HasUrlParameter<
 
         // is active sponsor member
         if (!member.getEmail().isBlank()) {
-            final var emailParts = member.getEmail().split("@", 2);
-            if (emailParts.length == 2) {
+            final var emailParts = member.getEmail().split("@", EMAIL_SPLIT_LIMIT);
+            if (emailParts.length == EMAIL_SPLIT_LIMIT) {
                 final var emailDomain = emailParts[1];
                 if (sponsorDomains.contains(emailDomain)) {
                     return "sponsored";

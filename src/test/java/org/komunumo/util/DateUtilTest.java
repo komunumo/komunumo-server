@@ -53,6 +53,7 @@ class DateUtilTest {
     }
 
     @Test
+    @SuppressWarnings("PMD.AvoidAccessibilityAlteration") // this is exactly what we want to test
     void privateConstructorWithException() {
         final var cause = assertThrows(InvocationTargetException.class, () -> {
             Constructor<DateUtil> constructor = DateUtil.class.getDeclaredConstructor();

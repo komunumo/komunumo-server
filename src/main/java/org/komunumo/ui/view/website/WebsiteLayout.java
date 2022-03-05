@@ -27,6 +27,9 @@ import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.RouterLayout;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.DatabaseService;
 import org.komunumo.security.AuthenticatedUser;
@@ -34,6 +37,8 @@ import org.komunumo.security.AuthenticatedUser;
 @CssImport(value = "./themes/komunumo/views/website/website-layout.css")
 public final class WebsiteLayout extends Div implements RouterLayout {
 
+    @Serial
+    private static final long serialVersionUID = 3096690154788879457L;
     private final Main main;
     private final TwitterFeed twitterFeed;
 

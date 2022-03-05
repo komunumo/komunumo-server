@@ -30,6 +30,9 @@ import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
@@ -48,6 +51,8 @@ import java.util.List;
 @AnonymousAllowed
 public final class EventsView extends ContentBlock implements BeforeEnterObserver, HasDynamicTitle {
 
+    @Serial
+    private static final long serialVersionUID = -1477933866218710123L;
     private final DatabaseService databaseService;
 
     private String selectedLocation;
@@ -64,7 +69,6 @@ public final class EventsView extends ContentBlock implements BeforeEnterObserve
 
     @Override
     public void beforeEnter(@NotNull final BeforeEnterEvent beforeEnterEvent) {
-        selectedLocation = null;
         final var params = beforeEnterEvent.getRouteParameters();
         final var location = params.get("location");
         final var events = databaseService.upcomingEvents().toList();

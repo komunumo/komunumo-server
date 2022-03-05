@@ -23,6 +23,9 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.DatabaseService;
@@ -31,6 +34,9 @@ import static org.komunumo.util.FormatterUtil.formatDate;
 
 @CssImport("./themes/komunumo/views/website/event-deregistration-form.css")
 public class EventDeregistrationForm extends Div {
+
+    @Serial
+    private static final long serialVersionUID = 4831112167632344866L;
 
     public EventDeregistrationForm(@NotNull final DatabaseService databaseService,
                                    @NotNull final Event event,

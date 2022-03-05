@@ -19,9 +19,15 @@
 package org.komunumo.ui.view.website;
 
 import com.vaadin.flow.component.html.Anchor;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 
 public class SubMenuItem extends Anchor {
+
+    @Serial
+    private static final long serialVersionUID = -3384869879252154122L;
 
     public SubMenuItem(@NotNull final String href, @NotNull final String text) {
         this(href, text, false);

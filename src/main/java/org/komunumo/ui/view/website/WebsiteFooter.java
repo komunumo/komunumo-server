@@ -26,12 +26,17 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.configuration.Configuration;
 import org.komunumo.data.service.DatabaseService;
 
 public class WebsiteFooter extends Footer {
 
+    @Serial
+    private static final long serialVersionUID = -5150780117791978295L;
     private final Configuration configuration;
 
     public WebsiteFooter(@NotNull final DatabaseService databaseService) {

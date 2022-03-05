@@ -41,6 +41,9 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
@@ -74,6 +77,8 @@ import static org.komunumo.util.FormatterUtil.formatDateTime;
 @RolesAllowed(Role.Type.ADMIN)
 public final class EventsView extends ResizableView implements HasUrlParameter<String> {
 
+    @Serial
+    private static final long serialVersionUID = -7178074280442155494L;
     private final AuthenticatedUser authenticatedUser;
     private final DatabaseService databaseService;
 

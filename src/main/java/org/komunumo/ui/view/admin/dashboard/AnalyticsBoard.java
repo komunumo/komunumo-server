@@ -33,6 +33,9 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.NoShows;
 import org.komunumo.data.service.DatabaseService;
@@ -43,6 +46,8 @@ import java.time.Year;
 @CssImport(value = "./themes/komunumo/views/admin/analytics-board.css")
 public class AnalyticsBoard extends Div {
 
+    @Serial
+    private static final long serialVersionUID = 5025158769585320565L;
     private final Chart monthlyVisitors = new Chart();
     private final H2 numberOfRegistrations = new H2();
     private final H2 numberOfEvents = new H2();

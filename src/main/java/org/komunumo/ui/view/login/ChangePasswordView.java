@@ -30,6 +30,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.security.AuthenticatedUser;
 import org.komunumo.security.SecurityConfiguration;
@@ -42,6 +45,9 @@ import javax.annotation.security.PermitAll;
 @PageTitle("Change Password")
 @PermitAll
 public class ChangePasswordView extends VerticalLayout {
+
+    @Serial
+    private static final long serialVersionUID = -1548708006113468096L;
 
     public ChangePasswordView(@NotNull final AuthenticatedUser authenticatedUser,
                               @NotNull final SecurityService securityService) {

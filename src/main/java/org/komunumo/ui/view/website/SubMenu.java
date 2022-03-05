@@ -21,10 +21,16 @@ package org.komunumo.ui.view.website;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Nav;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 
 @CssImport("./themes/komunumo/views/website/sub-menu.css")
 public class SubMenu extends Nav {
+
+    @Serial
+    private static final long serialVersionUID = -1625103028098617871L;
 
     public SubMenu() {
         addClassName("sub-menu");

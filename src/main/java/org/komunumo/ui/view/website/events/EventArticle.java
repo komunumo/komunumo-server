@@ -27,6 +27,9 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Span;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.KeywordEntity;
@@ -41,6 +44,8 @@ public class EventArticle extends Article {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    @Serial
+    private static final long serialVersionUID = -6558638652341245266L;
 
     public EventArticle() {
         addClassName("event-article");

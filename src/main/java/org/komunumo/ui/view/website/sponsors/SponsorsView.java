@@ -35,6 +35,9 @@ import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.enums.PageParent;
 import org.komunumo.data.db.enums.SponsorLevel;
@@ -51,6 +54,8 @@ import org.komunumo.util.URLUtil;
 @AnonymousAllowed
 public final class SponsorsView extends ContentBlock implements AfterNavigationObserver {
 
+    @Serial
+    private static final long serialVersionUID = 1434267042866729347L;
     private final DatabaseService databaseService;
 
     public SponsorsView(@NotNull final DatabaseService databaseService) {

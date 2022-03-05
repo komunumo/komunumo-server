@@ -22,10 +22,15 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.shared.Registration;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.Nullable;
 
 public class ResizableView extends Div {
 
+    @Serial
+    private static final long serialVersionUID = 7946777006269624867L;
     private Registration listener;
 
     /**

@@ -22,6 +22,9 @@ import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.security.AuthenticatedUser;
 
@@ -31,6 +34,9 @@ import javax.annotation.security.PermitAll;
 @PageTitle("Logout")
 @PermitAll
 public class LogoutView extends Composite<VerticalLayout> {
+
+    @Serial
+    private static final long serialVersionUID = -1311609912638895522L;
 
     public LogoutView(@NotNull final AuthenticatedUser authenticatedUser) {
         authenticatedUser.logout();

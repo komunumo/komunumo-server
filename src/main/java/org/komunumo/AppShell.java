@@ -24,6 +24,9 @@ import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.AppShellSettings;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.DatabaseService;
 
@@ -35,6 +38,8 @@ import org.komunumo.data.service.DatabaseService;
 @SuppressWarnings({"unused", "ClassCanBeRecord"})
 public final class AppShell implements AppShellConfigurator {
 
+    @Serial
+    private static final long serialVersionUID = 2859611862945757311L;
     private final DatabaseService databaseService;
 
     public AppShell(@NotNull final DatabaseService databaseService) {

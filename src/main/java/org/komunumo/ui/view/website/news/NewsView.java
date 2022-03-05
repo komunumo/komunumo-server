@@ -32,6 +32,9 @@ import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.NewsEntity;
 import org.komunumo.data.service.DatabaseService;
@@ -51,6 +54,8 @@ import static org.komunumo.util.FormatterUtil.formatDate;
 @AnonymousAllowed
 public final class NewsView extends ContentBlock implements BeforeEnterObserver, HasDynamicTitle {
 
+    @Serial
+    private static final long serialVersionUID = 4588464261444649592L;
     private final DatabaseService databaseService;
 
     private NewsEntity newsEntity = null;
@@ -63,7 +68,6 @@ public final class NewsView extends ContentBlock implements BeforeEnterObserver,
 
     @Override
     public void beforeEnter(@NotNull final BeforeEnterEvent beforeEnterEvent) {
-        newsEntity = null;
         final var newsEntities = new ArrayList<NewsEntity>();
 
         final var params = beforeEnterEvent.getRouteParameters();

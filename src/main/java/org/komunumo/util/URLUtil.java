@@ -18,6 +18,8 @@
 
 package org.komunumo.util;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -86,7 +88,7 @@ public final class URLUtil {
                         .build();
                 final var response = client.send(request,
                         HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-                if (response.statusCode() == 200) {
+                if (response.statusCode() == HttpServletResponse.SC_OK) {
                     return true;
                 }
             } catch (final Exception e) {

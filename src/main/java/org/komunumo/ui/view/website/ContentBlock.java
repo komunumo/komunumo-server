@@ -26,6 +26,9 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.NotFoundException;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.PageParent;
@@ -36,6 +39,8 @@ import org.komunumo.util.FormatterUtil;
 @CssImport("./themes/komunumo/views/website/content-block.css")
 public class ContentBlock extends HorizontalLayout {
 
+    @Serial
+    private static final long serialVersionUID = -7498317913387890319L;
     private final HtmlContainer titleColumn;
 
     private HtmlContainer subMenuContainer = null;

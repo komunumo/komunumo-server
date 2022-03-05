@@ -22,10 +22,16 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Paragraph;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 
 @CssImport("./themes/komunumo/views/website/more.css")
 public class More extends Paragraph {
+
+    @Serial
+    private static final long serialVersionUID = -1388694063439698258L;
 
     public More(@NotNull final String url) {
         super(

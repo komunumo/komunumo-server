@@ -20,6 +20,9 @@ package org.komunumo.ui.view.website;
 
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.server.InvalidApplicationConfigurationException;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.DatabaseService;
 
@@ -27,6 +30,8 @@ import java.util.Random;
 
 public class WebsiteLogo extends Image {
 
+    @Serial
+    private static final long serialVersionUID = 5073126350713287726L;
     private final String logoUrlTemplate;
     private final int minLogoNumber;
     private final int maxLogoNumber;

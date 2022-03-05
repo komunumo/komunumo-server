@@ -20,9 +20,15 @@ package org.komunumo.ui.view.admin.dashboard;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 
 public class WrapperCard extends Div {
+
+    @Serial
+    private static final long serialVersionUID = -7214646065995668880L;
 
     public WrapperCard(@NotNull final String className,
                        @NotNull final Component[] components,

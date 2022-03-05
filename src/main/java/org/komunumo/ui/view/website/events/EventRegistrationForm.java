@@ -35,6 +35,9 @@ import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.value.ValueChangeMode;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
@@ -45,6 +48,12 @@ import static org.komunumo.util.FormatterUtil.formatDate;
 
 @CssImport("./themes/komunumo/views/website/event-registration-form.css")
 public class EventRegistrationForm extends Div {
+
+    @Serial
+    private static final long serialVersionUID = -5376951081537558903L;
+
+    private static final int LAST_SEAT = 1;
+    private static final int TEN_SEATS = 10;
 
     @SuppressWarnings("checkstyle:MethodLength") // TODO split steps in methods
     public EventRegistrationForm(@NotNull final DatabaseService databaseService,
@@ -80,13 +89,13 @@ public class EventRegistrationForm extends Div {
         emailForm.add(new HorizontalLayout(emailField, verifyButton));
         if (event.getAttendeeLimit() > 0) {
             final var freeSeats = event.getAttendeeLimit() - databaseService.countRegistrations(event.getId());
-            if (freeSeats == 1) {
+            if (freeSeats == LAST_SEAT) {
                 final var seatMessage = new Paragraph("There is only one free seat left!");
                 seatMessage.addClassName("seat-message");
                 seatMessage.addClassName("last-seat");
                 emailForm.add(seatMessage);
             } else {
-                final var seatMessage = new Paragraph("There are %s %d free seats left!".formatted(freeSeats <= 10 ? "only" : "", freeSeats));
+                final var seatMessage = new Paragraph("There are %s %d free seats left!".formatted(freeSeats <= TEN_SEATS ? "only" : "", freeSeats));
                 seatMessage.addClassName("seat-message");
                 emailForm.add(seatMessage);
             }

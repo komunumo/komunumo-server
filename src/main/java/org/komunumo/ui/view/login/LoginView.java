@@ -27,6 +27,9 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.security.AuthenticatedUser;
 import org.komunumo.security.LoginAttemptService;
@@ -38,6 +41,8 @@ import org.komunumo.ui.view.admin.dashboard.DashboardView;
 @AnonymousAllowed
 public final class LoginView extends LoginOverlay implements BeforeEnterObserver {
 
+    @Serial
+    private static final long serialVersionUID = 3136950494923039756L;
     private final AuthenticatedUser authenticatedUser;
 
     public LoginView(@NotNull final AuthenticatedUser authenticatedUser,

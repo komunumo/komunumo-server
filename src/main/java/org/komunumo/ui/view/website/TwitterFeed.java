@@ -24,9 +24,14 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.shared.ui.LoadMode;
 
+import java.io.Serial;
+
 @CssImport("./themes/komunumo/views/website/twitter-feed.css")
 @JavaScript(value = "https://platform.twitter.com/widgets.js", loadMode = LoadMode.LAZY)
 public class TwitterFeed extends Div {
+
+    @Serial
+    private static final long serialVersionUID = 4956529560008231139L;
 
     public TwitterFeed() {
         addClassName("twitter-feed");

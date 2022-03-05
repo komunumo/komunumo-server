@@ -25,6 +25,7 @@ import java.util.Map;
 @SuppressWarnings("ClassCanBeRecord")
 public final class Configuration {
 
+    @SuppressWarnings("PMD.AvoidFieldNameMatchingTypeName")
     private final Map<String, String> configuration;
 
     public Configuration(@NotNull final Map<String, String> configuration) {

@@ -41,6 +41,11 @@ import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
+
+import java.io.Serial;
+
+import java.util.Locale;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.enums.MemberTheme;
 import org.komunumo.security.AuthenticatedUser;
@@ -65,6 +70,8 @@ import java.util.Optional;
 @CssImport(value = "./themes/komunumo/views/admin/admin-layout.css")
 public final class AdminLayout extends AppLayout {
 
+    @Serial
+    private static final long serialVersionUID = -8057080937435753774L;
     private final AuthenticatedUser authenticatedUser;
     private final AccessAnnotationChecker accessChecker;
     private final Tabs menu;
@@ -146,7 +153,7 @@ public final class AdminLayout extends AppLayout {
         final var member = authenticatedUser.get().orElse(null);
         if (member != null) {
             final var avatar = new Avatar(String.format("%s %s", member.getFirstName(), member.getLastName()));
-            avatar.setImage(GravatarUtil.getGravatarAddress(member.getEmail().toLowerCase()));
+            avatar.setImage(GravatarUtil.getGravatarAddress(member.getEmail().toLowerCase(Locale.getDefault())));
             avatar.getStyle().set("cursor", "pointer");
             return avatar;
         } else {

@@ -21,6 +21,9 @@ package org.komunumo.ui.view.website;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.NoShows;
 import org.komunumo.data.service.DatabaseService;
@@ -34,6 +37,8 @@ import static org.komunumo.util.FormatterUtil.formatNumber;
 
 public class WebsiteStats extends Div {
 
+    @Serial
+    private static final long serialVersionUID = 5728884795340520078L;
     private final Random random;
     private final DatabaseService databaseService;
 

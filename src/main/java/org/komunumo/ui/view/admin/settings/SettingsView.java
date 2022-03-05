@@ -29,6 +29,9 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.ApplicationServiceInitListener;
 import org.komunumo.data.entity.Role;
@@ -49,6 +52,8 @@ import java.util.List;
 public final class SettingsView extends ResizableView implements BeforeEnterObserver {
 
     private static final String ANCHOR_PREFIX = "admin/settings/";
+    @Serial
+    private static final long serialVersionUID = -2617826959693372843L;
 
     private final DatabaseService databaseService;
     private final ApplicationServiceInitListener applicationServiceInitListener;

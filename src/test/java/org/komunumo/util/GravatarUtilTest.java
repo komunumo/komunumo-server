@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class GravatarUtilTest {
 
     @Test
@@ -54,6 +55,7 @@ public class GravatarUtilTest {
     }
 
     @Test
+    @SuppressWarnings("PMD.AvoidAccessibilityAlteration") // this is exactly what we want to test
     void privateConstructorWithException() {
         final var cause = assertThrows(InvocationTargetException.class, () -> {
             Constructor<GravatarUtil> constructor = GravatarUtil.class.getDeclaredConstructor();

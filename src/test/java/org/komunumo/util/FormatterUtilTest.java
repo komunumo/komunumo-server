@@ -82,6 +82,7 @@ class FormatterUtilTest {
     }
 
     @Test
+    @SuppressWarnings("PMD.AvoidAccessibilityAlteration") // this is exactly what we want to test
     void privateConstructorWithException() {
         final var cause = assertThrows(InvocationTargetException.class, () -> {
             Constructor<FormatterUtil> constructor = FormatterUtil.class.getDeclaredConstructor();

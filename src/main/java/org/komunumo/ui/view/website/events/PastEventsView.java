@@ -29,6 +29,9 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+
+import java.io.Serial;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.service.DatabaseService;
@@ -47,6 +50,8 @@ import java.util.List;
 @AnonymousAllowed
 public final class PastEventsView extends ContentBlock implements BeforeEnterObserver, HasDynamicTitle {
 
+    @Serial
+    private static final long serialVersionUID = -5927631850104413849L;
     private final DatabaseService databaseService;
 
     private Year selectedYear;
