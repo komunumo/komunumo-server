@@ -17,11 +17,13 @@
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-      "automerge": true
+      "automerge": true,
+      "commitMessagePrefix" : "⬆️ "
     },
     {
       "matchDepTypes": ["devDependencies"],
-      "automerge": true
+      "automerge": true,
+      "commitMessagePrefix" : "⬆️ "
     }
   ],
   "platformAutomerge": true
