@@ -32,7 +32,7 @@ public class JtafJooqConfiguration {
      */
     @Bean
     Settings jooqSettings() {
-        return new Settings().withRenderNameCase(RenderNameCase.UPPER);
+        return new Settings().withRenderNameCase(RenderNameCase.LOWER);
     }
 
 }

@@ -45,6 +45,14 @@ DB_PASS=verysecret
 
 The database schema will be migrated automatically by *Komunumo*.
 
+#### Important H2 configuration
+
+By default, H2 creates all table names in uppercase and handles table names case sensitive. If you use H2, please configure it to create all tables lowercase and to handle the identifiers case insensitive by adding the approbiate parameters to the connection:
+
+```
+DB_URL=jdbc:h2:mem:komunumo;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE}
+```
+
 #### Important MySQL and MariaDB configuration
 
 MySQL and MariaDB have a possible silent truncation problem with the `GROUP_CONCAT` command. To avoid this it is necessary, to configure these two databases to allow multi queries. Just add `allowMultiQueries=true` to the JDBC database URL like in this example (you may need to scroll the example code to the right):
