@@ -149,89 +149,88 @@ CREATE TABLE event_speaker (
     PRIMARY KEY (`event_id`, `speaker_id`),
     FOREIGN KEY (`event_id`) REFERENCES event(`id`),
     FOREIGN KEY (`speaker_id`) REFERENCES speaker(`id`)
- );
+);
 
- CREATE TABLE sponsor (
-     `id` INTEGER NOT NULL AUTO_INCREMENT,
+CREATE TABLE sponsor (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
 
-     `name` VARCHAR(255) NOT NULL,
-     `website` VARCHAR(255) NOT NULL DEFAULT '',
-     `logo` MEDIUMTEXT NOT NULL DEFAULT '',
-     `description` MEDIUMTEXT NOT NULL DEFAULT '',
-     `valid_from` DATE NULL,
-     `valid_to` DATE NULL,
-     `level` ENUM('Silver', 'Gold', 'Platinum') NULL,
+    `name` VARCHAR(255) NOT NULL,
+    `website` VARCHAR(255) NOT NULL DEFAULT '',
+    `logo` MEDIUMTEXT NOT NULL DEFAULT '',
+    `description` MEDIUMTEXT NOT NULL DEFAULT '',
+    `valid_from` DATE NULL,
+    `valid_to` DATE NULL,
+    `level` ENUM('Silver', 'Gold', 'Platinum') NULL,
 
-     PRIMARY KEY (`id`)
- );
+    PRIMARY KEY (`id`)
+);
 
- CREATE TABLE sponsor_domain (
-     `sponsor_id` INTEGER NOT NULL,
-     `domain` VARCHAR(255) NOT NULL DEFAULT '',
+CREATE TABLE sponsor_domain (
+    `sponsor_id` INTEGER NOT NULL,
+    `domain` VARCHAR(255) NOT NULL DEFAULT '',
 
-     PRIMARY KEY (`sponsor_id`, `domain`),
-     FOREIGN KEY (`sponsor_id`) REFERENCES sponsor(`id`)
- );
+    PRIMARY KEY (`sponsor_id`, `domain`),
+    FOREIGN KEY (`sponsor_id`) REFERENCES sponsor(`id`)
+);
 
- CREATE TABLE news (
-     `id` INTEGER NOT NULL AUTO_INCREMENT,
-     `created` DATETIME NOT NULL,
-     `title` VARCHAR(255) NOT NULL,
-     `subtitle` VARCHAR(255) NOT NULL DEFAULT '',
-     `teaser` MEDIUMTEXT NOT NULL,
-     `message` MEDIUMTEXT NOT NULL,
-     `show_from` DATETIME NULL,
-     `show_to` DATETIME NULL,
+CREATE TABLE news (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `created` DATETIME NOT NULL,
+    `title` VARCHAR(255) NOT NULL,
+    `subtitle` VARCHAR(255) NOT NULL DEFAULT '',
+    `teaser` MEDIUMTEXT NOT NULL,
+    `message` MEDIUMTEXT NOT NULL,
+    `show_from` DATETIME NULL,
+    `show_to` DATETIME NULL,
 
-     PRIMARY KEY (`id`)
- );
+    PRIMARY KEY (`id`)
+);
 
- CREATE TABLE subscription (
-     `email` VARCHAR(255) NOT NULL,
-     `subscription_date` DATETIME NOT NULL,
-     `status` ENUM('PENDING', 'ACTIVE') NOT NULL DEFAULT 'PENDING',
-     `validation_code` VARCHAR(255) NULL,
+CREATE TABLE subscription (
+    `email` VARCHAR(255) NOT NULL,
+    `subscription_date` DATETIME NOT NULL,
+    `status` ENUM('PENDING', 'ACTIVE') NOT NULL DEFAULT 'PENDING',
+    `validation_code` VARCHAR(255) NULL,
 
-     PRIMARY KEY (`email`)
- );
+    PRIMARY KEY (`email`)
+);
 
- CREATE TABLE faq (
-     `id` INTEGER NOT NULL AUTO_INCREMENT,
-     `question` VARCHAR(255) NOT NULL,
-     `answer` MEDIUMTEXT NOT NULL,
+CREATE TABLE faq (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `question` VARCHAR(255) NOT NULL,
+    `answer` MEDIUMTEXT NOT NULL,
 
-     PRIMARY KEY (`id`)
- );
+    PRIMARY KEY (`id`)
+);
 
- CREATE TABLE page (
-     `id` INTEGER NOT NULL AUTO_INCREMENT,
-     `parent` ENUM('Members', 'Sponsors') NOT NULL,
-     `page_url` VARCHAR(255) NOT NULL,
-     `title` VARCHAR(255) NOT NULL,
-     `content` LONGTEXT NOT NULL,
+CREATE TABLE page (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `parent` ENUM('Members', 'Sponsors') NOT NULL,
+    `page_url` VARCHAR(255) NOT NULL,
+    `title` VARCHAR(255) NOT NULL,
+    `content` LONGTEXT NOT NULL,
 
-     PRIMARY KEY (`id`)
- );
+    PRIMARY KEY (`id`)
+);
 
- CREATE UNIQUE INDEX `page_url` ON page(`page_url`);
+CREATE UNIQUE INDEX `page_url` ON page(`page_url`);
 
- CREATE TABLE mail_template (
-     `id` VARCHAR(255) NOT NULL,
-     `subject` VARCHAR(255) NOT NULL,
-     `content_text` LONGTEXT NOT NULL,
-     `content_html` LONGTEXT NOT NULL,
+CREATE TABLE mail_template (
+    `id` VARCHAR(255) NOT NULL,
+    `subject` VARCHAR(255) NOT NULL,
+    `content_text` LONGTEXT NOT NULL,
+    `content_html` LONGTEXT NOT NULL,
 
-     PRIMARY KEY (`id`)
- );
+    PRIMARY KEY (`id`)
+);
 
- CREATE TABLE feedback (
-     `id` INTEGER NOT NULL AUTO_INCREMENT,
-     `received` DATETIME NOT NULL,
-     `first_name` VARCHAR(255) NOT NULL,
-     `last_name` VARCHAR(255) NOT NULL,
-     `email` VARCHAR(255) NOT NULL,
-     `feedback` MEDIUMTEXT NOT NULL,
+CREATE TABLE feedback (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `received` DATETIME NOT NULL,
+    `first_name` VARCHAR(255) NOT NULL,
+    `last_name` VARCHAR(255) NOT NULL,
+    `email` VARCHAR(255) NOT NULL,
+    `feedback` MEDIUMTEXT NOT NULL,
 
-     PRIMARY KEY (`id`)
- );
-
+    PRIMARY KEY (`id`)
+);
