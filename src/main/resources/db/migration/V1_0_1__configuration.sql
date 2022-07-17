@@ -15,7 +15,7 @@ VALUES  ('website.url', 'http://localhost:8080'),
         ('website.logo.min', '1'),
         ('website.logo.max', '22');
 
-INSERT INTO location_color (location, color)
+INSERT INTO location_color (`location`, `color`)
 VALUES  ('Basel', '#ff8c00'),
         ('Bern', '#a8a6e9'),
         ('Luzern', '#7abaff'),
