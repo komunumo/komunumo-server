@@ -6,7 +6,7 @@ CREATE TABLE configuration (
 );
 
 CREATE TABLE event (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
 
     `type` ENUM('Talk', 'Workshop', 'Meetup', 'Sponsored') NOT NULL,
     `title` VARCHAR(255) NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE event (
     `youtube` VARCHAR(255) NOT NULL DEFAULT '',
     `date` DATETIME NULL,
     `duration` TIME NULL,
-    `attendee_limit` SMALLINT NOT NULL DEFAULT 0,
+    `attendee_limit` INTEGER NOT NULL DEFAULT 0,
     `members_only` BOOLEAN NOT NULL DEFAULT 0,
     `published` BOOLEAN NOT NULL DEFAULT 0,
     `event_url` VARCHAR(255) NOT NULL DEFAULT '',
@@ -47,7 +47,7 @@ CREATE TABLE location_color (
 );
 
 CREATE TABLE member (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
 
     `first_name` VARCHAR(255) NOT NULL,
     `last_name` VARCHAR(255) NOT NULL,
@@ -61,7 +61,7 @@ CREATE TABLE member (
     `registration_date` DATETIME NOT NULL,
     `membership_begin` DATE NULL,
     `membership_end` DATE NULL,
-    `membership_id` INTEGER NOT NULL DEFAULT 0,
+    `membership_id` BIGINT NOT NULL DEFAULT 0,
     `theme` ENUM('dark', 'light') NOT NULL DEFAULT 'light',
     `admin` BOOLEAN NOT NULL DEFAULT 0,
     `password_hash` VARCHAR(255) NULL,
@@ -80,8 +80,8 @@ CREATE INDEX `member_names` ON member (`first_name`, `last_name`);
 CREATE INDEX `member_email` ON member (`email`);
 
 CREATE TABLE registration (
-    `event_id` INTEGER NOT NULL,
-    `member_id` INTEGER NOT NULL,
+    `event_id` BIGINT NOT NULL,
+    `member_id` BIGINT NOT NULL,
     `date` DATETIME NULL,
     `source` VARCHAR(255) NOT NULL DEFAULT '',
     `deregister` VARCHAR(255) NOT NULL DEFAULT '',
@@ -93,8 +93,8 @@ CREATE TABLE registration (
 );
 
 CREATE TABLE event_organizer (
-    `event_id` INTEGER NOT NULL,
-    `member_id` INTEGER NOT NULL,
+    `event_id` BIGINT NOT NULL,
+    `member_id` BIGINT NOT NULL,
 
     PRIMARY KEY (`event_id`, `member_id`),
     FOREIGN KEY (`event_id`) REFERENCES event(`id`),
@@ -102,7 +102,7 @@ CREATE TABLE event_organizer (
 );
 
 CREATE TABLE keyword (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
     `keyword` VARCHAR(255) NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -111,8 +111,8 @@ CREATE TABLE keyword (
 CREATE UNIQUE INDEX `unqiue_keyword` ON keyword(`keyword`);
 
 CREATE TABLE event_keyword (
-    `event_id` INTEGER NOT NULL,
-    `keyword_id` INTEGER NOT NULL,
+    `event_id` BIGINT NOT NULL,
+    `keyword_id` BIGINT NOT NULL,
 
     PRIMARY KEY (`event_id`, `keyword_id`),
     FOREIGN KEY (`event_id`) REFERENCES event(`id`),
@@ -120,7 +120,7 @@ CREATE TABLE event_keyword (
 );
 
 CREATE TABLE speaker (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
 
     `first_name` VARCHAR(255) NOT NULL,
     `last_name` VARCHAR(255) NOT NULL,
@@ -143,8 +143,8 @@ CREATE TABLE speaker (
 CREATE INDEX `speaker_names` ON speaker (`first_name`, `last_name`);
 
 CREATE TABLE event_speaker (
-    `event_id` INTEGER NOT NULL,
-    `speaker_id` INTEGER NOT NULL,
+    `event_id` BIGINT NOT NULL,
+    `speaker_id` BIGINT NOT NULL,
 
     PRIMARY KEY (`event_id`, `speaker_id`),
     FOREIGN KEY (`event_id`) REFERENCES event(`id`),
@@ -152,7 +152,7 @@ CREATE TABLE event_speaker (
 );
 
 CREATE TABLE sponsor (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
 
     `name` VARCHAR(255) NOT NULL,
     `website` VARCHAR(255) NOT NULL DEFAULT '',
@@ -166,7 +166,7 @@ CREATE TABLE sponsor (
 );
 
 CREATE TABLE sponsor_domain (
-    `sponsor_id` INTEGER NOT NULL,
+    `sponsor_id` BIGINT NOT NULL,
     `domain` VARCHAR(255) NOT NULL DEFAULT '',
 
     PRIMARY KEY (`sponsor_id`, `domain`),
@@ -174,7 +174,7 @@ CREATE TABLE sponsor_domain (
 );
 
 CREATE TABLE news (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
     `created` DATETIME NOT NULL,
     `title` VARCHAR(255) NOT NULL,
     `subtitle` VARCHAR(255) NOT NULL DEFAULT '',
@@ -196,7 +196,7 @@ CREATE TABLE subscription (
 );
 
 CREATE TABLE faq (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
     `question` VARCHAR(255) NOT NULL,
     `answer` MEDIUMTEXT NOT NULL,
 
@@ -204,7 +204,7 @@ CREATE TABLE faq (
 );
 
 CREATE TABLE page (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
     `parent` ENUM('Members', 'Sponsors') NOT NULL,
     `page_url` VARCHAR(255) NOT NULL,
     `title` VARCHAR(255) NOT NULL,
@@ -225,7 +225,7 @@ CREATE TABLE mail_template (
 );
 
 CREATE TABLE feedback (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
     `received` DATETIME NOT NULL,
     `first_name` VARCHAR(255) NOT NULL,
     `last_name` VARCHAR(255) NOT NULL,
