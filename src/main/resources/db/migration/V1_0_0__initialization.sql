@@ -105,9 +105,10 @@ CREATE TABLE keyword (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `keyword` VARCHAR(255) NOT NULL,
 
-    PRIMARY KEY (`id`),
-    UNIQUE INDEX (`keyword`)
+    PRIMARY KEY (`id`)
 );
+
+CREATE UNIQUE INDEX `unqiue_keyword` ON keyword(`keyword`);
 
 CREATE TABLE event_keyword (
     `event_id` INTEGER NOT NULL,
@@ -209,9 +210,10 @@ CREATE TABLE event_speaker (
      `title` VARCHAR(255) NOT NULL,
      `content` LONGTEXT NOT NULL,
 
-     PRIMARY KEY (`id`),
-     UNIQUE INDEX (`page_url`)
+     PRIMARY KEY (`id`)
  );
+
+ CREATE UNIQUE INDEX `page_url` ON page(`page_url`);
 
  CREATE TABLE mail_template (
      `id` VARCHAR(255) NOT NULL,
