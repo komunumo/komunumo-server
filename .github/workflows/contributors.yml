@@ -9,7 +9,7 @@ jobs:
   main:
     runs-on: ubuntu-latest
     steps:
-      - uses: minicli/action-contributors@v3.1
+      - uses: minicli/action-contributors@v3.3
         name: "Update a projects CONTRIBUTORS file"
         env:
           CONTRIB_REPOSITORY: 'komunumo/komunumo-server'
