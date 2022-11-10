@@ -77,7 +77,7 @@ public final class EventDialog extends EditDialog<Event> {
     @SuppressWarnings("checkstyle:MethodLength") // just a lot of fields for the form
     @Override
     public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<Event> binder) {
-        final var type = new Select<>(EventType.values());
+        final var type = new Select<EventType>();
         final var title = new TextField("Title");
         final var subtitle = new TextField("Subtitle");
         final var speaker = new MultiSelectComboBox<EventSpeakerEntity>();
@@ -85,8 +85,8 @@ public final class EventDialog extends EditDialog<Event> {
         final var description = new RichTextEditor();
         final var keyword = new MultiSelectComboBox<KeywordEntity>();
         final var agenda = new RichTextEditor();
-        final var level = new Select<>(EventLevel.values());
-        final var language = new Select<>(EventLanguage.values());
+        final var level = new Select<EventLevel>();
+        final var language = new Select<EventLanguage>();
         final var room = new TextField("Room");
         final var travelInstructions = new TextField("Travel instructions");
         final var location = new ComboBox<String>("Location");
@@ -100,6 +100,7 @@ public final class EventDialog extends EditDialog<Event> {
         final var published = new Checkbox("Published");
 
         type.setLabel("Type");
+        type.setItems(EventType.values());
         type.setRequiredIndicatorVisible(true);
         title.setRequiredIndicatorVisible(true);
         title.setValueChangeMode(EAGER);
@@ -111,16 +112,18 @@ public final class EventDialog extends EditDialog<Event> {
         subtitle.setValueChangeMode(EAGER);
         speaker.setLabel("Speaker");
         speaker.setItemLabelGenerator(EventSpeakerEntity::fullName);
-        speaker.setItems(databaseService.getAllEventSpeakers());
+        speaker.setItems(databaseService.getAllEventSpeakers().toList());
         organizer.setLabel("Organizer");
         organizer.setItemLabelGenerator(value -> String.format("%s %s", value.getFirstName(), value.getLastName()));
-        organizer.setItems(databaseService.getAllAdmins());
+        organizer.setItems(databaseService.getAllAdmins().toList());
         organizer.setRequiredIndicatorVisible(true);
         keyword.setLabel("Keyword");
         keyword.setItemLabelGenerator(KeywordEntity::keyword);
-        keyword.setItems(databaseService.getAllKeywords());
+        keyword.setItems(databaseService.getAllKeywords().toList());
         level.setLabel("Level");
+        level.setItems(EventLevel.values());
         language.setLabel("Language");
+        language.setItems(EventLanguage.values());
         location.setItems(databaseService.getAllEventLocations());
         location.setAllowCustomValue(true);
         location.addValueChangeListener(changeEvent -> {
