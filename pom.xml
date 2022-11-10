@@ -165,11 +165,6 @@
 
         <dependency>
             <groupId>com.vaadin.componentfactory</groupId>
-            <artifactId>multi-combo-box-flow</artifactId>
-            <version>23.1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin.componentfactory</groupId>
             <artifactId>enhanced-date-picker</artifactId>
             <version>2.0.0</version>
         </dependency>
