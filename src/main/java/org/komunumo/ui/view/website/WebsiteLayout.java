@@ -27,12 +27,11 @@ import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.RouterLayout;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.DatabaseService;
 import org.komunumo.security.AuthenticatedUser;
+
+import java.io.Serial;
 
 @CssImport(value = "./themes/komunumo/views/website/website-layout.css")
 public final class WebsiteLayout extends Div implements RouterLayout {
@@ -73,7 +72,7 @@ public final class WebsiteLayout extends Div implements RouterLayout {
     }
 
     private void pageResized(final int width) {
-        twitterFeed.setVisible(width >= 1350);
+        twitterFeed.setVisible(width >= 1500);
     }
 
     @Override
