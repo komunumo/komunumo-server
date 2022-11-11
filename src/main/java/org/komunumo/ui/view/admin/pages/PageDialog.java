@@ -45,12 +45,13 @@ public final class PageDialog extends EditDialog<Page> {
 
     @Override
     public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<Page> binder) {
-        final var parent = new Select<>(PageParent.values());
+        final var parent = new Select<PageParent>();
         final var pageUrl = new TextField("URL");
         final var title = new TextField("Title");
         final var content = new RichTextEditor();
 
         parent.setLabel("Parent");
+        parent.setItems(PageParent.values());
         parent.setRequiredIndicatorVisible(true);
         parent.addValueChangeListener(changeEvent -> pageUrl.setPrefixComponent(
                 new Span("%s/".formatted(URLUtil.createReadableUrl(changeEvent.getValue().getLiteral())))));

@@ -29,7 +29,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.data.renderer.TemplateRenderer;
+import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
@@ -38,9 +38,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.NewsEntity;
@@ -53,6 +50,7 @@ import org.komunumo.ui.view.admin.AdminLayout;
 
 import javax.annotation.security.RolesAllowed;
 import java.io.ByteArrayInputStream;
+import java.io.Serial;
 import java.io.StringWriter;
 import java.util.List;
 
@@ -115,8 +113,8 @@ public final class NewsView extends ResizableView implements HasUrlParameter<Str
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
-        grid.addColumn(TemplateRenderer.<NewsEntity>of(
-                "<span style=\"font-weight: bold;\">[[item.title]]</span><br/><span>[[item.subtitle]]</span>")
+        grid.addColumn(LitRenderer.<NewsEntity>of(
+                "<span style=\"font-weight: bold;\">${item.title}</span><br/><span>${item.subtitle}</span>")
                 .withProperty("title", NewsEntity::title)
                 .withProperty("subtitle", NewsEntity::subtitle))
                 .setHeader("Title").setAutoWidth(true).setFlexGrow(1);

@@ -29,7 +29,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.data.renderer.TemplateRenderer;
+import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
@@ -38,9 +38,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Role;
@@ -53,6 +50,7 @@ import org.komunumo.ui.view.admin.AdminLayout;
 
 import javax.annotation.security.RolesAllowed;
 import java.io.ByteArrayInputStream;
+import java.io.Serial;
 import java.io.StringWriter;
 import java.util.List;
 
@@ -115,13 +113,13 @@ public final class SponsorsView extends ResizableView implements HasUrlParameter
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
-        grid.addColumn(TemplateRenderer.<SponsorEntity>of(
-                "<a style=\"font-weight: bold;\" href=\"[[item.website]]\" target=\"_blank\">[[item.name]]</a>")
+        grid.addColumn(LitRenderer.<SponsorEntity>of(
+                "<a style=\"font-weight: bold;\" href=\"${item.website}\" target=\"_blank\">${item.name}</a>")
                 .withProperty("name", SponsorEntity::name)
                 .withProperty("website", SponsorEntity::website))
                 .setHeader("Name").setAutoWidth(true).setFlexGrow(1);
-        grid.addColumn(TemplateRenderer.<SponsorEntity>of(
-                "<img style=\"max-width: 100%;\" src=\"[[item.logo]]\" /></span>")
+        grid.addColumn(LitRenderer.<SponsorEntity>of(
+                "<img style=\"max-width: 100%;\" src=\"${item.logo}\" /></span>")
                 .withProperty("logo", SponsorEntity::logo))
                 .setHeader("Logo").setWidth("96px").setFlexGrow(0);
         grid.addColumn(SponsorEntity::level)

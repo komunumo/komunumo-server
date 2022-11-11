@@ -114,7 +114,7 @@ public class RegistrationsDialog extends EnhancedDialog {
                         new Anchor("mailto:" + registrationListEntity.email(), registrationListEntity.fullName())))
                 .setHeader("Attendee").setAutoWidth(true).setFlexGrow(0);
 
-        grid.addColumn(new LocalDateTimeRenderer<>(RegistrationListEntity::date, FormatterUtil.dateTimeFormatter()))
+        grid.addColumn(new LocalDateTimeRenderer<>(RegistrationListEntity::date, FormatterUtil::dateTimeFormatter))
                 .setHeader("Registration date").setAutoWidth(true).setFlexGrow(0);
 
         grid.addColumn(RegistrationListEntity::source)
