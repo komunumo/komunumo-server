@@ -393,11 +393,11 @@
     "@vaadin/common-frontend": "$@vaadin/common-frontend",
     "construct-style-sheets-polyfill": "$construct-style-sheets-polyfill",
     "date-fns": "$date-fns",
-    "line-awesome": "$line-awesome",
     "lit": "$lit",
-    "lumo-css-framework": "$lumo-css-framework",
     "@vaadin/lit-renderer": "$@vaadin/lit-renderer",
     "@vaadin/multi-select-combo-box": "$@vaadin/multi-select-combo-box",
-    "proj4": "$proj4"
+    "proj4": "$proj4",
+    "lumo-css-framework": "$lumo-css-framework",
+    "line-awesome": "$line-awesome"
   }
 }

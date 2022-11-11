@@ -52,7 +52,8 @@ public final class MailTemplateDialog extends EditDialog<MailTemplateRecord> {
     @Override
     public void createForm(@NotNull final FormLayout formLayout,
                            @NotNull final Binder<MailTemplateRecord> binder) {
-        final var id = new Select<>(mailTemplateIds.stream().map(MailTemplateId::name).toArray(String[]::new));
+        final var id = new Select<String>();
+        id.setItems(mailTemplateIds.stream().map(MailTemplateId::name).toArray(String[]::new));
         id.setRequiredIndicatorVisible(true);
         id.setLabel("ID");
         formLayout.add(id);
