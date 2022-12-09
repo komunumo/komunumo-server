@@ -18,7 +18,7 @@
 
 package org.komunumo.security;
 
-import com.vaadin.flow.spring.security.VaadinWebSecurityConfigurerAdapter;
+import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.view.login.LoginView;
@@ -34,7 +34,7 @@ import java.security.SecureRandom;
 
 @EnableWebSecurity
 @Configuration
-public class SecurityConfiguration extends VaadinWebSecurityConfigurerAdapter {
+public class SecurityConfiguration extends VaadinWebSecurity {
 
     public static final String LOGIN_URL = "login";
     public static final String LOGOUT_URL = "/";
@@ -55,7 +55,7 @@ public class SecurityConfiguration extends VaadinWebSecurityConfigurerAdapter {
     }
 
     /**
-     * @see VaadinWebSecurityConfigurerAdapter#configure(HttpSecurity)
+     * @see VaadinWebSecurity#configure(HttpSecurity)
      */
     @Override
     protected void configure(@NotNull final HttpSecurity http) throws Exception {
@@ -64,7 +64,7 @@ public class SecurityConfiguration extends VaadinWebSecurityConfigurerAdapter {
     }
 
     /**
-     * @see VaadinWebSecurityConfigurerAdapter#configure(WebSecurity)
+     * @see VaadinWebSecurity#configure(WebSecurity)
      */
     @Override
     public void configure(@NotNull final WebSecurity web) throws Exception {
