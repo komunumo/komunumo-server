@@ -4,10 +4,9 @@ Shout out to our top contributors!
 - [McPringle](https://github.com/McPringle)
 - [renovate-bot](https://github.com/renovate-bot)
 - [github-actions[bot]](https://github.com/apps/github-actions)
-- [renovate[bot]](https://github.com/apps/renovate)
 - [dependabot[bot]](https://github.com/apps/dependabot)
 - [Shree-Gillorkar](https://github.com/Shree-Gillorkar)
 - [knoobie](https://github.com/knoobie)
 
 
-_Last updated: Wed, 11 Jan 23 13:59:50 +0000_
+_Last updated: Wed, 11 Jan 23 14:01:45 +0000_
