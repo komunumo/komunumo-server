@@ -76,7 +76,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <jooq.version>3.17.5</jooq.version>
+        <jooq.version>3.17.4</jooq.version>
         <maven.version>3.8.4</maven.version>
         <vaadin.version>23.2.8</vaadin.version>
     </properties>
@@ -100,7 +100,9 @@
         </repository>
         <repository>
             <id>vaadin-prereleases</id>
-            <url>https://maven.vaadin.com/vaadin-prereleases/</url>
+            <url>
+                https://maven.vaadin.com/vaadin-prereleases/
+            </url>
         </repository>
         <!-- Repository used by many Vaadin add-ons -->
         <repository>
@@ -163,6 +165,11 @@
 
         <dependency>
             <groupId>com.vaadin.componentfactory</groupId>
+            <artifactId>multi-combo-box-flow</artifactId>
+            <version>23.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin.componentfactory</groupId>
             <artifactId>enhanced-date-picker</artifactId>
             <version>2.0.0</version>
         </dependency>
@@ -179,7 +186,7 @@
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
-            <version>5.7.1</version>
+            <version>5.7.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -286,19 +293,19 @@
         <dependency>
             <groupId>com.icegreen</groupId>
             <artifactId>greenmail-junit5</artifactId>
-            <version>1.6.12</version>
+            <version>1.6.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
-            <version>5.3.1</version>
+            <version>5.3.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.github.mvysny.kaributesting</groupId>
             <artifactId>karibu-testing-v10-spring</artifactId>
-            <version>1.3.23</version>
+            <version>1.3.21</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

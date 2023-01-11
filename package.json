@@ -8,6 +8,7 @@
     "@polymer/iron-meta": "3.0.1",
     "@polymer/iron-resizable-behavior": "3.0.1",
     "@polymer/polymer": "3.5.1",
+    "@vaadin-component-factory/vcf-multiselect-combo-box": "2.1.2",
     "@vaadin/accordion": "23.2.8",
     "@vaadin/app-layout": "23.2.8",
     "@vaadin/avatar": "23.2.8",
@@ -147,6 +148,7 @@
       "@polymer/iron-meta": "3.0.1",
       "@polymer/iron-resizable-behavior": "3.0.1",
       "@polymer/polymer": "3.5.1",
+      "@vaadin-component-factory/vcf-multiselect-combo-box": "2.1.2",
       "@vaadin/accordion": "23.2.8",
       "@vaadin/app-layout": "23.2.8",
       "@vaadin/avatar": "23.2.8",
@@ -277,7 +279,7 @@
       "workbox-core": "6.5.0",
       "workbox-precaching": "6.5.0"
     },
-    "hash": "2bc99259985c6740941321c86c3964a3daf8d21e19478eefb21ba68bc0aa369f"
+    "hash": "69d7e7bf33a8e1ca4ace53a44b603c3e1e2a34cfe165d7c882e8517a5e3730fe"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -393,11 +395,12 @@
     "@vaadin/common-frontend": "$@vaadin/common-frontend",
     "construct-style-sheets-polyfill": "$construct-style-sheets-polyfill",
     "date-fns": "$date-fns",
+    "line-awesome": "$line-awesome",
     "lit": "$lit",
+    "lumo-css-framework": "$lumo-css-framework",
     "@vaadin/lit-renderer": "$@vaadin/lit-renderer",
     "@vaadin/multi-select-combo-box": "$@vaadin/multi-select-combo-box",
     "proj4": "$proj4",
-    "lumo-css-framework": "$lumo-css-framework",
-    "line-awesome": "$line-awesome"
+    "@vaadin-component-factory/vcf-multiselect-combo-box": "$@vaadin-component-factory/vcf-multiselect-combo-box"
   }
 }
