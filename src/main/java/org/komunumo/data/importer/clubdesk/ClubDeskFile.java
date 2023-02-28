@@ -54,7 +54,7 @@ public final class ClubDeskFile {
         final var columnHeaders = getColumnHeaders(sheet.getRow(0));
         final var membershipBeginDateColumn = findColumn(columnHeaders, "Eintritt").orElseThrow();
         final var membershipEndDateColumn = findColumn(columnHeaders, "Austritt").orElseThrow();
-        final var membershipIdColumn = findColumn(columnHeaders, "M-Nr.").orElseThrow();
+        final var membershipIdColumn = findColumn(columnHeaders, "Mitgliedernummer").orElseThrow();
         final var firstNameColumn = findColumn(columnHeaders, "Vorname").orElseThrow();
         final var lastNameColumn = findColumn(columnHeaders, "Nachname").orElseThrow();
         final var companyColumn = findColumn(columnHeaders, "Firma").orElseThrow();
