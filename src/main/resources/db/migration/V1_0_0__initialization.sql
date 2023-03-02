@@ -1,11 +1,11 @@
-CREATE TABLE configuration (
+CREATE TABLE `configuration` (
     `key` VARCHAR(255) NOT NULL,
     `value` MEDIUMTEXT NOT NULL DEFAULT '',
 
     PRIMARY KEY (`key`)
 );
 
-CREATE TABLE event (
+CREATE TABLE `event` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
 
     `type` ENUM('Talk', 'Workshop', 'Meetup', 'Sponsored') NOT NULL,
@@ -30,23 +30,23 @@ CREATE TABLE event (
     PRIMARY KEY (`id`)
 );
 
-CREATE INDEX `event_date` ON event (`date`);
+CREATE INDEX `event_date` ON `event` (`date`);
 
-CREATE TABLE redirect (
+CREATE TABLE `redirect` (
     `old_url` VARCHAR(255) NOT NULL,
     `new_url` VARCHAR(255) NOT NULL,
 
     PRIMARY KEY (`old_url`)
 );
 
-CREATE TABLE location_color (
+CREATE TABLE `location_color` (
     `location` VARCHAR(255) NOT NULL,
     `color` VARCHAR(7) NOT NULL,
 
     PRIMARY KEY (`location`)
 );
 
-CREATE TABLE member (
+CREATE TABLE `member` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
 
     `first_name` VARCHAR(255) NOT NULL,
@@ -76,10 +76,10 @@ CREATE TABLE member (
     PRIMARY KEY (`id`)
 );
 
-CREATE INDEX `member_names` ON member (`first_name`, `last_name`);
-CREATE INDEX `member_email` ON member (`email`);
+CREATE INDEX `member_names` ON `member` (`first_name`, `last_name`);
+CREATE INDEX `member_email` ON `member` (`email`);
 
-CREATE TABLE registration (
+CREATE TABLE `registration` (
     `event_id` BIGINT NOT NULL,
     `member_id` BIGINT NOT NULL,
     `date` DATETIME NULL,
@@ -88,38 +88,38 @@ CREATE TABLE registration (
     `no_show` BOOLEAN NOT NULL DEFAULT 0,
 
     PRIMARY KEY (`event_id`, `member_id`),
-    FOREIGN KEY (`event_id`) REFERENCES event(`id`),
-    FOREIGN KEY (`member_id`) REFERENCES member(`id`)
+    FOREIGN KEY (`event_id`) REFERENCES `event` (`id`),
+    FOREIGN KEY (`member_id`) REFERENCES `member` (`id`)
 );
 
-CREATE TABLE event_organizer (
+CREATE TABLE `event_organizer` (
     `event_id` BIGINT NOT NULL,
     `member_id` BIGINT NOT NULL,
 
     PRIMARY KEY (`event_id`, `member_id`),
-    FOREIGN KEY (`event_id`) REFERENCES event(`id`),
-    FOREIGN KEY (`member_id`) REFERENCES member(`id`)
+    FOREIGN KEY (`event_id`) REFERENCES `event` (`id`),
+    FOREIGN KEY (`member_id`) REFERENCES `member` (`id`)
 );
 
-CREATE TABLE keyword (
+CREATE TABLE `keyword` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `keyword` VARCHAR(255) NOT NULL,
 
     PRIMARY KEY (`id`)
 );
 
-CREATE UNIQUE INDEX `unqiue_keyword` ON keyword(`keyword`);
+CREATE UNIQUE INDEX `unqiue_keyword` ON `keyword`(`keyword`);
 
-CREATE TABLE event_keyword (
+CREATE TABLE `event_keyword` (
     `event_id` BIGINT NOT NULL,
     `keyword_id` BIGINT NOT NULL,
 
     PRIMARY KEY (`event_id`, `keyword_id`),
-    FOREIGN KEY (`event_id`) REFERENCES event(`id`),
-    FOREIGN KEY (`keyword_id`) REFERENCES keyword(`id`)
+    FOREIGN KEY (`event_id`) REFERENCES `event` (`id`),
+    FOREIGN KEY (`keyword_id`) REFERENCES `keyword` (`id`)
 );
 
-CREATE TABLE speaker (
+CREATE TABLE `speaker` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
 
     `first_name` VARCHAR(255) NOT NULL,
@@ -140,18 +140,18 @@ CREATE TABLE speaker (
     PRIMARY KEY (`id`)
 );
 
-CREATE INDEX `speaker_names` ON speaker (`first_name`, `last_name`);
+CREATE INDEX `speaker_names` ON `speaker` (`first_name`, `last_name`);
 
-CREATE TABLE event_speaker (
+CREATE TABLE `event_speaker` (
     `event_id` BIGINT NOT NULL,
     `speaker_id` BIGINT NOT NULL,
 
     PRIMARY KEY (`event_id`, `speaker_id`),
-    FOREIGN KEY (`event_id`) REFERENCES event(`id`),
-    FOREIGN KEY (`speaker_id`) REFERENCES speaker(`id`)
+    FOREIGN KEY (`event_id`) REFERENCES `event` (`id`),
+    FOREIGN KEY (`speaker_id`) REFERENCES `speaker` (`id`)
 );
 
-CREATE TABLE sponsor (
+CREATE TABLE `sponsor` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
 
     `name` VARCHAR(255) NOT NULL,
@@ -165,15 +165,15 @@ CREATE TABLE sponsor (
     PRIMARY KEY (`id`)
 );
 
-CREATE TABLE sponsor_domain (
+CREATE TABLE `sponsor_domain` (
     `sponsor_id` BIGINT NOT NULL,
     `domain` VARCHAR(255) NOT NULL DEFAULT '',
 
     PRIMARY KEY (`sponsor_id`, `domain`),
-    FOREIGN KEY (`sponsor_id`) REFERENCES sponsor(`id`)
+    FOREIGN KEY (`sponsor_id`) REFERENCES `sponsor` (`id`)
 );
 
-CREATE TABLE news (
+CREATE TABLE `news` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `created` DATETIME NOT NULL,
     `title` VARCHAR(255) NOT NULL,
@@ -186,7 +186,7 @@ CREATE TABLE news (
     PRIMARY KEY (`id`)
 );
 
-CREATE TABLE subscription (
+CREATE TABLE `subscription` (
     `email` VARCHAR(255) NOT NULL,
     `subscription_date` DATETIME NOT NULL,
     `status` ENUM('PENDING', 'ACTIVE') NOT NULL DEFAULT 'PENDING',
@@ -195,7 +195,7 @@ CREATE TABLE subscription (
     PRIMARY KEY (`email`)
 );
 
-CREATE TABLE faq (
+CREATE TABLE `faq` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `question` VARCHAR(255) NOT NULL,
     `answer` MEDIUMTEXT NOT NULL,
@@ -203,7 +203,7 @@ CREATE TABLE faq (
     PRIMARY KEY (`id`)
 );
 
-CREATE TABLE page (
+CREATE TABLE `page` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `parent` ENUM('Members', 'Sponsors') NOT NULL,
     `page_url` VARCHAR(255) NOT NULL,
@@ -213,9 +213,9 @@ CREATE TABLE page (
     PRIMARY KEY (`id`)
 );
 
-CREATE UNIQUE INDEX `page_url` ON page(`page_url`);
+CREATE UNIQUE INDEX `page_url` ON `page` (`page_url`);
 
-CREATE TABLE mail_template (
+CREATE TABLE `mail_template` (
     `id` VARCHAR(255) NOT NULL,
     `subject` VARCHAR(255) NOT NULL,
     `content_text` LONGTEXT NOT NULL,
@@ -224,7 +224,7 @@ CREATE TABLE mail_template (
     PRIMARY KEY (`id`)
 );
 
-CREATE TABLE feedback (
+CREATE TABLE `feedback` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `received` DATETIME NOT NULL,
     `first_name` VARCHAR(255) NOT NULL,
