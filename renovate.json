@@ -17,6 +17,7 @@
   ],
   "packageRules": [
     {
+      "matchManagers": ["maven", "maven-wrapper", "gradle", "gradle-wrapper"],
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true,
       "automergeType": "branch",
