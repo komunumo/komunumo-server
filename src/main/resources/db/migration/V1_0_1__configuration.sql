@@ -1,6 +1,6 @@
 -- [jooq ignore start]
 
-INSERT INTO `configuration` (`key`, `value`)
+INSERT INTO `configuration` (`conf_key`, `conf_value`)
 VALUES  ('website.url', 'http://localhost:8080'),
         ('website.favicon', 'https://static.jug.ch/images/favicon.ico'),
         ('website.name', 'Java User Group Switzerland'),

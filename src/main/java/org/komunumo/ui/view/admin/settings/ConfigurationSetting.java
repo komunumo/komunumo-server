@@ -86,10 +86,10 @@ public class ConfigurationSetting extends ResizableView {
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
 
-        grid.addColumn(ConfigurationRecord::getKey)
+        grid.addColumn(ConfigurationRecord::getConfKey)
                 .setHeader("Key").setAutoWidth(true).setFlexGrow(0);
 
-        grid.addColumn(ConfigurationRecord::getValue)
+        grid.addColumn(ConfigurationRecord::getConfValue)
                 .setHeader("Value").setAutoWidth(false).setFlexGrow(1);
 
         grid.addColumn(new ComponentRenderer<>(configurationRecord -> {
@@ -114,7 +114,7 @@ public class ConfigurationSetting extends ResizableView {
 
     private void deleteConfiguration(@NotNull final ConfigurationRecord configurationRecord) {
         new ConfirmDialog("Confirm deletion",
-                String.format("Are you sure you want to permanently delete the configuration setting \"%s\"?", configurationRecord.getKey()),
+                String.format("Are you sure you want to permanently delete the configuration setting \"%s\"?", configurationRecord.getConfKey()),
                 "Delete", dialogEvent -> {
             configurationRecord.delete();
             databaseService.reloadConfiguration();
@@ -139,8 +139,8 @@ public class ConfigurationSetting extends ResizableView {
             });
             grid.getGenericDataView()
                     .getItems().map(configurationRecord -> new String[] {
-                            configurationRecord.getKey(),
-                            configurationRecord.getValue()
+                            configurationRecord.getConfKey(),
+                            configurationRecord.getConfValue()
                     }).forEach(csvWriter::writeNext);
             return new ByteArrayInputStream(stringWriter.toString().getBytes(UTF_8));
         });

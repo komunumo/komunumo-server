@@ -58,12 +58,12 @@ public final class ConfigurationDialog extends EditDialog<ConfigurationRecord> {
         binder.forField(key)
                 .withValidator(new StringLengthValidator(
                         "Please enter the key (max. 255 chars)", 1, 255))
-                .bind(ConfigurationRecord::getKey, ConfigurationRecord::setKey);
+                .bind(ConfigurationRecord::getConfKey, ConfigurationRecord::setConfKey);
 
         binder.forField(value)
                 .withValidator(new StringLengthValidator(
                         "Please enter the value (max. 255 chars)", 1, 255))
-                .bind(ConfigurationRecord::getValue, ConfigurationRecord::setValue);
+                .bind(ConfigurationRecord::getConfValue, ConfigurationRecord::setConfValue);
 
         afterOpen = () -> key.setReadOnly(!key.getValue().isBlank());
     }

@@ -40,8 +40,8 @@ interface ConfigurationService extends DSLContextGetter {
         final var filterValue = filter == null || filter.isBlank() ? null : "%" + filter.trim() + "%";
         return dsl().selectFrom(CONFIGURATION)
                 .where(filterValue == null ? DSL.noCondition()
-                        : CONFIGURATION.KEY.like(filterValue).or(CONFIGURATION.VALUE.like(filterValue)))
-                .orderBy(CONFIGURATION.KEY)
+                        : CONFIGURATION.CONF_KEY.like(filterValue).or(CONFIGURATION.CONF_VALUE.like(filterValue)))
+                .orderBy(CONFIGURATION.CONF_KEY)
                 .offset(offset)
                 .limit(limit)
                 .stream();
@@ -50,7 +50,7 @@ interface ConfigurationService extends DSLContextGetter {
     default Configuration loadConfigurationFromDatabase() {
         final var configurationData = new HashMap<String, String>();
         dsl().selectFrom(CONFIGURATION)
-                .forEach(configurationRecord -> configurationData.put(configurationRecord.getKey(), configurationRecord.getValue()));
+                .forEach(configurationRecord -> configurationData.put(configurationRecord.getConfKey(), configurationRecord.getConfValue()));
         return new Configuration(Collections.unmodifiableMap(configurationData));
     }
 
