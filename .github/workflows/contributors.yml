@@ -1,8 +1,8 @@
 name: Update Contributors
 
 on:
-  schedule: # Run workflow automatically
-    - cron: '0 0 * * *' # Runs every night at midnight
+#  schedule: # Run workflow automatically
+#    - cron: '0 0 * * *' # Runs every night at midnight
   workflow_dispatch: # Run workflow manually (without waiting for the cron to be called), through the GitHub Actions Workflow page directly
 
 jobs:
