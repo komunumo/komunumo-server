@@ -8,6 +8,8 @@ on:
 jobs:
   main:
     runs-on: ubuntu-latest
+    name: Update Contributors
+
     steps:
       - uses: minicli/action-contributors@v3.3
         name: "Update a projects CONTRIBUTORS file"

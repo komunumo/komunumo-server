@@ -8,8 +8,8 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    name: All Tests
 
     steps:
     - uses: actions/checkout@v3
