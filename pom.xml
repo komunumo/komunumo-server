@@ -300,7 +300,6 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>mariadb</artifactId>
             <version>1.18.0</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -417,12 +416,20 @@
                 <artifactId>jooq-codegen-maven</artifactId>
                 <executions>
                     <execution>
+                        <id>java-generator</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
+                    <jdbc>
+                        <driver>org.testcontainers.jdbc.ContainerDatabaseDriver</driver>
+                        <url>jdbc:tc:mariadb:10.11.2:///test?allowMultiQueries=true&amp;TC_TMPFS=/testtmpfs:rw&amp;TC_INITSCRIPT=file:${basedir}/src/main/resources/db/migration/V1_0_0__initialization.sql</url>
+                        <user>test</user>
+                        <password>test</password>
+                    </jdbc>
                     <generator>
                         <database>
                             <name>org.jooq.meta.extensions.ddl.DDLDatabase</name>
