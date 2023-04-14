@@ -31,14 +31,12 @@ MAIL_PORT=25
 
 ### Database
 
-*Komunumo* needs a database to store the business data. All JDBC compatible databases are supported. By default, *Komunumo* uses an in memory [H2](https://www.h2database.com/) database. You don't need to configure anything, but you will loose all your data when you stop *Komunumo*.
-
-To permanently store data, we highly recommend [MariaDB](https://mariadb.org/), just because we are using it during development and it is highly tested with *Komunumo*. Please make sure that your database is using an unicode character set to avoid problems storing data containing unicode characters.
+*Komunumo* needs a database to store the business data. By default, *Komunumo* comes with [MariaDB](https://mariadb.org/) drivers by default, which is recommended because we are using it during development and it is highly tested with *Komunumo*. All JDBC compatible databases are supported, but you need to configure the JDBC driver dependencies accordingly. Please make sure that your database is using a unicode character set to avoid problems storing data containing unicode characters.
 
 The `DB_USER` is used to access the *Komunumo* database including automatic schema migrations and needs `ALL PRIVILEGES`.
 
 ```
-DB_URL=jdbc:mariadb://localhost:3306/komunumo?serverTimezone\=Europe/Zurich
+DB_URL=jdbc:mariadb://localhost:3306/komunumo?serverTimezone\=Europe/Zurich&allowMultiQueries=true
 DB_USER=johndoe
 DB_PASS=verysecret
 ```
@@ -108,6 +106,10 @@ docker run -p 8080:8080 komunumo:latest
 ### Build
 
 We are using [Maven](https://maven.apache.org/) to build the *Komunumo* project. You do not need to have Maven installed! *Komunumo* makes use of the Maven Wrapper. In the root folder of this project, instead of using the `mvn` command directly just call the wrapper script `./mvnw` (or `.\mvnw` on Windows).
+
+### Test
+
+The integration tests need a database. To provide a temporary MariaDB database, the [Testcontainers](https://www.testcontainers.org/) framework is used. This framework needs a working [Docker](https://www.docker.com/) environment.
 
 ### Mail
 
