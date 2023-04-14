@@ -41,6 +41,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 
@@ -57,6 +58,7 @@ import java.util.List;
  */
 @SpringBootTest
 @DirtiesContext
+@Testcontainers
 public abstract class KaribuTest {
 
     @RegisterExtension
