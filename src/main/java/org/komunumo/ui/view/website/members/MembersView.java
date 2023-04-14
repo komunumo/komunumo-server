@@ -37,10 +37,6 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-
-import java.io.Serial;
-import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.enums.PageParent;
 import org.komunumo.data.service.DatabaseService;
@@ -48,6 +44,9 @@ import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.SubMenu;
 import org.komunumo.ui.view.website.SubMenuItem;
 import org.komunumo.ui.view.website.WebsiteLayout;
+
+import java.io.Serial;
+import java.util.List;
 
 @Route(value = "members", layout = WebsiteLayout.class)
 @RouteAlias(value = "members/feedback", layout = WebsiteLayout.class)

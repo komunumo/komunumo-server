@@ -25,8 +25,8 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.NewsRecord;
+import org.komunumo.ui.component.CustomDateTimePicker;
 import org.komunumo.ui.component.CustomLabel;
-import org.komunumo.ui.component.DateTimePicker;
 import org.komunumo.ui.component.EditDialog;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
@@ -43,8 +43,8 @@ public final class NewsDialog extends EditDialog<NewsRecord> {
         final var subtitle = new TextField("Subtitle");
         final var teaser = new RichTextEditor();
         final var message = new RichTextEditor();
-        final var showFrom = new DateTimePicker("Show from");
-        final var showTo = new DateTimePicker("Show to");
+        final var showFrom = new CustomDateTimePicker("Show from");
+        final var showTo = new CustomDateTimePicker("Show to");
 
         title.setRequiredIndicatorVisible(true);
         title.setValueChangeMode(EAGER);

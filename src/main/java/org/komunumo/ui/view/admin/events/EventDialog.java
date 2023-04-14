@@ -42,8 +42,8 @@ import org.komunumo.data.entity.KeywordEntity;
 import org.komunumo.data.entity.Member;
 import org.komunumo.data.service.DatabaseService;
 import org.komunumo.security.AuthenticatedUser;
+import org.komunumo.ui.component.CustomDateTimePicker;
 import org.komunumo.ui.component.CustomLabel;
-import org.komunumo.ui.component.DateTimePicker;
 import org.komunumo.ui.component.EditDialog;
 import org.komunumo.util.URLUtil;
 
@@ -77,7 +77,7 @@ public final class EventDialog extends EditDialog<Event> {
     @SuppressWarnings("checkstyle:MethodLength") // just a lot of fields for the form
     @Override
     public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<Event> binder) {
-        final var type = new Select<>(EventType.values());
+        final var type = new Select<EventType>();
         final var title = new TextField("Title");
         final var subtitle = new TextField("Subtitle");
         final var speaker = new MultiComboBox<EventSpeakerEntity>("Speaker");
@@ -85,14 +85,14 @@ public final class EventDialog extends EditDialog<Event> {
         final var description = new RichTextEditor();
         final var keyword = new MultiComboBox<KeywordEntity>("Keyword");
         final var agenda = new RichTextEditor();
-        final var level = new Select<>(EventLevel.values());
-        final var language = new Select<>(EventLanguage.values());
+        final var level = new Select<EventLevel>();
+        final var language = new Select<EventLanguage>();
         final var room = new TextField("Room");
         final var travelInstructions = new TextField("Travel instructions");
         final var location = new ComboBox<String>("Location");
         final var webinarUrl = new TextField("Webinar URL");
         final var youtTube = new TextField("YouTube");
-        final var date = new DateTimePicker("Date & Time");
+        final var date = new CustomDateTimePicker("Date & Time");
         final var duration = new TimePicker("Duration");
         final var eventUrl = new TextField("Event URL");
         final var attendeeLimit = new IntegerField("Attendee limit (0 = no limit)");
@@ -101,6 +101,7 @@ public final class EventDialog extends EditDialog<Event> {
 
         type.setLabel("Type");
         type.setRequiredIndicatorVisible(true);
+        type.setItems(EventType.values());
         title.setRequiredIndicatorVisible(true);
         title.setValueChangeMode(EAGER);
         title.addValueChangeListener(changeEvent -> {
@@ -117,7 +118,9 @@ public final class EventDialog extends EditDialog<Event> {
         keyword.setItemLabelGenerator(KeywordEntity::keyword);
         keyword.setItems(databaseService.getAllKeywords());
         level.setLabel("Level");
+        level.setItems(EventLevel.values());
         language.setLabel("Language");
+        language.setItems(EventLanguage.values());
         location.setItems(databaseService.getAllEventLocations());
         location.setAllowCustomValue(true);
         location.addValueChangeListener(changeEvent -> {
@@ -142,7 +145,7 @@ public final class EventDialog extends EditDialog<Event> {
         attendeeLimit.setMin(0);
         attendeeLimit.setMax(500);
         attendeeLimit.setStep(10);
-        attendeeLimit.setHasControls(true);
+        attendeeLimit.setStepButtonsVisible(true);
         published.addValueChangeListener(changeEvent -> {
             final var value = changeEvent.getValue();
             speaker.setRequiredIndicatorVisible(value);
@@ -266,7 +269,7 @@ public final class EventDialog extends EditDialog<Event> {
     }
 
     private void updateEventUrlPrefix(@NotNull final ComboBox<String> location,
-                                      @NotNull final DateTimePicker date,
+                                      @NotNull final CustomDateTimePicker date,
                                       @NotNull final TextField eventUrl) {
         final var locationValue = location.getValue();
         final var dateValue = date.getValue();
@@ -275,7 +278,7 @@ public final class EventDialog extends EditDialog<Event> {
         eventUrl.setPrefixComponent(new Span("%s/%s/".formatted(locationText, year)));
     }
 
-    private boolean isPastEvent(@NotNull final DateTimePicker date) {
+    private boolean isPastEvent(@NotNull final CustomDateTimePicker date) {
         return date.getValue() != null && date.getValue().isBefore(LocalDateTime.now());
     }
 

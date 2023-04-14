@@ -19,10 +19,9 @@
 package org.komunumo.ui.view.website;
 
 import com.vaadin.flow.component.html.Anchor;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serial;
-
-import org.jetbrains.annotations.NotNull;
 
 public class SubMenuItem extends Anchor {
 

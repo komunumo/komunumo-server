@@ -35,14 +35,13 @@ import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.value.ValueChangeMode;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.entity.Member;
 import org.komunumo.data.service.DatabaseService;
+
+import java.io.Serial;
 
 import static org.komunumo.util.FormatterUtil.formatDate;
 

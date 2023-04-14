@@ -22,13 +22,11 @@ import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-
-import java.io.Serial;
-
+import jakarta.annotation.security.PermitAll;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.security.AuthenticatedUser;
 
-import javax.annotation.security.PermitAll;
+import java.io.Serial;
 
 @Route("logout")
 @PageTitle("Logout")

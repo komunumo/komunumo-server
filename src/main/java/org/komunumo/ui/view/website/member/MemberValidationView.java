@@ -28,15 +28,14 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.security.SecurityService;
 import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.WebsiteLayout;
 import org.komunumo.ui.view.website.home.HomeView;
 import org.springframework.security.authentication.BadCredentialsException;
+
+import java.io.Serial;
 
 @AnonymousAllowed
 @PageTitle("Validation")

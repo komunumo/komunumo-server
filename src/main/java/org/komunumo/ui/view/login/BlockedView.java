@@ -26,13 +26,11 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
-
-import java.io.Serial;
-
+import jakarta.annotation.security.PermitAll;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.MemberRecord;
 
-import javax.annotation.security.PermitAll;
+import java.io.Serial;
 
 @Route(value = "blocked")
 @PageTitle("Account blocked")

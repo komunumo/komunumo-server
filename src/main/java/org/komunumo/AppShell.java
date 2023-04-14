@@ -24,11 +24,10 @@ import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.AppShellSettings;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.DatabaseService;
+
+import java.io.Serial;
 
 @Push
 @Theme(value = "komunumo")

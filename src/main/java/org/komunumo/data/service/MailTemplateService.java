@@ -18,10 +18,6 @@
 
 package org.komunumo.data.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.impl.DSL;
@@ -29,6 +25,9 @@ import org.komunumo.data.db.tables.records.MailTemplateRecord;
 import org.komunumo.data.entity.MailTemplateId;
 import org.komunumo.data.service.getter.DSLContextGetter;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 

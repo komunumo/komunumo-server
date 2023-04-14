@@ -30,9 +30,6 @@ import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.Event;
@@ -43,6 +40,7 @@ import org.komunumo.ui.view.website.SubMenuItem;
 import org.komunumo.ui.view.website.WebsiteLayout;
 import org.komunumo.util.URLUtil;
 
+import java.io.Serial;
 import java.util.List;
 
 @Route(value = "events", layout = WebsiteLayout.class)

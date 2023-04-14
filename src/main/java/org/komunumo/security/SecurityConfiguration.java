@@ -25,10 +25,10 @@ import org.komunumo.ui.view.login.LoginView;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.security.SecureRandom;
 
@@ -59,39 +59,40 @@ public class SecurityConfiguration extends VaadinWebSecurity {
      */
     @Override
     protected void configure(@NotNull final HttpSecurity http) throws Exception {
-        super.configure(http);
-        setLoginView(http, LoginView.class, LOGOUT_URL);
-    }
-
-    /**
-     * @see VaadinWebSecurity#configure(WebSecurity)
-     */
-    @Override
-    public void configure(@NotNull final WebSecurity web) throws Exception {
-        super.configure(web);
-        web.ignoring().antMatchers(
+        http.authorizeHttpRequests().requestMatchers(
                 // Client-side JS
-                "/VAADIN/**",
+                new AntPathRequestMatcher("/VAADIN/**"),
 
                 // the standard favicon URI
-                "/favicon.ico",
+                new AntPathRequestMatcher("/favicon.ico"),
 
                 // the robots exclusion standard
-                "/robots.txt",
+                new AntPathRequestMatcher("/robots.txt"),
 
                 // web application manifest
-                "/manifest.webmanifest",
-                "/sw.js",
-                "/offline.html",
+                new AntPathRequestMatcher("/manifest.webmanifest"),
+                new AntPathRequestMatcher("/sw.js"),
+                new AntPathRequestMatcher("/offline.html"),
 
                 // icons and images
-                "/icons/**",
-                "/images/**",
-                "/styles/**",
+                new AntPathRequestMatcher("/icons/**"),
+                new AntPathRequestMatcher("/images/**"),
+                new AntPathRequestMatcher("/styles/**"),
 
                 // (development mode) H2 debugging console
-                "/h2-console/**");
+                new AntPathRequestMatcher("/h2-console/**")
+        ).permitAll();
 
-        databaseService.getAllRedirects().forEach(record -> web.ignoring().antMatchers(record.getOldUrl()));
+        databaseService.getAllRedirects().forEach(record -> {
+            try {
+                http.authorizeHttpRequests().requestMatchers(new AntPathRequestMatcher(record.getOldUrl()));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        super.configure(http);
+
+        setLoginView(http, LoginView.class, LOGOUT_URL);
     }
 }

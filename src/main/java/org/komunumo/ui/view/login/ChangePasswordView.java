@@ -30,16 +30,14 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-
-import java.io.Serial;
-
+import jakarta.annotation.security.PermitAll;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.security.AuthenticatedUser;
 import org.komunumo.security.SecurityConfiguration;
 import org.komunumo.security.SecurityService;
 import org.springframework.security.core.AuthenticationException;
 
-import javax.annotation.security.PermitAll;
+import java.io.Serial;
 
 @Route("change-password")
 @PageTitle("Change Password")

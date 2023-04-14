@@ -22,10 +22,9 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.shared.Registration;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serial;
-
-import org.jetbrains.annotations.Nullable;
 
 public class ResizableView extends Div {
 

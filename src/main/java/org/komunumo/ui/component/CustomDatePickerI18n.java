@@ -18,23 +18,30 @@
 
 package org.komunumo.ui.component;
 
-import com.vaadin.componentfactory.EnhancedDatePicker;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serial;
 import java.text.DateFormatSymbols;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-class DatePickerI18N extends EnhancedDatePicker.DatePickerI18n {
+import static org.komunumo.util.FormatterUtil.DATE_PATTERN;
 
-    DatePickerI18N() {
+class CustomDatePickerI18n extends DatePicker.DatePickerI18n {
+
+    @Serial
+    private static final long serialVersionUID = 117631275236516039L;
+
+    CustomDatePickerI18n() {
         this(UI.getCurrent().getSession().getBrowser().getLocale());
     }
 
-    DatePickerI18N(@NotNull final Locale locale) {
+    CustomDatePickerI18n(@NotNull final Locale locale) {
+        this.setDateFormat(DATE_PATTERN);
         final var symbols = new DateFormatSymbols(locale);
         this.setMonthNames(Arrays.asList(symbols.getMonths()));
         this.setFirstDayOfWeek(Calendar.getInstance(locale).getFirstDayOfWeek());

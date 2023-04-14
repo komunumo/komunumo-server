@@ -35,6 +35,7 @@ import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import elemental.json.Json;
+import jakarta.annotation.security.RolesAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.komunumo.ApplicationServiceInitListener;
@@ -48,7 +49,6 @@ import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.component.ResizableView;
 import org.komunumo.ui.view.admin.AdminLayout;
 
-import javax.annotation.security.RolesAllowed;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 

@@ -23,13 +23,12 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.view.website.NewsBlock;
 import org.komunumo.ui.view.website.WebsiteLayout;
+
+import java.io.Serial;
 
 @Route(value = "", layout = WebsiteLayout.class)
 @CssImport("./themes/komunumo/views/website/home-view.css")

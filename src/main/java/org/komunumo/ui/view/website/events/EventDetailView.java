@@ -24,9 +24,6 @@ import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.NotFoundException;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Event;
 import org.komunumo.data.service.DatabaseService;
@@ -36,6 +33,7 @@ import org.komunumo.ui.view.website.SubMenuItem;
 import org.komunumo.ui.view.website.WebsiteLayout;
 import org.komunumo.util.URLUtil;
 
+import java.io.Serial;
 import java.time.Year;
 import java.util.HashMap;
 import java.util.List;

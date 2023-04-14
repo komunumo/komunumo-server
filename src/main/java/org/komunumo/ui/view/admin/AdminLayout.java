@@ -41,11 +41,6 @@ import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
-
-import java.io.Serial;
-
-import java.util.Locale;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.enums.MemberTheme;
 import org.komunumo.security.AuthenticatedUser;
@@ -64,7 +59,9 @@ import org.komunumo.ui.view.admin.sponsors.SponsorsView;
 import org.komunumo.ui.view.login.ChangePasswordView;
 import org.komunumo.util.GravatarUtil;
 
+import java.io.Serial;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Optional;
 
 @CssImport(value = "./themes/komunumo/views/admin/admin-layout.css")

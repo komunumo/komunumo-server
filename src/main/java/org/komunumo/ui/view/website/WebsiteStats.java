@@ -21,13 +21,11 @@ package org.komunumo.ui.view.website;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.NoShows;
 import org.komunumo.data.service.DatabaseService;
 
+import java.io.Serial;
 import java.time.Year;
 import java.util.Random;
 

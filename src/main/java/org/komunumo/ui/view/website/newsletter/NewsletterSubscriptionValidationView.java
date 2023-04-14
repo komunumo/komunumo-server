@@ -29,9 +29,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.service.DatabaseService;
@@ -39,6 +36,7 @@ import org.komunumo.ui.view.website.ContentBlock;
 import org.komunumo.ui.view.website.WebsiteLayout;
 import org.komunumo.ui.view.website.home.HomeView;
 
+import java.io.Serial;
 import java.util.List;
 
 @Route(value = "newsletter/subscription/validation", layout = WebsiteLayout.class)

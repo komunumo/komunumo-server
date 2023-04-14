@@ -35,9 +35,6 @@ import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.enums.PageParent;
 import org.komunumo.data.db.enums.SponsorLevel;
@@ -48,6 +45,8 @@ import org.komunumo.ui.view.website.SubMenu;
 import org.komunumo.ui.view.website.SubMenuItem;
 import org.komunumo.ui.view.website.WebsiteLayout;
 import org.komunumo.util.URLUtil;
+
+import java.io.Serial;
 
 @Route(value = "sponsors", layout = WebsiteLayout.class)
 @CssImport("./themes/komunumo/views/website/sponsors-view.css")

@@ -27,13 +27,11 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.dom.Element;
 import elemental.json.Json;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.util.UriUtils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Serial;
 import java.util.Base64;
 
 import static java.nio.charset.StandardCharsets.UTF_8;

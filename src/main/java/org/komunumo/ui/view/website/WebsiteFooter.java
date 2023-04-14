@@ -26,12 +26,11 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.configuration.Configuration;
 import org.komunumo.data.service.DatabaseService;
+
+import java.io.Serial;
 
 public class WebsiteFooter extends Footer {
 

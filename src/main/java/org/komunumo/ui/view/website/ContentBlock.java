@@ -26,15 +26,14 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.NotFoundException;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.db.enums.PageParent;
 import org.komunumo.data.entity.Page;
 import org.komunumo.data.service.DatabaseService;
 import org.komunumo.util.FormatterUtil;
+
+import java.io.Serial;
 
 @CssImport("./themes/komunumo/views/website/content-block.css")
 public class ContentBlock extends HorizontalLayout {

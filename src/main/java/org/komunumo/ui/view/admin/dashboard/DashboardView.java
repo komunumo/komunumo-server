@@ -26,15 +26,13 @@ import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-
-import java.io.Serial;
-
+import jakarta.annotation.security.RolesAllowed;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.Role;
 import org.komunumo.data.service.DatabaseService;
 import org.komunumo.ui.view.admin.AdminLayout;
 
-import javax.annotation.security.RolesAllowed;
+import java.io.Serial;
 import java.time.Year;
 import java.util.Comparator;
 
@@ -65,7 +63,7 @@ public class DashboardView extends Div {
         yearSelector.addThemeVariants(TextFieldVariant.LUMO_SMALL);
         yearSelector.addClassName("year-selector");
         yearSelector.setStep(1);
-        yearSelector.setHasControls(true);
+        yearSelector.setStepButtonsVisible(true);
         yearSelector.setMin(minYear.getValue());
         yearSelector.setMax(maxYear.getValue());
         yearSelector.setValue(selectedYear.getValue());

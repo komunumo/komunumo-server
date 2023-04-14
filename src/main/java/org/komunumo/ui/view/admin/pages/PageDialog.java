@@ -30,10 +30,9 @@ import org.komunumo.data.db.enums.PageParent;
 import org.komunumo.data.entity.Page;
 import org.komunumo.ui.component.CustomLabel;
 import org.komunumo.ui.component.EditDialog;
+import org.komunumo.util.URLUtil;
 
 import java.util.Objects;
-
-import org.komunumo.util.URLUtil;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 

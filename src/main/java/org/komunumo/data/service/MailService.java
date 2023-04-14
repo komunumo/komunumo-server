@@ -18,11 +18,6 @@
 
 package org.komunumo.data.service;
 
-import java.util.Map;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.entity.MailTemplateId;
@@ -30,6 +25,10 @@ import org.komunumo.data.service.getter.ConfigurationGetter;
 import org.komunumo.data.service.getter.DSLContextGetter;
 import org.komunumo.data.service.getter.MailSenderGetter;
 import org.springframework.mail.SimpleMailMessage;
+
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public interface MailService extends ConfigurationGetter, DSLContextGetter, MailSenderGetter, MailTemplateService {
 

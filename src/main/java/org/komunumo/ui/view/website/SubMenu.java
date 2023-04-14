@@ -21,10 +21,9 @@ package org.komunumo.ui.view.website;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Nav;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serial;
-
-import org.jetbrains.annotations.NotNull;
 
 @CssImport("./themes/komunumo/views/website/sub-menu.css")
 public class SubMenu extends Nav {

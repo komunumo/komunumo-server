@@ -20,10 +20,9 @@ package org.komunumo.ui.view.admin.dashboard;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serial;
-
-import org.jetbrains.annotations.NotNull;
 
 public class WrapperCard extends Div {
 

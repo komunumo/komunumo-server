@@ -21,9 +21,8 @@ package org.komunumo;
 import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
-
-import java.io.Serial;
-
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.enums.PageParent;
 import org.komunumo.data.service.DatabaseService;
@@ -32,13 +31,12 @@ import org.komunumo.ui.view.website.members.MembersView;
 import org.komunumo.ui.view.website.sponsors.SponsorsView;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY;
+import static jakarta.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY;
 
 @Component
 public final class ApplicationServiceInitListener implements VaadinServiceInitListener {

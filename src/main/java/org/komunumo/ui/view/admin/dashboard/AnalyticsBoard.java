@@ -33,14 +33,12 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.entity.NoShows;
 import org.komunumo.data.service.DatabaseService;
 import org.komunumo.util.FormatterUtil;
 
+import java.io.Serial;
 import java.time.Year;
 
 @CssImport(value = "./themes/komunumo/views/admin/analytics-board.css")

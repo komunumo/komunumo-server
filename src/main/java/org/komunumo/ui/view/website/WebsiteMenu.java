@@ -23,9 +23,6 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.AnchorTarget;
 import com.vaadin.flow.component.html.Nav;
 import com.vaadin.flow.router.RouterLink;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.security.AuthenticatedUser;
 import org.komunumo.ui.view.website.events.EventsView;
@@ -33,6 +30,8 @@ import org.komunumo.ui.view.website.faq.FaqView;
 import org.komunumo.ui.view.website.home.HomeView;
 import org.komunumo.ui.view.website.members.MembersView;
 import org.komunumo.ui.view.website.sponsors.SponsorsView;
+
+import java.io.Serial;
 
 @CssImport("./themes/komunumo/views/website/website-menu.css")
 public class WebsiteMenu extends Nav {

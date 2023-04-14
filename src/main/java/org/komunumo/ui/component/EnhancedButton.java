@@ -22,10 +22,9 @@ import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serial;
-
-import org.jetbrains.annotations.NotNull;
 
 public final class EnhancedButton extends Button {
 

@@ -18,6 +18,7 @@
 
 package org.komunumo;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -35,6 +36,7 @@ public final class ApplicationContextHolder implements ApplicationContextAware {
 
     @Override
     @SuppressWarnings("java:S2696") // modify static properties from non-static methods
+    @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     public void setApplicationContext(@SuppressWarnings("NullableProblems") final ApplicationContext applicationContext) throws BeansException {
         ApplicationContextHolder.applicationContext = applicationContext;
     }

@@ -18,25 +18,19 @@
 
 package org.komunumo.ui.component;
 
-import com.vaadin.componentfactory.EnhancedDateTimePicker;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serial;
 
-import org.jetbrains.annotations.NotNull;
-
-import static org.komunumo.util.FormatterUtil.DATE_PATTERN;
-import static org.komunumo.util.FormatterUtil.TIME_PATTERN;
-
-public class DateTimePicker extends EnhancedDateTimePicker {
+public class CustomDateTimePicker extends DateTimePicker {
 
     @Serial
-    private static final long serialVersionUID = 2011330359887922052L;
+    private static final long serialVersionUID = -2313498224252211301L;
 
-    public DateTimePicker(@NotNull final String label) {
+    public CustomDateTimePicker(@NotNull final String label) {
         super(label);
-        this.setTimePattern(TIME_PATTERN);
-        this.setDatePattern(DATE_PATTERN);
-        this.setDatePickerI18n(new DatePickerI18N());
+        this.setDatePickerI18n(new CustomDatePickerI18n());
         this.setWeekNumbersVisible(true);
     }
 

@@ -29,9 +29,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.komunumo.data.service.DatabaseService;
@@ -40,6 +37,7 @@ import org.komunumo.ui.view.website.SubMenu;
 import org.komunumo.ui.view.website.SubMenuItem;
 import org.komunumo.ui.view.website.WebsiteLayout;
 
+import java.io.Serial;
 import java.time.Year;
 import java.util.Comparator;
 import java.util.List;

@@ -30,8 +30,8 @@ import org.komunumo.Callback;
 import org.komunumo.data.db.enums.SponsorLevel;
 import org.komunumo.data.db.tables.records.SponsorRecord;
 import org.komunumo.data.service.DatabaseService;
+import org.komunumo.ui.component.CustomDatePicker;
 import org.komunumo.ui.component.CustomLabel;
-import org.komunumo.ui.component.DatePicker;
 import org.komunumo.ui.component.EditDialog;
 import org.komunumo.ui.component.ImageUploadField;
 import org.komunumo.ui.component.TagField;
@@ -60,8 +60,8 @@ public final class SponsorDialog extends EditDialog<SponsorRecord> {
         final var level = new ComboBox<SponsorLevel>("Level");
         final var logo = new ImageUploadField("Logo");
         final var description = new RichTextEditor();
-        final var validFrom = new DatePicker("Valid from");
-        final var validTo = new DatePicker("Valid to");
+        final var validFrom = new CustomDatePicker("Valid from");
+        final var validTo = new CustomDatePicker("Valid to");
         final var domains = new TagField("Domains");
 
         name.setRequiredIndicatorVisible(true);

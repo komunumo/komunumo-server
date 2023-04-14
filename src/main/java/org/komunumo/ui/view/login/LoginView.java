@@ -27,14 +27,13 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.security.AuthenticatedUser;
 import org.komunumo.security.LoginAttemptService;
 import org.komunumo.security.SecurityService;
 import org.komunumo.ui.view.admin.dashboard.DashboardView;
+
+import java.io.Serial;
 
 @Route(value = "login")
 @PageTitle("Login")

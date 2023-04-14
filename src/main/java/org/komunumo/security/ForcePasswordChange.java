@@ -22,11 +22,10 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.spring.annotation.SpringComponent;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.ui.view.login.ChangePasswordView;
+
+import java.io.Serial;
 
 @SpringComponent
 public final class ForcePasswordChange implements VaadinServiceInitListener {

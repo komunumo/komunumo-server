@@ -18,11 +18,10 @@
 
 package org.komunumo.util;
 
-import java.lang.reflect.InvocationTargetException;
-
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Calendar;
 

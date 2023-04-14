@@ -18,23 +18,19 @@
 
 package org.komunumo.ui.component;
 
-import com.vaadin.componentfactory.EnhancedDatePicker;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serial;
 
-import org.jetbrains.annotations.NotNull;
-
-import static org.komunumo.util.FormatterUtil.DATE_PATTERN;
-
-public class DatePicker extends EnhancedDatePicker {
+public class CustomDatePicker extends DatePicker {
 
     @Serial
-    private static final long serialVersionUID = -3377656832680318019L;
+    private static final long serialVersionUID = -7602954593446482651L;
 
-    public DatePicker(@NotNull final String label) {
+    public CustomDatePicker(@NotNull final String label) {
         super(label);
-        this.setPattern(DATE_PATTERN);
-        this.setI18n(new DatePickerI18N());
+        this.setI18n(new CustomDatePickerI18n());
         this.setWeekNumbersVisible(true);
     }
 

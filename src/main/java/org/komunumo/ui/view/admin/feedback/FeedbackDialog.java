@@ -24,7 +24,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.FeedbackRecord;
-import org.komunumo.ui.component.DateTimePicker;
+import org.komunumo.ui.component.CustomDateTimePicker;
 import org.komunumo.ui.component.EditDialog;
 
 public final class FeedbackDialog extends EditDialog<FeedbackRecord> {
@@ -35,7 +35,7 @@ public final class FeedbackDialog extends EditDialog<FeedbackRecord> {
 
     @Override
     public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<FeedbackRecord> binder) {
-        final var received = new DateTimePicker("Received");
+        final var received = new CustomDateTimePicker("Received");
         final var firstName = new TextField("First name");
         final var lastName = new TextField("Last name");
         final var email = new TextField("Email");

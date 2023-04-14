@@ -20,11 +20,10 @@ package org.komunumo.ui.view.website;
 
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Header;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.service.DatabaseService;
+
+import java.io.Serial;
 
 public class WebsiteHeader extends Header {
 

@@ -30,11 +30,10 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.theme.lumo.Lumo;
-
-import java.io.Serial;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.Serial;
 
 @SuppressWarnings("PMD.ConstructorCallsOverridableMethod") // call is prefixed with super
 @CssImport("./themes/komunumo/views/admin/komunumo-dialog.css")
