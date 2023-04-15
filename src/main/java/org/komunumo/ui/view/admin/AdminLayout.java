@@ -182,7 +182,7 @@ public final class AdminLayout extends AppLayout {
         return tabs;
     }
 
-    private Component[] createMenuItems() {
+    private Tab[] createMenuItems() {
         final var member = authenticatedUser.get().orElse(null);
         if (member != null && member.getPasswordChange()) {
             return new Tab[] {
