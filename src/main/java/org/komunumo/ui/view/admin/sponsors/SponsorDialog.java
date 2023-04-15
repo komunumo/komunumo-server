@@ -20,7 +20,6 @@ package org.komunumo.ui.view.admin.sponsors;
 
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.richtexteditor.RichTextEditor;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
@@ -35,6 +34,7 @@ import org.komunumo.ui.component.CustomLabel;
 import org.komunumo.ui.component.EditDialog;
 import org.komunumo.ui.component.ImageUploadField;
 import org.komunumo.ui.component.TagField;
+import org.vaadin.addons.jhoffmann99.TrixEditor;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -59,7 +59,7 @@ public final class SponsorDialog extends EditDialog<SponsorRecord> {
         final var website = new TextField("Website");
         final var level = new ComboBox<SponsorLevel>("Level");
         final var logo = new ImageUploadField("Logo");
-        final var description = new RichTextEditor();
+        final var description = new TrixEditor("");
         final var validFrom = new CustomDatePicker("Valid from");
         final var validTo = new CustomDatePicker("Valid to");
         final var domains = new TagField("Domains");
@@ -93,7 +93,7 @@ public final class SponsorDialog extends EditDialog<SponsorRecord> {
                         "The logo is too big (max. 100 KB)", 0, 100_000))
                 .bind(SponsorRecord::getLogo, SponsorRecord::setLogo);
 
-        binder.forField(description.asHtml())
+        binder.forField(description)
                 .withValidator(new StringLengthValidator(
                         "The description is too long (max. 100'000 chars)", 0, 100_000))
                 .bind(SponsorRecord::getDescription, SponsorRecord::setDescription);

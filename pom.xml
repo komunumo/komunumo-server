@@ -170,6 +170,11 @@
             <version>23.1.2</version>
         </dependency>
         <dependency>
+            <groupId>org.vaadin.addons.jhoffmann99</groupId>
+            <artifactId>trix-editor</artifactId>
+            <version>1.0.0</version> <!-- Attention: Don't update to v1.0.1, it is broken! -->
+        </dependency>
+        <dependency>
             <groupId>org.vaadin.reportui</groupId>
             <artifactId>report-ui</artifactId>
             <version>4.0.2</version>

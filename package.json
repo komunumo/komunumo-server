@@ -77,7 +77,8 @@
     "line-awesome": "1.3.0",
     "lit": "2.6.1",
     "lumo-css-framework": "^4.0.10",
-    "proj4": "2.8.1"
+    "proj4": "2.8.1",
+    "trix": "2.0.4"
   },
   "devDependencies": {
     "@rollup/plugin-replace": "5.0.2",
@@ -171,7 +172,8 @@
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
     "date-fns": "$date-fns",
     "lumo-css-framework": "$lumo-css-framework",
-    "line-awesome": "$line-awesome"
+    "line-awesome": "$line-awesome",
+    "trix": "$trix"
   },
   "vaadin": {
     "dependencies": {
@@ -250,7 +252,8 @@
       "line-awesome": "1.3.0",
       "lit": "2.6.1",
       "lumo-css-framework": "^4.0.10",
-      "proj4": "2.8.1"
+      "proj4": "2.8.1",
+      "trix": "2.0.4"
     },
     "devDependencies": {
       "@rollup/plugin-replace": "5.0.2",
@@ -268,6 +271,6 @@
       "workbox-core": "6.5.4",
       "workbox-precaching": "6.5.4"
     },
-    "hash": "489a7380b845b80443a267bfc7c3642ffbc753599bd47fc15ec068cfa3f7b93c"
+    "hash": "36d724e7834bad574d699b2a547b29ea8e633421c3192447f73336414da2ddc3"
   }
 }

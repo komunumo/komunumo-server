@@ -19,7 +19,6 @@
 package org.komunumo.ui.view.admin.news;
 
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.richtexteditor.RichTextEditor;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
@@ -28,6 +27,7 @@ import org.komunumo.data.db.tables.records.NewsRecord;
 import org.komunumo.ui.component.CustomDateTimePicker;
 import org.komunumo.ui.component.CustomLabel;
 import org.komunumo.ui.component.EditDialog;
+import org.vaadin.addons.jhoffmann99.TrixEditor;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
@@ -41,8 +41,8 @@ public final class NewsDialog extends EditDialog<NewsRecord> {
     public void createForm(@NotNull final FormLayout formLayout, @NotNull final Binder<NewsRecord> binder) {
         final var title = new TextField("Title");
         final var subtitle = new TextField("Subtitle");
-        final var teaser = new RichTextEditor();
-        final var message = new RichTextEditor();
+        final var teaser = new TrixEditor("");
+        final var message = new TrixEditor("");
         final var showFrom = new CustomDateTimePicker("Show from");
         final var showTo = new CustomDateTimePicker("Show to");
 
@@ -63,12 +63,12 @@ public final class NewsDialog extends EditDialog<NewsRecord> {
                         "The subtitle is too long (max. 255 chars)", 0, 255))
                 .bind(NewsRecord::getSubtitle, NewsRecord::setSubtitle);
 
-        binder.forField(teaser.asHtml())
+        binder.forField(teaser)
                 .withValidator(new StringLengthValidator(
                         "The teaser is too long (max. 1'000 chars)", 0, 1_000))
                 .bind(NewsRecord::getTeaser, NewsRecord::setTeaser);
 
-        binder.forField(message.asHtml())
+        binder.forField(message)
                 .withValidator(new StringLengthValidator(
                         "The message is too long (max. 100'000 chars)", 0, 100_000))
                 .bind(NewsRecord::getMessage, NewsRecord::setMessage);

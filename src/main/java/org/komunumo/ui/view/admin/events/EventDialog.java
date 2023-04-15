@@ -23,7 +23,6 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.richtexteditor.RichTextEditor;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -46,6 +45,7 @@ import org.komunumo.ui.component.CustomDateTimePicker;
 import org.komunumo.ui.component.CustomLabel;
 import org.komunumo.ui.component.EditDialog;
 import org.komunumo.util.URLUtil;
+import org.vaadin.addons.jhoffmann99.TrixEditor;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -82,9 +82,9 @@ public final class EventDialog extends EditDialog<Event> {
         final var subtitle = new TextField("Subtitle");
         final var speaker = new MultiComboBox<EventSpeakerEntity>("Speaker");
         final var organizer = new MultiComboBox<Member>("Organizer");
-        final var description = new RichTextEditor();
+        final var description = new TrixEditor("");
         final var keyword = new MultiComboBox<KeywordEntity>("Keyword");
-        final var agenda = new RichTextEditor();
+        final var agenda = new TrixEditor("");
         final var level = new Select<EventLevel>();
         final var language = new Select<EventLanguage>();
         final var room = new TextField("Room");
@@ -194,7 +194,7 @@ public final class EventDialog extends EditDialog<Event> {
                         "Please select a level")
                 .bind(Event::getLevel, Event::setLevel);
 
-        binder.forField(description.asHtml())
+        binder.forField(description)
                 .withValidator(value -> !published.getValue() || value != null && !value.isBlank(),
                         "Please enter a description")
                 .bind(Event::getDescription, Event::setDescription);
@@ -202,7 +202,7 @@ public final class EventDialog extends EditDialog<Event> {
         binder.forField(keyword)
                 .bind(this::getKeyword, this::setKeyword);
 
-        binder.forField(agenda.asHtml())
+        binder.forField(agenda)
                 .bind(Event::getAgenda, Event::setAgenda);
 
         binder.forField(language)

@@ -19,7 +19,6 @@
 package org.komunumo.ui.view.admin.faq;
 
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.richtexteditor.RichTextEditor;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.StringLengthValidator;
@@ -27,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.komunumo.data.db.tables.records.FaqRecord;
 import org.komunumo.ui.component.CustomLabel;
 import org.komunumo.ui.component.EditDialog;
+import org.vaadin.addons.jhoffmann99.TrixEditor;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 
@@ -42,7 +42,7 @@ public final class FaqDialog extends EditDialog<FaqRecord> {
         question.setRequiredIndicatorVisible(true);
         question.setValueChangeMode(EAGER);
 
-        final var answer = new RichTextEditor();
+        final var answer = new TrixEditor("");
         answer.setRequiredIndicatorVisible(true);
 
         formLayout.add(question, new CustomLabel("Answer"), answer);
@@ -52,9 +52,9 @@ public final class FaqDialog extends EditDialog<FaqRecord> {
                         "Please enter the question (max. 255 chars)", 1, 255))
                 .bind(FaqRecord::getQuestion, FaqRecord::setQuestion);
 
-        binder.forField(answer.asHtml())
+        binder.forField(answer)
                 .withValidator(new StringLengthValidator(
-                        "Please enter the question (max. 255 chars)", 1, 10_000))
+                        "Please enter the answer (max. 10.000 chars)", 1, 10_000))
                 .bind(FaqRecord::getAnswer, FaqRecord::setAnswer);
     }
 

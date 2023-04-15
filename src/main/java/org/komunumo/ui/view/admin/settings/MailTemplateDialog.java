@@ -19,7 +19,6 @@
 package org.komunumo.ui.view.admin.settings;
 
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.richtexteditor.RichTextEditor;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
@@ -32,6 +31,7 @@ import org.komunumo.data.db.tables.records.MailTemplateRecord;
 import org.komunumo.data.entity.MailTemplateId;
 import org.komunumo.ui.component.CustomLabel;
 import org.komunumo.ui.component.EditDialog;
+import org.vaadin.addons.jhoffmann99.TrixEditor;
 
 import java.util.List;
 import java.util.Objects;
@@ -67,7 +67,7 @@ public final class MailTemplateDialog extends EditDialog<MailTemplateRecord> {
         contentText.setRequiredIndicatorVisible(true);
         formLayout.add(new CustomLabel("Content as plain text"), contentText);
 
-        final var contentHTML = new RichTextEditor();
+        final var contentHTML = new TrixEditor("");
         contentHTML.setRequiredIndicatorVisible(true);
         formLayout.add(new CustomLabel("Content as formatted HTML"), contentHTML);
 
@@ -85,7 +85,7 @@ public final class MailTemplateDialog extends EditDialog<MailTemplateRecord> {
                         "Please enter the content as plain text (max. 8'000 chars)", 1, 8_000))
                 .bind(MailTemplateRecord::getContentText, MailTemplateRecord::setContentText);
 
-        binder.forField(contentHTML.asHtml())
+        binder.forField(contentHTML)
                 .withValidator(new StringLengthValidator(
                         "Please enter the content as formattet HTML (max. 8'000 chars)", 1, 8_000))
                 .bind(MailTemplateRecord::getContentHtml, MailTemplateRecord::setContentHtml);

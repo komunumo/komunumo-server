@@ -20,7 +20,6 @@ package org.komunumo.ui.view.admin.pages;
 
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.richtexteditor.RichTextEditor;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -31,6 +30,7 @@ import org.komunumo.data.entity.Page;
 import org.komunumo.ui.component.CustomLabel;
 import org.komunumo.ui.component.EditDialog;
 import org.komunumo.util.URLUtil;
+import org.vaadin.addons.jhoffmann99.TrixEditor;
 
 import java.util.Objects;
 
@@ -47,7 +47,7 @@ public final class PageDialog extends EditDialog<Page> {
         final var parent = new Select<PageParent>();
         final var pageUrl = new TextField("URL");
         final var title = new TextField("Title");
-        final var content = new RichTextEditor();
+        final var content = new TrixEditor("");
 
         parent.setLabel("Parent");
         parent.setItems(PageParent.values());
@@ -75,7 +75,7 @@ public final class PageDialog extends EditDialog<Page> {
                         "Please enter the title of the page (max. 255 chars)", 1, 255))
                 .bind(Page::getTitle, Page::setTitle);
 
-        binder.forField(content.asHtml())
+        binder.forField(content)
                 .withValidator(new StringLengthValidator(
                         "The content is too long (max. 8'000 chars)", 0, 8_000))
                 .bind(Page::getContent, Page::setContent);

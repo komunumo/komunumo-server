@@ -19,7 +19,6 @@
 package org.komunumo.ui.view.admin.speakers;
 
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.richtexteditor.RichTextEditor;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -31,6 +30,7 @@ import org.komunumo.ui.component.CustomLabel;
 import org.komunumo.ui.component.EditDialog;
 import org.komunumo.ui.component.ImageUploadField;
 import org.komunumo.util.GravatarUtil;
+import org.vaadin.addons.jhoffmann99.TrixEditor;
 
 import static com.vaadin.flow.data.value.ValueChangeMode.EAGER;
 import static org.komunumo.util.GravatarUtil.GRAVATAR_URL;
@@ -46,7 +46,7 @@ public final class SpeakerDialog extends EditDialog<SpeakerRecord> {
         final var firstName = new TextField("First name");
         final var lastName = new TextField("Last name");
         final var company = new TextField("Company");
-        final var bio = new RichTextEditor();
+        final var bio = new TrixEditor("");
         final var photo = new ImageUploadField("Photo");
         final var email = new EmailField("Email");
         final var twitter = new TextField("Twitter");
@@ -91,7 +91,7 @@ public final class SpeakerDialog extends EditDialog<SpeakerRecord> {
                         "The company name is too long (max. 255 chars)", 0, 255))
                 .bind(SpeakerRecord::getCompany, SpeakerRecord::setCompany);
 
-        binder.forField(bio.asHtml())
+        binder.forField(bio)
                 .withValidator(new StringLengthValidator(
                         "The bio is too long (max. 100'000 chars)", 0, 100_000))
                 .bind(SpeakerRecord::getBio, SpeakerRecord::setBio);
