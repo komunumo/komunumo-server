@@ -20,7 +20,6 @@ package org.komunumo.ui.view.website;
 
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.cookieconsent.CookieConsent;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Main;
@@ -49,7 +48,6 @@ public final class WebsiteLayout extends Div implements RouterLayout {
         website.addClassName("website");
         add(website);
 
-        website.add(new CookieConsent());
         website.add(new WebsiteMenu(authenticatedUser));
         website.add(new WebsiteHeader(databaseService));
 

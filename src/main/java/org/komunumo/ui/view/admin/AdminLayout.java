@@ -24,7 +24,6 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
-import com.vaadin.flow.component.cookieconsent.CookieConsent;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.AnchorTarget;
 import com.vaadin.flow.component.html.H1;
@@ -79,7 +78,6 @@ public final class AdminLayout extends AppLayout {
         this.authenticatedUser = authenticatedUser;
         this.accessChecker = accessChecker;
 
-        addToNavbar(new CookieConsent());
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
         menu = createMenu();
