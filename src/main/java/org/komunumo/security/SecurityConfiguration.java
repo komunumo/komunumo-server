@@ -71,8 +71,14 @@ public class SecurityConfiguration extends VaadinWebSecurity {
 
                 // web application manifest
                 new AntPathRequestMatcher("/manifest.webmanifest"),
+
+                // service worker
                 new AntPathRequestMatcher("/sw.js"),
+                new AntPathRequestMatcher("/sw-runtime-resources-precache.js"),
+
+                // offline info
                 new AntPathRequestMatcher("/offline.html"),
+                new AntPathRequestMatcher("/offline-stub.html"),
 
                 // icons and images
                 new AntPathRequestMatcher("/icons/**"),
