@@ -6,6 +6,7 @@
     "extends": "standard-with-typescript",
     "parserOptions": {
         "ecmaVersion": "latest",
+        "project": "tsconfig.json",
         "sourceType": "module"
     },
     "rules": {
