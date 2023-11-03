@@ -1,5 +1,7 @@
 # Komunumo
 
+[![All Tests](https://github.com/komunumo/komunumo-server/actions/workflows/all-tests.yml/badge.svg)](https://github.com/komunumo/komunumo-server/actions/workflows/all-tests.yml)
+
 **Open Source Community Manager**
 
 *Komunumo* is an esperanto noun with a meaning of *community*.
