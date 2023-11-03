@@ -79,8 +79,6 @@
         <jooq.version>3.18.7</jooq.version>
         <maven.version>3.8.7</maven.version>
         <vaadin.version>24.2.1</vaadin.version>
-        <!-- this parameter is needed as spring-boot bom overwrites it -->
-        <selenium.version>4.5.3</selenium.version>
     </properties>
 
     <parent>
