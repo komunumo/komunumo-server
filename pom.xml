@@ -76,7 +76,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <jooq.version>3.19.1</jooq.version>
+        <jooq.version>3.19.2</jooq.version>
         <maven.version>3.8.7</maven.version>
         <vaadin.version>24.3.2</vaadin.version>
     </properties>
