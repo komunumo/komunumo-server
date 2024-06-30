@@ -1,4 +1,4 @@
-# Top Contributors: komunumo/komunumo-server
+# Top Contributors: McPringle/komunumo
 Shout out to our top contributors!
 
 - [McPringle](https://github.com/McPringle)

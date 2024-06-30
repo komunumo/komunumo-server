@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: komunumo-server
+  name: komunumo
   namespace: default
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: komunumo-server
+      app: komunumo
   template:
     metadata:
       labels:
-        app: komunumo-server
+        app: komunumo
     spec:
       containers:
-        - name: komunumo-server
-          image: komunumo-server:latest
+        - name: komunumo
+          image: komunumo:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 8080
@@ -28,10 +28,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: komunumo-server-balancer
+  name: komunumo-balancer
 spec:
   selector:
-    app: komunumo-server
+    app: komunumo
   ports:
     - protocol: TCP
       port: 8000 # The port to expose to the outside

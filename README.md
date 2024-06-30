@@ -1,6 +1,6 @@
 # Komunumo
 
-[![All Tests](https://github.com/komunumo/komunumo-server/actions/workflows/all-tests.yml/badge.svg)](https://github.com/komunumo/komunumo-server/actions/workflows/all-tests.yml)
+[![All Tests](https://github.com/McPringle/komunumo/actions/workflows/all-tests.yml/badge.svg)](https://github.com/McPringle/komunumo/actions/workflows/all-tests.yml)
 
 **Open Source Community Manager**
 
@@ -179,4 +179,4 @@ You should have received a copy of the GNU Affero General Public License along w
 
 ## Authors
 
-**Komunumo** is led by [Marcus Fihlon](https://github.com/McPringle) and has received contributions from [many individuals](https://github.com/komunumo/komunumo-server/blob/main/CONTRIBUTORS.md) in Komunumo’s awesome community. The project was initiated in 2017 by Marcus Fihlon.
+**Komunumo** is led by [Marcus Fihlon](https://github.com/McPringle) and has received contributions from [many individuals](https://github.com/McPringle/komunumo/blob/main/CONTRIBUTORS.md) in Komunumo’s awesome community. The project was initiated in 2017 by Marcus Fihlon.
